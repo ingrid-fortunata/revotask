@@ -85,3 +85,33 @@ def load_json_body(schema: Schema) -> dict[str, Any]:
         if not field_messages:
             raise RequestValidationError(BODY_MESSAGE) from None
         raise RequestValidationError(fields=field_messages) from None
+
+
+class StrictBool(fields.Field):
+    """A JSON boolean only. `1`, `"true"` and `null` are rejected."""
+
+    def __init__(self, message: str, **kwargs: Any) -> None:
+        kwargs.setdefault("error_messages", {"invalid": message, "null": message})
+        super().__init__(**kwargs)
+
+    def _deserialize(self, value: Any, attr: str | None, data: Any, **kwargs: Any) -> bool:
+        if isinstance(value, bool):
+            return value
+        raise self.make_error("invalid")
+
+
+class BoundedInt(fields.Field):
+    """A JSON integer in [minimum, maximum]. Booleans, floats and strings are rejected."""
+
+    def __init__(self, minimum: int, maximum: int, message: str, **kwargs: Any) -> None:
+        kwargs.setdefault("error_messages", {"invalid": message, "null": REQUIRED})
+        super().__init__(**kwargs)
+        self.minimum = minimum
+        self.maximum = maximum
+
+    def _deserialize(self, value: Any, attr: str | None, data: Any, **kwargs: Any) -> int:
+        if isinstance(value, bool) or not isinstance(value, int):
+            raise self.make_error("invalid")
+        if not self.minimum <= value <= self.maximum:
+            raise self.make_error("invalid")
+        return value

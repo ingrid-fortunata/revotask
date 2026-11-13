@@ -116,3 +116,25 @@ class StateConflictError(ApiError):
     status = 409
     code = "STATE_CONFLICT"
     message = "The request conflicts with the current state."
+
+
+class PositionConflictError(ApiError):
+    """The client's `expected_position_version` is stale (409).
+
+    Raised after the board lock and the source recheck, before any destination check (K3).
+    """
+
+    status = 409
+    code = "POSITION_CONFLICT"
+    message = "The board changed. Refresh and try again."
+
+
+class InvalidDestinationError(ApiError):
+    """A move names a destination column or anchor that is not valid for this board (400).
+
+    The message is fixed and there are no `fields`, so nothing about another board is disclosed.
+    """
+
+    status = 400
+    code = "VALIDATION_ERROR"
+    message = "Choose a valid destination."
