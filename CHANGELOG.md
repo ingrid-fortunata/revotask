@@ -7,6 +7,7 @@ Track notable user-facing changes using [Keep a Changelog](https://keepachangelo
 - Added handbook review and submission evidence for Kiro, Claude Code, Postman and Playwright.
 ### Added
 
+- Authentication slice (T03–T04, local only): register, login, logout and `GET /api/users/me` in Flask with Argon2id, JWT revocation, a shared `AUTH_REQUIRED` guard and login and register rate limits. Same-origin Next.js Route Handlers keep the token in an HttpOnly `revotask_session` cookie and return only the public user. Register and login pages, a protected shell with sign out, a typed `ApiError`, and one set of field rules shared by the forms and the API. Mobile rules (AC13.1) apply to every page and are measured in a real browser. Local verification: [evidence](evidence/authentication-T03-T04.md). Real-phone checks, Playwright (T15) and production rate limiting (T16) are pending.
 - Foundation slice (T01–T02, local only): backend Flask factory with validated settings, shared JSON error envelope with `X-Request-ID`, `GET /api/health`, nine SQLAlchemy models, the first Alembic revision and a `bootstrap-schema` command. Frontend Next.js scaffold with Tailwind CSS, daisyUI and Vitest tests. Backend Docker image and local Compose service, on port 5001, with a Render Docker Web Service procedure.
 - Added the Kiro Feature Spec workflow and detailed backend and frontend implementation specs.
 - Local implementation prompts, placeholder environment files and repository ignore rules.
@@ -14,9 +15,11 @@ Track notable user-facing changes using [Keep a Changelog](https://keepachangelo
 
 ### Changed
 
+- Request-body failures use the JSON envelope: 400 malformed JSON, 415 `UNSUPPORTED_MEDIA_TYPE`, 413 `CONTENT_TOO_LARGE`. `docs/API.md` lists both new statuses. `GET /api/users/me` (E30 read) moved from T12 to T03.
+- Mobile responsiveness is a standing rule for every UI slice (AC13.1, FE-S4–S6): 375 px and wider, 44 by 44 px tappable areas, 16 px inputs, `min-h-dvh`.
 - Simplified implementation to two reusable prompts per feature with synchronized task status and documentation.
 - Added a documentation checkpoint to each implementation task so README facts and applicable changelogs can be updated with the code change.
-- The implementation workflow starts from the included spec. Local acceptance precedes GitHub connection and live deployment. Foundation (T01–T02) is implemented locally. Authentication and later slices, live deployment and submission evidence are pending.
+- The implementation workflow starts from the included spec. Local acceptance precedes GitHub connection and live deployment. Foundation (T01–T02) is implemented locally. Foundation (T01–T02) and authentication (T03–T04) are implemented locally. Boards and later slices, live deployment and submission evidence are pending.
 - Shared error envelope gains `405 METHOD_NOT_ALLOWED` with an `Allow` header (`docs/API.md`).
 
 ## Release entry template

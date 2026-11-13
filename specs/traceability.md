@@ -16,8 +16,8 @@ Every row is planned. E codes refer to the [API](../docs/API.md), T codes to [ta
 | AC09.1 | D5–D6 · E22 · Board search | T11 | V07, V11 |
 | AC10.1, AC10.2 | D3, D6 · E17–E18, E24, E27–E28 · Notification bell | T13 | V08, V11 |
 | AC11.1 | D3, D6 · E29 · Analytics panel | T14 | V08 |
-| AC12.1 | D2, D5 · E30–E31 · `/profile` | T12 | V07 |
-| AC13.1 | D5 · protected pages and Move control | T09, T15 | V11 |
+| AC12.1 | D2, D5 · E30–E31 · `/profile` | T03 (E30 read), T04 (shell consumer), T12 | V07 |
+| AC13.1 | D5 · every page, dialog and control, and the Move control | T04, T06, T09–T14 (each UI task), T15 | V11 |
 | AC13.2 | D1, D6 · E07 | T15, T16 | V12 |
 | AC13.3 | D2, D6 · private pages and mutations | T01, T03, T04, T15 | V02, V13 |
 | AC14.1 | D1, D6 · E01–E03 and public API routing | T02, T16 | V14 |
@@ -40,7 +40,9 @@ Use this map to verify that every route and page has a task. The acceptance matr
 | E13–E20 Kanban UI | T09 |
 | E23–E26 comments and card detail modal | T10 |
 | E21–E22 My Tasks and search | T11 |
-| E30–E31 profile | T12 |
+| E30 GET current user | T03 |
+| E30 consumption by the protected shell | T04 |
+| E31 profile update and profile UI | T12 |
 | E27–E28 notifications | T13 |
 | E29 analytics | T14 |
 | /register and /login | T04 |
@@ -68,3 +70,18 @@ Local status only. The planned verification rows above stay the reference. This 
 | AC14.1 | Local API on `127.0.0.1:5001` in Docker Compose, with health 200 and Alembic at head | Passed locally. Live Render checks are T16. |
 | V14 (local part) | Container health and 405 path on port 5001 | Passed locally. |
 | FND-R10 (FND-AC10.1–10.7) | Dockerfile, `.dockerignore`, `compose.yaml`, Gunicorn pin, Render Docker procedure | Passed locally (tasks 1.8 to 1.10). Live Render deployment is T16. |
+## Authentication evidence status (T03–T04)
+Local status only. The planned verification rows above stay the reference. Evidence: `evidence/authentication-T03-T04.md`. Rate-limit results are local behavior with in-memory counters.
+| AC | Authentication contribution | Status |
+|---|---|---|
+| AC01.1, AC01.2 | E02 and `/register`: exact fields, shared field rules, 400 field errors, 409 including an 8-way simultaneous registration, redirect to `/login` signed out | Passed locally (V01 local part) |
+| AC02.1 | E03 and `/login`: JWT, HttpOnly cookie, login opens the protected shell at `/` | Passed locally. Dashboard content arrives with T06 |
+| AC02.2 | Identical 401 for a wrong password and an unknown email. Absent, expired, revoked and tampered sessions return 401 and redirect to `/login` | Passed locally (V02 local part) |
+| AC02.3 | E04: revocation, token replay rejected, cookie cleared, idempotent browser logout, retry when Flask is down, Back after sign out | Passed locally in Chrome device emulation. The Playwright run (V09) is T15. The back-forward cache `pageshow` path has unit tests only |
+| AC12.1 | E30 read (`GET /api/users/me`) | Partial. E31, the profile UI and the context refresh are T12 |
+| AC13.1 | AUTH-R13 for `/login`, `/register`, the shell and the error state at 320, 375, 768 and 1280 px | Passed locally in emulation. No real phone, no on-screen keyboard. The same check repeats in every later UI slice, in T15 and in T16 |
+| AC13.3 | `no-store` on private responses, exact `Origin` check on the three auth handlers, secrets absent from the browser bundle | Partial. The same checks on later handlers, the full V13 run (T15) and the live cookie flags (T16) remain |
+| AC14.1 | Local register and login | Partial. Live Render checks are T16 |
+| V13 (auth part) | Missing, mismatched and valid `Origin`; `no-store`; sentinel bundle build; `server-only` negative control | Passed locally |
+| NFR 3 (brief) | Absent, expired and revoked tokens rejected; private responses `no-store` | Passed locally for the auth surface. Board scoping arrives with T05 |
+| Rate limits (design D2) | 429 with `Retry-After` on register and login | Local behavior only. Shared storage and trusted client address handling are open for T16 |

@@ -26,8 +26,8 @@ Mark complete only after code review and verification. Every task that adds UI a
 
 - [x] T01
 - [x] T02
-- [ ] T03
-- [ ] T04
+- [x] T03
+- [x] T04
 - [ ] T05
 - [ ] T06
 - [ ] T07

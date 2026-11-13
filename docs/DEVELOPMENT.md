@@ -1,6 +1,6 @@
 # RevoTask Development Guide
 
-These commands are verified for the foundation slice (T01–T02) on macOS with PostgreSQL 16.14, Python 3.14.5 and Node.js 24.22.1. Run each command from the directory shown. Login, boards and Kanban routes arrive in later feature slices.
+These commands are verified for the foundation (T01–T02) and authentication (T03–T04) slices on macOS with PostgreSQL 16.14, Python 3.14.5 and Node.js 24.22.1. Run each command from the directory shown. Boards and Kanban routes arrive in later feature slices.
 
 ## Prerequisites
 
@@ -46,7 +46,7 @@ ruff check . && ruff format --check .
 pytest -v
 ```
 
-`TEST_DATABASE_URL` must point to a local database whose name ends in `_test`. Test setup refuses to run if the test URL matches `DATABASE_URL`, names another database, or uses a remote host. The migration tests drop and rebuild the `revotask` schema on that test database.
+The tests include real Argon2 hashing and a simultaneous-registration race, so the suite takes a few seconds. Login and register rate limits are on by default. The test configuration sets `RATE_LIMIT_ENABLED=false`, and `tests/test_rate_limit.py` builds its own app with them on. `TEST_DATABASE_URL` must point to a local database whose name ends in `_test`. Test setup refuses to run if the test URL matches `DATABASE_URL`, names another database, or uses a remote host. The migration tests drop and rebuild the `revotask` schema on that test database.
 
 ## Docker (Flask container)
 
@@ -82,24 +82,40 @@ npm run dev                       # http://localhost:3000
 ```bash
 npm run lint
 npm run typecheck
-npm test                          # Vitest with jsdom and React Testing Library
+npm test                          # Vitest: jsdom for components, node for Route Handlers and server modules
 npm run build
 ```
 
 Playwright browser tests arrive with the local acceptance task (T15).
+
+### Sign in locally and run the smoke checks
+
+Start Flask first (native on port 5001, or `docker compose up -d backend`). Then, from `frontend/`:
+
+```bash
+npm run build
+npm run start                     # http://localhost:3000, or `npx next start -p 3100`
+```
+
+- **Use `localhost`, not `127.0.0.1`, in the browser.** Next accepts a browser `POST` only when its `Origin` header equals `APP_ORIGIN` exactly. A page opened on a different host or port gets a 403 on register, login and logout. When you start Next on another port, set `APP_ORIGIN` to match, for example `APP_ORIGIN=http://localhost:3100 npx next start -p 3100`.
+- **`APP_ORIGIN` must be an https origin, or an http origin on `localhost`, `127.0.0.1` or `[::1]`.** Any other value makes the auth handlers answer 500 and log which variable is wrong, without its value. The session cookie is `Secure` only when `APP_ORIGIN` is https.
+- **Two scripts in `evidence/` repeat the checks against the real stack.** Both create one throwaway account and delete it. Neither prints a password, token or cookie value.
+  - `python ../evidence/authentication-http-smoke.py` (from `backend/`, venv active) runs 64 HTTP checks. It stops and restarts the `backend` Compose service once, and ends with deliberate wrong-password logins, so wait a minute before running it again.
+  - `node evidence/authentication-mobile-measure.mjs` (from the repository root) drives headless Google Chrome over the DevTools Protocol with Node's built-in WebSocket, so it needs no dependency. It measures every route at 320, 375, 768 and 1280 px (page scroll, 44 by 44 tappable areas, 16 px inputs, toasts) and checks sign in, sign out and Back. It uses device emulation, not a real phone.
 
 ## Environment contract
 
 | Scope          | Variables                                                | Example values                                                       |
 | -------------- | -------------------------------------------------------- | -------------------------------------------------------------------- |
 | Flask          | `APP_ENV`, `DATABASE_URL`, `JWT_SECRET_KEY`, `LOG_LEVEL` | development, local PostgreSQL URI, local-only generated secret, INFO |
+| Flask (optional) | `RATE_LIMIT_ENABLED` | `true` by default. `false` only for local experiments. It is refused when `APP_ENV=production`. Counters are in process memory, so the limits prove local behavior only |
 | Flask tests    | `TEST_DATABASE_URL`                                      | Isolated local PostgreSQL URI whose database name ends in `_test`    |
 | Docker Compose (root `.env`) | `DOCKER_DATABASE_URL` | `postgresql+psycopg://revotask:<password>@host.docker.internal:5432/revotask_dev` |
 | Container runtime | `PORT`, `GUNICORN_WORKERS` (optional) | `5001` locally. Render sets its own `PORT`. |
-| Next.js server | `APP_ORIGIN`, `API_BASE_URL`                             | `http://localhost:3000`, `http://127.0.0.1:5001`                     |
+| Next.js server | `APP_ORIGIN`, `API_BASE_URL`                             | `http://localhost:3000`, `http://127.0.0.1:5001`. Read on the first request, so `next build` needs neither |
 | Playwright     | `E2E_BASE_URL`                                           | `http://localhost:3000` or verified Vercel URL. Added with T15.      |
 
-Both `.env.example` files are committed with placeholders. Real `.env*` files stay ignored, and so do `.venv/`, `__pycache__/`, `.next/`, `node_modules/`, `*.tsbuildinfo` and `playwright/.auth/`. The frontend does not read the Next.js variables yet. The server client in T04 is the first reader.
+Both `.env.example` files are committed with placeholders. Real `.env*` files stay ignored, and so do `.venv/`, `__pycache__/`, `.next/`, `node_modules/`, `*.tsbuildinfo` and `playwright/.auth/`. The Route Handlers and Server Components read the two Next.js variables on the server only. They never reach the browser bundle (checked with a sentinel build in `evidence/authentication-T03-T04.md`).
 
 ## Dependency pins
 

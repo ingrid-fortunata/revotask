@@ -2,7 +2,7 @@
 
 RevoTask is a collaborative Kanban app for small teams. Members organize cards into columns, move cards through a workflow, assign work and discuss cards. Board admins manage membership and columns.
 
-**Status:** Foundation (T01–T02) is implemented and checked locally, including the Flask API as a Docker image with Compose on port 5001. The Flask API serves `GET /api/health`, the first migration creates the nine tables, and the Next.js shell builds. Authentication and later slices, live deployments and submission evidence are pending. Local results are in [the foundation evidence](evidence/foundation-T01-T02.md).
+**Status:** Foundation (T01–T02) and authentication (T03–T04) are implemented and checked locally. The Flask API (Docker image with Compose on port 5001) serves health, register, login, logout and the current-user read, with Argon2id passwords, JWT revocation and local rate limits. The Next.js app has `/register`, `/login` and a protected shell at `/`, with the session in an HttpOnly cookie. Local checks: backend 382 tests, frontend 431 tests, a 64-check HTTP smoke and a 90-check Chrome run (device emulation, no real phone). Boards and later slices, Playwright, live deployments and submission evidence are pending. Production rate limiting needs shared storage and trusted client address handling before release (T16). Results: [foundation evidence](evidence/foundation-T01-T02.md) and [authentication evidence](evidence/authentication-T03-T04.md).
 
 | Project | Technology | Live URL |
 |---|---|---|
