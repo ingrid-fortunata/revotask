@@ -7,3 +7,7 @@ psycopg[binary]==3.3.9
 Flask-JWT-Extended==4.7.4
 # WSGI server for the Docker image and Render (BE01). Pure-Python wheel, Python >=3.10.
 gunicorn==27.0.1
+# Authentication slice (T03): Argon2id hashing, request validation and rate limiting.
+argon2-cffi==25.1.0
+marshmallow==4.4.0
+Flask-Limiter==4.1.1
