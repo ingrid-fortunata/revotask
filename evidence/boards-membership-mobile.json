@@ -1,0 +1,1383 @@
+{
+  "generatedAt": "2026-11-13T11:18:30.866Z",
+  "origin": "http://localhost:3000",
+  "browser": "Chrome/157.0.8103.51",
+  "device": "headless Chrome device emulation, not a real phone",
+  "widths": [
+    320,
+    375,
+    768,
+    1280
+  ],
+  "summary": {
+    "total": 180,
+    "passed": 180,
+    "failed": 0
+  },
+  "checks": [
+    {
+      "role": "admin",
+      "page": "/",
+      "width": 320,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "admin",
+      "page": "/",
+      "width": 320,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "5 controls"
+    },
+    {
+      "role": "admin",
+      "page": "/",
+      "width": 320,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/",
+      "width": 320,
+      "check": "every text input computes to a font size of at least 16px",
+      "pass": true,
+      "detail": "1 inputs"
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id",
+      "width": 320,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id",
+      "width": 320,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "8 controls"
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id",
+      "width": 320,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id",
+      "width": 320,
+      "check": "every text input computes to a font size of at least 16px",
+      "pass": true,
+      "detail": "1 inputs"
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id rename form",
+      "width": 320,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id rename form",
+      "width": 320,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "11 controls"
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id rename form",
+      "width": 320,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id rename form",
+      "width": 320,
+      "check": "every text input computes to a font size of at least 16px",
+      "pass": true,
+      "detail": "2 inputs"
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:missing-id (not-found)",
+      "width": 320,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:missing-id (not-found)",
+      "width": 320,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "3 controls"
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:missing-id (not-found)",
+      "width": 320,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "delete board Confirm_Dialog",
+      "width": 320,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "admin",
+      "page": "delete board Confirm_Dialog",
+      "width": 320,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "admin",
+      "page": "delete board Confirm_Dialog",
+      "width": 320,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "delete board Confirm_Dialog",
+      "width": 320,
+      "check": "focus moves into the dialog and lands on Cancel",
+      "pass": true,
+      "detail": "focused: Cancel"
+    },
+    {
+      "role": "admin",
+      "page": "delete board Confirm_Dialog",
+      "width": 320,
+      "check": "Tab keeps focus inside the dialog (6 presses)",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "delete board Confirm_Dialog",
+      "width": 320,
+      "check": "Cancel closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "delete board Confirm_Dialog",
+      "width": 320,
+      "check": "Cancel sends no request to /api/boards",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "delete board Confirm_Dialog",
+      "width": 320,
+      "check": "focus returns to the opener after Cancel",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "delete board Confirm_Dialog",
+      "width": 320,
+      "check": "Escape closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "delete board Confirm_Dialog",
+      "width": 320,
+      "check": "Escape sends no request to /api/boards",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "delete board Confirm_Dialog",
+      "width": 320,
+      "check": "focus returns to the opener after Escape",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "remove member Confirm_Dialog",
+      "width": 320,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "admin",
+      "page": "remove member Confirm_Dialog",
+      "width": 320,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "admin",
+      "page": "remove member Confirm_Dialog",
+      "width": 320,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "remove member Confirm_Dialog",
+      "width": 320,
+      "check": "focus moves into the dialog and lands on Cancel",
+      "pass": true,
+      "detail": "focused: Cancel"
+    },
+    {
+      "role": "admin",
+      "page": "remove member Confirm_Dialog",
+      "width": 320,
+      "check": "Tab keeps focus inside the dialog (6 presses)",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "remove member Confirm_Dialog",
+      "width": 320,
+      "check": "Cancel closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "remove member Confirm_Dialog",
+      "width": 320,
+      "check": "Cancel sends no request to /api/boards",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "remove member Confirm_Dialog",
+      "width": 320,
+      "check": "focus returns to the opener after Cancel",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "remove member Confirm_Dialog",
+      "width": 320,
+      "check": "Escape closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "remove member Confirm_Dialog",
+      "width": 320,
+      "check": "Escape sends no request to /api/boards",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "remove member Confirm_Dialog",
+      "width": 320,
+      "check": "focus returns to the opener after Escape",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/",
+      "width": 375,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "admin",
+      "page": "/",
+      "width": 375,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "5 controls"
+    },
+    {
+      "role": "admin",
+      "page": "/",
+      "width": 375,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/",
+      "width": 375,
+      "check": "every text input computes to a font size of at least 16px",
+      "pass": true,
+      "detail": "1 inputs"
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id",
+      "width": 375,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id",
+      "width": 375,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "8 controls"
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id",
+      "width": 375,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id",
+      "width": 375,
+      "check": "every text input computes to a font size of at least 16px",
+      "pass": true,
+      "detail": "1 inputs"
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id rename form",
+      "width": 375,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id rename form",
+      "width": 375,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "11 controls"
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id rename form",
+      "width": 375,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id rename form",
+      "width": 375,
+      "check": "every text input computes to a font size of at least 16px",
+      "pass": true,
+      "detail": "2 inputs"
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:missing-id (not-found)",
+      "width": 375,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:missing-id (not-found)",
+      "width": 375,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "3 controls"
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:missing-id (not-found)",
+      "width": 375,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "delete board Confirm_Dialog",
+      "width": 375,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "admin",
+      "page": "delete board Confirm_Dialog",
+      "width": 375,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "admin",
+      "page": "delete board Confirm_Dialog",
+      "width": 375,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "delete board Confirm_Dialog",
+      "width": 375,
+      "check": "focus moves into the dialog and lands on Cancel",
+      "pass": true,
+      "detail": "focused: Cancel"
+    },
+    {
+      "role": "admin",
+      "page": "delete board Confirm_Dialog",
+      "width": 375,
+      "check": "Tab keeps focus inside the dialog (6 presses)",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "delete board Confirm_Dialog",
+      "width": 375,
+      "check": "Cancel closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "delete board Confirm_Dialog",
+      "width": 375,
+      "check": "Cancel sends no request to /api/boards",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "delete board Confirm_Dialog",
+      "width": 375,
+      "check": "focus returns to the opener after Cancel",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "delete board Confirm_Dialog",
+      "width": 375,
+      "check": "Escape closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "delete board Confirm_Dialog",
+      "width": 375,
+      "check": "Escape sends no request to /api/boards",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "delete board Confirm_Dialog",
+      "width": 375,
+      "check": "focus returns to the opener after Escape",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "remove member Confirm_Dialog",
+      "width": 375,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "admin",
+      "page": "remove member Confirm_Dialog",
+      "width": 375,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "admin",
+      "page": "remove member Confirm_Dialog",
+      "width": 375,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "remove member Confirm_Dialog",
+      "width": 375,
+      "check": "focus moves into the dialog and lands on Cancel",
+      "pass": true,
+      "detail": "focused: Cancel"
+    },
+    {
+      "role": "admin",
+      "page": "remove member Confirm_Dialog",
+      "width": 375,
+      "check": "Tab keeps focus inside the dialog (6 presses)",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "remove member Confirm_Dialog",
+      "width": 375,
+      "check": "Cancel closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "remove member Confirm_Dialog",
+      "width": 375,
+      "check": "Cancel sends no request to /api/boards",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "remove member Confirm_Dialog",
+      "width": 375,
+      "check": "focus returns to the opener after Cancel",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "remove member Confirm_Dialog",
+      "width": 375,
+      "check": "Escape closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "remove member Confirm_Dialog",
+      "width": 375,
+      "check": "Escape sends no request to /api/boards",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "remove member Confirm_Dialog",
+      "width": 375,
+      "check": "focus returns to the opener after Escape",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/",
+      "width": 768,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 768, innerWidth 768"
+    },
+    {
+      "role": "admin",
+      "page": "/",
+      "width": 768,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "5 controls"
+    },
+    {
+      "role": "admin",
+      "page": "/",
+      "width": 768,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/",
+      "width": 768,
+      "check": "every text input computes to a font size of at least 16px",
+      "pass": true,
+      "detail": "1 inputs"
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id",
+      "width": 768,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 768, innerWidth 768"
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id",
+      "width": 768,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "8 controls"
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id",
+      "width": 768,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id",
+      "width": 768,
+      "check": "every text input computes to a font size of at least 16px",
+      "pass": true,
+      "detail": "1 inputs"
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id rename form",
+      "width": 768,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 768, innerWidth 768"
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id rename form",
+      "width": 768,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "11 controls"
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id rename form",
+      "width": 768,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id rename form",
+      "width": 768,
+      "check": "every text input computes to a font size of at least 16px",
+      "pass": true,
+      "detail": "2 inputs"
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:missing-id (not-found)",
+      "width": 768,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 768, innerWidth 768"
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:missing-id (not-found)",
+      "width": 768,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "3 controls"
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:missing-id (not-found)",
+      "width": 768,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "delete board Confirm_Dialog",
+      "width": 768,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 768, innerWidth 768"
+    },
+    {
+      "role": "admin",
+      "page": "delete board Confirm_Dialog",
+      "width": 768,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "admin",
+      "page": "delete board Confirm_Dialog",
+      "width": 768,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "delete board Confirm_Dialog",
+      "width": 768,
+      "check": "focus moves into the dialog and lands on Cancel",
+      "pass": true,
+      "detail": "focused: Cancel"
+    },
+    {
+      "role": "admin",
+      "page": "delete board Confirm_Dialog",
+      "width": 768,
+      "check": "Tab keeps focus inside the dialog (6 presses)",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "delete board Confirm_Dialog",
+      "width": 768,
+      "check": "Cancel closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "delete board Confirm_Dialog",
+      "width": 768,
+      "check": "Cancel sends no request to /api/boards",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "delete board Confirm_Dialog",
+      "width": 768,
+      "check": "focus returns to the opener after Cancel",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "delete board Confirm_Dialog",
+      "width": 768,
+      "check": "Escape closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "delete board Confirm_Dialog",
+      "width": 768,
+      "check": "Escape sends no request to /api/boards",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "delete board Confirm_Dialog",
+      "width": 768,
+      "check": "focus returns to the opener after Escape",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "remove member Confirm_Dialog",
+      "width": 768,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 768, innerWidth 768"
+    },
+    {
+      "role": "admin",
+      "page": "remove member Confirm_Dialog",
+      "width": 768,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "admin",
+      "page": "remove member Confirm_Dialog",
+      "width": 768,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "remove member Confirm_Dialog",
+      "width": 768,
+      "check": "focus moves into the dialog and lands on Cancel",
+      "pass": true,
+      "detail": "focused: Cancel"
+    },
+    {
+      "role": "admin",
+      "page": "remove member Confirm_Dialog",
+      "width": 768,
+      "check": "Tab keeps focus inside the dialog (6 presses)",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "remove member Confirm_Dialog",
+      "width": 768,
+      "check": "Cancel closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "remove member Confirm_Dialog",
+      "width": 768,
+      "check": "Cancel sends no request to /api/boards",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "remove member Confirm_Dialog",
+      "width": 768,
+      "check": "focus returns to the opener after Cancel",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "remove member Confirm_Dialog",
+      "width": 768,
+      "check": "Escape closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "remove member Confirm_Dialog",
+      "width": 768,
+      "check": "Escape sends no request to /api/boards",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "remove member Confirm_Dialog",
+      "width": 768,
+      "check": "focus returns to the opener after Escape",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/",
+      "width": 1280,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "admin",
+      "page": "/",
+      "width": 1280,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "6 controls"
+    },
+    {
+      "role": "admin",
+      "page": "/",
+      "width": 1280,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/",
+      "width": 1280,
+      "check": "every text input computes to a font size of at least 16px",
+      "pass": true,
+      "detail": "1 inputs"
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id",
+      "width": 1280,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id",
+      "width": 1280,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "9 controls"
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id",
+      "width": 1280,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id",
+      "width": 1280,
+      "check": "every text input computes to a font size of at least 16px",
+      "pass": true,
+      "detail": "1 inputs"
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id rename form",
+      "width": 1280,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id rename form",
+      "width": 1280,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "12 controls"
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id rename form",
+      "width": 1280,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id rename form",
+      "width": 1280,
+      "check": "every text input computes to a font size of at least 16px",
+      "pass": true,
+      "detail": "2 inputs"
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:missing-id (not-found)",
+      "width": 1280,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:missing-id (not-found)",
+      "width": 1280,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "4 controls"
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:missing-id (not-found)",
+      "width": 1280,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "delete board Confirm_Dialog",
+      "width": 1280,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "admin",
+      "page": "delete board Confirm_Dialog",
+      "width": 1280,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "admin",
+      "page": "delete board Confirm_Dialog",
+      "width": 1280,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "delete board Confirm_Dialog",
+      "width": 1280,
+      "check": "focus moves into the dialog and lands on Cancel",
+      "pass": true,
+      "detail": "focused: Cancel"
+    },
+    {
+      "role": "admin",
+      "page": "delete board Confirm_Dialog",
+      "width": 1280,
+      "check": "Tab keeps focus inside the dialog (6 presses)",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "delete board Confirm_Dialog",
+      "width": 1280,
+      "check": "Cancel closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "delete board Confirm_Dialog",
+      "width": 1280,
+      "check": "Cancel sends no request to /api/boards",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "delete board Confirm_Dialog",
+      "width": 1280,
+      "check": "focus returns to the opener after Cancel",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "delete board Confirm_Dialog",
+      "width": 1280,
+      "check": "Escape closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "delete board Confirm_Dialog",
+      "width": 1280,
+      "check": "Escape sends no request to /api/boards",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "delete board Confirm_Dialog",
+      "width": 1280,
+      "check": "focus returns to the opener after Escape",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "remove member Confirm_Dialog",
+      "width": 1280,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "admin",
+      "page": "remove member Confirm_Dialog",
+      "width": 1280,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "admin",
+      "page": "remove member Confirm_Dialog",
+      "width": 1280,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "remove member Confirm_Dialog",
+      "width": 1280,
+      "check": "focus moves into the dialog and lands on Cancel",
+      "pass": true,
+      "detail": "focused: Cancel"
+    },
+    {
+      "role": "admin",
+      "page": "remove member Confirm_Dialog",
+      "width": 1280,
+      "check": "Tab keeps focus inside the dialog (6 presses)",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "remove member Confirm_Dialog",
+      "width": 1280,
+      "check": "Cancel closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "remove member Confirm_Dialog",
+      "width": 1280,
+      "check": "Cancel sends no request to /api/boards",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "remove member Confirm_Dialog",
+      "width": 1280,
+      "check": "focus returns to the opener after Cancel",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "remove member Confirm_Dialog",
+      "width": 1280,
+      "check": "Escape closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "remove member Confirm_Dialog",
+      "width": 1280,
+      "check": "Escape sends no request to /api/boards",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "remove member Confirm_Dialog",
+      "width": 1280,
+      "check": "focus returns to the opener after Escape",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "/",
+      "width": 320,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "member",
+      "page": "/",
+      "width": 320,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "5 controls"
+    },
+    {
+      "role": "member",
+      "page": "/",
+      "width": 320,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "/",
+      "width": 320,
+      "check": "every text input computes to a font size of at least 16px",
+      "pass": true,
+      "detail": "1 inputs"
+    },
+    {
+      "role": "member",
+      "page": "/boards/:id",
+      "width": 320,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "member",
+      "page": "/boards/:id",
+      "width": 320,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "3 controls"
+    },
+    {
+      "role": "member",
+      "page": "/boards/:id",
+      "width": 320,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "/boards/:id",
+      "width": 320,
+      "check": "Member sees no Rename, Delete or Remove control (Requirement 3.10)",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "/",
+      "width": 375,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "member",
+      "page": "/",
+      "width": 375,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "5 controls"
+    },
+    {
+      "role": "member",
+      "page": "/",
+      "width": 375,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "/",
+      "width": 375,
+      "check": "every text input computes to a font size of at least 16px",
+      "pass": true,
+      "detail": "1 inputs"
+    },
+    {
+      "role": "member",
+      "page": "/boards/:id",
+      "width": 375,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "member",
+      "page": "/boards/:id",
+      "width": 375,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "3 controls"
+    },
+    {
+      "role": "member",
+      "page": "/boards/:id",
+      "width": 375,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "/boards/:id",
+      "width": 375,
+      "check": "Member sees no Rename, Delete or Remove control (Requirement 3.10)",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "/",
+      "width": 768,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 768, innerWidth 768"
+    },
+    {
+      "role": "member",
+      "page": "/",
+      "width": 768,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "5 controls"
+    },
+    {
+      "role": "member",
+      "page": "/",
+      "width": 768,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "/",
+      "width": 768,
+      "check": "every text input computes to a font size of at least 16px",
+      "pass": true,
+      "detail": "1 inputs"
+    },
+    {
+      "role": "member",
+      "page": "/boards/:id",
+      "width": 768,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 768, innerWidth 768"
+    },
+    {
+      "role": "member",
+      "page": "/boards/:id",
+      "width": 768,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "3 controls"
+    },
+    {
+      "role": "member",
+      "page": "/boards/:id",
+      "width": 768,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "/boards/:id",
+      "width": 768,
+      "check": "Member sees no Rename, Delete or Remove control (Requirement 3.10)",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "/",
+      "width": 1280,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "member",
+      "page": "/",
+      "width": 1280,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "6 controls"
+    },
+    {
+      "role": "member",
+      "page": "/",
+      "width": 1280,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "/",
+      "width": 1280,
+      "check": "every text input computes to a font size of at least 16px",
+      "pass": true,
+      "detail": "1 inputs"
+    },
+    {
+      "role": "member",
+      "page": "/boards/:id",
+      "width": 1280,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "member",
+      "page": "/boards/:id",
+      "width": 1280,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "4 controls"
+    },
+    {
+      "role": "member",
+      "page": "/boards/:id",
+      "width": 1280,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "/boards/:id",
+      "width": 1280,
+      "check": "Member sees no Rename, Delete or Remove control (Requirement 3.10)",
+      "pass": true
+    }
+  ]
+}

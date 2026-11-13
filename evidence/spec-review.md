@@ -135,3 +135,69 @@ These changes are in the working tree but no decision in R1–R14 covers them. T
 ### Approval
 
 On 2026-11-13 the user approved the plan on the basis of R1–R14. The items marked "needs review" above were not named in R1–R14 and need an explicit confirmation. Task 0.1 records this review. Implementation has not started.
+
+## Kanban review record (T07–T09)
+
+Review of `.kiro/specs/kanban/` (requirements.md, design.md). Requirements and design were produced by Claude Code (`/revotask-feature spec kanban`, 2026-11-13). Spec review only: no source code, test, README or application changelog was changed, and no test was run. Implementation checks and outcomes will go in `evidence/kanban-T07-T09.md`. Root T05 to T09 status is unchanged.
+
+| Phase | Status | Note |
+| --- | --- | --- |
+| Requirements | Approved 2026-11-13 | 11 requirements. Decisions K1–K12 approved with the clarifications below. |
+| Design | Approved 2026-11-13 with clarifications L1–L7 | `design.md`: DD1–DD13, 18 properties, work packages WP-B1 to WP-D, contract clarifications C6–C13. |
+| Tasks | Approved 2026-11-13 (user, in chat, before `implement kanban`) | `tasks.md`. Dependencies: T05 before T07, T07 before T08, T06 and T08 before T09. |
+| Finalize | Root links done 2026-11-13 | `specs/tasks.md` T07, T08 and T09 link `.kiro/specs/kanban/tasks.md`. The kanban traceability table and `guidelines/frontend.md` (SelectField) are implementation-time updates (tasks 13.1 and 13.4). |
+
+### Decisions K1–K12
+
+| ID | Decision | Resolution | Where applied |
+| --- | --- | --- | --- |
+| K1 | E15 and E19 body | `{"data": {"position_version": n}}`. | `requirements.md` 1.8, 3.6; `design.md` Serialization; `docs/API.md` E15, E19 |
+| K2 | Open error codes | 409 `STATE_CONFLICT` for Done and nonempty-column conflicts. 400 with `fields.assignee_id`. "Choose a valid destination." for destination and anchor. | `requirements.md` 1.3, 1.6, 1.9, 2.6, 3.5, 4.6; `design.md` DD5, DD6, Error Handling; `docs/API.md`; `backend/specs/api-contract.md` |
+| K3 | Check order | Authenticate, shape, board access, lock, recheck membership, role and source under the lock, version 409, then destination 400. 404 nonmember and 403 member kept. | `requirements.md` 1.12, 2.5, 3.10, 4.5, 5.2; `design.md` DD1, DD2, Check order; `docs/API.md`; `backend/specs/api-contract.md`; `specs/design.md` D4 |
+| K4 | Column reorder UI | Move left and Move right, edge buttons disabled, accessible labels. | `requirements.md` 7.2, 7.9; `design.md` Drag and the Move dialog |
+| K5 | Card edit dialog | `CardEditDialog` in T09. T10 adds comments and the detail modal and reuses the edit behavior. | `requirements.md` 8.3, 8.7; `design.md` Frontend layout |
+| K6 | Events | Same transaction, only on a real change. Same-column reorder is a move. Unchanged position keeps the version and writes no event. `entered_done` only on creation in Done or a move from non-Done into Done. | `requirements.md` 2.2, 2.10, 4.3, 4.4, 5.4, 5.5; `design.md` DD4; `docs/API.md`; `specs/design.md` D4; `specs/requirements.md` AC07.2 |
+| K7 | New board | Starts empty. Admin Add column, Member message. | `requirements.md` 6.5; `design.md` Screens and states |
+| K8 | One request at a time | One Kanban write or refetch at a time, controls disabled, refetch before another move after a stale or uncertain outcome. | `requirements.md` 9.7, 9.8; `design.md` DD9, Board state and the gate |
+| K9 | `is_done` unchanged | Allowed on a nonempty column. Other valid fields still apply. | `requirements.md` 1.6; `design.md` DD8; `docs/API.md` E14 |
+| K10 | Move dialog | Column and position selects, same-column reorder, 44 by 44 px, checked at 375 px. | `requirements.md` 9.2, 10.3, 10.7; `design.md` Drag and the Move dialog, Browser checks |
+| K11 | Limits | No product cap on columns or cards. 100 cards is a measurement target. | `requirements.md` (none needed); `design.md` Risks |
+| K12 | Member removal refresh | After E12, refetch the board and members list, deferred while a move is pending, older responses discarded. | `requirements.md` 6.8; `design.md` Board state and the gate; `frontend/specs/api-integration.md` |
+
+### Points that go beyond the approved wording
+
+These are the design's own choices. The reviewer should confirm or change each one.
+
+| Item | Choice |
+| --- | --- |
+| E16 moved column not on the board | 404 `NOT_FOUND`, not 400, because K3 makes the moved column the source resource and one 404 hides other boards' IDs. |
+| Gate scope | Every Kanban write and refetch, not only create, delete and reorder, so a rollback cannot undo an edit. |
+| Rename and Done toggle | One `ColumnEditDialog` behind an Edit button. |
+| `SelectField` | A new shared part. `FormField` gets `multiline`. |
+| Hook split | `useKanbanBoard` (state and gate) and `useDragAndDrop` (drag only). `frontend/specs/pages-and-components.md` updated. |
+| Blank description | Stored as null. |
+| Version range | E16 and E20 accept 0 to 2147483647 and reject booleans. |
+
+### Implementation record (2026-11-13)
+
+All native groups of `.kiro/specs/kanban/tasks.md` were implemented by Claude Code (`/revotask-feature implement kanban`). The plan approval, the K1–K12 decisions and the L1–L7 clarifications held without change. Deviations that touched the spec (no behavior change) are in `specs/CHANGELOG.md`. Evidence: `evidence/kanban-T07-T09.md`.
+
+### Dependency gates
+
+T05 before T07, T07 before T08, T06 and T08 before T09. The boards-membership task 7.2 (measured mobile check and manual journey) is still in progress, so root T05 and T06 stay unchecked and root T06 is not checked until that check and the journey pass. The kanban spec does not check them.
+
+### Kanban design review clarifications (2026-11-13)
+
+The user approved the design with these clarifications. Applied to `design.md`, `requirements.md` and the shared specs. Spec review only: no source code or test was changed and no test was run.
+
+| ID | Clarification | Where applied |
+| --- | --- | --- |
+| L1 | E16: a well-formed `column_id` that is missing, soft-deleted or on another board returns the same generic 404. A malformed ID is 400. The version is checked before destination and anchor. | `requirements.md` 2.5; `design.md` DD2, Check order step 3 |
+| L2 | The per-board gate covers all Kanban writes and board refetches that can replace the same UI state, including the member-removal refresh and Reload board. A write may finish its own recovery refetch while competing actions stay disabled. Stale responses are ignored. | `requirements.md` 6.8, 9.8; `design.md` DD9, Board state and the gate |
+| L3 | One `ColumnEditDialog` for rename and the Done toggle. | `design.md` Frontend layout |
+| L4 | `SelectField` and multiline `FormField` approved. Existing field behavior preserved, labels and messages accessible. | `design.md` Frontend layout; `tasks.md` 7.6 |
+| L5 | `useKanbanBoard` for state, gate, rollback and refetch. `useDragAndDrop` for drag state only. | `design.md` Board state and the gate; `tasks.md` 8.2, 8.3 |
+| L6 | Blank or whitespace-only description stored as null, omitted description kept on edit. Versions 0 to 2147483647, booleans rejected. At the ceiling a version-changing write returns 409 `STATE_CONFLICT` and writes nothing. | `requirements.md` 3.3, 3.12, 5.7; `design.md` DD7, DD12; `docs/API.md`; `backend/specs/api-contract.md` |
+| L7 | E12 clears assignments only on active cards in active columns of the board, in the same transaction. Soft-deleted cards, cards in soft-deleted columns and other boards are preserved. A regression test covers each case. | `requirements.md` 11.10; `design.md` DD13; `docs/API.md` E12; `specs/requirements.md` AC04.2; `specs/traceability.md`; boards-membership requirements and DD6; `tasks.md` group 1 |
+
+Task gates (kept): T05 is verified against its own backend acceptance checks before T07 (group 1). T07 before T08. T06 and T08 before T09. Root T06 closes only after boards-membership task 7.2 (the measured mobile check and the manual journey) passes. Unverified tasks stay open.

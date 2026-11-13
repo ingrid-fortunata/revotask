@@ -1,0 +1,3138 @@
+{
+  "slice": "kanban (T07-T09)",
+  "browser": "Chrome/157.0.8103.51",
+  "mode": "headless Chrome with device emulation (not a real phone), touch emulation below 640 px",
+  "drag": "synthetic DOM drag events with a real DataTransfer, not a pointer drag (Playwright, T15)",
+  "widths": [
+    320,
+    375,
+    768,
+    1280
+  ],
+  "total": 418,
+  "failed": 0,
+  "results": [
+    {
+      "role": "admin",
+      "page": "board with columns and cards",
+      "width": 320,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "admin",
+      "page": "board with columns and cards",
+      "width": 320,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "37 controls"
+    },
+    {
+      "role": "admin",
+      "page": "board with columns and cards",
+      "width": 320,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "board with columns and cards",
+      "width": 320,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "5 controls"
+    },
+    {
+      "role": "admin",
+      "page": "board",
+      "width": 320,
+      "check": "the Kanban region is focusable, named and scrolls sideways only inside itself",
+      "pass": true,
+      "detail": "{\"named\":\"Kanban columns\",\"tabindex\":\"0\",\"overflowX\":\"auto\",\"scrolls\":true,\"lanes\":3}"
+    },
+    {
+      "role": "admin",
+      "page": "board",
+      "width": 320,
+      "check": "the three lanes overflow the region at phone width",
+      "pass": true,
+      "detail": "3 lanes"
+    },
+    {
+      "role": "admin",
+      "page": "board",
+      "width": 320,
+      "check": "ArrowRight scrolls the focused region (keyboard scroll)",
+      "pass": true,
+      "detail": "scrollLeft 80"
+    },
+    {
+      "role": "admin",
+      "page": "board",
+      "width": 320,
+      "check": "column controls shown for admin",
+      "pass": true,
+      "detail": "{\"edit\":true,\"remove\":true,\"left\":true,\"right\":true,\"move\":true,\"addColumn\":true,\"addCard\":true}"
+    },
+    {
+      "role": "admin",
+      "page": "board",
+      "width": 320,
+      "check": "card controls and the visible Move button shown",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Move card dialog",
+      "width": 320,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "admin",
+      "page": "Move card dialog",
+      "width": 320,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "4 controls"
+    },
+    {
+      "role": "admin",
+      "page": "Move card dialog",
+      "width": 320,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Move card dialog",
+      "width": 320,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "admin",
+      "page": "Move card dialog",
+      "width": 320,
+      "check": "focus moves into the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Move card dialog",
+      "width": 320,
+      "check": "Tab keeps focus inside the dialog (8 presses)",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Move card dialog",
+      "width": 320,
+      "check": "Cancel closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Move card dialog",
+      "width": 320,
+      "check": "Cancel sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "Move card dialog",
+      "width": 320,
+      "check": "focus returns to the opener after Cancel",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Move card dialog",
+      "width": 320,
+      "check": "Escape closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Move card dialog",
+      "width": 320,
+      "check": "Escape sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "Move card dialog",
+      "width": 320,
+      "check": "focus returns to the opener after Escape",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Edit card dialog",
+      "width": 320,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "admin",
+      "page": "Edit card dialog",
+      "width": 320,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "6 controls"
+    },
+    {
+      "role": "admin",
+      "page": "Edit card dialog",
+      "width": 320,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Edit card dialog",
+      "width": 320,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "3 controls"
+    },
+    {
+      "role": "admin",
+      "page": "Edit card dialog",
+      "width": 320,
+      "check": "focus moves into the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Edit card dialog",
+      "width": 320,
+      "check": "Tab keeps focus inside the dialog (8 presses)",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Edit card dialog",
+      "width": 320,
+      "check": "Cancel closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Edit card dialog",
+      "width": 320,
+      "check": "Cancel sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "Edit card dialog",
+      "width": 320,
+      "check": "focus returns to the opener after Cancel",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Edit card dialog",
+      "width": 320,
+      "check": "Escape closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Edit card dialog",
+      "width": 320,
+      "check": "Escape sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "Edit card dialog",
+      "width": 320,
+      "check": "focus returns to the opener after Escape",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Edit column dialog",
+      "width": 320,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "admin",
+      "page": "Edit column dialog",
+      "width": 320,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "4 controls"
+    },
+    {
+      "role": "admin",
+      "page": "Edit column dialog",
+      "width": 320,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Edit column dialog",
+      "width": 320,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "1 controls"
+    },
+    {
+      "role": "admin",
+      "page": "Edit column dialog",
+      "width": 320,
+      "check": "focus moves into the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Edit column dialog",
+      "width": 320,
+      "check": "Tab keeps focus inside the dialog (8 presses)",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Edit column dialog",
+      "width": 320,
+      "check": "Cancel closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Edit column dialog",
+      "width": 320,
+      "check": "Cancel sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "Edit column dialog",
+      "width": 320,
+      "check": "focus returns to the opener after Cancel",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Edit column dialog",
+      "width": 320,
+      "check": "Escape closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Edit column dialog",
+      "width": 320,
+      "check": "Escape sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "Edit column dialog",
+      "width": 320,
+      "check": "focus returns to the opener after Escape",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Delete column confirm dialog",
+      "width": 320,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "admin",
+      "page": "Delete column confirm dialog",
+      "width": 320,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "admin",
+      "page": "Delete column confirm dialog",
+      "width": 320,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Delete column confirm dialog",
+      "width": 320,
+      "check": "focus moves into the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Delete column confirm dialog",
+      "width": 320,
+      "check": "Tab keeps focus inside the dialog (8 presses)",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Delete column confirm dialog",
+      "width": 320,
+      "check": "Cancel closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Delete column confirm dialog",
+      "width": 320,
+      "check": "Cancel sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "Delete column confirm dialog",
+      "width": 320,
+      "check": "focus returns to the opener after Cancel",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Delete column confirm dialog",
+      "width": 320,
+      "check": "Escape closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Delete column confirm dialog",
+      "width": 320,
+      "check": "Escape sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "Delete column confirm dialog",
+      "width": 320,
+      "check": "focus returns to the opener after Escape",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Delete card confirm",
+      "width": 320,
+      "check": "the confirm opens above the edit dialog",
+      "pass": true,
+      "detail": "2 open dialogs"
+    },
+    {
+      "role": "admin",
+      "page": "Delete card confirm dialog",
+      "width": 320,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "admin",
+      "page": "Delete card confirm dialog",
+      "width": 320,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "admin",
+      "page": "Delete card confirm dialog",
+      "width": 320,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Delete card confirm",
+      "width": 320,
+      "check": "Cancel and Escape send no request",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "empty board",
+      "width": 320,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "admin",
+      "page": "empty board",
+      "width": 320,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "11 controls"
+    },
+    {
+      "role": "admin",
+      "page": "empty board",
+      "width": 320,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "empty board",
+      "width": 320,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "admin",
+      "page": "empty board",
+      "width": 320,
+      "check": "admin sees Add your first column and the form",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "board with columns and cards",
+      "width": 375,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "admin",
+      "page": "board with columns and cards",
+      "width": 375,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "37 controls"
+    },
+    {
+      "role": "admin",
+      "page": "board with columns and cards",
+      "width": 375,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "board with columns and cards",
+      "width": 375,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "5 controls"
+    },
+    {
+      "role": "admin",
+      "page": "board",
+      "width": 375,
+      "check": "the Kanban region is focusable, named and scrolls sideways only inside itself",
+      "pass": true,
+      "detail": "{\"named\":\"Kanban columns\",\"tabindex\":\"0\",\"overflowX\":\"auto\",\"scrolls\":true,\"lanes\":3}"
+    },
+    {
+      "role": "admin",
+      "page": "board",
+      "width": 375,
+      "check": "the three lanes overflow the region at phone width",
+      "pass": true,
+      "detail": "3 lanes"
+    },
+    {
+      "role": "admin",
+      "page": "board",
+      "width": 375,
+      "check": "ArrowRight scrolls the focused region (keyboard scroll)",
+      "pass": true,
+      "detail": "scrollLeft 80"
+    },
+    {
+      "role": "admin",
+      "page": "board",
+      "width": 375,
+      "check": "column controls shown for admin",
+      "pass": true,
+      "detail": "{\"edit\":true,\"remove\":true,\"left\":true,\"right\":true,\"move\":true,\"addColumn\":true,\"addCard\":true}"
+    },
+    {
+      "role": "admin",
+      "page": "board",
+      "width": 375,
+      "check": "card controls and the visible Move button shown",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Move card dialog",
+      "width": 375,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "admin",
+      "page": "Move card dialog",
+      "width": 375,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "4 controls"
+    },
+    {
+      "role": "admin",
+      "page": "Move card dialog",
+      "width": 375,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Move card dialog",
+      "width": 375,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "admin",
+      "page": "Move card dialog",
+      "width": 375,
+      "check": "focus moves into the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Move card dialog",
+      "width": 375,
+      "check": "Tab keeps focus inside the dialog (8 presses)",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Move card dialog",
+      "width": 375,
+      "check": "Cancel closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Move card dialog",
+      "width": 375,
+      "check": "Cancel sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "Move card dialog",
+      "width": 375,
+      "check": "focus returns to the opener after Cancel",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Move card dialog",
+      "width": 375,
+      "check": "Escape closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Move card dialog",
+      "width": 375,
+      "check": "Escape sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "Move card dialog",
+      "width": 375,
+      "check": "focus returns to the opener after Escape",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Edit card dialog",
+      "width": 375,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "admin",
+      "page": "Edit card dialog",
+      "width": 375,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "6 controls"
+    },
+    {
+      "role": "admin",
+      "page": "Edit card dialog",
+      "width": 375,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Edit card dialog",
+      "width": 375,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "3 controls"
+    },
+    {
+      "role": "admin",
+      "page": "Edit card dialog",
+      "width": 375,
+      "check": "focus moves into the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Edit card dialog",
+      "width": 375,
+      "check": "Tab keeps focus inside the dialog (8 presses)",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Edit card dialog",
+      "width": 375,
+      "check": "Cancel closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Edit card dialog",
+      "width": 375,
+      "check": "Cancel sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "Edit card dialog",
+      "width": 375,
+      "check": "focus returns to the opener after Cancel",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Edit card dialog",
+      "width": 375,
+      "check": "Escape closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Edit card dialog",
+      "width": 375,
+      "check": "Escape sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "Edit card dialog",
+      "width": 375,
+      "check": "focus returns to the opener after Escape",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Edit column dialog",
+      "width": 375,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "admin",
+      "page": "Edit column dialog",
+      "width": 375,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "4 controls"
+    },
+    {
+      "role": "admin",
+      "page": "Edit column dialog",
+      "width": 375,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Edit column dialog",
+      "width": 375,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "1 controls"
+    },
+    {
+      "role": "admin",
+      "page": "Edit column dialog",
+      "width": 375,
+      "check": "focus moves into the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Edit column dialog",
+      "width": 375,
+      "check": "Tab keeps focus inside the dialog (8 presses)",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Edit column dialog",
+      "width": 375,
+      "check": "Cancel closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Edit column dialog",
+      "width": 375,
+      "check": "Cancel sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "Edit column dialog",
+      "width": 375,
+      "check": "focus returns to the opener after Cancel",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Edit column dialog",
+      "width": 375,
+      "check": "Escape closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Edit column dialog",
+      "width": 375,
+      "check": "Escape sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "Edit column dialog",
+      "width": 375,
+      "check": "focus returns to the opener after Escape",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Delete column confirm dialog",
+      "width": 375,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "admin",
+      "page": "Delete column confirm dialog",
+      "width": 375,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "admin",
+      "page": "Delete column confirm dialog",
+      "width": 375,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Delete column confirm dialog",
+      "width": 375,
+      "check": "focus moves into the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Delete column confirm dialog",
+      "width": 375,
+      "check": "Tab keeps focus inside the dialog (8 presses)",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Delete column confirm dialog",
+      "width": 375,
+      "check": "Cancel closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Delete column confirm dialog",
+      "width": 375,
+      "check": "Cancel sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "Delete column confirm dialog",
+      "width": 375,
+      "check": "focus returns to the opener after Cancel",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Delete column confirm dialog",
+      "width": 375,
+      "check": "Escape closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Delete column confirm dialog",
+      "width": 375,
+      "check": "Escape sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "Delete column confirm dialog",
+      "width": 375,
+      "check": "focus returns to the opener after Escape",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Delete card confirm",
+      "width": 375,
+      "check": "the confirm opens above the edit dialog",
+      "pass": true,
+      "detail": "2 open dialogs"
+    },
+    {
+      "role": "admin",
+      "page": "Delete card confirm dialog",
+      "width": 375,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "admin",
+      "page": "Delete card confirm dialog",
+      "width": 375,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "admin",
+      "page": "Delete card confirm dialog",
+      "width": 375,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Delete card confirm",
+      "width": 375,
+      "check": "Cancel and Escape send no request",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "empty board",
+      "width": 375,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "admin",
+      "page": "empty board",
+      "width": 375,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "11 controls"
+    },
+    {
+      "role": "admin",
+      "page": "empty board",
+      "width": 375,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "empty board",
+      "width": 375,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "admin",
+      "page": "empty board",
+      "width": 375,
+      "check": "admin sees Add your first column and the form",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "board with columns and cards",
+      "width": 768,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 768, innerWidth 768"
+    },
+    {
+      "role": "admin",
+      "page": "board with columns and cards",
+      "width": 768,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "37 controls"
+    },
+    {
+      "role": "admin",
+      "page": "board with columns and cards",
+      "width": 768,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "board with columns and cards",
+      "width": 768,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "5 controls"
+    },
+    {
+      "role": "admin",
+      "page": "board",
+      "width": 768,
+      "check": "the Kanban region is focusable, named and scrolls sideways only inside itself",
+      "pass": true,
+      "detail": "{\"named\":\"Kanban columns\",\"tabindex\":\"0\",\"overflowX\":\"auto\",\"scrolls\":true,\"lanes\":3}"
+    },
+    {
+      "role": "admin",
+      "page": "board",
+      "width": 768,
+      "check": "column controls shown for admin",
+      "pass": true,
+      "detail": "{\"edit\":true,\"remove\":true,\"left\":true,\"right\":true,\"move\":true,\"addColumn\":true,\"addCard\":true}"
+    },
+    {
+      "role": "admin",
+      "page": "board",
+      "width": 768,
+      "check": "card controls and the visible Move button shown",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Move card dialog",
+      "width": 768,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 768, innerWidth 768"
+    },
+    {
+      "role": "admin",
+      "page": "Move card dialog",
+      "width": 768,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "4 controls"
+    },
+    {
+      "role": "admin",
+      "page": "Move card dialog",
+      "width": 768,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Move card dialog",
+      "width": 768,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "admin",
+      "page": "Move card dialog",
+      "width": 768,
+      "check": "focus moves into the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Move card dialog",
+      "width": 768,
+      "check": "Tab keeps focus inside the dialog (8 presses)",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Move card dialog",
+      "width": 768,
+      "check": "Cancel closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Move card dialog",
+      "width": 768,
+      "check": "Cancel sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "Move card dialog",
+      "width": 768,
+      "check": "focus returns to the opener after Cancel",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Move card dialog",
+      "width": 768,
+      "check": "Escape closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Move card dialog",
+      "width": 768,
+      "check": "Escape sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "Move card dialog",
+      "width": 768,
+      "check": "focus returns to the opener after Escape",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Edit card dialog",
+      "width": 768,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 768, innerWidth 768"
+    },
+    {
+      "role": "admin",
+      "page": "Edit card dialog",
+      "width": 768,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "6 controls"
+    },
+    {
+      "role": "admin",
+      "page": "Edit card dialog",
+      "width": 768,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Edit card dialog",
+      "width": 768,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "3 controls"
+    },
+    {
+      "role": "admin",
+      "page": "Edit card dialog",
+      "width": 768,
+      "check": "focus moves into the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Edit card dialog",
+      "width": 768,
+      "check": "Tab keeps focus inside the dialog (8 presses)",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Edit card dialog",
+      "width": 768,
+      "check": "Cancel closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Edit card dialog",
+      "width": 768,
+      "check": "Cancel sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "Edit card dialog",
+      "width": 768,
+      "check": "focus returns to the opener after Cancel",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Edit card dialog",
+      "width": 768,
+      "check": "Escape closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Edit card dialog",
+      "width": 768,
+      "check": "Escape sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "Edit card dialog",
+      "width": 768,
+      "check": "focus returns to the opener after Escape",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Edit column dialog",
+      "width": 768,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 768, innerWidth 768"
+    },
+    {
+      "role": "admin",
+      "page": "Edit column dialog",
+      "width": 768,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "4 controls"
+    },
+    {
+      "role": "admin",
+      "page": "Edit column dialog",
+      "width": 768,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Edit column dialog",
+      "width": 768,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "1 controls"
+    },
+    {
+      "role": "admin",
+      "page": "Edit column dialog",
+      "width": 768,
+      "check": "focus moves into the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Edit column dialog",
+      "width": 768,
+      "check": "Tab keeps focus inside the dialog (8 presses)",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Edit column dialog",
+      "width": 768,
+      "check": "Cancel closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Edit column dialog",
+      "width": 768,
+      "check": "Cancel sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "Edit column dialog",
+      "width": 768,
+      "check": "focus returns to the opener after Cancel",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Edit column dialog",
+      "width": 768,
+      "check": "Escape closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Edit column dialog",
+      "width": 768,
+      "check": "Escape sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "Edit column dialog",
+      "width": 768,
+      "check": "focus returns to the opener after Escape",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Delete column confirm dialog",
+      "width": 768,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 768, innerWidth 768"
+    },
+    {
+      "role": "admin",
+      "page": "Delete column confirm dialog",
+      "width": 768,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "admin",
+      "page": "Delete column confirm dialog",
+      "width": 768,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Delete column confirm dialog",
+      "width": 768,
+      "check": "focus moves into the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Delete column confirm dialog",
+      "width": 768,
+      "check": "Tab keeps focus inside the dialog (8 presses)",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Delete column confirm dialog",
+      "width": 768,
+      "check": "Cancel closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Delete column confirm dialog",
+      "width": 768,
+      "check": "Cancel sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "Delete column confirm dialog",
+      "width": 768,
+      "check": "focus returns to the opener after Cancel",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Delete column confirm dialog",
+      "width": 768,
+      "check": "Escape closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Delete column confirm dialog",
+      "width": 768,
+      "check": "Escape sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "Delete column confirm dialog",
+      "width": 768,
+      "check": "focus returns to the opener after Escape",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Delete card confirm",
+      "width": 768,
+      "check": "the confirm opens above the edit dialog",
+      "pass": true,
+      "detail": "2 open dialogs"
+    },
+    {
+      "role": "admin",
+      "page": "Delete card confirm dialog",
+      "width": 768,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 768, innerWidth 768"
+    },
+    {
+      "role": "admin",
+      "page": "Delete card confirm dialog",
+      "width": 768,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "admin",
+      "page": "Delete card confirm dialog",
+      "width": 768,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Delete card confirm",
+      "width": 768,
+      "check": "Cancel and Escape send no request",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "empty board",
+      "width": 768,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 768, innerWidth 768"
+    },
+    {
+      "role": "admin",
+      "page": "empty board",
+      "width": 768,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "11 controls"
+    },
+    {
+      "role": "admin",
+      "page": "empty board",
+      "width": 768,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "empty board",
+      "width": 768,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "admin",
+      "page": "empty board",
+      "width": 768,
+      "check": "admin sees Add your first column and the form",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "board with columns and cards",
+      "width": 1280,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "admin",
+      "page": "board with columns and cards",
+      "width": 1280,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "38 controls"
+    },
+    {
+      "role": "admin",
+      "page": "board with columns and cards",
+      "width": 1280,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "board with columns and cards",
+      "width": 1280,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "5 controls"
+    },
+    {
+      "role": "admin",
+      "page": "board",
+      "width": 1280,
+      "check": "the Kanban region is focusable, named and scrolls sideways only inside itself",
+      "pass": true,
+      "detail": "{\"named\":\"Kanban columns\",\"tabindex\":\"0\",\"overflowX\":\"auto\",\"scrolls\":true,\"lanes\":3}"
+    },
+    {
+      "role": "admin",
+      "page": "board",
+      "width": 1280,
+      "check": "column controls shown for admin",
+      "pass": true,
+      "detail": "{\"edit\":true,\"remove\":true,\"left\":true,\"right\":true,\"move\":true,\"addColumn\":true,\"addCard\":true}"
+    },
+    {
+      "role": "admin",
+      "page": "board",
+      "width": 1280,
+      "check": "card controls and the visible Move button shown",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Move card dialog",
+      "width": 1280,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "admin",
+      "page": "Move card dialog",
+      "width": 1280,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "4 controls"
+    },
+    {
+      "role": "admin",
+      "page": "Move card dialog",
+      "width": 1280,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Move card dialog",
+      "width": 1280,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "admin",
+      "page": "Move card dialog",
+      "width": 1280,
+      "check": "focus moves into the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Move card dialog",
+      "width": 1280,
+      "check": "Tab keeps focus inside the dialog (8 presses)",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Move card dialog",
+      "width": 1280,
+      "check": "Cancel closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Move card dialog",
+      "width": 1280,
+      "check": "Cancel sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "Move card dialog",
+      "width": 1280,
+      "check": "focus returns to the opener after Cancel",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Move card dialog",
+      "width": 1280,
+      "check": "Escape closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Move card dialog",
+      "width": 1280,
+      "check": "Escape sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "Move card dialog",
+      "width": 1280,
+      "check": "focus returns to the opener after Escape",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Edit card dialog",
+      "width": 1280,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "admin",
+      "page": "Edit card dialog",
+      "width": 1280,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "6 controls"
+    },
+    {
+      "role": "admin",
+      "page": "Edit card dialog",
+      "width": 1280,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Edit card dialog",
+      "width": 1280,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "3 controls"
+    },
+    {
+      "role": "admin",
+      "page": "Edit card dialog",
+      "width": 1280,
+      "check": "focus moves into the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Edit card dialog",
+      "width": 1280,
+      "check": "Tab keeps focus inside the dialog (8 presses)",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Edit card dialog",
+      "width": 1280,
+      "check": "Cancel closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Edit card dialog",
+      "width": 1280,
+      "check": "Cancel sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "Edit card dialog",
+      "width": 1280,
+      "check": "focus returns to the opener after Cancel",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Edit card dialog",
+      "width": 1280,
+      "check": "Escape closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Edit card dialog",
+      "width": 1280,
+      "check": "Escape sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "Edit card dialog",
+      "width": 1280,
+      "check": "focus returns to the opener after Escape",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Edit column dialog",
+      "width": 1280,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "admin",
+      "page": "Edit column dialog",
+      "width": 1280,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "4 controls"
+    },
+    {
+      "role": "admin",
+      "page": "Edit column dialog",
+      "width": 1280,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Edit column dialog",
+      "width": 1280,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "1 controls"
+    },
+    {
+      "role": "admin",
+      "page": "Edit column dialog",
+      "width": 1280,
+      "check": "focus moves into the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Edit column dialog",
+      "width": 1280,
+      "check": "Tab keeps focus inside the dialog (8 presses)",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Edit column dialog",
+      "width": 1280,
+      "check": "Cancel closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Edit column dialog",
+      "width": 1280,
+      "check": "Cancel sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "Edit column dialog",
+      "width": 1280,
+      "check": "focus returns to the opener after Cancel",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Edit column dialog",
+      "width": 1280,
+      "check": "Escape closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Edit column dialog",
+      "width": 1280,
+      "check": "Escape sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "Edit column dialog",
+      "width": 1280,
+      "check": "focus returns to the opener after Escape",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Delete column confirm dialog",
+      "width": 1280,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "admin",
+      "page": "Delete column confirm dialog",
+      "width": 1280,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "admin",
+      "page": "Delete column confirm dialog",
+      "width": 1280,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Delete column confirm dialog",
+      "width": 1280,
+      "check": "focus moves into the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Delete column confirm dialog",
+      "width": 1280,
+      "check": "Tab keeps focus inside the dialog (8 presses)",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Delete column confirm dialog",
+      "width": 1280,
+      "check": "Cancel closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Delete column confirm dialog",
+      "width": 1280,
+      "check": "Cancel sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "Delete column confirm dialog",
+      "width": 1280,
+      "check": "focus returns to the opener after Cancel",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Delete column confirm dialog",
+      "width": 1280,
+      "check": "Escape closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Delete column confirm dialog",
+      "width": 1280,
+      "check": "Escape sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "Delete column confirm dialog",
+      "width": 1280,
+      "check": "focus returns to the opener after Escape",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Delete card confirm",
+      "width": 1280,
+      "check": "the confirm opens above the edit dialog",
+      "pass": true,
+      "detail": "2 open dialogs"
+    },
+    {
+      "role": "admin",
+      "page": "Delete card confirm dialog",
+      "width": 1280,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "admin",
+      "page": "Delete card confirm dialog",
+      "width": 1280,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "admin",
+      "page": "Delete card confirm dialog",
+      "width": 1280,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Delete card confirm",
+      "width": 1280,
+      "check": "Cancel and Escape send no request",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "empty board",
+      "width": 1280,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "admin",
+      "page": "empty board",
+      "width": 1280,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "12 controls"
+    },
+    {
+      "role": "admin",
+      "page": "empty board",
+      "width": 1280,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "empty board",
+      "width": 1280,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "admin",
+      "page": "empty board",
+      "width": 1280,
+      "check": "admin sees Add your first column and the form",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board with columns and cards",
+      "width": 320,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "member",
+      "page": "board with columns and cards",
+      "width": 320,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "17 controls"
+    },
+    {
+      "role": "member",
+      "page": "board with columns and cards",
+      "width": 320,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board with columns and cards",
+      "width": 320,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "3 controls"
+    },
+    {
+      "role": "member",
+      "page": "board",
+      "width": 320,
+      "check": "the Kanban region is focusable, named and scrolls sideways only inside itself",
+      "pass": true,
+      "detail": "{\"named\":\"Kanban columns\",\"tabindex\":\"0\",\"overflowX\":\"auto\",\"scrolls\":true,\"lanes\":3}"
+    },
+    {
+      "role": "member",
+      "page": "board",
+      "width": 320,
+      "check": "the three lanes overflow the region at phone width",
+      "pass": true,
+      "detail": "3 lanes"
+    },
+    {
+      "role": "member",
+      "page": "board",
+      "width": 320,
+      "check": "ArrowRight scrolls the focused region (keyboard scroll)",
+      "pass": true,
+      "detail": "scrollLeft 80"
+    },
+    {
+      "role": "member",
+      "page": "board",
+      "width": 320,
+      "check": "column controls hidden for member",
+      "pass": true,
+      "detail": "{\"edit\":false,\"remove\":false,\"left\":false,\"right\":false,\"move\":true,\"addColumn\":false,\"addCard\":true}"
+    },
+    {
+      "role": "member",
+      "page": "board",
+      "width": 320,
+      "check": "card controls and the visible Move button shown",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Move card dialog",
+      "width": 320,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "member",
+      "page": "Move card dialog",
+      "width": 320,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "4 controls"
+    },
+    {
+      "role": "member",
+      "page": "Move card dialog",
+      "width": 320,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Move card dialog",
+      "width": 320,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "member",
+      "page": "Move card dialog",
+      "width": 320,
+      "check": "focus moves into the dialog",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Move card dialog",
+      "width": 320,
+      "check": "Tab keeps focus inside the dialog (8 presses)",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Move card dialog",
+      "width": 320,
+      "check": "Cancel closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Move card dialog",
+      "width": 320,
+      "check": "Cancel sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "member",
+      "page": "Move card dialog",
+      "width": 320,
+      "check": "focus returns to the opener after Cancel",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Move card dialog",
+      "width": 320,
+      "check": "Escape closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Move card dialog",
+      "width": 320,
+      "check": "Escape sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "member",
+      "page": "Move card dialog",
+      "width": 320,
+      "check": "focus returns to the opener after Escape",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Edit card dialog",
+      "width": 320,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "member",
+      "page": "Edit card dialog",
+      "width": 320,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "6 controls"
+    },
+    {
+      "role": "member",
+      "page": "Edit card dialog",
+      "width": 320,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Edit card dialog",
+      "width": 320,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "3 controls"
+    },
+    {
+      "role": "member",
+      "page": "Edit card dialog",
+      "width": 320,
+      "check": "focus moves into the dialog",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Edit card dialog",
+      "width": 320,
+      "check": "Tab keeps focus inside the dialog (8 presses)",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Edit card dialog",
+      "width": 320,
+      "check": "Cancel closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Edit card dialog",
+      "width": 320,
+      "check": "Cancel sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "member",
+      "page": "Edit card dialog",
+      "width": 320,
+      "check": "focus returns to the opener after Cancel",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Edit card dialog",
+      "width": 320,
+      "check": "Escape closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Edit card dialog",
+      "width": 320,
+      "check": "Escape sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "member",
+      "page": "Edit card dialog",
+      "width": 320,
+      "check": "focus returns to the opener after Escape",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "empty board",
+      "width": 320,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "member",
+      "page": "empty board",
+      "width": 320,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "3 controls"
+    },
+    {
+      "role": "member",
+      "page": "empty board",
+      "width": 320,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "empty board",
+      "width": 320,
+      "check": "member sees the message and no card or column form",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board with columns and cards",
+      "width": 375,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "member",
+      "page": "board with columns and cards",
+      "width": 375,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "17 controls"
+    },
+    {
+      "role": "member",
+      "page": "board with columns and cards",
+      "width": 375,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board with columns and cards",
+      "width": 375,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "3 controls"
+    },
+    {
+      "role": "member",
+      "page": "board",
+      "width": 375,
+      "check": "the Kanban region is focusable, named and scrolls sideways only inside itself",
+      "pass": true,
+      "detail": "{\"named\":\"Kanban columns\",\"tabindex\":\"0\",\"overflowX\":\"auto\",\"scrolls\":true,\"lanes\":3}"
+    },
+    {
+      "role": "member",
+      "page": "board",
+      "width": 375,
+      "check": "the three lanes overflow the region at phone width",
+      "pass": true,
+      "detail": "3 lanes"
+    },
+    {
+      "role": "member",
+      "page": "board",
+      "width": 375,
+      "check": "ArrowRight scrolls the focused region (keyboard scroll)",
+      "pass": true,
+      "detail": "scrollLeft 80"
+    },
+    {
+      "role": "member",
+      "page": "board",
+      "width": 375,
+      "check": "column controls hidden for member",
+      "pass": true,
+      "detail": "{\"edit\":false,\"remove\":false,\"left\":false,\"right\":false,\"move\":true,\"addColumn\":false,\"addCard\":true}"
+    },
+    {
+      "role": "member",
+      "page": "board",
+      "width": 375,
+      "check": "card controls and the visible Move button shown",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Move card dialog",
+      "width": 375,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "member",
+      "page": "Move card dialog",
+      "width": 375,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "4 controls"
+    },
+    {
+      "role": "member",
+      "page": "Move card dialog",
+      "width": 375,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Move card dialog",
+      "width": 375,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "member",
+      "page": "Move card dialog",
+      "width": 375,
+      "check": "focus moves into the dialog",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Move card dialog",
+      "width": 375,
+      "check": "Tab keeps focus inside the dialog (8 presses)",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Move card dialog",
+      "width": 375,
+      "check": "Cancel closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Move card dialog",
+      "width": 375,
+      "check": "Cancel sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "member",
+      "page": "Move card dialog",
+      "width": 375,
+      "check": "focus returns to the opener after Cancel",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Move card dialog",
+      "width": 375,
+      "check": "Escape closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Move card dialog",
+      "width": 375,
+      "check": "Escape sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "member",
+      "page": "Move card dialog",
+      "width": 375,
+      "check": "focus returns to the opener after Escape",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Edit card dialog",
+      "width": 375,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "member",
+      "page": "Edit card dialog",
+      "width": 375,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "6 controls"
+    },
+    {
+      "role": "member",
+      "page": "Edit card dialog",
+      "width": 375,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Edit card dialog",
+      "width": 375,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "3 controls"
+    },
+    {
+      "role": "member",
+      "page": "Edit card dialog",
+      "width": 375,
+      "check": "focus moves into the dialog",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Edit card dialog",
+      "width": 375,
+      "check": "Tab keeps focus inside the dialog (8 presses)",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Edit card dialog",
+      "width": 375,
+      "check": "Cancel closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Edit card dialog",
+      "width": 375,
+      "check": "Cancel sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "member",
+      "page": "Edit card dialog",
+      "width": 375,
+      "check": "focus returns to the opener after Cancel",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Edit card dialog",
+      "width": 375,
+      "check": "Escape closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Edit card dialog",
+      "width": 375,
+      "check": "Escape sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "member",
+      "page": "Edit card dialog",
+      "width": 375,
+      "check": "focus returns to the opener after Escape",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "empty board",
+      "width": 375,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "member",
+      "page": "empty board",
+      "width": 375,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "3 controls"
+    },
+    {
+      "role": "member",
+      "page": "empty board",
+      "width": 375,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "empty board",
+      "width": 375,
+      "check": "member sees the message and no card or column form",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board with columns and cards",
+      "width": 768,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 768, innerWidth 768"
+    },
+    {
+      "role": "member",
+      "page": "board with columns and cards",
+      "width": 768,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "17 controls"
+    },
+    {
+      "role": "member",
+      "page": "board with columns and cards",
+      "width": 768,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board with columns and cards",
+      "width": 768,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "3 controls"
+    },
+    {
+      "role": "member",
+      "page": "board",
+      "width": 768,
+      "check": "the Kanban region is focusable, named and scrolls sideways only inside itself",
+      "pass": true,
+      "detail": "{\"named\":\"Kanban columns\",\"tabindex\":\"0\",\"overflowX\":\"auto\",\"scrolls\":true,\"lanes\":3}"
+    },
+    {
+      "role": "member",
+      "page": "board",
+      "width": 768,
+      "check": "column controls hidden for member",
+      "pass": true,
+      "detail": "{\"edit\":false,\"remove\":false,\"left\":false,\"right\":false,\"move\":true,\"addColumn\":false,\"addCard\":true}"
+    },
+    {
+      "role": "member",
+      "page": "board",
+      "width": 768,
+      "check": "card controls and the visible Move button shown",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Move card dialog",
+      "width": 768,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 768, innerWidth 768"
+    },
+    {
+      "role": "member",
+      "page": "Move card dialog",
+      "width": 768,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "4 controls"
+    },
+    {
+      "role": "member",
+      "page": "Move card dialog",
+      "width": 768,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Move card dialog",
+      "width": 768,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "member",
+      "page": "Move card dialog",
+      "width": 768,
+      "check": "focus moves into the dialog",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Move card dialog",
+      "width": 768,
+      "check": "Tab keeps focus inside the dialog (8 presses)",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Move card dialog",
+      "width": 768,
+      "check": "Cancel closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Move card dialog",
+      "width": 768,
+      "check": "Cancel sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "member",
+      "page": "Move card dialog",
+      "width": 768,
+      "check": "focus returns to the opener after Cancel",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Move card dialog",
+      "width": 768,
+      "check": "Escape closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Move card dialog",
+      "width": 768,
+      "check": "Escape sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "member",
+      "page": "Move card dialog",
+      "width": 768,
+      "check": "focus returns to the opener after Escape",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Edit card dialog",
+      "width": 768,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 768, innerWidth 768"
+    },
+    {
+      "role": "member",
+      "page": "Edit card dialog",
+      "width": 768,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "6 controls"
+    },
+    {
+      "role": "member",
+      "page": "Edit card dialog",
+      "width": 768,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Edit card dialog",
+      "width": 768,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "3 controls"
+    },
+    {
+      "role": "member",
+      "page": "Edit card dialog",
+      "width": 768,
+      "check": "focus moves into the dialog",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Edit card dialog",
+      "width": 768,
+      "check": "Tab keeps focus inside the dialog (8 presses)",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Edit card dialog",
+      "width": 768,
+      "check": "Cancel closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Edit card dialog",
+      "width": 768,
+      "check": "Cancel sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "member",
+      "page": "Edit card dialog",
+      "width": 768,
+      "check": "focus returns to the opener after Cancel",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Edit card dialog",
+      "width": 768,
+      "check": "Escape closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Edit card dialog",
+      "width": 768,
+      "check": "Escape sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "member",
+      "page": "Edit card dialog",
+      "width": 768,
+      "check": "focus returns to the opener after Escape",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "empty board",
+      "width": 768,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 768, innerWidth 768"
+    },
+    {
+      "role": "member",
+      "page": "empty board",
+      "width": 768,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "3 controls"
+    },
+    {
+      "role": "member",
+      "page": "empty board",
+      "width": 768,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "empty board",
+      "width": 768,
+      "check": "member sees the message and no card or column form",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board with columns and cards",
+      "width": 1280,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "member",
+      "page": "board with columns and cards",
+      "width": 1280,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "18 controls"
+    },
+    {
+      "role": "member",
+      "page": "board with columns and cards",
+      "width": 1280,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board with columns and cards",
+      "width": 1280,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "3 controls"
+    },
+    {
+      "role": "member",
+      "page": "board",
+      "width": 1280,
+      "check": "the Kanban region is focusable, named and scrolls sideways only inside itself",
+      "pass": true,
+      "detail": "{\"named\":\"Kanban columns\",\"tabindex\":\"0\",\"overflowX\":\"auto\",\"scrolls\":true,\"lanes\":3}"
+    },
+    {
+      "role": "member",
+      "page": "board",
+      "width": 1280,
+      "check": "column controls hidden for member",
+      "pass": true,
+      "detail": "{\"edit\":false,\"remove\":false,\"left\":false,\"right\":false,\"move\":true,\"addColumn\":false,\"addCard\":true}"
+    },
+    {
+      "role": "member",
+      "page": "board",
+      "width": 1280,
+      "check": "card controls and the visible Move button shown",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Move card dialog",
+      "width": 1280,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "member",
+      "page": "Move card dialog",
+      "width": 1280,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "4 controls"
+    },
+    {
+      "role": "member",
+      "page": "Move card dialog",
+      "width": 1280,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Move card dialog",
+      "width": 1280,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "member",
+      "page": "Move card dialog",
+      "width": 1280,
+      "check": "focus moves into the dialog",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Move card dialog",
+      "width": 1280,
+      "check": "Tab keeps focus inside the dialog (8 presses)",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Move card dialog",
+      "width": 1280,
+      "check": "Cancel closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Move card dialog",
+      "width": 1280,
+      "check": "Cancel sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "member",
+      "page": "Move card dialog",
+      "width": 1280,
+      "check": "focus returns to the opener after Cancel",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Move card dialog",
+      "width": 1280,
+      "check": "Escape closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Move card dialog",
+      "width": 1280,
+      "check": "Escape sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "member",
+      "page": "Move card dialog",
+      "width": 1280,
+      "check": "focus returns to the opener after Escape",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Edit card dialog",
+      "width": 1280,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "member",
+      "page": "Edit card dialog",
+      "width": 1280,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "6 controls"
+    },
+    {
+      "role": "member",
+      "page": "Edit card dialog",
+      "width": 1280,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Edit card dialog",
+      "width": 1280,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "3 controls"
+    },
+    {
+      "role": "member",
+      "page": "Edit card dialog",
+      "width": 1280,
+      "check": "focus moves into the dialog",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Edit card dialog",
+      "width": 1280,
+      "check": "Tab keeps focus inside the dialog (8 presses)",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Edit card dialog",
+      "width": 1280,
+      "check": "Cancel closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Edit card dialog",
+      "width": 1280,
+      "check": "Cancel sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "member",
+      "page": "Edit card dialog",
+      "width": 1280,
+      "check": "focus returns to the opener after Cancel",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Edit card dialog",
+      "width": 1280,
+      "check": "Escape closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Edit card dialog",
+      "width": 1280,
+      "check": "Escape sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "member",
+      "page": "Edit card dialog",
+      "width": 1280,
+      "check": "focus returns to the opener after Escape",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "empty board",
+      "width": 1280,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "member",
+      "page": "empty board",
+      "width": 1280,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "4 controls"
+    },
+    {
+      "role": "member",
+      "page": "empty board",
+      "width": 1280,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "empty board",
+      "width": 1280,
+      "check": "member sees the message and no card or column form",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "journey",
+      "width": 375,
+      "check": "add column: the new lane appears without a reload",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "journey",
+      "width": 375,
+      "check": "add card: the card appears in the new column",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "journey",
+      "width": 375,
+      "check": "edit and assign: the card shows the new title and the assignee",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "journey",
+      "width": 375,
+      "check": "Move dialog: the card lands in In progress",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "journey",
+      "width": 375,
+      "check": "move is announced in the live region",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "journey",
+      "width": 375,
+      "check": "reload: the card is still in In progress",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "journey",
+      "width": 375,
+      "check": "stale version: the 409 shows the board-changed message",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "journey",
+      "width": 375,
+      "check": "stale version: the board refetched and shows the other change",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "journey",
+      "width": 375,
+      "check": "after the refetch the region is no longer busy",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "journey",
+      "width": 375,
+      "check": "keyboard: Enter on the Move button opens the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "journey",
+      "width": 375,
+      "check": "keyboard: Escape closes it and focus returns to the Move button",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "journey",
+      "width": 375,
+      "check": "delete: the card is removed",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "drag (synthetic events)",
+      "width": 1280,
+      "check": "a drop on the end of In progress moves the card",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "drag (synthetic events)",
+      "width": 1280,
+      "check": "reload: the dragged card is still in In progress",
+      "pass": true
+    }
+  ]
+}

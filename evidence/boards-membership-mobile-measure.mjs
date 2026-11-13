@@ -416,10 +416,53 @@ async function login(page, email, password) {
   );
 }
 
+// Geometry sample of the open dialog: the box and its buttons, plus the box scale.
+// The dialog animates in (BaseModal, daisyUI scale and translate), so a fixed delay
+// measures a transient. This waits for the dialog to be open and for the geometry to
+// stop changing, with a hard upper bound.
+const DIALOG_GEOMETRY = `(() => {
+  const d = document.querySelector('dialog[open]');
+  if (!d) return null;
+  const box = d.querySelector('.modal-box') || d;
+  const scale = getComputedStyle(box).scale;
+  const rects = [box, ...d.querySelectorAll('button')].map((el) => {
+    const r = el.getBoundingClientRect();
+    return [Math.round(r.left * 10) / 10, Math.round(r.top * 10) / 10, Math.round(r.width * 10) / 10, Math.round(r.height * 10) / 10];
+  });
+  return JSON.stringify({ scale, rects });
+})()`;
+
+async function waitForDialogSettled(page, timeoutMs = 3000, stableSamples = 3) {
+  const end = Date.now() + timeoutMs;
+  let last = null;
+  let stable = 0;
+  while (Date.now() < end) {
+    let sample = null;
+    try {
+      sample = await page.eval(DIALOG_GEOMETRY);
+    } catch {
+      sample = null;
+    }
+    if (sample !== null) {
+      const parsed = JSON.parse(sample);
+      const settled = parsed.scale === "none" || parsed.scale === "1" || parsed.scale === "1 1";
+      stable = sample === last && settled ? stable + 1 : 0;
+      last = sample;
+      if (stable >= stableSamples) return true;
+    }
+    await sleep(100);
+  }
+  return false;
+}
+
 async function openDialog(page, openerJs) {
   if (!(await page.eval(openerJs))) return false;
   const opened = await page.tryWait("!!document.querySelector('dialog[open]')");
-  await sleep(200);
+  if (!opened) return false;
+  const settled = await waitForDialogSettled(page);
+  if (!settled) {
+    record("harness", "dialog settle", 0, "dialog geometry settled within 3 s", false, "geometry still changing");
+  }
   return opened;
 }
 

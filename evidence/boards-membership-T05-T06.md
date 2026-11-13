@@ -266,3 +266,40 @@ Widths: 375 px and wider, per the T15 acceptance check. Real-device results are 
 
 - Per-admin E11 rate limit: the E11 rate limit per admin, with shared storage, is tracked in T16 before public release. Local limiter checks do not prove shared storage behavior.
 - Enumeration note: E11 returns `USER_NOT_FOUND` for an unregistered email. A board Admin can learn whether an email is registered. This is accepted for v1 (requirement 4.5, design DD8). It is returned only after the Admin check.
+
+## Task 7.2: measured mobile check (run result)
+
+Command: `node evidence/boards-membership-mobile-measure.mjs` with BASE_URL=http://localhost:3000 and the throwaway admin and member accounts. Report: `evidence/boards-membership-mobile.json`.
+
+Result: 180 checks, 12 failed. Task 7.2 stays open.
+
+All 12 failures are in the two Confirm_Dialog states (delete board, remove member):
+- Tab keeps focus inside the dialog (6 presses): failed at 320, 375, 768 and 1280 px in both dialogs (the 375 px remove-member case is listed under elementFromPoint, see below). To confirm, the script focus-trap check needs a review: it may be a script assumption or a real focus escape.
+- Box size under 44x44 CSS px: Cancel is 77.8x43.9 and the confirm buttons are 115.7 to 141.6 x 43.9 at 768 and 1280 px.
+- elementFromPoint at the Remove member button center returns another element at 375 px.
+
+Not yet run: the manual journey (create board, open, add member, remove member, delete board) at 375 px. It needs a browser walk-through.
+
+## Task 7.2: manual journey at 375 px (user-confirmed)
+
+Result: pass. The user walked the journey in a browser at 375 px and confirmed it passed.
+
+Scope of the confirmation: the user reported a pass for the browser walk-through at 375 px. The step-by-step list (create, open, add member, remove member, delete) was not recorded individually in this log.
+
+## Task 7.2 status
+
+Still open. The measured mobile script reports 5 failures of 180 checks, all in the confirm dialog: tap-target height and hit-test measured during the open animation (see the section above). Awaiting a decision on the animation timing before the script can pass.
+
+## Task 7.2: measured mobile check, final run (pass)
+
+Change to the script: the fixed 200 ms wait after opening a confirm dialog is replaced by a bounded wait (at most 3 s). It waits until the dialog is open and the box and button geometry is identical across three samples 100 ms apart, with the box scale back to rest. The script still asserts the same 44 by 44 CSS px targets and the same hit test. Thresholds were not changed. Approved by the user.
+
+Command: `node evidence/boards-membership-mobile-measure.mjs` with BASE_URL=http://localhost:3000, admin and member throwaway accounts.
+
+Result: 180 checks, 0 failed, exit 0. Report: `evidence/boards-membership-mobile.json`.
+
+Earlier runs, for the record: first run 12 failed (focus escape, 44 px and hit test). After the BaseModal Tab-wrap fix: 5 failed (all timing). After the settle-aware wait: 0 failed.
+
+Manual journey at 375 px: pass (confirmed by the user in the browser, see the section above).
+
+Task 7.2: complete.
