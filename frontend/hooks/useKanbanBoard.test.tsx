@@ -369,6 +369,80 @@ describe("Property 16: refresh coordination (K12)", () => {
   });
 });
 
+describe("refreshBoard and hasCard (comments design DD10)", () => {
+  it("resolves applied with the new board and hasCard follows it", async () => {
+    vi.mocked(apiGet).mockResolvedValue(detail([column("todo", 1024, [card("z", "todo", 1024)])], 9));
+    const { result } = setup();
+    expect(result.current.hasCard("a")).toBe(true);
+    expect(result.current.hasCard("z")).toBe(false);
+    let outcome: unknown;
+    await act(async () => {
+      outcome = await result.current.refreshBoard();
+    });
+    expect(outcome).toBe("applied");
+    expect(result.current.version).toBe(9);
+    expect(result.current.hasCard("a")).toBe(false); // the refetch dropped card a
+    expect(result.current.hasCard("z")).toBe(true);
+    expect(result.current.status).toBe("idle");
+  });
+
+  it("resolves gone for a board 404 and leaves the page through the access redirect", async () => {
+    vi.mocked(apiGet).mockRejectedValue(apiError(404, "NOT_FOUND"));
+    const { result } = setup();
+    let outcome: unknown;
+    await act(async () => {
+      outcome = await result.current.refreshBoard();
+    });
+    expect(outcome).toBe("gone");
+    expect(router.push).toHaveBeenCalledWith("/");
+    expect(notifyError).toHaveBeenCalledWith("You no longer have access to this board.");
+  });
+
+  it("resolves failed for a transport failure and keeps the board in the stale state", async () => {
+    vi.mocked(apiGet).mockRejectedValue(apiError(null, "NETWORK_ERROR"));
+    const { result } = setup();
+    let outcome: unknown;
+    await act(async () => {
+      outcome = await result.current.refreshBoard();
+    });
+    expect(outcome).toBe("failed");
+    expect(result.current.status).toBe("stale");
+  });
+
+  it("waits behind a pending write and resolves with the queued refetch's outcome", async () => {
+    const move = deferred<unknown>();
+    vi.mocked(apiRequest).mockReturnValue(move.promise);
+    vi.mocked(apiGet).mockResolvedValue(detail(board(), 8));
+    const { result } = setup();
+    act(() => {
+      void result.current.moveCard("a", "doing", null);
+    });
+    let outcome: unknown = "pending";
+    act(() => {
+      void result.current.refreshBoard().then((value) => {
+        outcome = value;
+      });
+    });
+    expect(apiGet).not.toHaveBeenCalled();
+    expect(outcome).toBe("pending");
+    await act(async () => {
+      move.resolve(moveReply(board(), 4));
+    });
+    await waitFor(() => expect(outcome).toBe("applied"));
+    expect(apiGet).toHaveBeenCalledTimes(1);
+    expect(result.current.version).toBe(8);
+  });
+
+  it("keeps requestRefresh working as before", async () => {
+    vi.mocked(apiGet).mockResolvedValue(detail(board(), 7));
+    const { result } = setup();
+    act(() => {
+      result.current.requestRefresh();
+    });
+    await waitFor(() => expect(result.current.version).toBe(7));
+  });
+});
+
 describe("writes", () => {
   it("adds a column from the response and returns it", async () => {
     vi.mocked(apiRequest).mockResolvedValue({

@@ -40,12 +40,18 @@ const DECLARED_BOARD_REQUESTS: ReadonlyArray<{
   { method: "PATCH", pattern: new RegExp(`^/api/cards/${UUID}$`) },
   { method: "DELETE", pattern: new RegExp(`^/api/cards/${UUID}$`) },
   { method: "PATCH", pattern: new RegExp(`^/api/cards/${UUID}/position$`) },
+  // Comment writes (E24 to E26).
+  { method: "POST", pattern: new RegExp(`^/api/cards/${UUID}/comments$`) },
+  { method: "PATCH", pattern: new RegExp(`^/api/comments/${UUID}$`) },
+  { method: "DELETE", pattern: new RegExp(`^/api/comments/${UUID}$`) },
 ];
 
-// The only browser reads: the board (E07) and its members (E10), for refetches (DD11).
+// The only browser reads: the board (E07) and its members (E10) for refetches (DD11), and a
+// card's comments (E23) when the detail modal opens.
 const DECLARED_GETS: readonly RegExp[] = [
   new RegExp(`^/api/boards/${UUID}$`),
   new RegExp(`^/api/boards/${UUID}/members$`),
+  new RegExp(`^/api/cards/${UUID}/comments$`),
 ];
 
 /** True only for a declared GET path. */
@@ -141,7 +147,7 @@ export async function apiRequest<T>(
 }
 
 /**
- * GET a declared path (the board or its members) and return the unwrapped `data`. A path outside
+ * GET a declared path (the board, its members or a card's comments) and return the unwrapped `data`. A path outside
  * the allowlist throws before fetch is called. Failures throw ApiError.
  */
 export async function apiGet<T>(path: string, signal?: AbortSignal): Promise<T> {

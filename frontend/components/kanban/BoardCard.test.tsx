@@ -7,15 +7,15 @@ import { card } from "./kanbanTestData";
 
 describe("BoardCard", () => {
   function setup(over: Parameters<typeof card>[3] = {}, disabled = false) {
-    const onEdit = vi.fn();
+    const onOpen = vi.fn();
     const onMove = vi.fn();
-    render(<BoardCard card={card("k1", "c1", 1024, { title: "Fix login", ...over })} disabled={disabled} onEdit={onEdit} onMove={onMove} />);
-    return { onEdit, onMove };
+    render(<BoardCard card={card("k1", "c1", 1024, { title: "Fix login", ...over })} disabled={disabled} onOpen={onOpen} onMove={onMove} />);
+    return { onOpen, onMove };
   }
 
   it("shows the title and the assignee name", () => {
     setup({ assignee_name: "Grace" });
-    expect(screen.getByRole("button", { name: "Edit Fix login" })).toHaveTextContent("Fix login");
+    expect(screen.getByRole("button", { name: "Open Fix login" })).toHaveTextContent("Fix login");
     expect(screen.getByText("Grace")).toBeInTheDocument();
   });
 
@@ -24,30 +24,30 @@ describe("BoardCard", () => {
     expect(screen.getByText("Unassigned")).toBeInTheDocument();
   });
 
-  it("calls onEdit from the title and onMove from the always-visible Move button", async () => {
-    const { onEdit, onMove } = setup();
-    await userEvent.click(screen.getByRole("button", { name: "Edit Fix login" }));
+  it("calls onOpen from the title and onMove from the always-visible Move button", async () => {
+    const { onOpen, onMove } = setup();
+    await userEvent.click(screen.getByRole("button", { name: "Open Fix login" }));
     await userEvent.click(screen.getByRole("button", { name: "Move Fix login" }));
-    expect(onEdit).toHaveBeenCalledTimes(1);
+    expect(onOpen).toHaveBeenCalledTimes(1);
     expect(onMove).toHaveBeenCalledTimes(1);
   });
 
   it("disables both buttons while the board is busy", () => {
     setup({}, true);
-    expect(screen.getByRole("button", { name: "Edit Fix login" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Open Fix login" })).toBeDisabled();
     expect(screen.getByRole("button", { name: "Move Fix login" })).toBeDisabled();
   });
 
   it("gives both buttons the 44 px size class (FE-S5)", () => {
     setup();
-    for (const name of ["Edit Fix login", "Move Fix login"]) {
+    for (const name of ["Open Fix login", "Move Fix login"]) {
       expect(screen.getByRole("button", { name }).className).toMatch(/min-h-11/);
     }
   });
 
   it("wraps a long title instead of overflowing (FE-S4)", () => {
     setup({ title: "x".repeat(160) });
-    expect(screen.getByRole("button", { name: /^Edit x+/ }).className).toMatch(/break-words/);
+    expect(screen.getByRole("button", { name: /^Open x+/ }).className).toMatch(/break-words/);
   });
 });
 

@@ -59,7 +59,7 @@ describe("Feature: kanban, Property 17: declared kanban requests", () => {
   it("refuses undeclared kanban-like paths", () => {
     for (const path of [
       `/api/columns/${A}/cards/${A}`,
-      `/api/cards/${A}/comments`,
+      `/api/cards/${A}/comments/${A}`,
       `/api/cards?assignee=me`,
       `/api/boards/${A}/columns/${A}`,
       `/api/boards/${A}/cards/search`,

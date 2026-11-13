@@ -64,7 +64,8 @@ interface RunSpec<T> {
   form?: boolean;
 }
 
-type FetchOutcome = "applied" | "discarded" | "gone" | "failed";
+/** How a board refetch ended: applied, discarded as stale, the board is gone, or it failed. */
+export type FetchOutcome = "applied" | "discarded" | "gone" | "failed";
 
 function isAbort(error: unknown): boolean {
   return typeof error === "object" && error !== null && (error as { name?: string }).name === "AbortError";
@@ -89,6 +90,7 @@ export function useKanbanBoard({ boardId, initial }: UseKanbanBoardOptions) {
   const epochRef = useRef(0);
   const mountedRef = useRef(true);
   const refreshQueuedRef = useRef(false);
+  const refreshWaitersRef = useRef<Array<(outcome: FetchOutcome) => void>>([]);
 
   useEffect(() => {
     mountedRef.current = true;
@@ -163,7 +165,9 @@ export function useKanbanBoard({ boardId, initial }: UseKanbanBoardOptions) {
       refreshQueuedRef.current = true;
       return;
     }
-    await refetchHoldingGate();
+    const outcome = await refetchHoldingGate();
+    // Whoever asked for a refresh with refreshBoard() learns how this refetch ended.
+    for (const resolve of refreshWaitersRef.current.splice(0)) resolve(outcome);
   }
 
   async function recover<T>(error: unknown, spec: RunSpec<T>, snapshot: ColumnWithCards[]): Promise<boolean> {
@@ -401,6 +405,24 @@ export function useKanbanBoard({ boardId, initial }: UseKanbanBoardOptions) {
     void refreshWhenIdle();
   }
 
+  /**
+   * Refetch the board behind the gate and resolve with how it ended (comments design DD10). While
+   * the gate is held it waits and resolves with the queued refetch's outcome, as `requestRefresh`
+   * queues. A board 404 has already shown the access toast and left the page when this resolves
+   * with `gone`.
+   */
+  function refreshBoard(): Promise<FetchOutcome> {
+    return new Promise((resolve) => {
+      refreshWaitersRef.current.push(resolve);
+      void refreshWhenIdle();
+    });
+  }
+
+  /** True while the card is on the current board state. Reads the latest state, not a render. */
+  function hasCard(cardId: string): boolean {
+    return columnsRef.current.some((column) => column.cards.some((card) => card.id === cardId));
+  }
+
   /** The Reload board action in the `stale` state. */
   async function reload(): Promise<void> {
     if (statusRef.current !== "stale") return;
@@ -422,6 +444,8 @@ export function useKanbanBoard({ boardId, initial }: UseKanbanBoardOptions) {
     editCard,
     deleteCard,
     requestRefresh,
+    refreshBoard,
+    hasCard,
     reload,
   };
 }

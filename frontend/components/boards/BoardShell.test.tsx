@@ -81,7 +81,7 @@ describe("BoardShell layout (Requirement 2.7)", () => {
       },
     ]);
     expect(screen.getByRole("region", { name: "To do" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Edit Write spec" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Open Write spec" })).toBeInTheDocument();
   });
 });
 

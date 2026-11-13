@@ -17,6 +17,10 @@ const FOCUSABLE =
 function keepTabInside(event: ReactKeyboardEvent<HTMLDialogElement>) {
   if (event.key !== "Tab") return;
   const dialog = event.currentTarget;
+  // A confirmation dialog can sit inside this one. React bubbles its key events through the
+  // component tree, so leave Tab to the dialog that holds the focus.
+  const holder = document.activeElement instanceof Element ? document.activeElement.closest("dialog") : null;
+  if (holder && holder !== dialog) return;
   const controls = dialog.querySelectorAll<HTMLElement>(FOCUSABLE);
   if (controls.length === 0) {
     event.preventDefault();
@@ -49,6 +53,8 @@ export interface BaseModalProps {
   blockClose?: boolean;
   /** Receives focus when the dialog opens. */
   initialFocusRef?: RefObject<HTMLElement | null>;
+  /** A wider box (`max-w-2xl`) for dialogs with a list, such as card details. Still `w-full`, so it never exceeds the viewport. */
+  wide?: boolean;
   children: ReactNode;
 }
 
@@ -63,6 +69,7 @@ export function BaseModal({
   onClose,
   blockClose = false,
   initialFocusRef,
+  wide = false,
   children,
 }: BaseModalProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -95,10 +102,13 @@ export function BaseModal({
       onCancel={(event) => {
         // Stop the browser from closing the dialog, so `open` stays under the parent's control.
         event.preventDefault();
+        // React bubbles `cancel` through the component tree. Without this, Escape in a nested
+        // confirmation would also close the dialog behind it.
+        event.stopPropagation();
         if (!blockClose) onClose();
       }}
     >
-      <div className="modal-box w-full max-w-md min-w-0">
+      <div className={`modal-box w-full min-w-0 ${wide ? "max-w-2xl" : "max-w-md"}`}>
         {open ? children : null}
       </div>
     </dialog>

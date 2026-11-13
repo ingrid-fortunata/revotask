@@ -104,7 +104,7 @@ describe("BoardDetailPage", () => {
     vi.mocked(fetchPrivate).mockImplementation(async (route) => (route === "board" ? ok(withColumns) : ok(MEMBERS)));
     render(await renderPage(BOARD_ID));
     expect(screen.getByRole("region", { name: "To do" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Edit Write spec" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Open Write spec" })).toBeInTheDocument();
   });
 
   it("verifies the session and reads the board and its members through the helpers", async () => {

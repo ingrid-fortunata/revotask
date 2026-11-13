@@ -2,13 +2,14 @@
 
 import { useState } from "react";
 import { AddColumnForm } from "@/components/kanban/AddColumnForm";
-import { CardEditDialog } from "@/components/kanban/CardEditDialog";
+import { CardDetailModal } from "@/components/kanban/CardDetailModal";
 import { ColumnEditDialog } from "@/components/kanban/ColumnEditDialog";
 import { KanbanColumn } from "@/components/kanban/KanbanColumn";
 import { MoveCardDialog } from "@/components/kanban/MoveCardDialog";
 import { BaseButton } from "@/components/shared/BaseButton";
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { useDragAndDrop } from "@/hooks/useDragAndDrop";
+import type { NotFoundResolution } from "@/hooks/useCardComments";
 import type { useKanbanBoard } from "@/hooks/useKanbanBoard";
 import type { BoardRole, Card, ColumnWithCards, Membership } from "@/lib/types";
 
@@ -34,7 +35,7 @@ export function KanbanBoard({ role, members, kanban }: KanbanBoardProps) {
   const [deleteColumnId, setDeleteColumnId] = useState<string | null>(null);
   const [deletePending, setDeletePending] = useState(false);
   const [notice, setNotice] = useState<{ columnId: string; text: string } | null>(null);
-  const [editCardId, setEditCardId] = useState<string | null>(null);
+  const [openCardId, setOpenCardId] = useState<string | null>(null);
   const [moveCardId, setMoveCardId] = useState<string | null>(null);
 
   const dnd = useDragAndDrop({
@@ -46,7 +47,7 @@ export function KanbanBoard({ role, members, kanban }: KanbanBoardProps) {
   const editColumn = columns.find((column) => column.id === editColumnId) ?? null;
   const deleteColumn = columns.find((column) => column.id === deleteColumnId) ?? null;
   const allCards = columns.flatMap((column) => column.cards);
-  const editCard = allCards.find((card) => card.id === editCardId) ?? null;
+  const openCard = allCards.find((card) => card.id === openCardId) ?? null;
   const moveCard = allCards.find((card) => card.id === moveCardId) ?? null;
 
   function doneLockedReason(column: ColumnWithCards | null): string | null {
@@ -72,6 +73,15 @@ export function KanbanBoard({ role, members, kanban }: KanbanBoardProps) {
     setDeletePending(false);
     setDeleteColumnId(null);
     if (!result.ok && !result.handled) setNotice({ columnId: deleteColumn.id, text: "That column could not be deleted. Empty it first." });
+  }
+
+  // A comment 404 is the same for a missing comment, a missing card and lost access, so the board
+  // refetch decides (comments design DD10). A board 404 has already shown the access toast and left.
+  async function resolveCommentNotFound(): Promise<NotFoundResolution> {
+    const outcome = await kanban.refreshBoard();
+    if (outcome === "gone") return "access-lost";
+    if (outcome !== "applied") return "unknown";
+    return openCardId !== null && kanban.hasCard(openCardId) ? "card-present" : "card-gone";
   }
 
   function handleMoveColumn(index: number, direction: -1 | 1) {
@@ -135,7 +145,7 @@ export function KanbanBoard({ role, members, kanban }: KanbanBoardProps) {
               onDeleteColumn={() => handleDeleteColumn(column)}
               onMoveLeft={() => handleMoveColumn(index, -1)}
               onMoveRight={() => handleMoveColumn(index, 1)}
-              onEditCard={(card: Card) => setEditCardId(card.id)}
+              onOpenCard={(card: Card) => setOpenCardId(card.id)}
               onMoveCard={(card: Card) => setMoveCardId(card.id)}
               onAddCard={(title) => kanban.addCard(column.id, title)}
             />
@@ -158,7 +168,14 @@ export function KanbanBoard({ role, members, kanban }: KanbanBoardProps) {
         onConfirm={handleConfirmDelete}
         onCancel={() => setDeleteColumnId(null)}
       />
-      <CardEditDialog card={editCard} members={members} onSave={kanban.editCard} onDelete={kanban.deleteCard} onClose={() => setEditCardId(null)} />
+      <CardDetailModal
+        card={openCard}
+        members={members}
+        onSave={kanban.editCard}
+        onDelete={kanban.deleteCard}
+        onClose={() => setOpenCardId(null)}
+        resolveNotFound={resolveCommentNotFound}
+      />
       <MoveCardDialog card={moveCard} columns={columns} onMove={kanban.moveCard} onClose={() => setMoveCardId(null)} />
     </section>
   );

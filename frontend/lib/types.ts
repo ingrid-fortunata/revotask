@@ -38,6 +38,17 @@ export type ColumnWithCards = Column & { cards: Card[] };
 
 export type BoardDetail = BoardSummary & { columns: ColumnWithCards[] };
 
+// Comment shape from docs/API.md. `author_name` is the author's current name.
+export type Comment = {
+  id: string;
+  card_id: string;
+  author_id: string;
+  author_name: string;
+  content: string;
+  created_at: string;
+  updated_at: string;
+};
+
 export type Membership = {
   user_id: string;
   name: string;

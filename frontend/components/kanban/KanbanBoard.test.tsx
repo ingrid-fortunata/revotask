@@ -1,9 +1,11 @@
 import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { AuthProvider } from "@/components/auth/AuthContext";
 import { useKanbanBoard } from "@/hooks/useKanbanBoard";
 import { apiGet, apiRequest } from "@/lib/apiClient";
 import { ApiError } from "@/lib/errors";
+import { notifyError } from "@/lib/toast";
 import type { BoardRole, ColumnWithCards } from "@/lib/types";
 import { KanbanBoard } from "./KanbanBoard";
 import { BOARD_ID, board, card, column, detail, MEMBERS } from "./kanbanTestData";
@@ -18,7 +20,11 @@ vi.mock("@/lib/navigation", () => ({ hardRedirect: vi.fn() }));
 
 function Harness({ role = "admin", columns = board() }: { role?: BoardRole; columns?: ColumnWithCards[] }) {
   const kanban = useKanbanBoard({ boardId: BOARD_ID, initial: { columns, version: 3 } });
-  return <KanbanBoard role={role} members={MEMBERS} kanban={kanban} />;
+  return (
+    <AuthProvider user={{ id: "u-ada", name: "Ada", email: "ada@example.test" }}>
+      <KanbanBoard role={role} members={MEMBERS} kanban={kanban} />
+    </AuthProvider>
+  );
 }
 
 const apiError = (statusCode: number, code: string) => new ApiError({ statusCode, code, message: `m ${code}` });
@@ -32,6 +38,8 @@ const lane = (name: string) => screen.getByRole("region", { name });
 beforeEach(() => {
   vi.mocked(apiRequest).mockReset();
   vi.mocked(apiGet).mockReset();
+  vi.mocked(apiGet).mockResolvedValue([]); // the card detail modal reads its comments (E23)
+  vi.mocked(notifyError).mockReset();
 });
 
 describe("showing the board", () => {
@@ -91,7 +99,7 @@ describe("Property 13: role-based controls", () => {
   it.each(["admin", "member"] as const)("%s sees the card controls, the Move button and the add-card form", (role) => {
     render(<Harness role={role} />);
     const todo = within(lane("Col todo"));
-    expect(todo.getByRole("button", { name: "Edit Card a" })).toBeInTheDocument();
+    expect(todo.getByRole("button", { name: "Open Card a" })).toBeInTheDocument();
     expect(todo.getByRole("button", { name: "Move Card a" })).toBeInTheDocument();
     expect(todo.getByRole("button", { name: "Add card to Col todo" })).toBeInTheDocument();
   });
@@ -304,14 +312,14 @@ describe("card actions", () => {
     await userEvent.type(within(form).getByLabelText("New card"), "Fresh");
     await userEvent.click(within(form).getByRole("button", { name: "Add card" }));
     expect(apiRequest).toHaveBeenCalledExactlyOnceWith("POST", "/api/columns/doing/cards", { title: "Fresh" });
-    expect(await within(lane("Col doing")).findByRole("button", { name: "Edit Fresh" })).toBeInTheDocument();
+    expect(await within(lane("Col doing")).findByRole("button", { name: "Open Fresh" })).toBeInTheDocument();
   });
 
   it("edits and assigns a card from the dialog and shows the new assignee", async () => {
     vi.mocked(apiRequest).mockResolvedValue(card("a", "todo", 1024, { assignee_id: "u-ada", assignee_name: "Ada" }));
     render(<Harness />);
-    await userEvent.click(screen.getByRole("button", { name: "Edit Card a" }));
-    const dialog = screen.getByRole("dialog", { name: "Edit card" });
+    await userEvent.click(screen.getByRole("button", { name: "Open Card a" }));
+    const dialog = screen.getByRole("dialog", { name: "Card details" });
     await userEvent.selectOptions(within(dialog).getByLabelText("Assignee"), "Ada");
     await userEvent.click(within(dialog).getByRole("button", { name: "Save card" }));
     expect(apiRequest).toHaveBeenCalledExactlyOnceWith("PATCH", "/api/cards/a", { assignee_id: "u-ada" });
@@ -321,12 +329,64 @@ describe("card actions", () => {
   it("deletes a card after confirmation and removes it", async () => {
     vi.mocked(apiRequest).mockResolvedValue({ position_version: 4 });
     render(<Harness />);
-    await userEvent.click(screen.getByRole("button", { name: "Edit Card a" }));
-    await userEvent.click(within(screen.getByRole("dialog", { name: "Edit card" })).getByRole("button", { name: "Delete card" }));
+    await userEvent.click(screen.getByRole("button", { name: "Open Card a" }));
+    await userEvent.click(within(screen.getByRole("dialog", { name: "Card details" })).getByRole("button", { name: "Delete card" }));
     const confirm = screen.getByRole("dialog", { name: "Delete card?" });
     await userEvent.click(within(confirm).getByRole("button", { name: "Delete card" }));
     expect(apiRequest).toHaveBeenCalledExactlyOnceWith("DELETE", "/api/cards/a");
-    await waitFor(() => expect(screen.queryByRole("button", { name: "Edit Card a" })).not.toBeInTheDocument());
+    await waitFor(() => expect(screen.queryByRole("button", { name: "Open Card a" })).not.toBeInTheDocument());
+  });
+});
+
+describe("card detail modal (comments design DD9, DD10, N2, N4)", () => {
+  const openCard = () => userEvent.click(screen.getByRole("button", { name: "Open Card a" }));
+  const withoutCardA = () => board().map((c) => ({ ...c, cards: c.cards.filter((k) => k.id !== "a") }));
+
+  it("opens Card details from the card's Open button and loads its comments", async () => {
+    render(<Harness />);
+    await openCard();
+    expect(screen.getByRole("dialog", { name: "Card details" })).toBeInTheDocument();
+    await waitFor(() => expect(apiGet).toHaveBeenCalledWith("/api/cards/a/comments", expect.any(AbortSignal)));
+    expect(await screen.findByText("No comments yet.")).toBeInTheDocument();
+  });
+
+  it("closes the modal with a toast when a comment 404 and the board refetch show the card is gone", async () => {
+    vi.mocked(apiGet).mockImplementation(async (path) => {
+      if (String(path).endsWith("/comments")) throw apiError(404, "NOT_FOUND");
+      return detail(withoutCardA(), 5) as never;
+    });
+    render(<Harness />);
+    await openCard();
+    await waitFor(() => expect(screen.queryByRole("dialog", { name: "Card details" })).not.toBeInTheDocument());
+    expect(notifyError).toHaveBeenCalledWith("That card no longer exists.");
+    expect(screen.queryByRole("button", { name: "Open Card a" })).not.toBeInTheDocument();
+  });
+
+  it("keeps the modal open and reloads the comments when the board refetch shows the card still exists", async () => {
+    let commentReads = 0;
+    vi.mocked(apiGet).mockImplementation(async (path) => {
+      if (String(path).endsWith("/comments")) {
+        commentReads += 1;
+        if (commentReads === 1) throw apiError(404, "NOT_FOUND");
+        return [] as never;
+      }
+      return detail(board(), 5) as never;
+    });
+    render(<Harness />);
+    await openCard();
+    expect(await screen.findByText("No comments yet.")).toBeInTheDocument();
+    expect(screen.getByRole("dialog", { name: "Card details" })).toBeInTheDocument();
+    expect(commentReads).toBe(2);
+  });
+
+  it("leaves the modal to the board hook when access to the board is lost", async () => {
+    vi.mocked(apiGet).mockImplementation(async () => {
+      throw apiError(404, "NOT_FOUND"); // the comments and the board refetch both answer 404
+    });
+    render(<Harness />);
+    await openCard();
+    await waitFor(() => expect(notifyError).toHaveBeenCalledWith("You no longer have access to this board."));
+    expect(notifyError).not.toHaveBeenCalledWith("That card no longer exists.");
   });
 });
 

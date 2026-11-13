@@ -10,14 +10,14 @@ export interface BoardCardProps {
   dropIndicator?: boolean;
   /** Drag props from `useDragAndDrop().cardProps`. */
   dragProps?: HTMLAttributes<HTMLDivElement>;
-  onEdit: () => void;
+  onOpen: () => void;
   onMove: () => void;
 }
 
 // Props-only (FE-C2). A tinted item inside the lane panel, not a second panel (FE-D3). The title
-// opens the edit dialog and the Move button is always visible, so a touch or keyboard user can
+// opens the card detail modal (N2) and the Move button is always visible, so a touch or keyboard user can
 // move the card without drag (FE-C4, Requirement 9.3). Text wraps and both buttons are 44 px.
-export function BoardCard({ card, disabled, dropIndicator = false, dragProps, onEdit, onMove }: BoardCardProps) {
+export function BoardCard({ card, disabled, dropIndicator = false, dragProps, onOpen, onMove }: BoardCardProps) {
   return (
     <div
       {...dragProps}
@@ -26,9 +26,9 @@ export function BoardCard({ card, disabled, dropIndicator = false, dragProps, on
       <BaseButton
         variant="ghost"
         className="h-auto w-full justify-start whitespace-normal break-words text-left font-medium"
-        aria-label={`Edit ${card.title}`}
+        aria-label={`Open ${card.title}`}
         disabled={disabled}
-        onClick={onEdit}
+        onClick={onOpen}
       >
         {card.title}
       </BaseButton>

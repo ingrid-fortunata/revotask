@@ -1,8 +1,7 @@
 "use client";
 
-import { type FormEvent, useId, useRef, useState } from "react";
+import { type FormEvent, useRef, useState } from "react";
 import { BaseButton } from "@/components/shared/BaseButton";
-import { BaseModal } from "@/components/shared/BaseModal";
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { FormField } from "@/components/shared/FormField";
 import { SelectField } from "@/components/shared/SelectField";
@@ -11,11 +10,13 @@ import { ApiError } from "@/lib/errors";
 import { validateCardTitle, validateDescription } from "@/lib/kanbanRules";
 import type { Card, Membership } from "@/lib/types";
 
-export interface CardEditDialogProps {
-  /** The card being edited. The dialog is open while this is set. */
-  card: Card | null;
+export interface CardEditFormProps {
+  /** The card being edited. */
+  card: Card;
   /** Active participants, for the assignee list. */
   members: readonly Membership[];
+  /** True while a comment write runs: Save and Delete wait for it (Requirement 7.9). */
+  lockCard?: boolean;
   onSave: (
     cardId: string,
     patch: { title?: string; description?: string | null; assignee_id?: string | null },
@@ -24,28 +25,14 @@ export interface CardEditDialogProps {
   onClose: () => void;
 }
 
-export function CardEditDialog({ card, members, onSave, onDelete, onClose }: CardEditDialogProps) {
-  const titleId = useId();
-  return (
-    <BaseModal open={card !== null} labelledBy={titleId} onClose={onClose}>
-      {card ? <CardEditForm key={card.id} titleId={titleId} card={card} members={members} onSave={onSave} onDelete={onDelete} onClose={onClose} /> : null}
-    </BaseModal>
-  );
-}
-
 type Fields = { title?: string; description?: string; assignee_id?: string };
-
-interface CardEditFormProps extends Omit<CardEditDialogProps, "card"> {
-  titleId: string;
-  card: Card;
-}
 
 const NONE = "";
 
-// Edit, assign and delete one card (K5, Requirements 8.3 to 8.5, 8.7). T10 wraps this with the
-// comments. Only changed fields are sent, and a 400 keeps the dialog open with the entered values
-// and the message under the field. Delete asks for confirmation and names the card.
-function CardEditForm({ titleId, card, members, onSave, onDelete, onClose }: CardEditFormProps) {
+// Edit, assign and delete one card (K5, kanban Requirements 8.3 to 8.5). It is the form half of
+// the card detail modal. Only changed fields are sent, and a 400 keeps the form with the entered
+// values and the message under the field. Delete asks for confirmation and names the card.
+export function CardEditForm({ card, members, lockCard = false, onSave, onDelete, onClose }: CardEditFormProps) {
   const [title, setTitle] = useState(card.title);
   const [description, setDescription] = useState(card.description ?? "");
   const [assignee, setAssignee] = useState(card.assignee_id ?? NONE);
@@ -66,7 +53,7 @@ function CardEditForm({ titleId, card, members, onSave, onDelete, onClose }: Car
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (pending) return;
+    if (pending || lockCard) return;
     setErrors({});
     const checkedTitle = validateCardTitle(title);
     const checkedDescription = validateDescription(description);
@@ -104,7 +91,7 @@ function CardEditForm({ titleId, card, members, onSave, onDelete, onClose }: Car
   }
 
   async function handleConfirmDelete() {
-    if (deletePending) return;
+    if (deletePending || lockCard) return;
     setDeletePending(true);
     const result = await onDelete(card.id);
     setDeletePending(false);
@@ -114,22 +101,19 @@ function CardEditForm({ titleId, card, members, onSave, onDelete, onClose }: Car
 
   return (
     <>
-      <form onSubmit={handleSubmit} noValidate aria-busy={pending} className="flex flex-col gap-4">
-        <h2 id={titleId} className="break-words text-lg font-bold">
-          Edit card
-        </h2>
+      <form onSubmit={handleSubmit} noValidate aria-label="Edit card" aria-busy={pending} className="flex flex-col gap-4">
         <FormField id="edit-card-title" name="title" label="Title" value={title} error={errors.title} inputRef={titleRef} onChange={setTitle} />
         <FormField id="edit-card-description" name="description" label="Description" multiline value={description} error={errors.description} onChange={setDescription} />
         <SelectField id="edit-card-assignee" name="assignee_id" label="Assignee" value={assignee} options={options} error={errors.assignee_id} onChange={setAssignee} />
-        <div className="modal-action mt-0 flex flex-col gap-2 sm:flex-row sm:justify-between">
-          <BaseButton variant="ghost" className="w-full text-error sm:w-auto" disabled={pending} onClick={() => setConfirmOpen(true)}>
+        <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
+          <BaseButton variant="ghost" className="w-full text-error sm:w-auto" disabled={pending || lockCard} onClick={() => setConfirmOpen(true)}>
             Delete card
           </BaseButton>
           <div className="flex flex-col gap-2 sm:flex-row">
             <BaseButton variant="ghost" className="w-full sm:w-auto" disabled={pending} onClick={onClose}>
               Cancel
             </BaseButton>
-            <BaseButton type="submit" className="w-full sm:w-auto" loading={pending}>
+            <BaseButton type="submit" className="w-full sm:w-auto" loading={pending} disabled={lockCard}>
               Save card
             </BaseButton>
           </div>
@@ -140,7 +124,7 @@ function CardEditForm({ titleId, card, members, onSave, onDelete, onClose }: Car
         title="Delete card?"
         message={`Delete "${card.title}"? This cannot be undone.`}
         confirmLabel="Delete card"
-        pending={deletePending}
+        pending={deletePending || lockCard}
         onConfirm={handleConfirmDelete}
         onCancel={() => setConfirmOpen(false)}
       />

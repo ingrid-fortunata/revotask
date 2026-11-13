@@ -145,3 +145,73 @@ describe("BaseModal", () => {
     );
   });
 });
+
+describe("BaseModal wide", () => {
+  function box(wide?: boolean) {
+    render(
+      <BaseModal open labelledBy="t" onClose={vi.fn()} wide={wide}>
+        <h2 id="t">Title</h2>
+      </BaseModal>,
+    );
+    return screen.getByRole("dialog", { name: "Title" }).querySelector(".modal-box") as HTMLElement;
+  }
+
+  it("keeps the default width class", () => {
+    const el = box();
+    expect(el.className).toContain("max-w-md");
+    expect(el.className).not.toContain("max-w-2xl");
+  });
+
+  it("switches only the max width and stays w-full min-w-0, so it cannot exceed the viewport", () => {
+    const el = box(true);
+    expect(el.className).toContain("max-w-2xl");
+    expect(el.className).not.toContain("max-w-md");
+    expect(el.className).toContain("w-full");
+    expect(el.className).toContain("min-w-0");
+  });
+});
+
+describe("BaseModal nested in another BaseModal", () => {
+  function Nested({ onOuterClose, onInnerClose }: { onOuterClose: () => void; onInnerClose: () => void }) {
+    return (
+      <BaseModal open labelledBy="outer-title" onClose={onOuterClose}>
+        <h2 id="outer-title">Outer</h2>
+        <button type="button">Outer first</button>
+        <BaseModal open labelledBy="inner-title" onClose={onInnerClose}>
+          <h2 id="inner-title">Inner</h2>
+          <button type="button">Inner action</button>
+        </BaseModal>
+        <button type="button">Outer last</button>
+      </BaseModal>
+    );
+  }
+
+  it("closes only the inner dialog on Escape, because the cancel event does not bubble to the outer one", () => {
+    const onOuterClose = vi.fn();
+    const onInnerClose = vi.fn();
+    render(<Nested onOuterClose={onOuterClose} onInnerClose={onInnerClose} />);
+    fireEvent(screen.getByRole("dialog", { name: "Inner" }), new Event("cancel", { cancelable: true }));
+    expect(onInnerClose).toHaveBeenCalledTimes(1);
+    expect(onOuterClose).not.toHaveBeenCalled();
+  });
+
+  it("closes the outer dialog on its own Escape", () => {
+    const onOuterClose = vi.fn();
+    const onInnerClose = vi.fn();
+    render(<Nested onOuterClose={onOuterClose} onInnerClose={onInnerClose} />);
+    fireEvent(screen.getByRole("dialog", { name: "Outer" }), new Event("cancel", { cancelable: true }));
+    expect(onOuterClose).toHaveBeenCalledTimes(1);
+    expect(onInnerClose).not.toHaveBeenCalled();
+  });
+
+  it("does not let the outer dialog wrap Tab while focus is in the inner dialog", () => {
+    render(<Nested onOuterClose={vi.fn()} onInnerClose={vi.fn()} />);
+    const inner = screen.getByRole("button", { name: "Inner action" });
+    inner.focus();
+    // The inner button is the only control of the inner dialog, so the inner handler wraps to
+    // itself. The outer handler must leave the event alone: focus stays on the inner button.
+    const proceeded = fireEvent.keyDown(inner, { key: "Tab" });
+    expect(proceeded).toBe(false); // the inner dialog handled and prevented it
+    expect(inner).toHaveFocus();
+  });
+});

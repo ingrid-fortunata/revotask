@@ -24,7 +24,7 @@ export interface KanbanColumnProps {
   onDeleteColumn: () => void;
   onMoveLeft: () => void;
   onMoveRight: () => void;
-  onEditCard: (card: Card) => void;
+  onOpenCard: (card: Card) => void;
   onMoveCard: (card: Card) => void;
   onAddCard: (title: string) => Promise<WriteResult<Card>>;
 }
@@ -44,7 +44,7 @@ export function KanbanColumn({
   onDeleteColumn,
   onMoveLeft,
   onMoveRight,
-  onEditCard,
+  onOpenCard,
   onMoveCard,
   onAddCard,
 }: KanbanColumnProps) {
@@ -90,7 +90,7 @@ export function KanbanColumn({
               disabled={busy}
               dropIndicator={dnd.isTarget(column.id, card.id)}
               dragProps={dnd.cardProps(card.id)}
-              onEdit={() => onEditCard(card)}
+              onOpen={() => onOpenCard(card)}
               onMove={() => onMoveCard(card)}
             />
           </li>
