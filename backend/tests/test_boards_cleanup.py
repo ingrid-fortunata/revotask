@@ -7,11 +7,12 @@ sentinel set alone. Every write goes through the app built from TEST_DATABASE_UR
 
 from __future__ import annotations
 
+import uuid
 from pathlib import Path
 
 import pytest
 from dotenv import dotenv_values
-from sqlalchemy import make_url
+from sqlalchemy import func, make_url, select
 
 from app.extensions import db
 from app.models.base import utcnow
@@ -104,6 +105,50 @@ def test_teardown_removes_tracked_rows_after_failed_harness(app, schema_at_head)
         assert count_rows(app, BoardMember, [sentinel["membership"]]) == 1
         assert count_rows(app, BoardColumn, [sentinel["column"]]) == 1
         assert count_rows(app, Card, [sentinel["card"]]) == 1
+        assert count_rows(app, BoardEvent, [sentinel["event"]]) == 1
+        assert count_rows(app, CardComment, [sentinel["comment"]]) == 1
+    finally:
+        remove_untracked_sentinel(app, sentinel)
+
+
+def test_teardown_removes_api_created_comments_and_keeps_an_untracked_comment(app, schema_at_head):
+    """Task 2.9: comments and events made through E24 are tracked by their board and removed."""
+    from tests.comments_helpers import seed_comment_world
+    from tests.kanban_helpers import make_kanban
+
+    sentinel = seed_untracked_sentinel(app)
+    try:
+        teardown = tracked_boards(app)
+        tracker = next(teardown)
+        state: dict = {}
+        try:
+            with pytest.raises(AssertionError, match="deliberate failure"):
+                kanban = make_kanban(tracker, app)
+                world = seed_comment_world(kanban)
+                response = app.test_client().post(
+                    f"/api/cards/{world.card}/comments",
+                    json={"content": "Made through the API"},
+                    headers=kanban.headers(),
+                )
+                assert response.status_code == 201
+                state["api_comment"] = uuid.UUID(response.get_json()["data"]["id"])
+                state["seed_comment"] = world.comment
+                state["board_id"] = kanban.board_id
+                assert count_rows(app, CardComment, [state["api_comment"], world.comment]) == 2
+                raise AssertionError("harness: deliberate failure after the comment was posted")
+        finally:
+            assert next(teardown, None) is None
+
+        assert count_rows(app, CardComment, [state["api_comment"], state["seed_comment"]]) == 0
+        with app.app_context():
+            try:
+                events_left = db.session.scalar(
+                    select(func.count()).where(BoardEvent.board_id == state["board_id"])
+                )
+            finally:
+                db.session.remove()
+        assert events_left == 0
+        assert count_rows(app, CardComment, [sentinel["comment"]]) == 1
         assert count_rows(app, BoardEvent, [sentinel["event"]]) == 1
     finally:
         remove_untracked_sentinel(app, sentinel)

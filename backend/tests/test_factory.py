@@ -40,7 +40,7 @@ def test_engine_options_bound_connection_and_pool_waits():
 
 
 def test_registered_routes_match_the_implemented_slices():
-    """Foundation registered health only. Later slices add the routes below (T03, T05, T07, T08)."""
+    """Foundation registered health only. Later slices add the routes below (T03 to T10)."""
     app = create_app(VALID_ENV)
     endpoints = {rule.endpoint for rule in app.url_map.iter_rules() if rule.endpoint != "static"}
     assert endpoints == {
@@ -65,6 +65,10 @@ def test_registered_routes_match_the_implemented_slices():
         "cards.update_card_view",
         "cards.delete_card_view",
         "cards.move_card_view",
+        "comments.list_comments_view",
+        "comments.create_comment_view",
+        "comments.update_comment_view",
+        "comments.delete_comment_view",
     }
 
 

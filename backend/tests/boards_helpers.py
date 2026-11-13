@@ -244,6 +244,8 @@ def seed_untracked_sentinel(app: Flask) -> dict[str, uuid.UUID]:
             occurred_at=utcnow(),
         )
         db.session.add(event)
+        comment = CardComment(card_id=card.id, author_id=user.id, content="Sentinel comment")
+        db.session.add(comment)
         db.session.commit()
         ids = {
             "user": user.id,
@@ -252,6 +254,7 @@ def seed_untracked_sentinel(app: Flask) -> dict[str, uuid.UUID]:
             "column": column.id,
             "card": card.id,
             "event": event.id,
+            "comment": comment.id,
         }
         db.session.remove()
         return ids
@@ -261,6 +264,7 @@ def remove_untracked_sentinel(app: Flask, ids: dict[str, uuid.UUID]) -> None:
     """Remove the sentinel rows by their own IDs, after the assertions are done."""
     with app.app_context():
         try:
+            db.session.execute(delete(CardComment).where(CardComment.id == ids["comment"]))
             db.session.execute(delete(BoardEvent).where(BoardEvent.id == ids["event"]))
             db.session.execute(delete(Card).where(Card.id == ids["card"]))
             db.session.execute(delete(BoardColumn).where(BoardColumn.id == ids["column"]))

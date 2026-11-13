@@ -1,0 +1,166 @@
+{
+ "_note": "Shared boundary cases for the comment request body (comments design 'Request rules'; Requirements 2.2, 2.3, 3.3). The Flask schema tests (backend/tests/test_comments_schema.py) and the frontend commentRules tests (frontend/lib/commentRules.test.ts) both read this file, as kanban-field-cases.json is read. Each case starts from its form's base body, applies 'set' then 'drop', and expects 'accepted' (a map of the normalized values the schema must return) or 'fields' (the exact map of field messages). Values: {\"repeat\": s, \"times\": n} is s repeated n times. Lengths count Unicode code points. The one form, comment_content, is the body of E24 and E25. Content is trimmed, 1 to 2,000 characters, and inner line breaks are kept. Messages are fixed strings and never echo a value.",
+ "comment_content": {
+  "base": {
+   "content": "Looks good"
+  },
+  "cases": [
+   {
+    "id": "content-empty",
+    "set": {
+     "content": ""
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "content": "Must be 1 to 2000 characters."
+     }
+    }
+   },
+   {
+    "id": "content-spaces-only",
+    "set": {
+     "content": "   \n  "
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "content": "Must be 1 to 2000 characters."
+     }
+    }
+   },
+   {
+    "id": "content-1-char",
+    "set": {
+     "content": "A"
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "content": "A"
+     }
+    }
+   },
+   {
+    "id": "content-trimmed",
+    "set": {
+     "content": "  Done  "
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "content": "Done"
+     }
+    }
+   },
+   {
+    "id": "content-max-chars",
+    "set": {
+     "content": {
+      "repeat": "a",
+      "times": 2000
+     }
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "content": {
+       "repeat": "a",
+       "times": 2000
+      }
+     }
+    }
+   },
+   {
+    "id": "content-over-max",
+    "set": {
+     "content": {
+      "repeat": "a",
+      "times": 2001
+     }
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "content": "Must be 1 to 2000 characters."
+     }
+    }
+   },
+   {
+    "id": "content-max-after-trim",
+    "set": {
+     "content": {
+      "repeat": " ",
+      "times": 5
+     }
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "content": "Must be 1 to 2000 characters."
+     }
+    }
+   },
+   {
+    "id": "content-inner-line-breaks-kept",
+    "set": {
+     "content": "line one\nline two"
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "content": "line one\nline two"
+     }
+    }
+   },
+   {
+    "id": "content-outer-line-breaks-trimmed",
+    "set": {
+     "content": "\n line one\n\nline three \n"
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "content": "line one\n\nline three"
+     }
+    }
+   },
+   {
+    "id": "content-null",
+    "set": {
+     "content": null
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "content": "Required."
+     }
+    }
+   },
+   {
+    "id": "content-number",
+    "set": {
+     "content": 7
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "content": "Must be text."
+     }
+    }
+   },
+   {
+    "id": "content-missing",
+    "set": {},
+    "drop": [
+     "content"
+    ],
+    "expect": {
+     "fields": {
+      "content": "Required."
+     }
+    }
+   }
+  ]
+ }
+}
