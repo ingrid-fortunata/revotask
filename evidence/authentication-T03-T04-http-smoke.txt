@@ -2,6 +2,7 @@ throwaway account: <throwaway>@example.test
 Next localhost:3100  Flask 127.0.0.1:5001  APP_ORIGIN=http://localhost:3100
 
 ### 1. Exact fields, content type, size and Origin
+  (limiter state reset: before section 1)
   register, no Origin (Next)                                 -> 403 
   [PASS] 403 without Origin
   register, Origin http://evil.example (Next)                -> 403 
@@ -33,6 +34,25 @@ Next localhost:3100  Flask 127.0.0.1:5001  APP_ORIGIN=http://localhost:3100
   [PASS] no password or token in the body
   register the same email again                              -> 409 
   [PASS] 409 EMAIL_ALREADY_EXISTS
+
+### 1b. Password rules (rejected before any account is written)
+  (limiter state reset: before the five Next-level policy checks)
+  register, 7 characters (Next)                              -> 400 Must be 8 to 128 characters.
+  [PASS] 400 with: Must be 8 to 128 characters.
+  register, no uppercase (Next)                              -> 400 Must include an uppercase letter, a lowercase letter and a special character.
+  [PASS] 400 with: Must include an uppercase letter, a lowercase letter and a special character.
+  register, no lowercase (Next)                              -> 400 Must include an uppercase letter, a lowercase letter and a special character.
+  [PASS] 400 with: Must include an uppercase letter, a lowercase letter and a special character.
+  register, no special character (Next)                      -> 400 Must include an uppercase letter, a lowercase letter and a special character.
+  [PASS] 400 with: Must include an uppercase letter, a lowercase letter and a special character.
+  register, a space is not special (Next)                    -> 400 Must include an uppercase letter, a lowercase letter and a special character.
+  [PASS] 400 with: Must include an uppercase letter, a lowercase letter and a special character.
+  (limiter state reset: before the direct Flask policy check)
+  register, no uppercase, straight to Flask                  -> 400 
+  [PASS] Flask 400 with the composition message
+  login with a short, simple password (Next)                 -> 401 INVALID_CREDENTIALS
+  [PASS] 401 INVALID_CREDENTIALS, not a policy message
+  [PASS] the rejected registrations wrote no account
 
 ### 2. Invalid credentials
   login, wrong password                                      -> 401 
@@ -84,7 +104,7 @@ Next localhost:3100  Flask 127.0.0.1:5001  APP_ORIGIN=http://localhost:3100
   [PASS] 403
   [PASS] session still valid after the rejected logout
   logout with Origin and cookie                              -> 200 {'data': None}
-        Set-Cookie: revotask_session=<empty>; Path=/; Max-Age=0; HttpOnly; SameSite=Lax
+        Set-Cookie: revotask_session=<redacted>; Path=/; Max-Age=0; HttpOnly; SameSite=Lax
   [PASS] 200 {data:null}
   [PASS] cookie cleared: empty value, Max-Age=0, Path=/, no Domain
   logout again with no cookie                                -> 200 
@@ -120,11 +140,15 @@ Next localhost:3100  Flask 127.0.0.1:5001  APP_ORIGIN=http://localhost:3100
   [PASS] next=/\evil.example -> the form receives redirectTo=/  (got /)
   [PASS] next=/boards/abc -> the form receives redirectTo=/boards/abc  (got /boards/abc)
 
-### 10. Rate limit (local behavior only: in-memory counters in one container)
+### 10. Rate limit (fresh limiter state, one Gunicorn worker)
+  (limiter state reset: before the login rate-limit check)
         statuses: [401, 401, 401, 401, 401, 429]
-  [PASS] five 401s, then 429
-  6th attempt                                                -> 429 RATE_LIMITED Retry-After=['60']
-  [PASS] 429 RATE_LIMITED with Retry-After and a request id
+  [PASS] first five invalid attempts return 401 INVALID_CREDENTIALS  ([401, 401, 401, 401, 401, 429])
+  [PASS] sixth attempt returns 429  ([401, 401, 401, 401, 401, 429])
+  [PASS] 429 RATE_LIMITED with Retry-After and a request id  (Retry-After=['59'])
+  [PASS] 401 responses carry no Retry-After
+  first invalid login, straight to Flask                     -> 401 
+  [PASS] Flask 401 carries no Retry-After  ([])
 
 ### Cleanup
   deleted users: 1

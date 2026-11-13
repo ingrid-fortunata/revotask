@@ -2,7 +2,7 @@
 
 **Scope:** Native spec `.kiro/specs/authentication/` (requirements, design, tasks). Root tasks T03 and T04.
 
-**State:** Local implementation and verification. The change is uncommitted in the working tree. No GitHub, Render, Vercel or Supabase step was run. Every live check used `127.0.0.1` or `localhost`.
+**State:** Local implementation and verification. Revision 3 (password policy) and revision 4 (local rate limit, one worker) are below. Both were verified on the final code and stacks. The change is uncommitted in the working tree. No GitHub, Render, Vercel or Supabase step was run. Every live check used `127.0.0.1` or `localhost`.
 
 **Environment:** macOS, zsh. Python 3.14.5 (`backend/.venv`). Node.js 24.22.1. PostgreSQL 16.14 on `127.0.0.1:5432`. Docker Desktop 29.9.2 (Flask ran as the Compose image on port 5001). Google Chrome 157.0.8103.51, headless, with device emulation. **No real phone was used.**
 
@@ -11,15 +11,15 @@
 | Area | Result |
 |---|---|
 | Backend `ruff check .` and `ruff format --check .` | Pass (64 files formatted) |
-| Backend `pytest` | **382 passed** (foundation had 186, so 196 are new) |
+| Backend `pytest` | **431 passed** in the final run (foundation had 186; 245 are new). The rate-limit file alone passed 17 of 17 in a fresh process |
 | Backend race test (8 simultaneous registrations of one email) | Passed 5 of 5 consecutive runs, and again in the final full runs. The simultaneous-logout test passed too |
 | Backend Docker image rebuilt with the new dependencies | Builds. `GET /api/health` 200. `POST /api/auth/register` with `{}` returns the 400 envelope. A `text/plain` body returns 415 |
 | Frontend `npm run lint`, `typecheck` | Pass |
-| Frontend `npm test` (Vitest) | **431 passed in 31 files** (foundation had 1) |
+| Frontend `npm test` (Vitest) | **446 passed in 31 files** (foundation had 1) |
 | Frontend `npm run build` | Pass. Routes: `/` (dynamic), `/login` (dynamic), `/register` (static), `/api/auth/{register,login,logout}` (dynamic), `/_not-found` |
 | `npm audit --omit=dev` | 0 vulnerabilities. The seven dev-only moderate advisories from foundation are unchanged and untouched |
-| HTTP smoke (`evidence/authentication-http-smoke.py`) | **64 of 64 checks pass** against real Flask (5001) and a production Next server (3100) |
-| Real-browser check (`evidence/authentication-mobile-measure.mjs`) | **90 of 90 checks pass**, run twice in full |
+| HTTP smoke (`evidence/authentication-http-smoke.py`) | **75 of 75 checks pass** against real Flask (5001, one Gunicorn worker) and a production Next server (3100) |
+| Real-browser check (`evidence/authentication-mobile-measure.mjs`) | **96 of 96 checks pass** in the final run (revision 4 stack) |
 | Build checks | Sentinel absent from `.next`. Negative control fails as designed |
 
 Raw outputs: `evidence/authentication-T03-T04-http-smoke.txt` and `evidence/authentication-T03-T04-browser-check.txt`. Throwaway emails and UUIDs are replaced. Tokens, passwords and cookie values were never printed.
@@ -45,14 +45,14 @@ Password hashing (task 1.5): `argon2-cffi` defaults, Argon2id, version 19, `m=65
 | AUTH-AC7.1–7.5 body errors | `test_validation.py` (14), `test_errors.py` | Smoke 1 (400, 413, 415 at Next and at Flask) |
 | AUTH-AC8.1–8.8 handlers | Three `route.test.ts` files (21 login, 15 logout, 13 register), and `bff` (30), `origin` (11), `sessionCookie` (24), `env` (21), `flask` (11) tests | Smoke 1, 3, 6, 8 |
 | AUTH-AC9.1–9.3 errors | `errors` (21), `apiClient` (10), `useErrorHandler` (17), `ToasterHost` tests | Browser D (toast) |
-| AUTH-AC10.1–10.7 forms | `LoginForm` (12), `RegisterForm` (11), `pages` (13), `authRules` (61, of which 56 are the shared cases), `public.guard` (4) tests | Browser B and C |
+| AUTH-AC10.1–10.7 forms | `LoginForm` (12), `RegisterForm` (14), `pages` (13), `authRules` (71, of which 61 are the shared cases), `public.guard` (4) tests | Browser B and C |
 | AUTH-AC11.1–11.9 shell | `session` (13), `layout` (2), `AppHeader` (4), `LogoutButton` (3), `SessionRevalidator` (4), `error` (3), `AuthContext` (4), `pages.guard` (4) tests | Smoke 4–8, browser C–E |
 | AUTH-AC13.1–13.7 mobile | `FormField` (4), `BaseButton` (4), `AppHeader`, `ToasterHost` (3) class tests, `mobileGuard.test.ts` (40) | Browser A and D |
 
 ## Exact form fields
 
 - Flask register and login schemas use `unknown=RAISE`. Next handlers compare the key set before calling Flask. The forms render exactly three (register) and two (login) inputs, and a test asserts the input `name` attributes and the request body keys.
-- Shared cases: `specs/fixtures/auth-field-cases.json` holds 37 register and 19 login cases. The Flask schema tests and the `authRules.ts` tests each ran all 56, and they agreed on every case with no correction to the file.
+- Shared cases: `specs/fixtures/auth-field-cases.json` holds 42 register and 19 login cases (61 in all). The Flask schema tests and the `authRules.ts` tests each ran all 61, and they agreed on every case. Revision 3 changed the password cases and needed no other correction.
 - Smoke 1 confirmed extra and missing fields are rejected at Next (`Unknown field.`, `Required.`) and extra fields at Flask.
 
 ## Cookie flags (smoke 3 and browser C)
@@ -80,7 +80,7 @@ The cells are `scrollWidth/clientWidth`. At every width and route: no horizontal
 - **Upstream failure:** with Flask stopped, `GET /` returned 500 with no redirect and no internals in the HTML, logout returned 503 with the cookie kept, and login returned 503 with no cookie. After Flask returned, the same cookie worked. In the browser the failed sign out left the user on the page with the button enabled and a toast, and the cookie stayed.
 - **Unsafe redirects:** for `next` of `//evil.example`, `https://evil.example`, `/\evil.example` and `/login`, the form received `redirectTo` of `/`. For `/boards/abc` it received that path. In Chrome, signing in with `next=//evil.example` landed on `/` of this site, and `next=/?from=next` landed there.
 - **Back after sign out:** the sign out did a full load of `/login`, no private content showed, and Back to an earlier private URL ended on `/login` with the cookie gone.
-- **Rate limit:** five wrong-password logins for one email returned 401 and the sixth returned 429 with `Retry-After: 60`. Counters are in memory in one container.
+- **Rate limit (corrected in revision 3, fixed in revision 4):** the earlier note said five wrong-password logins returned 401 and the sixth returned 429. That was a lucky split of requests between two Gunicorn workers. Each worker keeps its own in-memory counter, so the real limit with the image default of two workers is up to 10 attempts before a 429 is certain. Revision 3 measured 14 direct attempts that returned a mix of 401 and 429. The smoke now requires a 429 within 12 attempts. See finding F-AUTH-11 and open item 8. Revision 4 fixed the local limit (below).
 
 ## Build checks (task 2.10)
 
@@ -115,6 +115,61 @@ The cells are `scrollWidth/clientWidth`. At every width and route: no horizontal
 - The mobile guard test and the protected and public page guard tests were added (`lib/mobileGuard.test.ts`, `app/(protected)/pages.guard.test.ts`, `app/(public)/public.guard.test.ts`).
 - Vitest got an `@` alias, a `matchMedia` stub and a React Testing Library cleanup hook in the shared setup.
 
+## Revision 3: password policy (8 characters, uppercase, lowercase and special)
+
+**Change:** register now needs 8 to 128 characters with at least one ASCII uppercase letter, one ASCII lowercase letter and one ASCII special character. The minimum was 12. The maximum stays 128. Login accepts 1 to 128 characters and has no composition rule. Specs: `requirements.md` P11, AUTH-AC1.3, AUTH-AC2.4, AUTH-AC10.8; `design.md` DD15 and §4.4; changelog entry in `specs/CHANGELOG.md`.
+
+**Where it applies:** `backend/app/blueprints/auth/schema.py` (Flask), `frontend/lib/authRules.ts` (the form), `frontend/components/shared/FormField.tsx` (the hint prop) and `RegisterForm.tsx` (the visible hint, linked with `aria-describedby`). The shared case file `specs/fixtures/auth-field-cases.json` drives both test suites.
+
+**Results (revision 3 run):**
+
+| Check | Result |
+|---|---|
+| Backend `ruff check`, `ruff format --check` | Pass |
+| Backend `pytest` | 428 passed. New: every ASCII punctuation character counts as special (32 cases), space and non-ASCII symbols do not, length message first when both rules fail, login accepts `abc` and returns 401 |
+| Frontend lint, typecheck, Vitest | Pass. 446 tests in 31 files. New: hint linked to the input, composition message and focus, an 8-character password accepted and sent unchanged, the same rules as the shared cases |
+| Frontend `next build` with sentinel values | Pass. The sentinel was absent from `.next`. The composition message appears in the client bundle, as expected, because the form shows it |
+| Docker image rebuilt | Pass. Flask returned the composition message for `aa1!aaaa` |
+| HTTP smoke, section 1b | 5 Next-level rejections and 1 direct Flask rejection, each with the right fixed message. A short, simple password at login gets 401 `INVALID_CREDENTIALS`, not a policy message. The rejected registrations wrote no account |
+| Chrome check, B2 | The register password input is described by the visible hint text. An 8-character lowercase password shows the composition message and takes focus. Layout checks at 375 px still pass |
+
+**Defect found and fixed in the check, not in the product:** the first smoke run failed three policy checks with 429. Section 1 had already used four of Flask's five register calls per minute, so the policy checks hit the rate limit. The script now waits a minute before each group, and states why in its header.
+
+## Rate-limit finding (F-AUTH-11)
+
+The limiter keeps counters in each Gunicorn worker's memory. The image default is two workers, so AUTH-AC6.2 ("5 per minute per email") is not exact. Direct test: 14 wrong-password logins to one new email returned `401 401 401 401 401 401 401 429 429 401 429 401 401 429`. The smoke now checks only that a 429 appears within 12 attempts, which two workers guarantee. Options for the owner: run one worker locally (exact local behavior), or move the counters to shared storage before production (T16, already tracked). The spec was not changed here.
+
+## Revision 4: local rate limit with one worker
+
+**Change:** `compose.yaml` sets `GUNICORN_WORKERS=1` for the local backend. The Render default stays 2 until T16 (`docs/DEPLOYMENT.md`). The limiter stays in memory. A 401 no longer carries `Retry-After`, because RFC 9110 gives it meaning only on 429 and 503 (`backend/app/response_headers.py`).
+
+**Isolation of quotas:**
+- Pytest: each limiter test builds its own app and calls `limiter.reset()`, so it starts with empty counters. Login and register use separate limit keys, and a test shows a blocked login does not block a registration. Policy tests run with the limiter disabled (`conftest.py`), so they never use register quota.
+- Live smoke: `reset_limiter()` restarts the backend before each check group. Policy checks run in two groups, five Next-level checks and then one direct Flask check, each within the 5-per-minute register quota. The login rate-limit check starts from empty counters.
+
+**Observed results**
+
+| Check | Observed |
+|---|---|
+| Compose config | `GUNICORN_WORKERS: "1"`. Log since the last start: one `Starting gunicorn`, one `Booting worker` (pid 7) |
+| Live, one normalized email, six attempts within one second, spelled as upper case, padded, title case and mixed | `401, 401, 401, 401, 401, 429`. The sixth was `RATE_LIMITED`. Measured with fresh counters, one worker |
+| Live, same check through the Next origin (smoke section 10) | `401, 401, 401, 401, 401, 429`. The 429 has `Retry-After` and a request ID. The 401s have none |
+| Live, first invalid login straight to Flask after the fix | `401`, `X-RateLimit-Remaining: 4`, no `Retry-After` |
+| Pytest, fresh process, `tests/test_rate_limit.py` | 17 passed, including the five-then-429 sequence, separate quotas and `Retry-After` only with 429 |
+| Pytest, full backend suite | 431 passed, Ruff clean |
+| Negative control 1: limit key set to the raw email | Sequence test failed with `[401, 401, 401, 401, 401, 401]`. Restored, then passed |
+| Negative control 2: `Retry-After` filter disabled | `Retry-After` test failed. Restored, then passed |
+| HTTP smoke, final | 75 of 75 |
+| Chrome check, final | 96 of 96 |
+| Dev database after the runs | 0 users, 0 revoked tokens |
+
+**Findings**
+- **F-AUTH-13:** the live check before the fix showed `Retry-After` on every 401 (Flask-Limiter adds it while its headers are on). Fixed with an after-request filter, and checked with a direct Flask request after the rebuild.
+- **F-AUTH-14:** in revision 3 the policy checks ran after four other register calls in the same window, so three of them returned 429. Revision 3 added a sleep. Revision 4 restarts the backend before each group, so no group depends on another's quota.
+- **F-AUTH-11 (resolved locally):** the per-worker counter is fixed for local runs by one worker. It remains open for production, where T16 must add shared storage before more workers run.
+
+**Still open:** shared limiter storage and trusted client address handling (T16). Real-phone checks and Playwright (T15).
+
 ## Open items and limits
 
 1. **No real phone.** All mobile results are from Chrome's device emulation. On-screen keyboard behavior is unverified. The T16 mobile walkthrough covers a real device.
@@ -124,3 +179,4 @@ The cells are `scrollWidth/clientWidth`. At every width and route: no horizontal
 5. **Revoked-token cleanup** has no job. The table grows by one row per sign out until one is added.
 6. **Dev-only audit advisories** (seven moderate, `minimatch`) are unchanged from foundation.
 7. **Other framework 4xx responses** (406, 414) still return Flask's default HTML.
+8. **Rate limits are per worker** (F-AUTH-11). Revision 4 runs one worker in Compose, so the local rule is exact. Before the release, the production service must also run one worker, or use shared limiter storage (T16). More workers must not be added before then.

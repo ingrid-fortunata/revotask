@@ -80,9 +80,21 @@ def session_cookie(res):
             return v
     return None
 
+def reset_limiter(label):
+    """Restart the backend so the in-memory limiter starts empty. Each check group gets its own quota."""
+    subprocess.run(["docker", "compose", "restart", "backend"], cwd=REPO, capture_output=True, check=True)
+    for _ in range(60):
+        try:
+            if request(FLASK, "GET", "/api/health")["status"] == 200:
+                break
+        except OSError:
+            pass
+        time.sleep(0.5)
+    print(f"  (limiter state reset: {label})")
+
 # ---------------------------------------------------------------- setup
 email = f"smoke-{int(time.time())}-{uuid.uuid4().hex[:6]}@example.test"
-password = os.urandom(12).hex() + "Aa1"           # never printed
+password = os.urandom(12).hex() + "Aa1!"           # meets the register rules; never printed
 name = "Smoke User"
 good = {"name": name, "email": f"  {email.upper()} ", "password": password}
 print(f"throwaway account: {email}")
@@ -90,6 +102,7 @@ print(f"Next {NEXT[0]}:{NEXT[1]}  Flask {FLASK[0]}:{FLASK[1]}  APP_ORIGIN={ORIGI
 
 # ---------------------------------------------------------------- 1
 section("1. Exact fields, content type, size and Origin")
+reset_limiter("before section 1")
 r = request(NEXT, "POST", "/api/auth/register", {"Content-Type": "application/json"}, good)
 show("register, no Origin (Next)", r); check("403 without Origin", r["status"] == 403 and js(r)["error"]["code"] == "FORBIDDEN")
 r = request(NEXT, "POST", "/api/auth/register", with_origin({"Origin": "http://evil.example"}), good)
@@ -126,6 +139,31 @@ check("no Set-Cookie after register (user stays signed out)", session_cookie(r) 
 check("no password or token in the body", password not in text(r) and "access_token" not in text(r))
 r = request(NEXT, "POST", "/api/auth/register", with_origin(), good)
 show("register the same email again", r); check("409 EMAIL_ALREADY_EXISTS", r["status"] == 409 and js(r)["error"]["code"] == "EMAIL_ALREADY_EXISTS")
+
+section("1b. Password rules (rejected before any account is written)")
+# Flask allows 5 register requests per minute per address (AUTH-AC6.1). Each group below starts
+# from a reset limiter and stays within its own quota, so the policy checks never spend the quota
+# of the register rate-limit check, and a 429 here could only mean a real problem.
+policy_email = f"policy-{uuid.uuid4().hex[:8]}@example.test"
+LEN_MSG = "Must be 8 to 128 characters."
+COMP_MSG = "Must include an uppercase letter, a lowercase letter and a special character."
+reset_limiter("before the five Next-level policy checks")
+for label, pw, want in [
+    ("7 characters", "Aa1!aaa", LEN_MSG),
+    ("no uppercase", "aa1!aaaa", COMP_MSG),
+    ("no lowercase", "AA1!AAAA", COMP_MSG),
+    ("no special character", "Aa1aaaaa", COMP_MSG),
+    ("a space is not special", "Aa1 aaaa", COMP_MSG),
+]:
+    r = request(NEXT, "POST", "/api/auth/register", with_origin(), {"name": "P", "email": policy_email, "password": pw})
+    got = (js(r) or {}).get("error", {}).get("fields", {}).get("password")
+    show(f"register, {label} (Next)", r, str(got)); check(f"400 with: {want}", r["status"] == 400 and got == want)
+reset_limiter("before the direct Flask policy check")
+r = request(FLASK, "POST", "/api/auth/register", {}, {"name": "P", "email": policy_email, "password": "aa1!aaaa"})
+show("register, no uppercase, straight to Flask", r); check("Flask 400 with the composition message", r["status"] == 400 and js(r)["error"]["fields"] == {"password": COMP_MSG})
+r = request(NEXT, "POST", "/api/auth/login", with_origin(), {"email": policy_email, "password": "abc"})
+show("login with a short, simple password (Next)", r, str(js(r)["error"]["code"])); check("401 INVALID_CREDENTIALS, not a policy message", r["status"] == 401 and js(r)["error"]["code"] == "INVALID_CREDENTIALS")
+check("the rejected registrations wrote no account", request(FLASK, "POST", "/api/auth/login", {}, {"email": policy_email, "password": "x"})["status"] == 401)
 
 # ---------------------------------------------------------------- 2
 section("2. Invalid credentials")
@@ -262,18 +300,28 @@ for nxt, safe in (("//evil.example", False), ("https://evil.example", False), ("
     check(f"next={nxt} -> the form receives redirectTo={want}", r["status"] == 200 and got == want, f"got {got}")
 
 # ---------------------------------------------------------------- 10
-section("10. Rate limit (local behavior only: in-memory counters in one container)")
+section("10. Rate limit (fresh limiter state, one Gunicorn worker)")
+reset_limiter("before the login rate-limit check")
+# AUTH-AC6.2: the first five invalid logins for one normalized email get 401, the sixth gets 429.
+# Each attempt spells the same normalized email differently, so the key is shown to be normalized.
 victim = f"ratelimit-{uuid.uuid4().hex[:8]}@example.test"
-codes = []
-for i in range(6):
-    r = request(NEXT, "POST", "/api/auth/login", with_origin(), {"email": victim, "password": "wrong-password-0000"})
-    codes.append(r["status"])
+spellings = [victim, victim.upper(), f"  {victim}  ", victim.title(), victim, f" {victim.upper()} "]
+responses = []
+for spelling in spellings:
+    responses.append(request(NEXT, "POST", "/api/auth/login", with_origin(), {"email": spelling, "password": "wrong-password-0"}))
+codes = [r["status"] for r in responses]
 print("        statuses:", codes)
-check("five 401s, then 429", codes == [401] * 5 + [429])
-show("6th attempt", r, str(js(r)["error"]["code"]) + " Retry-After=" + str(hv(r, "Retry-After")))
-check("429 RATE_LIMITED with Retry-After and a request id", js(r)["error"]["code"] == "RATE_LIMITED" and hv(r, "Retry-After") and js(r)["error"]["request_id"])
+check("first five invalid attempts return 401 INVALID_CREDENTIALS", codes[:5] == [401] * 5 and all(js(r)["error"]["code"] == "INVALID_CREDENTIALS" for r in responses[:5]), str(codes))
+check("sixth attempt returns 429", codes[5] == 429, str(codes))
+last = responses[5]
+check("429 RATE_LIMITED with Retry-After and a request id", js(last)["error"]["code"] == "RATE_LIMITED" and bool(hv(last, "Retry-After")) and bool(js(last)["error"]["request_id"]), "Retry-After=" + str(hv(last, "Retry-After")))
+check("401 responses carry no Retry-After", all(not hv(r, "Retry-After") for r in responses[:5]))
+# Next forwards Retry-After only on 429, so check Flask's own reply directly as well.
+direct_email = f"ratelimit-direct-{uuid.uuid4().hex[:8]}@example.test"
+direct = request(FLASK, "POST", "/api/auth/login", {}, {"email": direct_email, "password": "wrong-password-0"})
+show("first invalid login, straight to Flask", direct)
+check("Flask 401 carries no Retry-After", direct["status"] == 401 and not hv(direct, "Retry-After"), str(hv(direct, "Retry-After")))
 
-# ---------------------------------------------------------------- cleanup
 section("Cleanup")
 db_url = env_value("DATABASE_URL").replace("postgresql+psycopg://", "postgresql://")
 import psycopg

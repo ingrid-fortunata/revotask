@@ -223,7 +223,7 @@ async function api(path, init) {
 
 const email = `m-${randomBytes(4).toString("hex")}-${"x".repeat(40)}@example.test`;
 const longName = "W".repeat(80);
-const password = `${randomBytes(12).toString("hex")}Aa1`;
+const password = `${randomBytes(12).toString("hex")}Aa1!`; // meets the register rules
 
 async function main() {
   const reg = await api("/api/auth/register", { method: "POST", body: JSON.stringify({ name: longName, email, password }) });
@@ -271,6 +271,20 @@ async function main() {
     check("empty submit: focus moves to the email field and both messages show", messages.length === 2, JSON.stringify(messages));
     const inView = await page.eval("(() => { const r = document.activeElement.getBoundingClientRect(); return r.top >= 0 && r.bottom <= innerHeight; })()");
     check("the focused invalid field is inside the visible area", inView === true);
+
+    console.log("\n### B2. Register password rules in the browser @375px");
+    await page.goto(NEXT + "/register");
+    const hint = await page.eval("(() => { const i = document.querySelector('input[name=password]'); const h = document.getElementById(i.getAttribute('aria-describedby') || ''); return { describedBy: !!h, text: h ? h.textContent : '', visible: !!h && h.getBoundingClientRect().height > 0 }; })()");
+    check("register password input is described by the visible rules hint", hint.describedBy && hint.visible && hint.text.includes("At least 8 characters"), JSON.stringify(hint));
+    await page.type("input[name=name]", "Policy Check");
+    await page.type("input[name=email]", `policy-${randomBytes(4).toString("hex")}@example.test`);
+    await page.type("input[name=password]", "abcdefgh");
+    await page.eval("document.querySelector('form').requestSubmit()");
+    await page.waitFor("document.body.innerText.includes('Must include an uppercase letter')", "composition message");
+    const focus = await page.eval("document.activeElement.name");
+    check("composition message shows and the password field takes focus", focus === "password");
+    const compMeasure = await page.eval(MEASURE);
+    reportPage("/register with a password error", 375, compMeasure);
 
     console.log("\n### C. Sign in through the real UI, redirects and Back-after-sign-out @375px");
     // unsafe next
