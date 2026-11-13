@@ -9,7 +9,7 @@ The shared [HTTP endpoint reference](../../docs/API.md) defines methods, paths, 
 | `boards_bp` | E05–E12 | Board create/update and member add schemas. Reads scope active membership. Rename/delete and membership changes require admin. |
 | `columns_bp` | E13–E16 | Column create/update and position schemas. Admin-only writes with Done and position-version checks. |
 | `cards_bp` | E17–E22 | Card create/update, CardPositionSchema, My Tasks query and card search schema. Validate assignee participation, anchor ownership and board scope. |
-| `comments_bp` | E23–E26 | Comment create/update schemas. Require current board participation and check author on edit/delete. |
+| `comments_bp` | E23–E26 | Comment create/update schemas. Require current board participation, take the board lock for writes, and check the author on edit/delete after the lock (403 for a non-author participant, 404 for a nonmember or removed author). E24 records `comment_created`. No `position_version` change. |
 | `notifications_bp` | E27–E28 | Page and page-size schema. Reads and writes use current recipient and visible board/card ancestry. |
 | `analytics_bp` | E29 | Validate board UUID and active participation. Aggregate counts in SQLAlchemy. |
 | `users_bp` | E30–E31 | E30 read ships with T03 for the protected shell. E31 ships with T12: the update schema allows name/email and rejects password and unexpected fields. Serialize the public user DTO. |

@@ -59,6 +59,7 @@ Source: the attached *FSSE Handbook - AI tasks(2).pdf*, pp. 1–13. This checkli
 | JWT in AuthContext and browser API base URL | Next stores the JWT in an HttpOnly cookie and calls Flask with a server-only `API_BASE_URL`. AuthContext exposes the public user DTO. Test SSR and browser paths, 401 and logout. |
 | Client sends a positive float for position | Flask computes the positive FLOAT value from a stable anchor and version. Show persisted FLOAT values and concurrency tests. |
 | ORM backref, password dump-only wording and route line count | Use explicit bidirectional `back_populates`, a public field allowlist, explicit password-input rejection, and a five-executable-line route target. Record actual implementation and any exceptions. |
+| Comment create returns 201/400/401/403 | A nonmember gets the generic 404 on every board-scoped route (clarification C1), so comment create is tested with 201, 400, 401 and 404. The 403 is demonstrated separately on E25 and E26 for a participant who is not the author, an admin included. Evidence: `.kiro/specs/comments/requirements.md` (resolved decisions), `docs/TEST-PLAN.md` V06. |
 | 404 demonstrated by deleting a database row | Use an isolated missing-resource fixture and capture the real error chain. |
 | Comparing outputs | The main workflow uses reviewed feature specs and a shared project baseline. COMPARE A–B provide an isolated evidence route for the handbook's comparison items. Record them as pending if you choose to skip them. |
 

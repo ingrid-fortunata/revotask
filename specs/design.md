@@ -58,7 +58,7 @@ See [pages and components](../frontend/specs/pages-and-components.md), [API inte
 | `/register`, `/login` | Pages render server-side shells with client form components, inline field errors and a pending state. |
 | `/` | Protected Server Component lists boards. A client dialog creates a board. |
 | `/boards/[id]` | Protected Server Component fetches initial board data. `KanbanBoard` is a client island for interaction. Use native desktop drag with stable drop zones and a visible Move action for touch and keyboard. Both dispatch one move function. |
-| Card detail | Client `CardDetailModal` composes `BaseModal` and a props-driven `CommentList`. The modal owns form state and calls the comments API. |
+| Card detail | Client `CardDetailModal` composes `BaseModal`, the card edit form and a props-driven `CommentList`. It opens from the card title and replaces `CardEditDialog`. The modal owns form and comment state, loads E23 through a same-origin `GET` handler when it opens and uses local pending state, not the board gate. |
 | `/my-tasks` | Protected Server Component groups assignment results by board and links back to board detail. |
 | `/profile` | Protected page with a controlled client form seeded by the public profile. A save updates the profile UI and safe user context. |
 | Board tools and header | Admin member controls, 300 ms debounced card search with abort or latest-request guard, analytics panel, and notification polling every 30 seconds with cleanup. Marking read immediately refreshes list and count. |

@@ -201,3 +201,48 @@ The user approved the design with these clarifications. Applied to `design.md`, 
 | L7 | E12 clears assignments only on active cards in active columns of the board, in the same transaction. Soft-deleted cards, cards in soft-deleted columns and other boards are preserved. A regression test covers each case. | `requirements.md` 11.10; `design.md` DD13; `docs/API.md` E12; `specs/requirements.md` AC04.2; `specs/traceability.md`; boards-membership requirements and DD6; `tasks.md` group 1 |
 
 Task gates (kept): T05 is verified against its own backend acceptance checks before T07 (group 1). T07 before T08. T06 and T08 before T09. Root T06 closes only after boards-membership task 7.2 (the measured mobile check and the manual journey) passes. Unverified tasks stay open.
+
+## Comments review record (T10)
+
+Review of `.kiro/specs/comments/` (requirements.md, design.md). Requirements and design were produced by Claude Code (`/revotask-feature spec comments T10`, 2026-11-13). Spec review only: no source code, test, README or application changelog was changed and no test was run. Implementation checks and outcomes will go in `evidence/comments-T10.md`. Root T10 stays unchecked. Prerequisite check: the kanban slice is verified (root T07 to T09 checked, `evidence/kanban-T07-T09.md`).
+
+| Phase | Status | Note |
+| --- | --- | --- |
+| Requirements | Approved 2026-11-13 | 9 requirements. Decisions M1–M13 approved with the clarifications below. |
+| Design | Approved 2026-11-13 with clarifications N1–N5 | `design.md`: DD1–DD15, 19 properties, work packages WP-B1 to WP-D, contract clarifications C14–C17. |
+| Tasks | Approved 2026-11-13 (user, in chat, by invoking `implement comments T10` for all tasks) | `tasks.md`: groups 0 to 11, 38 sub-tasks (2 done in the spec phase), each with an acceptance check. Gates: backend checks before the frontend calls the API (B), full verification before the mobile record is final (C). |
+| Finalize | Done 2026-11-13 | `specs/tasks.md` T10 links `.kiro/specs/comments/tasks.md`. Layer specs, traceability and `guidelines/frontend.md` were synchronized with the implementation (tasks 11.1 and 11.4). |
+| Implementation | Done 2026-11-13, local checks | See "Implementation record" below and `evidence/comments-T10.md`. |
+
+### Decisions M1–M13
+
+| ID | Decision | Resolution | Where applied |
+| --- | --- | --- | --- |
+| M1–M3 | Author name, list, E26 body | The author's current name from `users`. E23 is an unpaginated list of active comments ordered by creation time and ID. E26 returns 200 with the pre-delete Comment in `data`. Later reads omit it. | `requirements.md` 1.1, 1.3, 1.5, 4.1, 4.2; `design.md` DD7, Serialization; `docs/API.md` E23, E26 |
+| M4 | Author-only | Only the author with current board access may edit or delete. A current participant who is not the author, an admin included, gets 403 `FORBIDDEN`. A removed author or other nonmember gets the generic board-scoped 404 (C1). Controls show only on the current user's comments. | `requirements.md` 3.4, 3.5, 4.3, 4.4, 7.4; `design.md` DD3; `docs/API.md` E25, E26 |
+| M5–M7 | Lock, version, event | Comment writes take the board lock and recheck membership, card availability and authorship. `position_version` is unchanged. E24 records one `comment_created` event in the same transaction. T14 reads the event, T13 owns notifications. | `requirements.md` 2.1, 2.6, 5.1, 5.4; `design.md` DD1, DD4; `docs/API.md` check-order note; `backend/specs/api-contract.md` |
+| M8–M9 | Content and edits | Trim, keep inner line breaks, 1 to 2,000 characters after trimming, wrapped plain text. An unchanged normalized edit returns 200 with the original `updated_at` and the UI skips the request. AC08.2 reworded: `updated_at` changes when the normalized content changes. | `requirements.md` 2.3, 3.1, 3.2, 7.5; `design.md` DD5, DD8, DD13; `specs/requirements.md` AC08.2; `docs/API.md` E24, E25 |
+| M10–M11 | Modal | One `CardDetailModal` opens from the card title, reuses the edit form above the comments and carries the existing edit tests forward. Card DTO and E07 unchanged. | `requirements.md` 6.1, 6.2; `design.md` DD9, Frontend layout; `specs/design.md` D5 |
+| M12–M13 | Read path, pending, stale | E23 loads through a same-origin Next `GET` handler when the modal opens. Comment writes use modal-local pending state. Card Save and Delete are disabled while a comment write is pending. Stale comment responses are ignored after close or a card switch. 44 by 44 px targets, checked at 375 px. | `requirements.md` 6.3, 7.9, 7.11, 8.3, 9.1; `design.md` DD10 to DD12 |
+
+### Design review clarifications N1–N5 (2026-11-13)
+
+The user approved design points 1 to 4 and revised point 5. Applied to `requirements.md`, `design.md` and `tasks.md`. Spec review only: no source code or test was changed and no test was run.
+
+| ID | Decision | Resolution | Where applied |
+| --- | --- | --- | --- |
+| N1 | Timestamps | `created_at` and `updated_at` come from one clock reading on create. Verify no "Edited" marker on a new comment and an unchanged `updated_at` on a same-content edit. | `requirements.md` 2.8, 3.2, 6.4; `design.md` DD6, Property 16; `tasks.md` 1.3, 2.3, 2.4, 7.3, 7.5; `docs/API.md` E24 |
+| N2 | Accessible names | "Open <title>" for the card button and "Card details" for the dialog. Kanban test selectors change, behavioral assertions stay. | `requirements.md` 6.1; `design.md` DD9; `tasks.md` 8.1, 8.2 |
+| N3 | Modal width | `BaseModal` gets the optional `wide` prop. Verify the wider dialog fits a 375 px viewport with no horizontal overflow. | `requirements.md` 6.1, 8.1; `design.md` DD9, Browser checks; `tasks.md` 7.1, 9.1, 9.2 |
+| N4 | Generic 404 | The same response for a missing comment, a missing card and lost access. Refetch the board. Lost access uses the existing redirect. A gone card closes the modal. An existing card reloads the comments. A failed refetch or a repeated 404 stops with a Retry notice. | `requirements.md` 6.7, 7.7; `design.md` DD10, Property 19; `tasks.md` 5.1, 6.1, 6.2, 8.1 |
+| N5 | Uncertain add (revised) | On a transport error or 5xx: keep the draft, keep the list visible, refetch E23, show that the comment may have been posted, keep Add comment disabled until a refresh succeeds, then let the user review the list and retry manually. No automatic retry, no deduplication by text. Regression case: saved but the response lost. | `requirements.md` 2.9, 7.12, 9.5; `design.md` DD15, Properties 17, 18; `tasks.md` 2.3, 6.1, 6.2, 7.5; `docs/API.md` E24 |
+
+Replaces the earlier design point "no list reload after a failed add" (Requirement 7.8 for add), which the user revised. Requirement 7.8 now covers edit and delete only.
+
+### Create-path status difference from the handbook
+
+The handbook and `docs/TEST-PLAN.md` V06 said comment create returns 201/400/401/403. Under contract clarification C1 a nonmember gets the generic 404 on every board-scoped route, so E24 is tested with 201, 400, 401 and 404, and the 403 is tested separately for a non-author edit and delete, an admin included. Applied to `docs/TEST-PLAN.md` V06 and `docs/RUBRIC.md` ("Project decisions that differ from literal rubric wording"). The test plan also names the no-op edit (`updated_at` unchanged) and the omission after delete, and says database-writing tests use `TEST_DATABASE_URL` and remove only their own rows.
+
+### Comments implementation record (2026-11-13)
+
+All native groups of `.kiro/specs/comments/tasks.md` were implemented by Claude Code (`/revotask-feature implement comments T10`). The plan approval was the user's invocation of `implement comments T10` for all tasks. The decisions M1–M13 and the clarifications N1–N5 held without change. Deviations that touched the spec (no behavior or contract change) are in `specs/CHANGELOG.md`. The browser check found two real defects, F-CMT-1 (Escape on a nested confirmation closed the dialog behind it) and F-CMT-2 (focus after an add), both fixed with tests. Evidence: `evidence/comments-T10.md`. Root T10 is checked in `specs/tasks.md`. Open: Playwright V10, real-device checks (T15), deployment (T16).
