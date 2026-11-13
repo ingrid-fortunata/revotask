@@ -1,6 +1,8 @@
-"""AUTH-AC6.1–6.4: register and login limits. These prove local behavior only (AUTH-AC6.6).
+"""AUTH-AC6.1-6.4: register and login limits. These prove local behavior only (AUTH-AC6.6).
 
-Counters live in process memory, so each test builds its own app and starts from zero.
+Counters live in process memory, one set per Gunicorn worker. The tests run in one process, so each
+test builds its own app and resets the limiter first, which gives fresh counters. Login and
+register use separate limit keys, so one endpoint never spends the other endpoint's quota.
 """
 
 import time
@@ -10,7 +12,7 @@ from sqlalchemy import delete
 
 from app import create_app
 from app.config import ConfigError, Settings
-from app.extensions import db
+from app.extensions import db, limiter
 from app.models.user import User
 from tests.auth_helpers import JWT_TEST_SECRET, unique_email
 
@@ -32,6 +34,7 @@ def make_app(test_db_url, enabled="true"):
 @pytest.fixture
 def limited_app(test_db_url, schema_at_head):
     app = make_app(test_db_url)
+    limiter.reset()  # fresh counters: no quota is inherited from an earlier test
     emails: list[str] = []
     app.created_emails = emails
     yield app
@@ -162,3 +165,55 @@ def test_rate_limit_cannot_be_disabled_in_production():
         Settings.from_env(env)
     assert str(caught.value).startswith("RATE_LIMIT_ENABLED")
     assert "false" not in str(caught.value).split(":", 1)[0]
+
+
+def test_five_invalid_logins_then_429_for_one_normalized_email(limited_app):
+    """AUTH-AC6.2: the first five invalid attempts for one email get 401, the sixth gets 429.
+
+    The attempts use different spellings of one normalized email (case and padding), so the test
+    also shows that the limit key is the normalized address and not the raw string.
+    """
+    client = limited_app.test_client()
+    email = unique_email("login-seq")
+    spellings = [email, email.upper(), f"  {email}  ", email.title(), email, f" {email.upper()}"]
+    responses = [
+        client.post("/api/auth/login", json={"email": spelling, "password": "wrong-password-0"})
+        for spelling in spellings
+    ]
+    assert [r.status_code for r in responses] == [401, 401, 401, 401, 401, 429]
+    for invalid in responses[:5]:
+        assert invalid.get_json()["error"]["code"] == "INVALID_CREDENTIALS"
+    assert_rate_limited(responses[5])
+
+
+def test_login_and_register_spend_separate_quotas(limited_app):
+    """A blocked login does not block registration, and registration does not use login quota."""
+    client = limited_app.test_client()
+    email = unique_email("separate")
+    for _ in range(6):
+        client.post("/api/auth/login", json={"email": email, "password": "wrong-password-0"})
+    assert_rate_limited(client.post("/api/auth/login", json={"email": email, "password": "x"}))
+
+    limited_app.created_emails.append(email)
+    registered = client.post(
+        "/api/auth/register", json={"name": "Separate", "email": email, "password": PASSWORD}
+    )
+    assert registered.status_code == 201, "a blocked login must not block registration"
+
+
+def test_retry_after_is_sent_only_with_429(limited_app):
+    """A 401 from a limited endpoint carries no Retry-After. Only the 429 does (RFC 9110)."""
+    client = limited_app.test_client()
+    email = unique_email("retry-after")
+    statuses = []
+    for _ in range(6):
+        response = client.post(
+            "/api/auth/login", json={"email": email, "password": "wrong-password-0"}
+        )
+        statuses.append(response.status_code)
+        if response.status_code == 401:
+            assert "Retry-After" not in response.headers
+        else:
+            assert response.status_code == 429
+            assert "Retry-After" in response.headers
+    assert statuses == [401, 401, 401, 401, 401, 429]
