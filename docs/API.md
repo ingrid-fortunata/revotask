@@ -7,7 +7,7 @@ Routes below are Flask endpoints relative to `API_BASE_URL`, which contains the 
 - JSON bodies use `Content-Type: application/json`. Reject unknown fields, invalid UUIDs and unsupported values with 400. A malformed JSON body returns 400, a missing or non-JSON `Content-Type` returns 415 and a body over 64 KiB returns 413. Query inputs are validated and pagination caps are applied.
 - Flask public routes are health, register and login. All other Flask routes use `Authorization: Bearer <access-token>`. For browser writes, the Next handler verifies exact Origin.
 - Success returns `{"data": ...}`. Delete and logout operations without response metadata return 200 with `{"data": null}`. Error example: `{"error":{"code":"VALIDATION_ERROR","message":"Check the submitted fields.","fields":{"title":"Required."},"request_id":"example-id"}}`. Omit `fields` where inapplicable. Timestamps are ISO 8601 UTC. PATCH modifies only submitted fields, except that explicit null clears fields documented as nullable.
-- Status conventions: 400 invalid input, 401 invalid authentication, 403 forbidden, 404 missing/deleted resource, 405 method not allowed (the response keeps the `Allow` header), 409 duplicate or state conflict, 413 request body too large (`CONTENT_TOO_LARGE`), 415 unsupported content type (`UNSUPPORTED_MEDIA_TYPE`), 429 rate limited, 503 unavailable. Unexpected internal errors return sanitized 500. Field limits below use trimmed length for names, titles and content. Preserve password bytes as entered.
+- Status conventions: 400 invalid input, 401 invalid authentication, 403 forbidden, 404 missing/deleted resource, or a board the caller is not an active participant of (E07–E12 use the same 404 for nonmembers; E11 adds `USER_NOT_FOUND` for an unregistered email), 405 method not allowed (the response keeps the `Allow` header), 409 duplicate or state conflict, 413 request body too large (`CONTENT_TOO_LARGE`), 415 unsupported content type (`UNSUPPORTED_MEDIA_TYPE`), 429 rate limited, 503 unavailable. Unexpected internal errors return sanitized 500. Field limits below use trimmed length for names, titles and content. Preserve password bytes as entered.
 
 ## Endpoints
 
@@ -21,10 +21,10 @@ Routes below are Flask endpoints relative to `API_BASE_URL`, which contains the 
 | E06 | POST `/api/boards` | `name` 1–100 → 201 board summary with admin membership. |
 | E07 | GET `/api/boards/{id}` | Participant → 200 board with role, version, columns and nested cards. |
 | E08 | PATCH `/api/boards/{id}` | Admin. `name` 1–100 → 200 updated board. |
-| E09 | DELETE `/api/boards/{id}` | Admin → 200 soft-deleted board. |
+| E09 | DELETE `/api/boards/{id}` | Admin → 200 with `{"data": null}`; the board is soft-deleted. |
 | E10 | GET `/api/boards/{id}/members` | Participant → 200 active participants with public IDs, names and board roles. |
-| E11 | POST `/api/boards/{id}/members` | Admin. Registered `email` → 201 membership; already active 409. |
-| E12 | DELETE `/api/boards/{id}/members/{user_id}` | Admin → 200 membership removed and assignments cleared. Admin removal 409. |
+| E11 | POST `/api/boards/{id}/members` | Admin. Registered `email` → 201 membership; a previously removed user is reactivated as `member` with 201; already active 409 `STATE_CONFLICT`; unregistered email 404 `USER_NOT_FOUND` (plain envelope, no `fields`, returned only to an admin of the board). |
+| E12 | DELETE `/api/boards/{id}/members/{user_id}` | Admin → 200 with `{"data": null}`; the membership is removed and the user's active card assignments on this board are cleared in the same transaction (other boards unaffected). Target without an active membership 404; admin removal 409 `STATE_CONFLICT`. |
 | E13 | POST `/api/boards/{id}/columns` | Admin. `name` 1–80, optional `is_done` default false → 201 column and version. |
 | E14 | PATCH `/api/columns/{id}` | Admin. `name`, `is_done` → 200 column. Changing Done flag on nonempty column or creating a second Done column returns 409. |
 | E15 | DELETE `/api/columns/{id}` | Admin → 200 with new `position_version` in `data`. Nonempty column 409. |

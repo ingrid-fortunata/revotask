@@ -1,0 +1,385 @@
+{
+ "_note": "Shared boundary cases for the board name and member email rules (boards-membership design DD9, DD14, DD16; Requirements 1.2, 3.4, 4.6). The Flask schema tests and the frontend boardRules tests both read this file, the same way auth-field-cases.json is read. Each case starts from the form's base body, applies 'set' then 'drop', and expects either 'accepted' (fields whose normalized value is checked; the output keys must equal the form's key set) or the exact 'fields' map of messages. Values: {\"repeat\": s, \"times\": n} is s repeated n times; {\"concat\": [a, b]} joins parts. Lengths count Unicode code points. board_create is the E06 body and board_update (E08) uses the same name rule. member_add is the E11 body. Member emails use the register email rule: trimmed, lowercased, at most 254 characters, one simple format check. An empty or blank email is 'Enter a valid email address.' because the field is present and format-checked, the same as register.",
+ "board_create": {
+  "base": {
+   "name": "Team Alpha"
+  },
+  "cases": [
+   {
+    "id": "name-empty",
+    "set": {
+     "name": ""
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "name": "Must be 1 to 100 characters."
+     }
+    }
+   },
+   {
+    "id": "name-spaces-only",
+    "set": {
+     "name": "   "
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "name": "Must be 1 to 100 characters."
+     }
+    }
+   },
+   {
+    "id": "name-1-char",
+    "set": {
+     "name": "A"
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "name": "A"
+     }
+    }
+   },
+   {
+    "id": "name-100-chars",
+    "set": {
+     "name": {
+      "repeat": "a",
+      "times": 100
+     }
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "name": {
+       "repeat": "a",
+       "times": 100
+      }
+     }
+    }
+   },
+   {
+    "id": "name-101-chars",
+    "set": {
+     "name": {
+      "repeat": "a",
+      "times": 101
+     }
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "name": "Must be 1 to 100 characters."
+     }
+    }
+   },
+   {
+    "id": "name-padded-internal-spaces-kept",
+    "set": {
+     "name": "  Team  Alpha  "
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "name": "Team  Alpha"
+     }
+    }
+   },
+   {
+    "id": "name-accented-letters",
+    "set": {
+     "name": "Équipe Produit"
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "name": "Équipe Produit"
+     }
+    }
+   },
+   {
+    "id": "name-100-emoji-counts-as-100",
+    "set": {
+     "name": {
+      "repeat": "😀",
+      "times": 100
+     }
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "name": {
+       "repeat": "😀",
+       "times": 100
+      }
+     }
+    }
+   },
+   {
+    "id": "name-101-emoji",
+    "set": {
+     "name": {
+      "repeat": "😀",
+      "times": 101
+     }
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "name": "Must be 1 to 100 characters."
+     }
+    }
+   },
+   {
+    "id": "name-number",
+    "set": {
+     "name": 5
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "name": "Must be text."
+     }
+    }
+   },
+   {
+    "id": "name-null",
+    "set": {
+     "name": null
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "name": "Required."
+     }
+    }
+   },
+   {
+    "id": "name-missing",
+    "set": {},
+    "drop": [
+     "name"
+    ],
+    "expect": {
+     "fields": {
+      "name": "Required."
+     }
+    }
+   },
+   {
+    "id": "extra-key",
+    "set": {
+     "role": "admin"
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "role": "Unknown field."
+     }
+    }
+   },
+   {
+    "id": "extra-key-and-bad-name",
+    "set": {
+     "role": "admin",
+     "name": ""
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "role": "Unknown field.",
+      "name": "Must be 1 to 100 characters."
+     }
+    }
+   }
+  ]
+ },
+ "member_add": {
+  "base": {
+   "email": "ada@example.com"
+  },
+  "cases": [
+   {
+    "id": "email-padded-and-mixed-case",
+    "set": {
+     "email": "  Ada@Example.COM "
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "email": "ada@example.com"
+     }
+    }
+   },
+   {
+    "id": "email-254-chars",
+    "set": {
+     "email": {
+      "concat": [
+       {
+        "repeat": "a",
+        "times": 242
+       },
+       "@example.com"
+      ]
+     }
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "email": {
+       "concat": [
+        {
+         "repeat": "a",
+         "times": 242
+        },
+        "@example.com"
+       ]
+      }
+     }
+    }
+   },
+   {
+    "id": "email-255-chars",
+    "set": {
+     "email": {
+      "concat": [
+       {
+        "repeat": "a",
+        "times": 243
+       },
+       "@example.com"
+      ]
+     }
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "email": "Must be at most 254 characters."
+     }
+    }
+   },
+   {
+    "id": "email-empty",
+    "set": {
+     "email": ""
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "email": "Enter a valid email address."
+     }
+    }
+   },
+   {
+    "id": "email-spaces-only",
+    "set": {
+     "email": "   "
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "email": "Enter a valid email address."
+     }
+    }
+   },
+   {
+    "id": "email-no-at",
+    "set": {
+     "email": "ada.example.com"
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "email": "Enter a valid email address."
+     }
+    }
+   },
+   {
+    "id": "email-two-at",
+    "set": {
+     "email": "a@b@c.com"
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "email": "Enter a valid email address."
+     }
+    }
+   },
+   {
+    "id": "email-no-domain-dot",
+    "set": {
+     "email": "ada@examplecom"
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "email": "Enter a valid email address."
+     }
+    }
+   },
+   {
+    "id": "email-space-inside",
+    "set": {
+     "email": "ada@exa mple.com"
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "email": "Enter a valid email address."
+     }
+    }
+   },
+   {
+    "id": "email-number",
+    "set": {
+     "email": 5
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "email": "Must be text."
+     }
+    }
+   },
+   {
+    "id": "email-null",
+    "set": {
+     "email": null
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "email": "Required."
+     }
+    }
+   },
+   {
+    "id": "email-missing",
+    "set": {},
+    "drop": [
+     "email"
+    ],
+    "expect": {
+     "fields": {
+      "email": "Required."
+     }
+    }
+   },
+   {
+    "id": "extra-key",
+    "set": {
+     "role": "admin"
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "role": "Unknown field."
+     }
+    }
+   }
+  ]
+ }
+}

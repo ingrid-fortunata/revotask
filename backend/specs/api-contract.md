@@ -46,8 +46,8 @@ A successful response returns `data.card`, `data.columns` for the affected colum
 |---|---|---|
 | 400 | `VALIDATION_ERROR` | Invalid UUID, missing content, malformed JSON, a non-object body, or an unexpected or forbidden field. Include `fields` for invalid field values. |
 | 401 | `INVALID_CREDENTIALS`, `AUTH_REQUIRED` | Rejected login, or absent, invalid, expired or revoked session on a protected route. |
-| 403 | `FORBIDDEN` | Authenticated caller lacks the board role, membership or ownership. |
-| 404 | `NOT_FOUND` | Source card, board or another addressed resource is missing or deleted. |
+| 403 | `FORBIDDEN` | Authenticated board participant lacks the required role (for example a member calling an admin-only route), or lacks ownership. |
+| 404 | `NOT_FOUND`, `USER_NOT_FOUND` | `NOT_FOUND`: source card, board or another addressed resource is missing or deleted, or the caller is not an active participant of the board (identical to a missing board). `USER_NOT_FOUND`: E11 email matches no registered user, returned only to an admin of the target board; plain envelope without `fields`. |
 | 405 | `METHOD_NOT_ALLOWED` | A known path is called with an unsupported method. Keep the `Allow` header that lists the supported methods. |
 | 409 | `POSITION_CONFLICT`, `EMAIL_ALREADY_EXISTS`, `STATE_CONFLICT` | Stale order version, duplicate normalized email, or conflicting board state. |
 | 413 | `CONTENT_TOO_LARGE` | Request body over 64 KiB. Checked before field validation. |

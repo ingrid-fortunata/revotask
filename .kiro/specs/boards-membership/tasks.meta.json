@@ -1,0 +1,882 @@
+{
+  "pbtResults": {},
+  "executionHistory": {
+    "1.1 Record the auth regression baseline before the move": [
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794559834059
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794559844327
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794559927442
+      }
+    ],
+    "1.2 Move the generic validators": [
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794559834109
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794559935948
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794560130444
+      }
+    ],
+    "1.3 Re-run the auth regression after the move": [
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794559834160
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794560145212
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794560306734
+      }
+    ],
+    "2.1 Add typed exceptions, `authorize_board` and `_commit` (WP-B1)": [
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794559834226
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794559936018
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794560130617
+      }
+    ],
+    "2.2 Add schemas, serializers and the shared field fixture (WP-B2)": [
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794559834275
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794560318126
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794560586659
+      }
+    ],
+    "2.3 Implement board services and routes E05–E09 (WP-B3)": [
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794559834327
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794560725766
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794560976975
+      }
+    ],
+    "2.4 Implement member services and routes E10–E12, register the blueprint (WP-B4)": [
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794559834376
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794560977379
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794561350541
+      }
+    ],
+    "2.5 Add the `BoardTracker` fixture and the cleanup test (WP-B5, DD15)": [
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794559834424
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794560318416
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794560586821
+      }
+    ],
+    "2.6 Write schema tests BT1 in `backend/tests/test_boards_schema.py`": [
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794559834481
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794560977494
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794561255311
+      }
+    ],
+    "2.7 Write create, list and detail tests BT2 and BT3": [
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794559834525
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794561359779
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794561518937
+      }
+    ],
+    "2.8 Write update and delete tests BT4 in `backend/tests/test_boards_update_delete.py`": [
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794559834573
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794561359914
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794561519213
+      }
+    ],
+    "2.9 Write member tests BT5 in `backend/tests/test_board_members.py`": [
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794559834623
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794561534863
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794561666391
+      }
+    ],
+    "2.10 Write E12 assignment-clearing tests in `backend/tests/test_board_members_assignments.py`": [
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794559834669
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794561666541
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794561819981
+      }
+    ],
+    "2.11 Write the nonmember 404 matrix in `backend/tests/test_boards_access.py`": [
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794559834718
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794561666685
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794561820356
+      }
+    ],
+    "2.12 Write the Member 403 tests in `backend/tests/test_boards_roles.py`": [
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794559834778
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794561666856
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794561820529
+      }
+    ],
+    "2.13 Write the validation-before-authorization tests in `backend/tests/test_boards_request_order.py`": [
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794559834833
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794561667505
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794561820930
+      }
+    ],
+    "2.14 Write atomicity and concurrency tests BT7 in `backend/tests/test_boards_atomicity.py`": [
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794559834885
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794561821749
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794562101108
+      }
+    ],
+    "2.15 Write parameterized tests for Properties 1–3 in `backend/tests/test_boards_properties_rules.py`": [
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794559834935
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794561822619
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794562101247
+      }
+    ],
+    "2.16 Write parameterized tests for Properties 4–7 in `backend/tests/test_boards_properties_reads.py`": [
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794559834990
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794561823447
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794562101429
+      }
+    ],
+    "2.17 Write parameterized tests for Properties 8–12 in `backend/tests/test_boards_properties_writes.py`": [
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794559835041
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794561830057
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794562101789
+      }
+    ],
+    "2.18 Write parameterized tests for Properties 15–17 in `backend/tests/test_boards_properties_scoping.py`": [
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794559835091
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794561830230
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794562102638
+      }
+    ],
+    "3. Checkpoint - Backend complete": [
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794559835139
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794562118909
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794562310761
+      }
+    ],
+    "4.1 Add error codes, types and parsers (WP-F1)": [
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794559835191
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794559936075
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794560130721
+      }
+    ],
+    "4.2 Add `boardRules.ts` and `boardPermissions.ts` (WP-F1)": [
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794559835242
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794559936225
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794560130860
+      }
+    ],
+    "4.3 Extend the browser API client with `apiRequest` (WP-F1)": [
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794559835291
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794559936277
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794560130966
+      }
+    ],
+    "4.4 Extend the server Flask helper (WP-F2)": [
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794559835341
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794560145363
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794560306965
+      }
+    ],
+    "4.5 Add `privateRoute.ts` and server board reads (WP-F2)": [
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794559835391
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794560725941
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794560977103
+      }
+    ],
+    "4.6 Add the four write Route Handlers (WP-F3)": [
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794559835435
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794561360019
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794561519325
+      }
+    ],
+    "5.1 Add shared components (WP-F4)": [
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794559835483
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794560145474
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794560307816
+      }
+    ],
+    "5.2 Build the dashboard (WP-F5)": [
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794559835543
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794561360129
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794562902310
+      }
+    ],
+    "5.3 Build the board page and shell (WP-F6)": [
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794559835592
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794562311245
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794562527739
+      }
+    ],
+    "5.4 Build the Members_Panel (WP-F6)": [
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794559835640
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794562528173
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794562667038
+      }
+    ],
+    "5.5 Build the mobile layout for all new surfaces (FE-S4–S6, AC13.1)": [
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794559835692
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794562908823
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794563026407
+      }
+    ],
+    "6.1 Test board and email rules FT1 in `frontend/lib/boardRules.test.ts`": [
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794559835742
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794560594540
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794560719205
+      }
+    ],
+    "6.2 Extend client and server helper tests FT2": [
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794559835790
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794560318507
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794560586975
+      }
+    ],
+    "6.3 Test the Route Handlers FT3 in `app/api/boards/**/route.test.ts`": [
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794559835834
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794562119054
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794562311051
+      }
+    ],
+    "6.4 Test `BaseModal` and `ConfirmDialog` FT4": [
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794559835890
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794560318602
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794560587092
+      }
+    ],
+    "6.5 Test the dashboard FT5": [
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794559835933
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794562311357
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794562528020
+      }
+    ],
+    "6.6 Test the board shell and members FT6": [
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794559835981
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794562667188
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794562902027
+      }
+    ],
+    "6.7 Test the server pages FT7": [
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794559836033
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794562667322
+      }
+    ],
+    "6.8 Write parameterized tests for Property 13 in `frontend/lib/boardPermissions.test.ts`": [
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794559836082
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794560319416
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794560587277
+      }
+    ],
+    "6.9 Write parameterized tests for Property 14 in `frontend/lib/apiClientProperties.test.ts`": [
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794559836146
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794560588179
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794560719499
+      }
+    ],
+    "7.1 Write the measured mobile script (BM1)": [
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794559836198
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794563026935
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794563254153
+      }
+    ],
+    "7.2 Run the mobile check and the manual journey, and record both": [
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794559836249
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794564046209
+      }
+    ],
+    "8. Checkpoint - Frontend and browser checks complete": [
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794559836298
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794563254489
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794563315656
+      }
+    ],
+    "9.1 Record the AC04.2 verification and the risks in traceability and evidence": [
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794559836350
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794564679876
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794564804721
+      }
+    ],
+    "9.2 Record the T15 and T16 handoff": [
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794559836399
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794564805147
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794564852862
+      }
+    ],
+    "9.3 Update the changelogs": [
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794559836451
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794564680098
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794564804882
+      }
+    ],
+    "9.4 Update README status": [
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794559836510
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794564680287
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794564805044
+      }
+    ],
+    "9.5 Synchronize task status": [
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794559836558
+      },
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794564867836
+      }
+    ],
+    "1. Move shared validators into `app/validation.py` (WP-B0, root T05)": [
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794560306842
+      }
+    ],
+    "4. Build the frontend foundations (root T06)": [
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794561519455
+      }
+    ],
+    "2. Implement the boards and membership API (root T05)": [
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794562102723
+      }
+    ],
+    "6. Write frontend tests (Vitest)": [
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794562902186
+      }
+    ],
+    "5. Build the dashboard, board shell, members controls and mobile UI (root T06)": [
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794563026642
+      }
+    ],
+    "9. Documentation sync and handoff (`documentation.md`)": [
+      {
+        "executionId": "73c936ed-39d3-482b-9b20-59a85616b265",
+        "chatSessionId": "sess_02030431-eb7c-4ac6-a5ba-59215249888b",
+        "timestamp": 1794564867962
+      }
+    ]
+  }
+}
