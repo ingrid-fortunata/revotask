@@ -41,6 +41,34 @@
 | FE-S5 | Interactive controls have a tappable area of at least 44 by 44 CSS px, measured as the element's rendered box from `getBoundingClientRect()` (padding included, glyph or text size excluded) and confirmed with `document.elementFromPoint` at its center. Text inputs use 16 px text (`text-base`). Do not rely on hover. Give every drag action a visible touch alternative. | Fingers need larger targets than a pointer, and iOS Safari zooms the page when a smaller input is focused. | `BaseButton` and `FormField` set `min-h-11` and `text-base`. The Move button replaces drag on touch. |
 | FE-S6 | A feature spec that adds UI includes a 375 px acceptance criterion, a task that builds it, and a recorded check at 320, 375, 768 and 1280 px before the task is checked. The record says whether the browser was an emulator or a real device. | Responsiveness has to be verified in every slice, so it cannot be left to the final acceptance run. | The authentication spec has AUTH-R13 and a width-by-route check in task 2.11. |
 
+## Visual Design System
+
+The app reads as a work dashboard: a dark ink sidebar, a cool grey canvas, white panels and one teal accent. It is mobile first, so the sidebar is a sticky top bar below 1024 px. Every UI slice follows these rules in addition to FE-S1 to FE-S6. The tokens live in `app/globals.css`. Do not copy hex values into components.
+
+| Token (daisyUI name) | Value | Use |
+|---|---|---|
+| `base-200` | `#F1F4F3` | Page canvas behind panels |
+| `base-100` | `#FFFFFF` | Panels, inputs |
+| `base-300` | `#DDE3E0` | Panel borders, dividers |
+| `base-content` | `#18242A` | Text. Secondary text is `text-base-content/70` |
+| `neutral` | `#10262B` | Sidebar, mobile top bar, auth side panel |
+| `primary` | `#0B7A75` | Main action, Admin badge, active nav item, focus ring |
+| `error` | `#B42318` | Destructive actions and field errors |
+
+| ID | Rule | RevoTask example |
+|---|---|---|
+| FE-D1 | Use only daisyUI semantic colors (`bg-base-100`, `text-primary`, `border-base-300`). Do not add a color, a font or a second accent without updating this section first. Use `<BaseButton>`, `<BaseBadge>`, `FormField` and `.surface` before writing new control styles. | `BoardList` uses `.surface` and `BaseBadge`, with no hex values. |
+| FE-D2 | Shell: `AppHeader` is the only navigation. It is a sticky top bar below 1024 px and a fixed 16 rem sidebar from 1024 px. The protected layout wraps content in `lg:pl-64`. Every protected `<main>` uses `mx-auto w-full max-w-6xl p-4 sm:p-6 lg:p-8`. Public pages use a split layout: an ink panel with the product line from 1024 px, and the form column alone below. | `app/(protected)/layout.tsx`, `app/(public)/layout.tsx` |
+| FE-D3 | A panel is the `.surface` utility (white, 1 px `base-300` border, box radius) with `p-4 sm:p-5`. No shadows on panels. Do not nest a panel in a panel. Use `divide-y divide-base-300` for rows inside one. | Members panel rows are a divided list inside one `.surface`. |
+| FE-D4 | Page pattern: a title (`text-2xl sm:text-3xl font-semibold tracking-tight`), then an optional summary strip, then content. From 1024 px, put secondary work (create form, members) in a 20 to 22 rem side column and keep the main content wide. Below 1024 px, stack in this order: main content, then side panel. A form that sits in the side column stacks its field and button. In a full-width panel it is a row from 640 px. | Dashboard: stat strip, board grid and the Create a board panel. Board page: columns and the Members panel. |
+| FE-D5 | Type is Figtree (`next/font`, variable `--font-figtree`). Section headings are `text-lg font-semibold`. Body is `text-base`. Help and secondary text are `text-sm text-base-content/70`. Use sentence case. Do not use all-caps labels, tracked-out eyebrows or decorative icons. Numbers in summaries use `tabular-nums`. | Stat strip values, board titles. |
+| FE-D6 | Color carries meaning. `primary` marks the main action, Admin and the current page. `error` marks destructive actions. A board gets one of six fixed chip colors from its ID, so it keeps the same color everywhere. Do not color a panel for decoration. | `chipClass()` in `BoardList.tsx` |
+| FE-D7 | Copy is plain and written for the user: a button says what it does ("Create board", "Add member"), the same action keeps the same name in its toast, and an empty state says what to do next. Errors say what happened and how to fix it. | "You have no boards yet. Create your first board to start planning with your team." |
+| FE-D8 | Keep one memorable thing per screen and keep the rest quiet. Here it is the board tiles on the dashboard and the ink sidebar. Motion only answers an action (dialog open, pending spinner). No entrance animations or hover effects on every card. | Tiles change only their border on hover. |
+| FE-D9 | Design never overrides FE-S4 to FE-S6. A UI slice records a screenshot check at 375, 768 and 1280 px (no horizontal page scroll, controls at least 44 px) next to the FE-S6 record. Component tests assert behavior, roles and text. Assert layout classes only for a mobile rule (FE-S4, FE-S5). | The boards screens were checked at 375, 768 and 1280 px. |
+
+Shared visual parts: `AppHeader` (shell), `BrandMark` (logo and name), `Avatar` (initials, decorative), `BaseBadge`, `BaseButton`, `BaseModal`, `ConfirmDialog` and `FormField`. A new screen composes these and the `.surface` utility. Add a new shared part only when two screens need it.
+
 ## State Management
 
 | ID | Rule | Rationale | RevoTask example |

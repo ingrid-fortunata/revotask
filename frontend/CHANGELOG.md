@@ -4,6 +4,10 @@ Record actual changes for this component. Reference the matching app release in 
 
 ## [Unreleased]
 
+- Visual redesign of the finished screens as a work dashboard, mobile first. New `revotask` daisyUI theme and `.surface` panel utility in `app/globals.css`, Figtree through `next/font`. `AppHeader` is a sticky top bar below 1024 px and a fixed sidebar from 1024 px with a Boards link marked `aria-current`. The dashboard has a summary strip (total boards, boards you manage, boards you join), a tile grid with a colored chip per board, and the create form in a side panel from 1024 px. The board page has a header panel with a back link, wide columns area and a 22 rem members panel with avatars. Login and register get a split layout from 1024 px. New shared parts: `BrandMark`, `Avatar`. `LogoutButton` accepts `className`.
+- Design rules are recorded as FE-D1 to FE-D9 in `guidelines/frontend.md`, and the `revotask-feature` skill reads them for UI work.
+- Verification: typecheck, lint and 958 Vitest tests (51 files) pass, and `next build` succeeds. Screenshots at 375, 768 and 1280 px (Chrome device emulation, no real phone) show no horizontal page scroll on the dashboard, board page, login and the empty state. The 320 px check and the real-phone check are pending.
+
 - Boards and membership UI (T06) implemented locally: dashboard at `/` with the board list, role badges, create form and empty state. Board page at `/boards/[id]` with the name, role badge, rename and delete (Admin only). Members panel with add and remove (Admin only; Remove on `member` rows only). Shared `BaseModal` and `ConfirmDialog` on native `<dialog>` for delete and remove.
 - Data flow: board reads run on the server (`lib/server/boards.ts`). Writes go through same-origin Route Handlers under `app/api/boards/` that share `handlePrivateWrite`. The browser client accepts only declared UUID paths. A 404 on a board request shows the access error and goes to `/`. `USER_NOT_FOUND` shows under the email field only.
 - Added `NOT_FOUND`, `USER_NOT_FOUND` and `STATE_CONFLICT` error codes with fallback copy. Board name and email rules are tested against the shared fixture.

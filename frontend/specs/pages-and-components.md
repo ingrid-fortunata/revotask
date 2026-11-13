@@ -1,6 +1,6 @@
 # Pages and Components
 
-Next.js App Router pages render on the server and compose client components for interactive forms, browser hooks and drag-and-drop. Use Tailwind CSS with daisyUI. Show meaningful loading, empty, success and failure states on each data-driven surface.
+Next.js App Router pages render on the server and compose client components for interactive forms, browser hooks and drag-and-drop. Use Tailwind CSS with daisyUI, following the dashboard look in the Visual Design System of [frontend guidelines](../../guidelines/frontend.md) (FE-D1 to FE-D9). Show meaningful loading, empty, success and failure states on each data-driven surface.
 
 | Route or surface | Component boundary | API and expected behavior |
 |---|---|---|

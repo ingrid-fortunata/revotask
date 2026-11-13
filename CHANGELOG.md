@@ -17,6 +17,8 @@ Track notable user-facing changes using [Keep a Changelog](https://keepachangelo
 
 ### Changed
 
+- Frontend redesign: the dashboard, board page, login and register screens use a work-dashboard look (ink sidebar, white panels, teal accent) that stays mobile first. The rules are FE-D1 to FE-D9 in `guidelines/frontend.md` and are read by the `revotask-feature` skill. No behavior, API or data change.
+
 - Local Compose runs one Gunicorn worker so the login and register rate limits are exact. Shared limiter storage (T16) is required before more production workers. A 401 no longer carries `Retry-After`.
 - Request-body failures use the JSON envelope: 400 malformed JSON, 415 `UNSUPPORTED_MEDIA_TYPE`, 413 `CONTENT_TOO_LARGE`. `docs/API.md` lists both new statuses. `GET /api/users/me` (E30 read) moved from T12 to T03.
 - Mobile responsiveness is a standing rule for every UI slice (AC13.1, FE-S4–S6): 375 px and wider, 44 by 44 px tappable areas, 16 px inputs, `min-h-dvh`.
