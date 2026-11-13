@@ -1,17 +1,16 @@
+import { BoardsDashboard } from "@/components/boards/BoardsDashboard";
+import { getBoards } from "@/lib/server/boards";
 import { getCurrentUser } from "@/lib/server/session";
 
-// Placeholder body inside the protected shell. The dashboard replaces it in T06 (A9).
-// The page verifies the session itself: the layout is not the authorization boundary (DD6).
+// Dashboard (Requirements 1.5–1.8, DD11). The session is verified here, not only in the layout
+// (DD6). getBoards() reads E05 through the server-only helper, so no token reaches the browser.
+// Mobile first: padded, width-capped and without full-height centering (FE-S4).
 export default async function HomePage() {
   await getCurrentUser();
+  const boards = await getBoards();
   return (
     <main className="mx-auto w-full max-w-3xl p-4 sm:p-6">
-      <section className="card w-full bg-base-100 shadow">
-        <div className="card-body">
-          <h1 className="card-title">RevoTask</h1>
-          <p>Application shell placeholder. Board features arrive in later slices.</p>
-        </div>
-      </section>
+      <BoardsDashboard initialBoards={boards} />
     </main>
   );
 }

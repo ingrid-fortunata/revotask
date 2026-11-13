@@ -5,6 +5,25 @@ export type PublicUser = {
   email: string;
 };
 
+// Board shapes from docs/API.md (BoardSummary, BoardDetail, Membership).
+export type BoardRole = "admin" | "member";
+
+export type BoardSummary = {
+  id: string;
+  name: string;
+  role: BoardRole;
+  position_version: number;
+};
+
+// Columns are typed fully in the board-columns slice (T07–T08).
+export type BoardDetail = BoardSummary & { columns: unknown[] };
+
+export type Membership = {
+  user_id: string;
+  name: string;
+  role: BoardRole;
+};
+
 export type SuccessEnvelope<T> = { data: T };
 
 export type ErrorEnvelope = {

@@ -8,6 +8,9 @@ export type KnownErrorCode =
   | "AUTH_REQUIRED"
   | "EMAIL_ALREADY_EXISTS"
   | "FORBIDDEN"
+  | "NOT_FOUND"
+  | "USER_NOT_FOUND"
+  | "STATE_CONFLICT"
   | "CONTENT_TOO_LARGE"
   | "UNSUPPORTED_MEDIA_TYPE"
   | "RATE_LIMITED"
@@ -20,14 +23,21 @@ const FALLBACK_COPY: Record<KnownErrorCode, string> = {
   AUTH_REQUIRED: "Your session has ended. Sign in again.",
   EMAIL_ALREADY_EXISTS: "An account with this email already exists.",
   FORBIDDEN: "This request was not allowed.",
-  CONTENT_TOO_LARGE: "The request could not be sent. Reload the page and try again.",
-  UNSUPPORTED_MEDIA_TYPE: "The request could not be sent. Reload the page and try again.",
+  NOT_FOUND: "That item was not found.",
+  USER_NOT_FOUND: "No registered user has this email.",
+  STATE_CONFLICT: "That change conflicts with the current state.",
+  CONTENT_TOO_LARGE:
+    "The request could not be sent. Reload the page and try again.",
+  UNSUPPORTED_MEDIA_TYPE:
+    "The request could not be sent. Reload the page and try again.",
   RATE_LIMITED: "Too many attempts. Try again later.",
-  SERVICE_UNAVAILABLE: "The service is temporarily unavailable. Try again shortly.",
+  SERVICE_UNAVAILABLE:
+    "The service is temporarily unavailable. Try again shortly.",
   INTERNAL_ERROR: "Something went wrong. Try again.",
 };
 
-export const NETWORK_ERROR_COPY = "Could not reach the server. Check your connection and try again.";
+export const NETWORK_ERROR_COPY =
+  "Could not reach the server. Check your connection and try again.";
 const GENERIC_COPY = FALLBACK_COPY.INTERNAL_ERROR;
 
 export type ApiErrorInit = {
@@ -66,7 +76,9 @@ export function isKnownCode(code: unknown): code is KnownErrorCode {
 }
 
 /** Seconds from a Retry-After header. HTTP dates and unusable values give undefined. */
-export function parseRetryAfter(value: string | null | undefined): number | undefined {
+export function parseRetryAfter(
+  value: string | null | undefined,
+): number | undefined {
   if (!value || !/^\d+(\.\d+)?$/.test(value.trim())) return undefined;
   const seconds = Math.ceil(Number(value));
   return Number.isFinite(seconds) && seconds >= 0 ? seconds : undefined;
@@ -105,18 +117,24 @@ export function apiErrorFromEnvelope(
   retryAfterHeader?: string | null,
 ): ApiError {
   const error = isRecord(body) && isRecord(body.error) ? body.error : null;
-  if (!error || typeof error.code !== "string") return malformedApiError(statusCode);
+  if (!error || typeof error.code !== "string")
+    return malformedApiError(statusCode);
   const known = isKnownCode(error.code);
   const serverMessage =
-    typeof error.message === "string" && error.message.length > 0 && error.message.length <= 200
+    typeof error.message === "string" &&
+    error.message.length > 0 &&
+    error.message.length <= 200
       ? error.message
       : null;
   return new ApiError({
     statusCode,
     code: error.code,
-    message: known ? (serverMessage ?? FALLBACK_COPY[error.code as KnownErrorCode]) : GENERIC_COPY,
+    message: known
+      ? (serverMessage ?? FALLBACK_COPY[error.code as KnownErrorCode])
+      : GENERIC_COPY,
     fields: cleanFields(error.fields),
-    requestId: typeof error.request_id === "string" ? error.request_id : undefined,
+    requestId:
+      typeof error.request_id === "string" ? error.request_id : undefined,
     retryAfterSeconds: parseRetryAfter(retryAfterHeader),
   });
 }

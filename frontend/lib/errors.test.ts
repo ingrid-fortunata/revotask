@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   ApiError,
   apiErrorFromEnvelope,
+  isKnownCode,
   malformedApiError,
   networkApiError,
   parsePublicUser,
@@ -27,16 +28,24 @@ describe("apiErrorFromEnvelope", () => {
 
   it("omits fields when the envelope has none", () => {
     const error = apiErrorFromEnvelope(401, {
-      error: { code: "INVALID_CREDENTIALS", message: "Invalid email or password." },
+      error: {
+        code: "INVALID_CREDENTIALS",
+        message: "Invalid email or password.",
+      },
     });
     expect(error.fields).toBeUndefined();
     expect(error.message).toBe("Invalid email or password.");
   });
 
   it("reads Retry-After seconds and ignores dates", () => {
-    const body = { error: { code: "RATE_LIMITED", message: "Too many requests." } };
+    const body = {
+      error: { code: "RATE_LIMITED", message: "Too many requests." },
+    };
     expect(apiErrorFromEnvelope(429, body, "42").retryAfterSeconds).toBe(42);
-    expect(apiErrorFromEnvelope(429, body, "Wed, 21 Oct 2026 07:28:00 GMT").retryAfterSeconds).toBeUndefined();
+    expect(
+      apiErrorFromEnvelope(429, body, "Wed, 21 Oct 2026 07:28:00 GMT")
+        .retryAfterSeconds,
+    ).toBeUndefined();
     expect(parseRetryAfter("1.2")).toBe(2);
     expect(parseRetryAfter(null)).toBeUndefined();
     expect(parseRetryAfter("-5")).toBeUndefined();
@@ -53,23 +62,33 @@ describe("apiErrorFromEnvelope", () => {
 
   it("replaces an empty or overlong message for a known code", () => {
     const long = "x".repeat(500);
-    expect(apiErrorFromEnvelope(503, { error: { code: "SERVICE_UNAVAILABLE", message: long } }).message).toBe(
-      "The service is temporarily unavailable. Try again shortly.",
-    );
-    expect(apiErrorFromEnvelope(503, { error: { code: "SERVICE_UNAVAILABLE", message: "" } }).message).toBe(
-      "The service is temporarily unavailable. Try again shortly.",
-    );
+    expect(
+      apiErrorFromEnvelope(503, {
+        error: { code: "SERVICE_UNAVAILABLE", message: long },
+      }).message,
+    ).toBe("The service is temporarily unavailable. Try again shortly.");
+    expect(
+      apiErrorFromEnvelope(503, {
+        error: { code: "SERVICE_UNAVAILABLE", message: "" },
+      }).message,
+    ).toBe("The service is temporarily unavailable. Try again shortly.");
   });
 
-  it.each([null, undefined, "<html>502</html>", 5, [], {}, { error: "text" }, { error: {} }])(
-    "treats a malformed body (%j) as a retryable service error",
-    (body) => {
-      const error = apiErrorFromEnvelope(502, body);
-      expect(error.code).toBe("SERVICE_UNAVAILABLE");
-      expect(error.statusCode).toBe(502);
-      expect(error.message).not.toMatch(/html/i);
-    },
-  );
+  it.each([
+    null,
+    undefined,
+    "<html>502</html>",
+    5,
+    [],
+    {},
+    { error: "text" },
+    { error: {} },
+  ])("treats a malformed body (%j) as a retryable service error", (body) => {
+    const error = apiErrorFromEnvelope(502, body);
+    expect(error.code).toBe("SERVICE_UNAVAILABLE");
+    expect(error.statusCode).toBe(502);
+    expect(error.message).not.toMatch(/html/i);
+  });
 });
 
 describe("transport and malformed errors", () => {
@@ -99,10 +118,76 @@ describe("parsePublicUser", () => {
     expect(Object.keys(user).sort()).toEqual(["email", "id", "name"]);
   });
 
-  it.each([null, "x", [], { id: 1, name: "a", email: "b" }, { id: "1", name: "a" }])(
-    "rejects a bad shape (%j)",
-    (value) => {
-      expect(() => parsePublicUser(value)).toThrow(ApiError);
+  it.each([
+    null,
+    "x",
+    [],
+    { id: 1, name: "a", email: "b" },
+    { id: "1", name: "a" },
+  ])("rejects a bad shape (%j)", (value) => {
+    expect(() => parsePublicUser(value)).toThrow(ApiError);
+  });
+});
+
+describe("board error codes keep their copy", () => {
+  const cases: Array<[string, string, number, string]> = [
+    ["NOT_FOUND", "That item was not found.", 404, "Board not found."],
+    [
+      "USER_NOT_FOUND",
+      "No registered user has this email.",
+      404,
+      "No registered user has this email.",
+    ],
+    [
+      "STATE_CONFLICT",
+      "That change conflicts with the current state.",
+      409,
+      "Already a member.",
+    ],
+  ];
+
+  it.each(cases)("treats %s as a known code", (code) => {
+    expect(isKnownCode(code)).toBe(true);
+  });
+
+  it.each(cases)(
+    "uses the fixed copy for %s when the server sends no message",
+    (code, copy, status) => {
+      const error = apiErrorFromEnvelope(status, {
+        error: { code, message: "" },
+      });
+      expect(error.code).toBe(code);
+      expect(error.statusCode).toBe(status);
+      expect(error.message).toBe(copy);
     },
   );
+
+  it.each(cases)(
+    "uses the fixed copy for %s when the message is overlong",
+    (code, copy, status) => {
+      const error = apiErrorFromEnvelope(status, {
+        error: { code, message: "y".repeat(201) },
+      });
+      expect(error.message).toBe(copy);
+    },
+  );
+
+  it.each(cases)(
+    "keeps the server message for %s when it is present",
+    (code, _copy, status, serverText) => {
+      const error = apiErrorFromEnvelope(status, {
+        error: { code, message: serverText },
+      });
+      expect(error.message).toBe(serverText);
+    },
+  );
+
+  it("keeps NOT_FOUND, USER_NOT_FOUND and STATE_CONFLICT envelopes without fields", () => {
+    for (const [code, , status] of cases) {
+      const error = apiErrorFromEnvelope(status, {
+        error: { code, message: "x" },
+      });
+      expect(error.fields).toBeUndefined();
+    }
+  });
 });

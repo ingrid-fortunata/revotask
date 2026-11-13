@@ -1,6 +1,8 @@
-import type { ButtonHTMLAttributes } from "react";
+import type { ButtonHTMLAttributes, Ref } from "react";
 
 export interface BaseButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  /** Forwarded to the button so a dialog can focus it on open (FE-C3). */
+  ref?: Ref<HTMLButtonElement>;
   variant?: "primary" | "ghost";
   /** Disables the button and shows a spinner while a request is pending. */
   loading?: boolean;
@@ -26,7 +28,12 @@ export function BaseButton({
       aria-busy={loading || undefined}
       {...rest}
     >
-      {loading ? <span className="loading loading-spinner loading-sm" aria-hidden="true" /> : null}
+      {loading ? (
+        <span
+          className="loading loading-spinner loading-sm"
+          aria-hidden="true"
+        />
+      ) : null}
       {children}
     </button>
   );
