@@ -14,6 +14,8 @@ Use the same record for a confirmed correction or a reviewed rule that passed. R
 
 | Evidence | Commit or version | Environment and command | Result or link |
 |---|---|---|---|
+| Foundation T01–T02 local checks (backend pytest 186 passed, frontend lint/typecheck/test/build, migrations, live 127.0.0.1:5001) | Uncommitted working tree | Clean-environment commands listed in the file | `evidence/foundation-T01-T02.md` |
+| Foundation revision 2: port 5001, Docker image and Compose, container health and database, npm advisory investigation | Uncommitted working tree | Commands listed in revision 2 of the file | `evidence/foundation-T01-T02.md` (revision 2) |
 | Implementation reviews and refinement prompts | | | Pending |
 | Local pytest, React Testing Library and Playwright | | | Pending |
 | Browser requests, 401, 404, mobile flow and optimistic rollback | | | Pending |

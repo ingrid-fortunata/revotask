@@ -17,3 +17,4 @@ test-results/
 /PROMPTS.md
 /EXTRA-PROMPTS.md
 /START-HERE.md
+*.tsbuildinfo

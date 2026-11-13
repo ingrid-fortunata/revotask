@@ -1,0 +1,20 @@
+[tool.ruff]
+line-length = 100
+target-version = "py314"
+extend-exclude = ["migrations/versions"]
+
+[tool.ruff.lint]
+# Explicit rule set so the lint gate does not change with the Ruff default.
+# E/W: pycodestyle, F: pyflakes, I: import order, B: bugbear, BLE: no blind except.
+select = ["E", "W", "F", "I", "B", "BLE"]
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-ra --strict-markers"
+markers = [
+    "migration: drops and rebuilds the revotask schema on the guarded test database. Run in file order.",
+]

@@ -1,0 +1,5 @@
+# Local development and test tools. Installs runtime dependencies too.
+-r requirements.txt
+pytest==9.2.0
+ruff==0.17.5
+python-dotenv==1.2.4

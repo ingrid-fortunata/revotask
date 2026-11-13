@@ -48,6 +48,7 @@ A successful response returns `data.card`, `data.columns` for the affected colum
 | 401 | `INVALID_CREDENTIALS`, `AUTH_REQUIRED` | Rejected login, or absent, invalid, expired or revoked session on a protected route. |
 | 403 | `FORBIDDEN` | Authenticated caller lacks the board role, membership or ownership. |
 | 404 | `NOT_FOUND` | Source card, board or another addressed resource is missing or deleted. |
+| 405 | `METHOD_NOT_ALLOWED` | A known path is called with an unsupported method. Keep the `Allow` header that lists the supported methods. |
 | 409 | `POSITION_CONFLICT`, `EMAIL_ALREADY_EXISTS`, `STATE_CONFLICT` | Stale order version, duplicate normalized email, or conflicting board state. |
 | 429 | `RATE_LIMITED` | Login or registration throttled. Forward Retry-After when available. |
 | 500 / 503 | `INTERNAL_ERROR` / `SERVICE_UNAVAILABLE` | Unexpected failure or unavailable dependency. Use a safe message and request ID. |

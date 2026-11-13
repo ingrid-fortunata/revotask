@@ -1,53 +1,110 @@
-# RevoTask Development Guide · Draft
+# RevoTask Development Guide
 
-This guide defines expected entry points. Verify and update each command after implementing T01.
+These commands are verified for the foundation slice (T01–T02) on macOS with PostgreSQL 16.14, Python 3.14.5 and Node.js 24.22.1. Run each command from the directory shown. Login, boards and Kanban routes arrive in later feature slices.
 
-## Local setup
+## Prerequisites
 
-1. Open the extracted workspace. After T01, use the runtime versions pinned by the scaffold. Before T02, start a local PostgreSQL instance and create separate development and test databases. The sample database URLs use the revotask role and databases revotask_dev and revotask_test. Match those values locally or update the URLs.
-2. From the root, set up Flask:
+- Python 3.14.5. The pin is in `backend/.python-version`.
+- Node.js 24.22.1. The pin is in `frontend/.nvmrc`. npm comes with Node.
+- A local PostgreSQL server with a role and two databases. Foundation can create missing ones (see below). The commands use a placeholder password. Replace it with your own and never commit the value.
+
+```sql
+CREATE ROLE revotask WITH LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE PASSWORD '<choose-a-password>';
+CREATE DATABASE revotask_dev OWNER revotask;
+CREATE DATABASE revotask_test OWNER revotask;
+```
+
+## Backend (Flask)
 
 ```bash
 cd backend
-python -m venv .venv
+python3.14 -m venv .venv          # use the Python 3.14.5 interpreter
 source .venv/bin/activate
-pip install -r requirements.txt
-cp .env.example .env
-# Set DATABASE_URL and TEST_DATABASE_URL for your local PostgreSQL.
-# Generate a random development JWT secret and save it in .env.
-flask --app app:create_app db upgrade
-flask --app app:create_app run
+pip install -r requirements-dev.txt   # runtime packages plus pytest and Ruff
+cp .env.example .env              # set DATABASE_URL, TEST_DATABASE_URL and JWT_SECRET_KEY
+flask --app app:create_app bootstrap-schema   # creates the revotask schema when missing
+flask --app app:create_app db upgrade         # applies the migrations
+flask --app app:create_app run --port 5001
 ```
 
-3. From the root in a second terminal, set up Next.js:
+Run `bootstrap-schema` before `db upgrade`. The migrations never create the schema. Both commands are safe to repeat.
+
+Check the server in a second terminal:
+
+```bash
+curl -s http://127.0.0.1:5001/api/health
+# {"data":{"status":"ok"}}
+```
+
+The local API uses port 5001. macOS AirPlay Receiver keeps port 5000 and answers `403 Forbidden` with an `AirTunes` server header, so Flask cannot use that port. Leave AirPlay Receiver on. Use 5001 for `flask run` and for `API_BASE_URL` in `frontend/.env.local`.
+
+### Backend checks
+
+```bash
+cd backend
+ruff check . && ruff format --check .
+pytest -v
+```
+
+`TEST_DATABASE_URL` must point to a local database whose name ends in `_test`. Test setup refuses to run if the test URL matches `DATABASE_URL`, names another database, or uses a remote host. The migration tests drop and rebuild the `revotask` schema on that test database.
+
+## Docker (Flask container)
+
+The same `backend/Dockerfile` serves local development and the Render Docker Web Service (see the [deployment runbook](DEPLOYMENT.md)). Start Docker Desktop first. Native Flask (above) and the container both use port 5001, so stop one before starting the other.
+
+```bash
+cp .env.example .env                         # repository root; set DOCKER_DATABASE_URL (below)
+docker compose build backend
+docker compose run --rm --no-deps backend flask --app app:create_app bootstrap-schema
+docker compose run --rm --no-deps backend flask --app app:create_app db upgrade
+docker compose run --rm --no-deps backend flask --app app:create_app db current
+docker compose up -d backend
+curl -s http://127.0.0.1:5001/api/health    # {"data":{"status":"ok"}}
+docker compose logs -f backend              # Ctrl-C stops following
+docker compose down                         # stops the container and keeps the database
+```
+
+- The root `.env` (git-ignored) holds `DOCKER_DATABASE_URL`, the same role, password and database as `backend/.env`, with the host `host.docker.internal`. Compose passes `backend/.env` to the container for `JWT_SECRET_KEY` and the other settings. Compose overrides `DATABASE_URL` with `DOCKER_DATABASE_URL`, because `127.0.0.1` inside a container is the container itself. Credentials are supplied at runtime and never copied into the image.
+- `host.docker.internal` reaches the PostgreSQL server on the Mac. Verified with Docker Desktop 29.9.2 and PostgreSQL 16.14 listening on `localhost` only. No PostgreSQL configuration change was needed. If another Docker runtime cannot connect, review the listen and `pg_hba.conf` settings before changing them.
+- Migrations run only as the one-off `run --rm` commands above. Gunicorn does not migrate. The database must already be running on the host.
+- Gunicorn binds `0.0.0.0:$PORT`. Compose sets `PORT=5001` and publishes `127.0.0.1:5001:5001`. Set `GUNICORN_WORKERS` in the compose environment to change the worker count (default 2).
+- Next.js still runs on the host with `npm run dev`, and reaches the container at `API_BASE_URL=http://127.0.0.1:5001`.
+
+## Frontend (Next.js)
 
 ```bash
 cd frontend
 npm ci
-cp .env.example .env.local
-# Set API_BASE_URL=http://127.0.0.1:5000 and APP_ORIGIN=http://localhost:3000.
-npm run dev
+cp .env.example .env.local        # server-only settings; the browser never receives them
+npm run dev                       # http://localhost:3000
 ```
 
-4. Use `http://localhost:3000` consistently for the browser origin. Validate the API health endpoint at `http://127.0.0.1:5000/api/health`. Configure daisyUI through the compatible Tailwind/PostCSS setup already present in the scaffold.
+```bash
+npm run lint
+npm run typecheck
+npm test                          # Vitest with jsdom and React Testing Library
+npm run build
+```
+
+Playwright browser tests arrive with the local acceptance task (T15).
 
 ## Environment contract
 
-| Scope | Variables | Example values |
-|---|---|---|
-| Flask | `APP_ENV`, `DATABASE_URL`, `JWT_SECRET_KEY`, `LOG_LEVEL` | development, local PostgreSQL URI, local-only generated secret, INFO |
-| Flask tests | `TEST_DATABASE_URL` | Isolated PostgreSQL URI. Test setup fails if it targets a protected environment. |
-| Next.js server | `APP_ORIGIN`, `API_BASE_URL` | `http://localhost:3000`, `http://127.0.0.1:5000` |
-| Playwright | `E2E_BASE_URL` | `http://localhost:3000` or verified Vercel URL. Add test-account inputs only if fixture strategy requires them. |
+| Scope          | Variables                                                | Example values                                                       |
+| -------------- | -------------------------------------------------------- | -------------------------------------------------------------------- |
+| Flask          | `APP_ENV`, `DATABASE_URL`, `JWT_SECRET_KEY`, `LOG_LEVEL` | development, local PostgreSQL URI, local-only generated secret, INFO |
+| Flask tests    | `TEST_DATABASE_URL`                                      | Isolated local PostgreSQL URI whose database name ends in `_test`    |
+| Docker Compose (root `.env`) | `DOCKER_DATABASE_URL` | `postgresql+psycopg://revotask:<password>@host.docker.internal:5432/revotask_dev` |
+| Container runtime | `PORT`, `GUNICORN_WORKERS` (optional) | `5001` locally. Render sets its own `PORT`. |
+| Next.js server | `APP_ORIGIN`, `API_BASE_URL`                             | `http://localhost:3000`, `http://127.0.0.1:5001`                     |
+| Playwright     | `E2E_BASE_URL`                                           | `http://localhost:3000` or verified Vercel URL. Added with T15.      |
 
-Commit both `.env.example` files with placeholders and commit lockfiles. Ignore real `.env*` files with an exception for the examples, `.venv/`, `__pycache__/`, `.next/`, `node_modules/`, `playwright/.auth/`, and unsanitized test reports and traces. Keep environment and test commands aligned with the chosen package scripts.
+Both `.env.example` files are committed with placeholders. Real `.env*` files stay ignored, and so do `.venv/`, `__pycache__/`, `.next/`, `node_modules/`, `*.tsbuildinfo` and `playwright/.auth/`. The frontend does not read the Next.js variables yet. The server client in T04 is the first reader.
 
-## Expected test commands
+## Dependency pins
 
-| Location | Command |
-|---|---|
-| `backend/` | `pytest -v` |
-| `frontend/` | `npm run lint`, `npm run typecheck`, `npm test`, `npm run build` |
-| `frontend/` | `npx playwright install`, `npx playwright test`, `npx playwright show-report` |
+- Backend runtime packages are exact pins in `backend/requirements.txt`. Development packages are in `backend/requirements-dev.txt`, which includes the runtime file.
+- Frontend packages are exact pins in `frontend/package.json`, and `frontend/package-lock.json` is committed.
+- `npm audit` reports seven moderate advisories in development-only lint tooling (`typescript-eslint` → `minimatch`). They do not ship to the browser. The only patched `minimatch` release is a major upgrade that `typescript-eslint` does not use. Tracked in `evidence/foundation-T01-T02.md`.
 
-Follow [the test plan](TEST-PLAN.md) and [deployment runbook](DEPLOYMENT.md) for execution and verification. Review each AI diff against the applicable guideline IDs. Record real changes in the relevant changelogs and keep migration revisions and API contracts reviewable.
+Deployment installs use `pip install -r requirements.txt` (see the [deployment runbook](DEPLOYMENT.md)).

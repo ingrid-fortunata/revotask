@@ -2,7 +2,7 @@
 
 ## D1. Architecture and deployment
 
-The browser uses same-origin Next.js Route Handlers for interactive requests. Protected Server Components call Flask directly from the server using the same server-side fetch helper. Flask on Render owns API authorization and persists data in Supabase PostgreSQL through SQLAlchemy. The browser gets public UI configuration and calls relative `/api/...` paths. Flask API documentation remains independently usable with a bearer token for Postman and tests.
+The browser uses same-origin Next.js Route Handlers for interactive requests. Protected Server Components call Flask directly from the server using the same server-side fetch helper. Flask runs from the same `backend/Dockerfile` locally (through Docker Compose) and on Render as a Docker Web Service. Flask on Render owns API authorization and persists data in Supabase PostgreSQL through SQLAlchemy. The browser gets public UI configuration and calls relative `/api/...` paths. Flask API documentation remains independently usable with a bearer token for Postman and tests.
 
 ```mermaid
 flowchart TD

@@ -1,0 +1,22 @@
+# Local development: Flask runs in Docker, Next.js runs on the host (see docs/DEVELOPMENT.md).
+# The database is the existing host PostgreSQL, reached through host.docker.internal.
+# Credentials come from backend/.env (env_file) and the root .env (DOCKER_DATABASE_URL), at runtime.
+name: revotask
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: revotask-backend:local
+    env_file:
+      - ./backend/.env
+    environment:
+      APP_ENV: development
+      LOG_LEVEL: INFO
+      PORT: "5001"
+      DATABASE_URL: ${DOCKER_DATABASE_URL:?Set DOCKER_DATABASE_URL in the root .env file}
+    ports:
+      - "127.0.0.1:5001:5001"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

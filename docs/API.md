@@ -7,7 +7,7 @@ Routes below are Flask endpoints relative to `API_BASE_URL`, which contains the 
 - JSON bodies use `Content-Type: application/json`. Reject unknown fields, invalid UUIDs and unsupported values with 400. Query inputs are validated and pagination caps are applied.
 - Flask public routes are health, register and login. All other Flask routes use `Authorization: Bearer <access-token>`. For browser writes, the Next handler verifies exact Origin.
 - Success returns `{"data": ...}`. Delete and logout operations without response metadata return 200 with `{"data": null}`. Error example: `{"error":{"code":"VALIDATION_ERROR","message":"Check the submitted fields.","fields":{"title":"Required."},"request_id":"example-id"}}`. Omit `fields` where inapplicable. Timestamps are ISO 8601 UTC. PATCH modifies only submitted fields, except that explicit null clears fields documented as nullable.
-- Status conventions: 400 invalid input, 401 invalid authentication, 403 forbidden, 404 missing/deleted resource, 409 duplicate or state conflict, 429 rate limited, 503 unavailable. Unexpected internal errors return sanitized 500. Field limits below use trimmed length for names, titles and content. Preserve password bytes as entered.
+- Status conventions: 400 invalid input, 401 invalid authentication, 403 forbidden, 404 missing/deleted resource, 405 method not allowed (the response keeps the `Allow` header), 409 duplicate or state conflict, 429 rate limited, 503 unavailable. Unexpected internal errors return sanitized 500. Field limits below use trimmed length for names, titles and content. Preserve password bytes as entered.
 
 ## Endpoints
 

@@ -1,0 +1,15 @@
+# Keep local secrets, virtual environments, caches and tests out of the build context.
+.env
+.env.*
+# Render copies secret files into the build context. Keep them out of the image.
+supabase-ca.crt
+.venv
+**/__pycache__
+*.pyc
+.pytest_cache
+.ruff_cache
+.coverage
+tests
+Dockerfile
+.dockerignore
+*.log

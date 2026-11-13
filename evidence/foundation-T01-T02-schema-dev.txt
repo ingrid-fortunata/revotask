@@ -1,0 +1,340 @@
+                                              Table "revotask.alembic_version"
+   Column    |         Type          | Collation | Nullable | Default | Storage  | Compression | Stats target | Description 
+-------------+-----------------------+-----------+----------+---------+----------+-------------+--------------+-------------
+ version_num | character varying(32) |           | not null |         | extended |             |              | 
+Indexes:
+    "alembic_version_pkc" PRIMARY KEY, btree (version_num)
+Access method: heap
+
+                        Index "revotask.alembic_version_pkc"
+   Column    |         Type          | Key? | Definition  | Storage  | Stats target 
+-------------+-----------------------+------+-------------+----------+--------------
+ version_num | character varying(32) | yes  | version_num | extended | 
+primary key, btree, for table "revotask.alembic_version"
+
+                                                Table "revotask.board_columns"
+   Column   |           Type           | Collation | Nullable | Default | Storage  | Compression | Stats target | Description 
+------------+--------------------------+-----------+----------+---------+----------+-------------+--------------+-------------
+ board_id   | uuid                     |           | not null |         | plain    |             |              | 
+ name       | character varying(80)    |           | not null |         | extended |             |              | 
+ is_done    | boolean                  |           | not null | false   | plain    |             |              | 
+ order      | double precision         |           | not null |         | plain    |             |              | 
+ id         | uuid                     |           | not null |         | plain    |             |              | 
+ created_at | timestamp with time zone |           | not null | now()   | plain    |             |              | 
+ updated_at | timestamp with time zone |           | not null | now()   | plain    |             |              | 
+ deleted_at | timestamp with time zone |           |          |         | plain    |             |              | 
+Indexes:
+    "pk_board_columns" PRIMARY KEY, btree (id)
+    "ix_board_columns_board_order_id" btree (board_id, "order", id) WHERE deleted_at IS NULL
+    "uq_board_columns_board_id_active_done" UNIQUE, btree (board_id) WHERE is_done AND deleted_at IS NULL
+Check constraints:
+    "ck_board_columns_order_finite_positive" CHECK ("order" > 0::double precision AND "order" < 'Infinity'::double precision)
+Foreign-key constraints:
+    "fk_board_columns_board_id_boards" FOREIGN KEY (board_id) REFERENCES revotask.boards(id) ON DELETE RESTRICT
+Referenced by:
+    TABLE "revotask.cards" CONSTRAINT "fk_cards_column_id_board_columns" FOREIGN KEY (column_id) REFERENCES revotask.board_columns(id) ON DELETE RESTRICT
+Access method: heap
+
+                                                 Table "revotask.board_events"
+   Column    |           Type           | Collation | Nullable | Default | Storage  | Compression | Stats target | Description 
+-------------+--------------------------+-----------+----------+---------+----------+-------------+--------------+-------------
+ board_id    | uuid                     |           | not null |         | plain    |             |              | 
+ actor_id    | uuid                     |           | not null |         | plain    |             |              | 
+ card_id     | uuid                     |           |          |         | plain    |             |              | 
+ kind        | character varying(24)    |           | not null |         | extended |             |              | 
+ occurred_at | timestamp with time zone |           | not null |         | plain    |             |              | 
+ id          | uuid                     |           | not null |         | plain    |             |              | 
+Indexes:
+    "pk_board_events" PRIMARY KEY, btree (id)
+    "ix_board_events_board_occurred" btree (board_id, occurred_at)
+Check constraints:
+    "ck_board_events_kind" CHECK (kind::text = ANY (ARRAY['card_created'::character varying, 'card_moved'::character varying, 'column_reordered'::character varying, 'comment_created'::character varying, 'entered_done'::character varying]::text[]))
+Foreign-key constraints:
+    "fk_board_events_actor_id_users" FOREIGN KEY (actor_id) REFERENCES revotask.users(id) ON DELETE RESTRICT
+    "fk_board_events_board_id_boards" FOREIGN KEY (board_id) REFERENCES revotask.boards(id) ON DELETE RESTRICT
+    "fk_board_events_card_id_cards" FOREIGN KEY (card_id) REFERENCES revotask.cards(id) ON DELETE RESTRICT
+Access method: heap
+
+                                                Table "revotask.board_members"
+   Column   |           Type           | Collation | Nullable | Default | Storage  | Compression | Stats target | Description 
+------------+--------------------------+-----------+----------+---------+----------+-------------+--------------+-------------
+ board_id   | uuid                     |           | not null |         | plain    |             |              | 
+ user_id    | uuid                     |           | not null |         | plain    |             |              | 
+ role       | character varying(8)     |           | not null |         | extended |             |              | 
+ id         | uuid                     |           | not null |         | plain    |             |              | 
+ created_at | timestamp with time zone |           | not null | now()   | plain    |             |              | 
+ updated_at | timestamp with time zone |           | not null | now()   | plain    |             |              | 
+ deleted_at | timestamp with time zone |           |          |         | plain    |             |              | 
+Indexes:
+    "pk_board_members" PRIMARY KEY, btree (id)
+    "ix_board_members_user_id_active" btree (user_id) WHERE deleted_at IS NULL
+    "uq_board_members_board_id_user_id" UNIQUE CONSTRAINT, btree (board_id, user_id)
+Check constraints:
+    "ck_board_members_role" CHECK (role::text = ANY (ARRAY['admin'::character varying, 'member'::character varying]::text[]))
+Foreign-key constraints:
+    "fk_board_members_board_id_boards" FOREIGN KEY (board_id) REFERENCES revotask.boards(id) ON DELETE RESTRICT
+    "fk_board_members_user_id_users" FOREIGN KEY (user_id) REFERENCES revotask.users(id) ON DELETE RESTRICT
+Access method: heap
+
+                                                      Table "revotask.boards"
+      Column      |           Type           | Collation | Nullable | Default | Storage  | Compression | Stats target | Description 
+------------------+--------------------------+-----------+----------+---------+----------+-------------+--------------+-------------
+ creator_id       | uuid                     |           | not null |         | plain    |             |              | 
+ name             | character varying(100)   |           | not null |         | extended |             |              | 
+ position_version | integer                  |           | not null | 0       | plain    |             |              | 
+ id               | uuid                     |           | not null |         | plain    |             |              | 
+ created_at       | timestamp with time zone |           | not null | now()   | plain    |             |              | 
+ updated_at       | timestamp with time zone |           | not null | now()   | plain    |             |              | 
+ deleted_at       | timestamp with time zone |           |          |         | plain    |             |              | 
+Indexes:
+    "pk_boards" PRIMARY KEY, btree (id)
+Check constraints:
+    "ck_boards_position_version_nonnegative" CHECK (position_version >= 0)
+Foreign-key constraints:
+    "fk_boards_creator_id_users" FOREIGN KEY (creator_id) REFERENCES revotask.users(id) ON DELETE RESTRICT
+Referenced by:
+    TABLE "revotask.board_columns" CONSTRAINT "fk_board_columns_board_id_boards" FOREIGN KEY (board_id) REFERENCES revotask.boards(id) ON DELETE RESTRICT
+    TABLE "revotask.board_events" CONSTRAINT "fk_board_events_board_id_boards" FOREIGN KEY (board_id) REFERENCES revotask.boards(id) ON DELETE RESTRICT
+    TABLE "revotask.board_members" CONSTRAINT "fk_board_members_board_id_boards" FOREIGN KEY (board_id) REFERENCES revotask.boards(id) ON DELETE RESTRICT
+    TABLE "revotask.notifications" CONSTRAINT "fk_notifications_board_id_boards" FOREIGN KEY (board_id) REFERENCES revotask.boards(id) ON DELETE RESTRICT
+Access method: heap
+
+                                                Table "revotask.card_comments"
+   Column   |           Type           | Collation | Nullable | Default | Storage  | Compression | Stats target | Description 
+------------+--------------------------+-----------+----------+---------+----------+-------------+--------------+-------------
+ card_id    | uuid                     |           | not null |         | plain    |             |              | 
+ author_id  | uuid                     |           | not null |         | plain    |             |              | 
+ content    | text                     |           | not null |         | extended |             |              | 
+ id         | uuid                     |           | not null |         | plain    |             |              | 
+ created_at | timestamp with time zone |           | not null | now()   | plain    |             |              | 
+ updated_at | timestamp with time zone |           | not null | now()   | plain    |             |              | 
+ deleted_at | timestamp with time zone |           |          |         | plain    |             |              | 
+Indexes:
+    "pk_card_comments" PRIMARY KEY, btree (id)
+    "ix_card_comments_card_created_id" btree (card_id, created_at, id) WHERE deleted_at IS NULL
+Foreign-key constraints:
+    "fk_card_comments_author_id_users" FOREIGN KEY (author_id) REFERENCES revotask.users(id) ON DELETE RESTRICT
+    "fk_card_comments_card_id_cards" FOREIGN KEY (card_id) REFERENCES revotask.cards(id) ON DELETE RESTRICT
+Access method: heap
+
+                                                    Table "revotask.cards"
+   Column    |           Type           | Collation | Nullable | Default | Storage  | Compression | Stats target | Description 
+-------------+--------------------------+-----------+----------+---------+----------+-------------+--------------+-------------
+ column_id   | uuid                     |           | not null |         | plain    |             |              | 
+ assignee_id | uuid                     |           |          |         | plain    |             |              | 
+ title       | character varying(160)   |           | not null |         | extended |             |              | 
+ description | text                     |           |          |         | extended |             |              | 
+ order       | double precision         |           | not null |         | plain    |             |              | 
+ id          | uuid                     |           | not null |         | plain    |             |              | 
+ created_at  | timestamp with time zone |           | not null | now()   | plain    |             |              | 
+ updated_at  | timestamp with time zone |           | not null | now()   | plain    |             |              | 
+ deleted_at  | timestamp with time zone |           |          |         | plain    |             |              | 
+Indexes:
+    "pk_cards" PRIMARY KEY, btree (id)
+    "ix_cards_assignee_id_active" btree (assignee_id) WHERE deleted_at IS NULL
+    "ix_cards_column_order_id" btree (column_id, "order", id) WHERE deleted_at IS NULL
+Check constraints:
+    "ck_cards_order_finite_positive" CHECK ("order" > 0::double precision AND "order" < 'Infinity'::double precision)
+Foreign-key constraints:
+    "fk_cards_assignee_id_users" FOREIGN KEY (assignee_id) REFERENCES revotask.users(id) ON DELETE RESTRICT
+    "fk_cards_column_id_board_columns" FOREIGN KEY (column_id) REFERENCES revotask.board_columns(id) ON DELETE RESTRICT
+Referenced by:
+    TABLE "revotask.board_events" CONSTRAINT "fk_board_events_card_id_cards" FOREIGN KEY (card_id) REFERENCES revotask.cards(id) ON DELETE RESTRICT
+    TABLE "revotask.card_comments" CONSTRAINT "fk_card_comments_card_id_cards" FOREIGN KEY (card_id) REFERENCES revotask.cards(id) ON DELETE RESTRICT
+    TABLE "revotask.notifications" CONSTRAINT "fk_notifications_card_id_cards" FOREIGN KEY (card_id) REFERENCES revotask.cards(id) ON DELETE RESTRICT
+Access method: heap
+
+             Index "revotask.ix_board_columns_board_order_id"
+  Column  |       Type       | Key? | Definition | Storage | Stats target 
+----------+------------------+------+------------+---------+--------------
+ board_id | uuid             | yes  | board_id   | plain   | 
+ order    | double precision | yes  | "order"    | plain   | 
+ id       | uuid             | yes  | id         | plain   | 
+btree, for table "revotask.board_columns", predicate (deleted_at IS NULL)
+
+                   Index "revotask.ix_board_events_board_occurred"
+   Column    |           Type           | Key? | Definition  | Storage | Stats target 
+-------------+--------------------------+------+-------------+---------+--------------
+ board_id    | uuid                     | yes  | board_id    | plain   | 
+ occurred_at | timestamp with time zone | yes  | occurred_at | plain   | 
+btree, for table "revotask.board_events"
+
+      Index "revotask.ix_board_members_user_id_active"
+ Column  | Type | Key? | Definition | Storage | Stats target 
+---------+------+------+------------+---------+--------------
+ user_id | uuid | yes  | user_id    | plain   | 
+btree, for table "revotask.board_members", predicate (deleted_at IS NULL)
+
+                 Index "revotask.ix_card_comments_card_created_id"
+   Column   |           Type           | Key? | Definition | Storage | Stats target 
+------------+--------------------------+------+------------+---------+--------------
+ card_id    | uuid                     | yes  | card_id    | plain   | 
+ created_at | timestamp with time zone | yes  | created_at | plain   | 
+ id         | uuid                     | yes  | id         | plain   | 
+btree, for table "revotask.card_comments", predicate (deleted_at IS NULL)
+
+           Index "revotask.ix_cards_assignee_id_active"
+   Column    | Type | Key? | Definition  | Storage | Stats target 
+-------------+------+------+-------------+---------+--------------
+ assignee_id | uuid | yes  | assignee_id | plain   | 
+btree, for table "revotask.cards", predicate (deleted_at IS NULL)
+
+                 Index "revotask.ix_cards_column_order_id"
+  Column   |       Type       | Key? | Definition | Storage | Stats target 
+-----------+------------------+------+------------+---------+--------------
+ column_id | uuid             | yes  | column_id  | plain   | 
+ order     | double precision | yes  | "order"    | plain   | 
+ id        | uuid             | yes  | id         | plain   | 
+btree, for table "revotask.cards", predicate (deleted_at IS NULL)
+
+                 Index "revotask.ix_notifications_recipient_created_id"
+    Column    |           Type           | Key? |  Definition  | Storage | Stats target 
+--------------+--------------------------+------+--------------+---------+--------------
+ recipient_id | uuid                     | yes  | recipient_id | plain   | 
+ created_at   | timestamp with time zone | yes  | created_at   | plain   | 
+ id           | uuid                     | yes  | id           | plain   | 
+btree, for table "revotask.notifications"
+
+         Index "revotask.ix_notifications_recipient_unread"
+    Column    | Type | Key? |  Definition  | Storage | Stats target 
+--------------+------+------+--------------+---------+--------------
+ recipient_id | uuid | yes  | recipient_id | plain   | 
+btree, for table "revotask.notifications", predicate (read_at IS NULL)
+
+                   Index "revotask.ix_revoked_tokens_expires_at"
+   Column   |           Type           | Key? | Definition | Storage | Stats target 
+------------+--------------------------+------+------------+---------+--------------
+ expires_at | timestamp with time zone | yes  | expires_at | plain   | 
+btree, for table "revotask.revoked_tokens"
+
+                                                 Table "revotask.notifications"
+    Column    |           Type           | Collation | Nullable | Default | Storage  | Compression | Stats target | Description 
+--------------+--------------------------+-----------+----------+---------+----------+-------------+--------------+-------------
+ recipient_id | uuid                     |           | not null |         | plain    |             |              | 
+ actor_id     | uuid                     |           | not null |         | plain    |             |              | 
+ board_id     | uuid                     |           | not null |         | plain    |             |              | 
+ card_id      | uuid                     |           | not null |         | plain    |             |              | 
+ kind         | character varying(20)    |           | not null |         | extended |             |              | 
+ created_at   | timestamp with time zone |           | not null | now()   | plain    |             |              | 
+ read_at      | timestamp with time zone |           |          |         | plain    |             |              | 
+ id           | uuid                     |           | not null |         | plain    |             |              | 
+Indexes:
+    "pk_notifications" PRIMARY KEY, btree (id)
+    "ix_notifications_recipient_created_id" btree (recipient_id, created_at, id)
+    "ix_notifications_recipient_unread" btree (recipient_id) WHERE read_at IS NULL
+Check constraints:
+    "ck_notifications_kind" CHECK (kind::text = ANY (ARRAY['assigned'::character varying, 'commented'::character varying]::text[]))
+Foreign-key constraints:
+    "fk_notifications_actor_id_users" FOREIGN KEY (actor_id) REFERENCES revotask.users(id) ON DELETE RESTRICT
+    "fk_notifications_board_id_boards" FOREIGN KEY (board_id) REFERENCES revotask.boards(id) ON DELETE RESTRICT
+    "fk_notifications_card_id_cards" FOREIGN KEY (card_id) REFERENCES revotask.cards(id) ON DELETE RESTRICT
+    "fk_notifications_recipient_id_users" FOREIGN KEY (recipient_id) REFERENCES revotask.users(id) ON DELETE RESTRICT
+Access method: heap
+
+             Index "revotask.pk_board_columns"
+ Column | Type | Key? | Definition | Storage | Stats target 
+--------+------+------+------------+---------+--------------
+ id     | uuid | yes  | id         | plain   | 
+primary key, btree, for table "revotask.board_columns"
+
+              Index "revotask.pk_board_events"
+ Column | Type | Key? | Definition | Storage | Stats target 
+--------+------+------+------------+---------+--------------
+ id     | uuid | yes  | id         | plain   | 
+primary key, btree, for table "revotask.board_events"
+
+             Index "revotask.pk_board_members"
+ Column | Type | Key? | Definition | Storage | Stats target 
+--------+------+------+------------+---------+--------------
+ id     | uuid | yes  | id         | plain   | 
+primary key, btree, for table "revotask.board_members"
+
+                 Index "revotask.pk_boards"
+ Column | Type | Key? | Definition | Storage | Stats target 
+--------+------+------+------------+---------+--------------
+ id     | uuid | yes  | id         | plain   | 
+primary key, btree, for table "revotask.boards"
+
+             Index "revotask.pk_card_comments"
+ Column | Type | Key? | Definition | Storage | Stats target 
+--------+------+------+------------+---------+--------------
+ id     | uuid | yes  | id         | plain   | 
+primary key, btree, for table "revotask.card_comments"
+
+                 Index "revotask.pk_cards"
+ Column | Type | Key? | Definition | Storage | Stats target 
+--------+------+------+------------+---------+--------------
+ id     | uuid | yes  | id         | plain   | 
+primary key, btree, for table "revotask.cards"
+
+             Index "revotask.pk_notifications"
+ Column | Type | Key? | Definition | Storage | Stats target 
+--------+------+------+------------+---------+--------------
+ id     | uuid | yes  | id         | plain   | 
+primary key, btree, for table "revotask.notifications"
+
+             Index "revotask.pk_revoked_tokens"
+ Column | Type | Key? | Definition | Storage | Stats target 
+--------+------+------+------------+---------+--------------
+ jti    | uuid | yes  | jti        | plain   | 
+primary key, btree, for table "revotask.revoked_tokens"
+
+                 Index "revotask.pk_users"
+ Column | Type | Key? | Definition | Storage | Stats target 
+--------+------+------+------------+---------+--------------
+ id     | uuid | yes  | id         | plain   | 
+primary key, btree, for table "revotask.users"
+
+                                               Table "revotask.revoked_tokens"
+   Column   |           Type           | Collation | Nullable | Default | Storage | Compression | Stats target | Description 
+------------+--------------------------+-----------+----------+---------+---------+-------------+--------------+-------------
+ jti        | uuid                     |           | not null |         | plain   |             |              | 
+ expires_at | timestamp with time zone |           | not null |         | plain   |             |              | 
+Indexes:
+    "pk_revoked_tokens" PRIMARY KEY, btree (jti)
+    "ix_revoked_tokens_expires_at" btree (expires_at)
+Access method: heap
+
+    Index "revotask.uq_board_columns_board_id_active_done"
+  Column  | Type | Key? | Definition | Storage | Stats target 
+----------+------+------+------------+---------+--------------
+ board_id | uuid | yes  | board_id   | plain   | 
+unique, btree, for table "revotask.board_columns", predicate (is_done AND deleted_at IS NULL)
+
+      Index "revotask.uq_board_members_board_id_user_id"
+  Column  | Type | Key? | Definition | Storage | Stats target 
+----------+------+------+------------+---------+--------------
+ board_id | uuid | yes  | board_id   | plain   | 
+ user_id  | uuid | yes  | user_id    | plain   | 
+unique, btree, for table "revotask.board_members"
+
+                        Index "revotask.uq_users_email"
+ Column |          Type          | Key? | Definition | Storage  | Stats target 
+--------+------------------------+------+------------+----------+--------------
+ email  | character varying(254) | yes  | email      | extended | 
+unique, btree, for table "revotask.users"
+
+                                                     Table "revotask.users"
+    Column     |           Type           | Collation | Nullable | Default | Storage  | Compression | Stats target | Description 
+---------------+--------------------------+-----------+----------+---------+----------+-------------+--------------+-------------
+ name          | character varying(80)    |           | not null |         | extended |             |              | 
+ email         | character varying(254)   |           | not null |         | extended |             |              | 
+ password_hash | text                     |           | not null |         | extended |             |              | 
+ id            | uuid                     |           | not null |         | plain    |             |              | 
+ created_at    | timestamp with time zone |           | not null | now()   | plain    |             |              | 
+ updated_at    | timestamp with time zone |           | not null | now()   | plain    |             |              | 
+Indexes:
+    "pk_users" PRIMARY KEY, btree (id)
+    "uq_users_email" UNIQUE CONSTRAINT, btree (email)
+Check constraints:
+    "ck_users_email_normalized" CHECK (email::text = lower(btrim(email::text)))
+Referenced by:
+    TABLE "revotask.board_events" CONSTRAINT "fk_board_events_actor_id_users" FOREIGN KEY (actor_id) REFERENCES revotask.users(id) ON DELETE RESTRICT
+    TABLE "revotask.board_members" CONSTRAINT "fk_board_members_user_id_users" FOREIGN KEY (user_id) REFERENCES revotask.users(id) ON DELETE RESTRICT
+    TABLE "revotask.boards" CONSTRAINT "fk_boards_creator_id_users" FOREIGN KEY (creator_id) REFERENCES revotask.users(id) ON DELETE RESTRICT
+    TABLE "revotask.card_comments" CONSTRAINT "fk_card_comments_author_id_users" FOREIGN KEY (author_id) REFERENCES revotask.users(id) ON DELETE RESTRICT
+    TABLE "revotask.cards" CONSTRAINT "fk_cards_assignee_id_users" FOREIGN KEY (assignee_id) REFERENCES revotask.users(id) ON DELETE RESTRICT
+    TABLE "revotask.notifications" CONSTRAINT "fk_notifications_actor_id_users" FOREIGN KEY (actor_id) REFERENCES revotask.users(id) ON DELETE RESTRICT
+    TABLE "revotask.notifications" CONSTRAINT "fk_notifications_recipient_id_users" FOREIGN KEY (recipient_id) REFERENCES revotask.users(id) ON DELETE RESTRICT
+Access method: heap
+

@@ -47,3 +47,24 @@ Use this map to verify that every route and page has a task. The acceptance matr
 | / and /boards/[id] | T06, T09 |
 | /my-tasks | T11 |
 | /profile | T12 |
+
+## Foundation evidence status (T01–T02)
+
+Local status only. The planned verification rows above stay the reference. This table records what foundation has produced. Evidence: `evidence/foundation-T01-T02.md`.
+
+| AC | Foundation contribution | Status |
+|---|---|---|
+| AC01.2 | Normalized-email database constraint and unique index (FND-AC6.1) | Partial. Field validation and 400/409 responses are T03. |
+| AC05.1 | One active Done column per board (FND-AC6.3) | Partial. Column API is T07. |
+| AC13.3 | Secrets excluded from source and bundle (FND-AC3.2, FND-AC3.3) | Partial. No-store and Origin checks are T03 and T04. |
+| AC14.1 | Local health (`GET /api/health` 200, 503 envelope) and migrations | Partial. Live Render checks are T16. Local API runs on port 5001 because AirPlay Receiver keeps 5000. |
+| V13 (fresh-database part) | Clean-database upgrade, downgrade, re-upgrade, constraint and index inspection | Passed locally. The prior-schema part waits for a second revision. |
+| V14 (local part) | Local health and the 405 path | Passed on port 5001. |
+
+## Foundation revision 2 status
+
+| AC | Foundation contribution | Status |
+|---|---|---|
+| AC14.1 | Local API on `127.0.0.1:5001` in Docker Compose, with health 200 and Alembic at head | Passed locally. Live Render checks are T16. |
+| V14 (local part) | Container health and 405 path on port 5001 | Passed locally. |
+| FND-R10 (FND-AC10.1–10.7) | Dockerfile, `.dockerignore`, `compose.yaml`, Gunicorn pin, Render Docker procedure | Passed locally (tasks 1.8 to 1.10). Live Render deployment is T16. |

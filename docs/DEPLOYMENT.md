@@ -14,7 +14,7 @@ Start after the local acceptance checks in [TEST-PLAN.md](TEST-PLAN.md) pass and
 2. In the Supabase **Connect** panel, copy the **Session pooler** settings. Use the host and username provided by the dashboard. Configure SQLAlchemy with the `postgresql+psycopg` driver. URL-encode special characters in passwords.
 3. Download the database CA certificate. Use `sslmode=verify-full` and `sslrootcert` pointing to that certificate. Verify connectivity and certificate validation before migrating.
 4. Prepare the `revotask` schema and separate migration and runtime database roles. Grant schema usage and required table operations to the runtime role. Give the migration role schema-change permissions. Use explicit schema names for models, foreign keys and the Alembic version table. For this dedicated project, Flask uses SQL directly and the Supabase Data API can be disabled.
-5. Run `flask --app app:create_app db upgrade` once with the migration role from the candidate commit. Record the result of `flask --app app:create_app db current`. Maintain compatibility with the prior app release while both versions may run.
+5. With the migration role from the candidate commit, run `flask --app app:create_app bootstrap-schema` once. It creates the `revotask` schema only when it is missing and never drops or alters an existing schema. Then run `flask --app app:create_app db upgrade` once. Record the result of `flask --app app:create_app db current`. Maintain compatibility with the prior app release while both versions may run.
 
 Example connection format. All angle-bracketed values are placeholders.
 
@@ -24,15 +24,28 @@ DATABASE_URL=postgresql+psycopg://<role>.<project_ref>:<encoded_password>@<sessi
 
 References: [connection modes](https://supabase.com/docs/guides/database/connecting-to-postgres), [TLS](https://supabase.com/docs/guides/platform/ssl-enforcement), [Data API security](https://supabase.com/docs/guides/api/securing-your-api).
 
-## 3. Flask on Render
+## 3. Flask on Render (Docker Web Service)
 
-1. Create a Python Web Service from the GitHub repo. Set **Root Directory** to `backend`.
-2. Use `pip install -r requirements.txt` as the build command. Use `gunicorn --bind 0.0.0.0:$PORT 'app:create_app()'` as the start command, assuming T01 uses this entry point.
-3. Set **Health Check Path** to `/api/health`. Configure `APP_ENV=production`, the runtime `DATABASE_URL`, `JWT_SECRET_KEY`, `LOG_LEVEL` and any rate-limiter settings the implementation uses. Install the CA certificate as Render Secret File `supabase-ca.crt`. Keep migration credentials in the environment that runs migrations.
-4. Use a controlled pre-deploy migration on a plan that supports it. If you migrate manually, run the migration and verify its revision before triggering the deployment. Keep migrations outside the Gunicorn worker startup path.
-5. Verify the public HTTPS health endpoint. Register and log in with a test account via Postman, then check one endpoint from each Blueprint as described in V14.
+Render builds the same `backend/Dockerfile` that local Compose uses (`compose.yaml`). Nothing in the image changes between local and Render. Settings come from the environment only. This procedure is for the release phase (T16). Do not run it before local acceptance passes.
 
-References: [Flask on Render](https://render.com/docs/deploy-flask), [monorepos](https://render.com/docs/monorepo-support), [deploy phases](https://render.com/docs/deploys), [secret files](https://render.com/docs/configure-environment-variables), [health checks](https://render.com/docs/health-checks).
+1. Create a Web Service from the GitHub repository. Set **Language** to **Docker**, **Root Directory** to `backend` (so `backend/.dockerignore` applies to the build), and **Dockerfile Path** to `./Dockerfile`. Choose a plan that supports Docker services.
+2. Do not set a build or start command. The image's `CMD` runs `gunicorn --bind 0.0.0.0:${PORT} 'app:create_app()'`, and Render provides `PORT`. Optionally set `GUNICORN_WORKERS` (default 2). Render provides `PORT` (default 10000). Gunicorn binds `0.0.0.0` on that port, which is what Render requires for web services.
+3. Set **Health Check Path** to `/api/health`. Set `APP_ENV=production`, the runtime `DATABASE_URL` (the Supabase session pooler URL from section 2 with `sslmode=verify-full` and `sslrootcert=/etc/secrets/supabase-ca.crt`), `JWT_SECRET_KEY` (at least 32 characters, generated for production only) and `LOG_LEVEL`. Install the CA certificate as Render Secret File `supabase-ca.crt`. Do not put `DOCKER_DATABASE_URL`, `TEST_DATABASE_URL` or any local `.env` value in Render.
+4. Run the migration as a separate one-off step with the migration role, before triggering a deploy that needs a new revision. Use the candidate commit's image or a local checkout of it:
+
+   ```bash
+   cd backend
+   DATABASE_URL='<migration-role URL from section 2>' flask --app app:create_app bootstrap-schema
+   DATABASE_URL='<migration-role URL from section 2>' flask --app app:create_app db upgrade
+   DATABASE_URL='<migration-role URL from section 2>' flask --app app:create_app db current
+   ```
+
+   Keep migration credentials out of the Render service's environment. Gunicorn does not run migrations. Record the `db current` output in the evidence log.
+5. Trigger the deploy. Confirm the Render health check passes on `/api/health`. Then verify the public HTTPS endpoints with `curl https://<render-host>/api/health`, a Postman register and login with a test account, and one endpoint from each Blueprint (V14).
+
+Local parity: run the same image with `docker compose up -d backend` after setting `DOCKER_DATABASE_URL` in the root `.env`. Local Compose publishes `127.0.0.1:5001`. Render listens on the port it assigns through `PORT` and routes public HTTPS traffic to it.
+
+References: [Render Docker deploys](https://render.com/docs/docker), [Render web services and port binding](https://render.com/docs/web-services), [Render secret files](https://render.com/docs/configure-environment-variables), [Supabase connecting](https://supabase.com/docs/guides/database/connecting-to-postgres), [TLS](https://supabase.com/docs/guides/platform/ssl-enforcement).
 
 ## 4. Next.js on Vercel
 
