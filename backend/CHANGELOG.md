@@ -4,6 +4,11 @@ Record actual changes for this component. Reference the matching app release in 
 
 ## [Unreleased]
 
+- Boards and membership (T05) implemented locally: E05–E09 for boards and E10–E12 for members, in `app/blueprints/boards/`. Errors use `NOT_FOUND` (404), `USER_NOT_FOUND` (404, no `fields`), `FORBIDDEN` (403) and `STATE_CONFLICT` (409). Non-members and removed members get the same 404 as a missing board. Members get 403 on Admin-only actions. Bodies are validated before authorization. Duplicate board names are allowed.
+- Member removal (E12) soft-deletes the membership and clears that member's active card assignments on the board, in one transaction under the board lock (AC04.2). Verified by `tests/test_board_members_assignments.py` (3 tests, including rollback) and Property 15 in `tests/test_boards_properties_scoping.py`.
+- Generic validators moved from the auth schema to `app/validation.py`. The auth regression is unchanged (202 auth tests pass).
+- Verification: `ruff check .` is clean. `pytest` gives 1146 passed and 1 skipped. The skip is deliberate: E05 has no error response for an authenticated caller (`tests/test_boards_properties_writes.py`). The backend Docker image was rebuilt with `docker compose up -d --build backend`, and the boards route returns 401 without a token.
+- Known limits: `USER_NOT_FOUND` reveals whether an email belongs to a registered user, visible only to board Admins (accepted for v1). The per-admin E11 rate limit with shared storage is T16. Open question: E12 also clears cards whose column is soft-deleted; the user has not decided this.
 - Register password rule (revision 3): 8 to 128 characters with at least one ASCII uppercase letter, lowercase letter and special character (`PASSWORD_MIN = 8`, `_password_composition` in `schema.py`). Login is unchanged. Migration and schema: none.
 - Authentication (T03) implemented locally: `POST /api/auth/register`, `/login`, `/logout` and `GET /api/users/me` (E02–E04, E30 read). Argon2id hashing (`argon2-cffi` defaults), Marshmallow schemas that accept exactly the declared fields, a `@token_required` guard that returns 401 `AUTH_REQUIRED` for every bad credential (the library default is 422), a `revoked_tokens` blocklist written with `ON CONFLICT DO NOTHING`, and `actor_id` in the request log.
 - Added 413 `CONTENT_TOO_LARGE` (body over 64 KiB), 415 `UNSUPPORTED_MEDIA_TYPE` and 400 for malformed JSON in the shared envelope. Every response under `/api/` except `GET /api/health` carries `Cache-Control: private, no-store`.
@@ -30,11 +35,17 @@ Record actual changes for this component. Reference the matching app release in 
 
 ```markdown
 ## [X.Y.Z] - YYYY-MM-DD
+
 ### Added
+
 - …
+
 ### Changed
+
 - …
+
 ### Fixed
+
 - …
 - App release and commit: …
 - API, migration or environment impact: …

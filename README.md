@@ -2,13 +2,13 @@
 
 RevoTask is a collaborative Kanban app for small teams. Members organize cards into columns, move cards through a workflow, assign work and discuss cards. Board admins manage membership and columns.
 
-**Status:** Foundation (T01–T02) and authentication (T03–T04) are implemented and checked locally. The Flask API (Docker image with Compose on port 5001) serves health, register, login, logout and the current-user read, with Argon2id passwords, JWT revocation and local rate limits. The Next.js app has `/register`, `/login` and a protected shell at `/`, with the session in an HttpOnly cookie. Local checks: backend 431 tests, frontend 446 tests, a 75-check HTTP smoke on one Gunicorn worker and a 96-check Chrome run (device emulation, no real phone). The register password needs 8 to 128 characters with an uppercase letter, a lowercase letter and a special character. Boards and later slices, Playwright, live deployments and submission evidence are pending. Production rate limiting needs shared storage and trusted client address handling before release (T16). Results: [foundation evidence](evidence/foundation-T01-T02.md) and [authentication evidence](evidence/authentication-T03-T04.md).
+**Status:** Foundation (T01–T02), authentication (T03–T04) and boards and membership (T05–T06) are implemented locally. The Flask API (Docker image with Compose on port 5001) serves health, register, login, logout, the current-user read, and the board and membership routes (E05–E12). Passwords use Argon2id, and JWT revocation and local rate limits are in place. Admins create, rename and delete boards and manage members. Removing a member clears that member's card assignments on that board. The Next.js app has `/register`, `/login`, a dashboard at `/`, and board pages at `/boards/[id]`. The session is in an HttpOnly cookie. The register password needs 8 to 128 characters with an uppercase letter, a lowercase letter and a special character. Local checks: backend 1146 tests passed and 1 skipped, with ruff clean. Frontend typecheck and lint are clean, and 950 Vitest tests in 50 files pass. Authentication also has a 75-check HTTP smoke and a 96-check Chrome run (device emulation, no real phone). Pending: the mobile check of the boards screens at 320, 375, 768 and 1280 px, the manual boards journey, Playwright (T15), live deployments and submission evidence. Production rate limiting needs shared storage and trusted client address handling before release (T16). Adding members can reveal whether an email is registered to a user, a risk accepted for v1. Results: [foundation evidence](evidence/foundation-T01-T02.md), [authentication evidence](evidence/authentication-T03-T04.md) and [boards and membership evidence](evidence/boards-membership-T05-T06.md).
 
-| Project | Technology | Live URL |
-|---|---|---|
-| Web | Next.js, React, TypeScript, Tailwind CSS, daisyUI | Pending Vercel URL |
-| API | Flask, SQLAlchemy, Marshmallow, Flask-Migrate, Gunicorn | Pending Render URL |
-| Data | PostgreSQL | Supabase in production |
+| Project | Technology                                              | Live URL               |
+| ------- | ------------------------------------------------------- | ---------------------- |
+| Web     | Next.js, React, TypeScript, Tailwind CSS, daisyUI       | Pending Vercel URL     |
+| API     | Flask, SQLAlchemy, Marshmallow, Flask-Migrate, Gunicorn | Pending Render URL     |
+| Data    | PostgreSQL                                              | Supabase in production |
 
 ## Local setup and tests
 

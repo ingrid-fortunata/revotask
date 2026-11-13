@@ -4,6 +4,11 @@ Record actual changes for this component. Reference the matching app release in 
 
 ## [Unreleased]
 
+- Boards and membership UI (T06) implemented locally: dashboard at `/` with the board list, role badges, create form and empty state. Board page at `/boards/[id]` with the name, role badge, rename and delete (Admin only). Members panel with add and remove (Admin only; Remove on `member` rows only). Shared `BaseModal` and `ConfirmDialog` on native `<dialog>` for delete and remove.
+- Data flow: board reads run on the server (`lib/server/boards.ts`). Writes go through same-origin Route Handlers under `app/api/boards/` that share `handlePrivateWrite`. The browser client accepts only declared UUID paths. A 404 on a board request shows the access error and goes to `/`. `USER_NOT_FOUND` shows under the email field only.
+- Added `NOT_FOUND`, `USER_NOT_FOUND` and `STATE_CONFLICT` error codes with fallback copy. Board name and email rules are tested against the shared fixture.
+- Mobile classes (FE-S4–S6) are applied to the new screens. Not yet checked in a browser.
+- Verification: typecheck and lint are clean. Vitest: 50 files and 950 tests passing. The browser and mobile check at 320, 375, 768 and 1280 px and the manual journey are pending. The dev server could not start from the agent shell, so no browser run has happened.
 - Foundation (T01–T02) scaffold: Next.js 16.4.6 App Router with React 19.3.1, TypeScript 5.9.3, Tailwind CSS 4.3.5 and daisyUI 5.8.0. Placeholder `/` is a Server Component with a daisyUI card. Node pinned to 24.22.1.
 - Vitest 4.1.12 with jsdom and React Testing Library. `app/page.test.tsx` asserts the rendered heading and card.
 - Verification: `npm ci`, lint, typecheck, test and build pass from a clean install. Dev server returned 200 for `/`. The build contains the daisyUI card rules. A sentinel placed in the build environment did not appear in `.next/`.
@@ -26,11 +31,17 @@ Record actual changes for this component. Reference the matching app release in 
 
 ```markdown
 ## [X.Y.Z] - YYYY-MM-DD
+
 ### Added
+
 - …
+
 ### Changed
+
 - …
+
 ### Fixed
+
 - …
 - App release and commit: …
 - API, migration or environment impact: …
