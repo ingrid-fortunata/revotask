@@ -11,6 +11,12 @@ export interface FormFieldProps {
   hint?: string;
   autoComplete?: string;
   inputRef?: Ref<HTMLInputElement>;
+  /** Render a textarea instead of an input (the card description). Same label, hint and error. */
+  multiline?: boolean;
+  /** Visible lines of a multiline field. */
+  rows?: number;
+  /** Ref for the textarea when `multiline` is set. */
+  textareaRef?: Ref<HTMLTextAreaElement>;
   onChange: (value: string) => void;
 }
 
@@ -27,6 +33,9 @@ export function FormField({
   hint,
   autoComplete,
   inputRef,
+  multiline = false,
+  rows = 4,
+  textareaRef,
   onChange,
 }: FormFieldProps) {
   const errorId = `${id}-error`;
@@ -37,18 +46,32 @@ export function FormField({
       <label htmlFor={id} className="text-sm font-medium">
         {label}
       </label>
-      <input
-        id={id}
-        name={name}
-        ref={inputRef}
-        type={type}
-        value={value}
-        autoComplete={autoComplete}
-        onChange={(event) => onChange(event.target.value)}
-        aria-invalid={error ? true : undefined}
-        aria-describedby={describedBy}
-        className={`input input-bordered min-h-11 min-w-11 w-full text-base${error ? " input-error" : ""}`}
-      />
+      {multiline ? (
+        <textarea
+          id={id}
+          name={name}
+          ref={textareaRef}
+          rows={rows}
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          aria-invalid={error ? true : undefined}
+          aria-describedby={describedBy}
+          className={`textarea textarea-bordered min-h-11 min-w-11 w-full text-base${error ? " textarea-error" : ""}`}
+        />
+      ) : (
+        <input
+          id={id}
+          name={name}
+          ref={inputRef}
+          type={type}
+          value={value}
+          autoComplete={autoComplete}
+          onChange={(event) => onChange(event.target.value)}
+          aria-invalid={error ? true : undefined}
+          aria-describedby={describedBy}
+          className={`input input-bordered min-h-11 min-w-11 w-full text-base${error ? " input-error" : ""}`}
+        />
+      )}
       {hint ? (
         <p id={hintId} className="break-words text-sm opacity-80">
           {hint}

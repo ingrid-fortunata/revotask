@@ -5,8 +5,8 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { BaseModal } from "./BaseModal";
 
 // jsdom has no focus trap and no Escape-to-cancel. The setup file stubs showModal and close to
-// toggle the `open` attribute, so these tests cover BaseModal's own logic. Tab containment is
-// the browser's job and is checked in the real browser by task 7.1 (FE-C3, DD12).
+// toggle the `open` attribute, so these tests cover BaseModal's own logic. BaseModal wraps Tab
+// itself, because Chrome moves focus out of a modal dialog after its last control (FE-C3, DD12).
 
 function Host({
   blockClose = false,
@@ -100,6 +100,23 @@ describe("BaseModal", () => {
     expect(proceeded).toBe(false);
     expect(onClose).not.toHaveBeenCalled();
     expect(getDialog()).toHaveAttribute("open");
+  });
+
+  it("wraps Tab from the last control to the first and Shift+Tab from the first to the last", async () => {
+    render(<Host onClose={vi.fn()} />);
+    await userEvent.click(screen.getByRole("button", { name: "Open" }));
+    const input = screen.getByLabelText("Board name");
+    const done = screen.getByRole("button", { name: "Done" });
+    expect(input).toHaveFocus();
+
+    await userEvent.tab();
+    expect(done).toHaveFocus();
+    await userEvent.tab();
+    expect(input).toHaveFocus();
+    await userEvent.tab({ shift: true });
+    expect(done).toHaveFocus();
+    await userEvent.tab({ shift: true });
+    expect(input).toHaveFocus();
   });
 
   it("returns focus to the opener when it closes", async () => {

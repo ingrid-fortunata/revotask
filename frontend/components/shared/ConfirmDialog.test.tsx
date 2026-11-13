@@ -4,8 +4,8 @@ import { useState } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { ConfirmDialog, type ConfirmDialogProps } from "./ConfirmDialog";
 
-// Tab containment is provided by the browser's modal dialog and is verified in the real browser
-// by task 7.1. These tests run in jsdom, where the setup file stubs showModal and close.
+// Tab wrapping is done by BaseModal (see BaseModal.test.tsx). These tests run in jsdom, where the
+// setup file stubs showModal and close.
 
 const TARGET = "Remove Ada from this board?";
 
@@ -116,6 +116,21 @@ describe("ConfirmDialog", () => {
 
     expect(cancel).toHaveFocus();
     await userEvent.tab();
+    expect(confirm).toHaveFocus();
+  });
+
+  it("keeps Tab inside the open dialog, so it never reaches the opener outside it", async () => {
+    render(<Host onConfirm={vi.fn()} />);
+    await userEvent.click(screen.getByRole("button", { name: "Remove Ada" }));
+    const cancel = screen.getByRole("button", { name: "Cancel" });
+    const confirm = screen.getByRole("button", { name: "Remove" });
+    expect(cancel).toHaveFocus();
+
+    await userEvent.tab();
+    expect(confirm).toHaveFocus();
+    await userEvent.tab();
+    expect(cancel).toHaveFocus();
+    await userEvent.tab({ shift: true });
     expect(confirm).toHaveFocus();
   });
 

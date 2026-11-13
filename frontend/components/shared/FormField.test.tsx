@@ -61,3 +61,46 @@ describe("FormField hint", () => {
     expect(screen.getByLabelText("Password")).not.toHaveAttribute("aria-invalid");
   });
 });
+
+function MultilineHarness({ error, hint }: { error?: string; hint?: string }) {
+  const [value, setValue] = useState("");
+  return (
+    <FormField
+      id="description"
+      name="description"
+      label="Description"
+      multiline
+      rows={3}
+      value={value}
+      error={error}
+      hint={hint}
+      onChange={setValue}
+    />
+  );
+}
+
+describe("FormField multiline", () => {
+  it("renders a labelled textarea with the same wiring as the input", async () => {
+    render(<MultilineHarness hint="Optional." error="Must be at most 2000 characters." />);
+    const area = screen.getByLabelText("Description");
+    expect(area.tagName).toBe("TEXTAREA");
+    expect(area).toHaveAttribute("name", "description");
+    expect(area).toHaveAttribute("rows", "3");
+    expect(area).toHaveAttribute("aria-invalid", "true");
+    expect(area.getAttribute("aria-describedby")).toBe("description-hint description-error");
+    await userEvent.type(area, "Steps to reproduce");
+    expect(area).toHaveValue("Steps to reproduce");
+  });
+
+  it("keeps the 44 px and 16 px mobile classes", () => {
+    render(<MultilineHarness />);
+    const area = screen.getByLabelText("Description");
+    expect(area.className).toMatch(/min-h-11/);
+    expect(area.className).toMatch(/text-base/);
+  });
+
+  it("leaves the single-line field unchanged: still an input", () => {
+    render(<Harness />);
+    expect(screen.getByLabelText("Email").tagName).toBe("INPUT");
+  });
+});
