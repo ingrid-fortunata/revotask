@@ -24,7 +24,8 @@ export interface BoardShellProps {
 
 // Client island for the board page (FE-C1, FE-C2). It owns the header name after a rename, the
 // rename form and the delete confirmation (Requirements 2.7, 3.7–3.9). Member controls are
-// supplied through membersPanel so task 5.4 can add them without changing this API.
+// supplied through membersPanel so task 5.4 can add them without changing this API. Columns come
+// first in the DOM and form the wide column from 1024 px; members sit in the 22 rem side column.
 export function BoardShell({ board, members, membersPanel }: BoardShellProps) {
   const router = useRouter();
   const { handleError } = useErrorHandler();
@@ -73,7 +74,7 @@ export function BoardShell({ board, members, membersPanel }: BoardShellProps) {
   }
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-4 sm:gap-6">
       <BoardHeader
         name={name}
         role={board.role}
@@ -83,24 +84,30 @@ export function BoardShell({ board, members, membersPanel }: BoardShellProps) {
         onRequestDelete={() => setDeleteOpen(true)}
       />
       {renameOpen && controls.canRename ? (
-        <RenameBoardForm
-          boardId={board.id}
-          currentName={name}
-          onRenamed={handleRenamed}
-          onClose={closeRename}
-        />
+        <div className="surface p-4 sm:p-5">
+          <RenameBoardForm
+            boardId={board.id}
+            currentName={name}
+            onRenamed={handleRenamed}
+            onClose={closeRename}
+          />
+        </div>
       ) : null}
-      {membersPanel ?? (
-        <section aria-labelledby="members-heading" className="flex flex-col gap-2">
-          <h2 id="members-heading" className="text-lg font-semibold">
-            Members
-          </h2>
-          <p className="break-words">
-            {members.length} {members.length === 1 ? "member" : "members"}
-          </p>
-        </section>
-      )}
-      <ColumnsPlaceholder />
+      <div className="grid gap-4 sm:gap-6 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-start">
+        <ColumnsPlaceholder />
+        <div className="min-w-0">
+          {membersPanel ?? (
+            <section aria-labelledby="members-heading" className="surface flex flex-col gap-2 p-4 sm:p-5">
+              <h2 id="members-heading" className="text-lg font-semibold">
+                Members
+              </h2>
+              <p className="break-words">
+                {members.length} {members.length === 1 ? "member" : "members"}
+              </p>
+            </section>
+          )}
+        </div>
+      </div>
       {controls.canDelete ? (
         <ConfirmDialog
           open={deleteOpen}

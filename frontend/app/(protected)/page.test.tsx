@@ -81,7 +81,7 @@ describe("HomePage dashboard", () => {
   it("is mobile first: padded, width-capped and without full-height centering", async () => {
     render(await HomePage());
     const main = screen.getByRole("main");
-    expect(main).toHaveClass("w-full", "max-w-3xl", "p-4", "sm:p-6");
+    expect(main).toHaveClass("w-full", "max-w-6xl", "p-4", "sm:p-6", "lg:p-8");
     expect(main.className).not.toMatch(/min-h-screen|h-screen/);
   });
 });

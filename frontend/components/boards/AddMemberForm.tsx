@@ -79,7 +79,7 @@ export function AddMemberForm({ boardId, onAdded }: AddMemberFormProps) {
       noValidate
       aria-busy={pending}
       aria-label="Add member"
-      className="flex flex-col gap-2 sm:flex-row sm:items-end"
+      className="flex flex-col gap-2 sm:flex-row sm:items-end lg:flex-col lg:items-stretch"
     >
       <div className="min-w-0 sm:flex-1">
         <FormField
@@ -94,7 +94,7 @@ export function AddMemberForm({ boardId, onAdded }: AddMemberFormProps) {
           onChange={setEmail}
         />
       </div>
-      <BaseButton type="submit" loading={pending} className="w-full sm:w-auto">
+      <BaseButton type="submit" loading={pending} className="w-full sm:w-auto lg:w-full">
         {pending ? "Adding…" : "Add member"}
       </BaseButton>
     </form>

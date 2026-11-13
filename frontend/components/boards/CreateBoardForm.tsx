@@ -57,7 +57,7 @@ export function CreateBoardForm({ onCreated }: CreateBoardFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate aria-busy={pending} className="flex flex-col gap-2 sm:flex-row sm:items-end">
+    <form onSubmit={handleSubmit} noValidate aria-busy={pending} className="flex flex-col gap-2 sm:flex-row sm:items-end lg:flex-col lg:items-stretch">
       {formError ? (
         <div role="alert" className="alert alert-error w-full break-words">
           {formError}
@@ -73,7 +73,7 @@ export function CreateBoardForm({ onCreated }: CreateBoardFormProps) {
           onChange={setName}
         />
       </div>
-      <BaseButton type="submit" loading={pending} className="w-full sm:w-auto">
+      <BaseButton type="submit" loading={pending} className="w-full sm:w-auto lg:w-full">
         {pending ? "Creating…" : "Create board"}
       </BaseButton>
     </form>

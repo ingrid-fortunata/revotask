@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { AddMemberForm } from "@/components/boards/AddMemberForm";
+import { Avatar } from "@/components/shared/Avatar";
 import { BaseBadge } from "@/components/shared/BaseBadge";
 import { BaseButton } from "@/components/shared/BaseButton";
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
@@ -80,15 +81,19 @@ export function MembersPanel({ boardId, viewerRole, members }: MembersPanelProps
   }
 
   return (
-    <section aria-labelledby="members-heading" className="flex min-w-0 flex-col gap-4">
-      <h2 id="members-heading" className="text-lg font-semibold">
-        Members
-      </h2>
+    <section aria-labelledby="members-heading" className="surface flex min-w-0 flex-col gap-4 p-4 sm:p-5">
+      <div className="flex items-baseline justify-between gap-2">
+        <h2 id="members-heading" className="text-lg font-semibold">
+          Members
+        </h2>
+        <p className="text-sm tabular-nums text-base-content/70">{rows.length}</p>
+      </div>
       {controls.canAddMember ? <AddMemberForm boardId={boardId} onAdded={handleAdded} /> : null}
-      <ul className="flex flex-col gap-2">
+      <ul className="flex flex-col divide-y divide-base-300">
         {rows.map((row) => (
-          <li key={row.user_id} className="flex flex-wrap items-center justify-between gap-2">
-            <span className="min-w-0 break-words">{row.name}</span>
+          <li key={row.user_id} className="flex flex-wrap items-center gap-x-3 gap-y-1 py-2">
+            <Avatar name={row.name} />
+            <span className="min-w-0 flex-1 break-words font-medium">{row.name}</span>
             <div className="flex items-center gap-2">
               <BaseBadge variant={row.role === "admin" ? "primary" : "ghost"}>
                 {ROLE_LABEL[row.role]}

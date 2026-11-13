@@ -4,12 +4,12 @@ import { getCurrentUser } from "@/lib/server/session";
 
 // Dashboard (Requirements 1.5–1.8, DD11). The session is verified here, not only in the layout
 // (DD6). getBoards() reads E05 through the server-only helper, so no token reaches the browser.
-// Mobile first: padded, width-capped and without full-height centering (FE-S4).
+// Dashboard shell: padded, width-capped and without full-height centering (FE-S4).
 export default async function HomePage() {
   await getCurrentUser();
   const boards = await getBoards();
   return (
-    <main className="mx-auto w-full max-w-3xl p-4 sm:p-6">
+    <main className="mx-auto w-full max-w-6xl p-4 sm:p-6 lg:p-8">
       <BoardsDashboard initialBoards={boards} />
     </main>
   );

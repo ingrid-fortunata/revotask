@@ -26,20 +26,47 @@ export function BoardsDashboard({ initialBoards }: BoardsDashboardProps) {
     setBoards((current) => [...current, board].sort(byNameThenId));
   }
 
+  const adminCount = boards.filter((board) => board.role === "admin").length;
+  const stats = [
+    { label: "Total boards", value: boards.length },
+    { label: "You manage", value: adminCount },
+    { label: "You join", value: boards.length - adminCount },
+  ];
+
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="break-words text-2xl font-semibold">Your boards</h1>
-      {boards.length === 0 ? (
-        <p className="break-words">You have no boards yet.</p>
-      ) : (
-        <BoardList boards={boards} />
-      )}
-      <section aria-labelledby="create-board-heading" className="flex flex-col gap-2">
-        <h2 id="create-board-heading" className="text-lg font-semibold">
-          Create a board
-        </h2>
-        <CreateBoardForm onCreated={handleCreated} />
-      </section>
+      <h1 className="break-words text-2xl font-semibold tracking-tight sm:text-3xl">Your boards</h1>
+      {boards.length > 0 ? (
+        <dl className="surface grid grid-cols-3 divide-x divide-base-300">
+          {stats.map((stat) => (
+            <div key={stat.label} className="flex min-w-0 flex-col gap-1 p-3 sm:p-5">
+              <dt className="text-sm text-base-content/70">{stat.label}</dt>
+              <dd className="text-2xl font-semibold tabular-nums sm:text-3xl">{stat.value}</dd>
+            </div>
+          ))}
+        </dl>
+      ) : null}
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start">
+        <div className="min-w-0 lg:col-start-1 lg:row-start-1">
+          {boards.length === 0 ? (
+            <div className="surface flex flex-col gap-1 border-dashed p-6">
+              <p className="break-words font-medium">You have no boards yet.</p>
+              <p className="break-words text-base-content/70">Create your first board to start planning with your team.</p>
+            </div>
+          ) : (
+            <BoardList boards={boards} />
+          )}
+        </div>
+        <section
+          aria-labelledby="create-board-heading"
+          className="surface flex flex-col gap-3 p-4 sm:p-5 lg:col-start-2 lg:row-start-1"
+        >
+          <h2 id="create-board-heading" className="text-lg font-semibold">
+            Create a board
+          </h2>
+          <CreateBoardForm onCreated={handleCreated} />
+        </section>
+      </div>
     </div>
   );
 }
