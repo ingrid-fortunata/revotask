@@ -476,12 +476,12 @@ async function boardChecks(role, page, width, ids) {
 
   // Dialogs available to both roles.
   await dialogChecks(role, page, width, "Move card", openerClick(byLabel("Move Write spec")));
-  await dialogChecks(role, page, width, "Edit card", openerClick(byLabel("Edit Write spec")));
+  await dialogChecks(role, page, width, "Card details", openerClick(byLabel("Open Write spec")));
   if (admin) {
     await dialogChecks(role, page, width, "Edit column", openerClick(byLabel("Edit column To do")));
     await dialogChecks(role, page, width, "Delete column confirm", openerClick(byLabel("Delete column Done")));
     // The card delete confirm opens from inside the edit dialog.
-    await page.eval(openerClick(byLabel("Edit Write spec")));
+    await page.eval(openerClick(byLabel("Open Write spec")));
     await page.tryWait("!!document.querySelector('dialog[open]')");
     await waitForDialogSettled(page);
     await page.eval(`(() => { const d = document.querySelector('dialog[open]'); const b = [...d.querySelectorAll('button')].find((x) => x.textContent.trim() === 'Delete card'); window.__opener = b; b.focus(); b.click(); })()`);
@@ -527,16 +527,16 @@ async function journey(page, ids) {
   await page.waitFor(`!!document.querySelector('${formSel}')`, "add-card form");
   await page.eval(setValue(`${formSel} input`, "Journey card"));
   await page.eval(`document.querySelector('${formSel}').requestSubmit()`);
-  record(R, "journey", W, "add card: the card appears in the new column", await page.tryWait(`!!${byLabel("Edit Journey card")}`));
+  record(R, "journey", W, "add card: the card appears in the new column", await page.tryWait(`!!${byLabel("Open Journey card")}`));
 
   // 3 edit and assign
-  await page.eval(openerClick(byLabel("Edit Journey card")));
+  await page.eval(openerClick(byLabel("Open Journey card")));
   await page.tryWait("!!document.querySelector('dialog[open]')");
   await waitForDialogSettled(page);
   await page.eval(setValue("#edit-card-title", "Journey card edited"));
   await page.eval(setValue("#edit-card-assignee", MEMBER.id));
   await page.eval(clickInDialog("Save card"));
-  record(R, "journey", W, "edit and assign: the card shows the new title and the assignee", await page.tryWait(`!!${byLabel("Edit Journey card edited")} && document.body.innerText.includes(${JSON.stringify(MEMBER.name)})`));
+  record(R, "journey", W, "edit and assign: the card shows the new title and the assignee", await page.tryWait(`!!${byLabel("Open Journey card edited")} && document.body.innerText.includes(${JSON.stringify(MEMBER.name)})`));
 
   // 4 move with the Move dialog (the touch path) to another column
   await page.eval(openerClick(byLabel("Move Journey card edited")));
@@ -584,14 +584,14 @@ async function journey(page, ids) {
   record(R, "journey", W, "keyboard: Escape closes it and focus returns to the Move button", (await page.tryWait("!document.querySelector('dialog[open]')")) && (await page.eval("document.activeElement === window.__opener")));
 
   // 8 delete the journey card
-  await page.eval(openerClick(byLabel("Edit Journey card edited")));
+  await page.eval(openerClick(byLabel("Open Journey card edited")));
   await page.tryWait("!!document.querySelector('dialog[open]')");
   await waitForDialogSettled(page);
   await page.eval(clickInDialog("Delete card"));
   await sleep(500);
   await waitForDialogSettled(page);
   await page.eval(`(() => { const ds = [...document.querySelectorAll('dialog[open]')]; const d = ds[ds.length - 1]; [...d.querySelectorAll('button')].find((x) => x.textContent.trim() === 'Delete card').click(); })()`);
-  record(R, "journey", W, "delete: the card is removed", await page.tryWait(`!${byLabel("Edit Journey card edited")}`));
+  record(R, "journey", W, "delete: the card is removed", await page.tryWait(`!${byLabel("Open Journey card edited")}`));
 }
 
 // ---- synthetic drag at 1280 px ---------------------------------------------------------------
@@ -616,11 +616,11 @@ async function dragCheck(page, ids) {
     card.dispatchEvent(new DragEvent('dragend', { bubbles: true, cancelable: true, dataTransfer: dt }));
     return title;
   })()`);
-  const moved = await page.tryWait(`(() => { const lane = [...document.querySelectorAll('section[aria-labelledby]')].find((s) => s.querySelector('h3')?.textContent === 'In progress'); return !!lane && lane.innerText.includes(${JSON.stringify(result.replace(/^Edit /, ""))}); })()`, 6000);
+  const moved = await page.tryWait(`(() => { const lane = [...document.querySelectorAll('section[aria-labelledby]')].find((s) => s.querySelector('h3')?.textContent === 'In progress'); return !!lane && lane.innerText.includes(${JSON.stringify(result.replace(/^Open /, ""))}); })()`, 6000);
   record(R, "drag (synthetic events)", W, "a drop on the end of In progress moves the card", moved);
   await page.goto(BOARD(ids.board.id));
   await page.waitFor(`!!${REGION}`, "board after reload");
-  record(R, "drag (synthetic events)", W, "reload: the dragged card is still in In progress", await page.eval(`(() => { const lane = [...document.querySelectorAll('section[aria-labelledby]')].find((s) => s.querySelector('h3')?.textContent === 'In progress'); return !!lane && lane.innerText.includes(${JSON.stringify(result.replace(/^Edit /, ""))}); })()`));
+  record(R, "drag (synthetic events)", W, "reload: the dragged card is still in In progress", await page.eval(`(() => { const lane = [...document.querySelectorAll('section[aria-labelledby]')].find((s) => s.querySelector('h3')?.textContent === 'In progress'); return !!lane && lane.innerText.includes(${JSON.stringify(result.replace(/^Open /, ""))}); })()`));
 }
 
 async function main() {

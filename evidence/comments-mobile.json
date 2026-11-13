@@ -1,0 +1,3626 @@
+{
+  "slice": "comments (T10)",
+  "browser": "Chrome/157.0.8103.51",
+  "mode": "headless Chrome with device emulation (not a real phone), touch emulation below 640 px",
+  "uncertainAdd": "the real server saves the comment and the page's fetch then rejects that one response, so the lost-response case runs against the real API",
+  "widths": [
+    320,
+    375,
+    768,
+    1280
+  ],
+  "total": 480,
+  "failed": 0,
+  "results": [
+    {
+      "role": "member",
+      "page": "board",
+      "width": 320,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "member",
+      "page": "board",
+      "width": 320,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "9 controls"
+    },
+    {
+      "role": "member",
+      "page": "board",
+      "width": 320,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board",
+      "width": 320,
+      "check": "every card shows an Open button named after its title",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 320,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 320,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "15 controls"
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 320,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 320,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "4 controls"
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 320,
+      "check": "the wide dialog box is no wider than the viewport",
+      "pass": true,
+      "detail": "box 320px, viewport 320px"
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 320,
+      "check": "nothing inside the dialog scrolls sideways (a long comment wraps)",
+      "pass": true,
+      "detail": "overflow 0px"
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 320,
+      "check": "the close control is reachable at the top of the dialog",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 320,
+      "check": "the comment field is reachable by scrolling inside the dialog",
+      "pass": true,
+      "detail": "dialog scrolls inside itself"
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 320,
+      "check": "pinch zoom stays enabled",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 320,
+      "check": "focus moves into the dialog",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 320,
+      "check": "Tab keeps focus inside the dialog (8 presses)",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 320,
+      "check": "Cancel closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 320,
+      "check": "Cancel sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 320,
+      "check": "focus returns to the opener after Cancel",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 320,
+      "check": "Escape closes the dialog",
+      "pass": true,
+      "detail": "0 dialogs open"
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 320,
+      "check": "Escape sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 320,
+      "check": "focus returns to the opener after Escape",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details",
+      "width": 320,
+      "check": "the dialog is named Card details and lists the four comments",
+      "pass": true,
+      "detail": "{\"name\":\"Card details\",\"items\":4}"
+    },
+    {
+      "role": "member",
+      "page": "Card details",
+      "width": 320,
+      "check": "Edit and Delete show only on the viewer's own comments (3)",
+      "pass": true,
+      "detail": "edit 3, delete 3"
+    },
+    {
+      "role": "member",
+      "page": "Card details",
+      "width": 320,
+      "check": "the edited comment shows the Edited text marker and a multi-line comment keeps its lines",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 320,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 320,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "9 controls"
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 320,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 320,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "4 controls"
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 320,
+      "check": "the wide dialog box is no wider than the viewport",
+      "pass": true,
+      "detail": "box 320px, viewport 320px"
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 320,
+      "check": "nothing inside the dialog scrolls sideways (a long comment wraps)",
+      "pass": true,
+      "detail": "overflow 0px"
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 320,
+      "check": "the close control is reachable at the top of the dialog",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 320,
+      "check": "the comment field is reachable by scrolling inside the dialog",
+      "pass": true,
+      "detail": "dialog scrolls inside itself"
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 320,
+      "check": "pinch zoom stays enabled",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 320,
+      "check": "focus moves into the dialog",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 320,
+      "check": "Tab keeps focus inside the dialog (8 presses)",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 320,
+      "check": "Cancel closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 320,
+      "check": "Cancel sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 320,
+      "check": "focus returns to the opener after Cancel",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 320,
+      "check": "Escape closes the dialog",
+      "pass": true,
+      "detail": "0 dialogs open"
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 320,
+      "check": "Escape sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 320,
+      "check": "focus returns to the opener after Escape",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments)",
+      "width": 320,
+      "check": "shows No comments yet. and the add form",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "comment editor",
+      "width": 320,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "member",
+      "page": "comment editor",
+      "width": 320,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "16 controls"
+    },
+    {
+      "role": "member",
+      "page": "comment editor",
+      "width": 320,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "comment editor",
+      "width": 320,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "5 controls"
+    },
+    {
+      "role": "member",
+      "page": "comment editor",
+      "width": 320,
+      "check": "focus moves into the editor field",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "comment editor",
+      "width": 320,
+      "check": "Cancel closes the editor, sends no request and returns focus to Edit",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Delete comment confirm dialog",
+      "width": 320,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "member",
+      "page": "Delete comment confirm dialog",
+      "width": 320,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "member",
+      "page": "Delete comment confirm dialog",
+      "width": 320,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Delete comment confirm dialog",
+      "width": 320,
+      "check": "focus moves into the dialog",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Delete comment confirm dialog",
+      "width": 320,
+      "check": "Tab keeps focus inside the dialog (8 presses)",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Delete comment confirm dialog",
+      "width": 320,
+      "check": "Cancel closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Delete comment confirm dialog",
+      "width": 320,
+      "check": "Cancel sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "member",
+      "page": "Delete comment confirm dialog",
+      "width": 320,
+      "check": "Escape closes the dialog",
+      "pass": true,
+      "detail": "1 dialogs open"
+    },
+    {
+      "role": "member",
+      "page": "Delete comment confirm dialog",
+      "width": 320,
+      "check": "Escape sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "member",
+      "page": "board",
+      "width": 375,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "member",
+      "page": "board",
+      "width": 375,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "9 controls"
+    },
+    {
+      "role": "member",
+      "page": "board",
+      "width": 375,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board",
+      "width": 375,
+      "check": "every card shows an Open button named after its title",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 375,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 375,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "15 controls"
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 375,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 375,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "4 controls"
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 375,
+      "check": "the wide dialog box is no wider than the viewport",
+      "pass": true,
+      "detail": "box 375px, viewport 375px"
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 375,
+      "check": "nothing inside the dialog scrolls sideways (a long comment wraps)",
+      "pass": true,
+      "detail": "overflow 0px"
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 375,
+      "check": "the close control is reachable at the top of the dialog",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 375,
+      "check": "the comment field is reachable by scrolling inside the dialog",
+      "pass": true,
+      "detail": "dialog scrolls inside itself"
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 375,
+      "check": "pinch zoom stays enabled",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 375,
+      "check": "focus moves into the dialog",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 375,
+      "check": "Tab keeps focus inside the dialog (8 presses)",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 375,
+      "check": "Cancel closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 375,
+      "check": "Cancel sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 375,
+      "check": "focus returns to the opener after Cancel",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 375,
+      "check": "Escape closes the dialog",
+      "pass": true,
+      "detail": "0 dialogs open"
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 375,
+      "check": "Escape sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 375,
+      "check": "focus returns to the opener after Escape",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details",
+      "width": 375,
+      "check": "the dialog is named Card details and lists the four comments",
+      "pass": true,
+      "detail": "{\"name\":\"Card details\",\"items\":4}"
+    },
+    {
+      "role": "member",
+      "page": "Card details",
+      "width": 375,
+      "check": "Edit and Delete show only on the viewer's own comments (3)",
+      "pass": true,
+      "detail": "edit 3, delete 3"
+    },
+    {
+      "role": "member",
+      "page": "Card details",
+      "width": 375,
+      "check": "the edited comment shows the Edited text marker and a multi-line comment keeps its lines",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 375,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 375,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "9 controls"
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 375,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 375,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "4 controls"
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 375,
+      "check": "the wide dialog box is no wider than the viewport",
+      "pass": true,
+      "detail": "box 375px, viewport 375px"
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 375,
+      "check": "nothing inside the dialog scrolls sideways (a long comment wraps)",
+      "pass": true,
+      "detail": "overflow 0px"
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 375,
+      "check": "the close control is reachable at the top of the dialog",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 375,
+      "check": "the comment field is reachable by scrolling inside the dialog",
+      "pass": true,
+      "detail": "dialog scrolls inside itself"
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 375,
+      "check": "pinch zoom stays enabled",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 375,
+      "check": "focus moves into the dialog",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 375,
+      "check": "Tab keeps focus inside the dialog (8 presses)",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 375,
+      "check": "Cancel closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 375,
+      "check": "Cancel sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 375,
+      "check": "focus returns to the opener after Cancel",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 375,
+      "check": "Escape closes the dialog",
+      "pass": true,
+      "detail": "0 dialogs open"
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 375,
+      "check": "Escape sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 375,
+      "check": "focus returns to the opener after Escape",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments)",
+      "width": 375,
+      "check": "shows No comments yet. and the add form",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "comment editor",
+      "width": 375,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "member",
+      "page": "comment editor",
+      "width": 375,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "16 controls"
+    },
+    {
+      "role": "member",
+      "page": "comment editor",
+      "width": 375,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "comment editor",
+      "width": 375,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "5 controls"
+    },
+    {
+      "role": "member",
+      "page": "comment editor",
+      "width": 375,
+      "check": "focus moves into the editor field",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "comment editor",
+      "width": 375,
+      "check": "Cancel closes the editor, sends no request and returns focus to Edit",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Delete comment confirm dialog",
+      "width": 375,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "member",
+      "page": "Delete comment confirm dialog",
+      "width": 375,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "member",
+      "page": "Delete comment confirm dialog",
+      "width": 375,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Delete comment confirm dialog",
+      "width": 375,
+      "check": "focus moves into the dialog",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Delete comment confirm dialog",
+      "width": 375,
+      "check": "Tab keeps focus inside the dialog (8 presses)",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Delete comment confirm dialog",
+      "width": 375,
+      "check": "Cancel closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Delete comment confirm dialog",
+      "width": 375,
+      "check": "Cancel sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "member",
+      "page": "Delete comment confirm dialog",
+      "width": 375,
+      "check": "Escape closes the dialog",
+      "pass": true,
+      "detail": "1 dialogs open"
+    },
+    {
+      "role": "member",
+      "page": "Delete comment confirm dialog",
+      "width": 375,
+      "check": "Escape sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "member",
+      "page": "board",
+      "width": 768,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 768, innerWidth 768"
+    },
+    {
+      "role": "member",
+      "page": "board",
+      "width": 768,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "9 controls"
+    },
+    {
+      "role": "member",
+      "page": "board",
+      "width": 768,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board",
+      "width": 768,
+      "check": "every card shows an Open button named after its title",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 768,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 768, innerWidth 768"
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 768,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "15 controls"
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 768,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 768,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "4 controls"
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 768,
+      "check": "the wide dialog box is no wider than the viewport",
+      "pass": true,
+      "detail": "box 672px, viewport 768px"
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 768,
+      "check": "nothing inside the dialog scrolls sideways (a long comment wraps)",
+      "pass": true,
+      "detail": "overflow 0px"
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 768,
+      "check": "the close control is reachable at the top of the dialog",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 768,
+      "check": "the comment field is reachable by scrolling inside the dialog",
+      "pass": true,
+      "detail": "dialog scrolls inside itself"
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 768,
+      "check": "pinch zoom stays enabled",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 768,
+      "check": "focus moves into the dialog",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 768,
+      "check": "Tab keeps focus inside the dialog (8 presses)",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 768,
+      "check": "Cancel closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 768,
+      "check": "Cancel sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 768,
+      "check": "focus returns to the opener after Cancel",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 768,
+      "check": "Escape closes the dialog",
+      "pass": true,
+      "detail": "0 dialogs open"
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 768,
+      "check": "Escape sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 768,
+      "check": "focus returns to the opener after Escape",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details",
+      "width": 768,
+      "check": "the dialog is named Card details and lists the four comments",
+      "pass": true,
+      "detail": "{\"name\":\"Card details\",\"items\":4}"
+    },
+    {
+      "role": "member",
+      "page": "Card details",
+      "width": 768,
+      "check": "Edit and Delete show only on the viewer's own comments (3)",
+      "pass": true,
+      "detail": "edit 3, delete 3"
+    },
+    {
+      "role": "member",
+      "page": "Card details",
+      "width": 768,
+      "check": "the edited comment shows the Edited text marker and a multi-line comment keeps its lines",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 768,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 768, innerWidth 768"
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 768,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "9 controls"
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 768,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 768,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "4 controls"
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 768,
+      "check": "the wide dialog box is no wider than the viewport",
+      "pass": true,
+      "detail": "box 672px, viewport 768px"
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 768,
+      "check": "nothing inside the dialog scrolls sideways (a long comment wraps)",
+      "pass": true,
+      "detail": "overflow 0px"
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 768,
+      "check": "the close control is reachable at the top of the dialog",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 768,
+      "check": "the comment field is reachable by scrolling inside the dialog",
+      "pass": true,
+      "detail": "dialog fits without scrolling"
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 768,
+      "check": "pinch zoom stays enabled",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 768,
+      "check": "focus moves into the dialog",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 768,
+      "check": "Tab keeps focus inside the dialog (8 presses)",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 768,
+      "check": "Cancel closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 768,
+      "check": "Cancel sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 768,
+      "check": "focus returns to the opener after Cancel",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 768,
+      "check": "Escape closes the dialog",
+      "pass": true,
+      "detail": "0 dialogs open"
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 768,
+      "check": "Escape sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 768,
+      "check": "focus returns to the opener after Escape",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments)",
+      "width": 768,
+      "check": "shows No comments yet. and the add form",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "comment editor",
+      "width": 768,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 768, innerWidth 768"
+    },
+    {
+      "role": "member",
+      "page": "comment editor",
+      "width": 768,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "16 controls"
+    },
+    {
+      "role": "member",
+      "page": "comment editor",
+      "width": 768,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "comment editor",
+      "width": 768,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "5 controls"
+    },
+    {
+      "role": "member",
+      "page": "comment editor",
+      "width": 768,
+      "check": "focus moves into the editor field",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "comment editor",
+      "width": 768,
+      "check": "Cancel closes the editor, sends no request and returns focus to Edit",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Delete comment confirm dialog",
+      "width": 768,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 768, innerWidth 768"
+    },
+    {
+      "role": "member",
+      "page": "Delete comment confirm dialog",
+      "width": 768,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "member",
+      "page": "Delete comment confirm dialog",
+      "width": 768,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Delete comment confirm dialog",
+      "width": 768,
+      "check": "focus moves into the dialog",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Delete comment confirm dialog",
+      "width": 768,
+      "check": "Tab keeps focus inside the dialog (8 presses)",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Delete comment confirm dialog",
+      "width": 768,
+      "check": "Cancel closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Delete comment confirm dialog",
+      "width": 768,
+      "check": "Cancel sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "member",
+      "page": "Delete comment confirm dialog",
+      "width": 768,
+      "check": "Escape closes the dialog",
+      "pass": true,
+      "detail": "1 dialogs open"
+    },
+    {
+      "role": "member",
+      "page": "Delete comment confirm dialog",
+      "width": 768,
+      "check": "Escape sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "member",
+      "page": "board",
+      "width": 1280,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "member",
+      "page": "board",
+      "width": 1280,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "10 controls"
+    },
+    {
+      "role": "member",
+      "page": "board",
+      "width": 1280,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board",
+      "width": 1280,
+      "check": "every card shows an Open button named after its title",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 1280,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 1280,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "15 controls"
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 1280,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 1280,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "4 controls"
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 1280,
+      "check": "the wide dialog box is no wider than the viewport",
+      "pass": true,
+      "detail": "box 672px, viewport 1280px"
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 1280,
+      "check": "nothing inside the dialog scrolls sideways (a long comment wraps)",
+      "pass": true,
+      "detail": "overflow 0px"
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 1280,
+      "check": "the close control is reachable at the top of the dialog",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 1280,
+      "check": "the comment field is reachable by scrolling inside the dialog",
+      "pass": true,
+      "detail": "dialog scrolls inside itself"
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 1280,
+      "check": "pinch zoom stays enabled",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 1280,
+      "check": "focus moves into the dialog",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 1280,
+      "check": "Tab keeps focus inside the dialog (8 presses)",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 1280,
+      "check": "Cancel closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 1280,
+      "check": "Cancel sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 1280,
+      "check": "focus returns to the opener after Cancel",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 1280,
+      "check": "Escape closes the dialog",
+      "pass": true,
+      "detail": "0 dialogs open"
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 1280,
+      "check": "Escape sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "member",
+      "page": "Card details (with comments) dialog",
+      "width": 1280,
+      "check": "focus returns to the opener after Escape",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details",
+      "width": 1280,
+      "check": "the dialog is named Card details and lists the four comments",
+      "pass": true,
+      "detail": "{\"name\":\"Card details\",\"items\":4}"
+    },
+    {
+      "role": "member",
+      "page": "Card details",
+      "width": 1280,
+      "check": "Edit and Delete show only on the viewer's own comments (3)",
+      "pass": true,
+      "detail": "edit 3, delete 3"
+    },
+    {
+      "role": "member",
+      "page": "Card details",
+      "width": 1280,
+      "check": "the edited comment shows the Edited text marker and a multi-line comment keeps its lines",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 1280,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 1280,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "9 controls"
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 1280,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 1280,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "4 controls"
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 1280,
+      "check": "the wide dialog box is no wider than the viewport",
+      "pass": true,
+      "detail": "box 672px, viewport 1280px"
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 1280,
+      "check": "nothing inside the dialog scrolls sideways (a long comment wraps)",
+      "pass": true,
+      "detail": "overflow 0px"
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 1280,
+      "check": "the close control is reachable at the top of the dialog",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 1280,
+      "check": "the comment field is reachable by scrolling inside the dialog",
+      "pass": true,
+      "detail": "dialog fits without scrolling"
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 1280,
+      "check": "pinch zoom stays enabled",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 1280,
+      "check": "focus moves into the dialog",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 1280,
+      "check": "Tab keeps focus inside the dialog (8 presses)",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 1280,
+      "check": "Cancel closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 1280,
+      "check": "Cancel sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 1280,
+      "check": "focus returns to the opener after Cancel",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 1280,
+      "check": "Escape closes the dialog",
+      "pass": true,
+      "detail": "0 dialogs open"
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 1280,
+      "check": "Escape sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments) dialog",
+      "width": 1280,
+      "check": "focus returns to the opener after Escape",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Card details (no comments)",
+      "width": 1280,
+      "check": "shows No comments yet. and the add form",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "comment editor",
+      "width": 1280,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "member",
+      "page": "comment editor",
+      "width": 1280,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "16 controls"
+    },
+    {
+      "role": "member",
+      "page": "comment editor",
+      "width": 1280,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "comment editor",
+      "width": 1280,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "5 controls"
+    },
+    {
+      "role": "member",
+      "page": "comment editor",
+      "width": 1280,
+      "check": "focus moves into the editor field",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "comment editor",
+      "width": 1280,
+      "check": "Cancel closes the editor, sends no request and returns focus to Edit",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Delete comment confirm dialog",
+      "width": 1280,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "member",
+      "page": "Delete comment confirm dialog",
+      "width": 1280,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "member",
+      "page": "Delete comment confirm dialog",
+      "width": 1280,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Delete comment confirm dialog",
+      "width": 1280,
+      "check": "focus moves into the dialog",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Delete comment confirm dialog",
+      "width": 1280,
+      "check": "Tab keeps focus inside the dialog (8 presses)",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Delete comment confirm dialog",
+      "width": 1280,
+      "check": "Cancel closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "Delete comment confirm dialog",
+      "width": 1280,
+      "check": "Cancel sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "member",
+      "page": "Delete comment confirm dialog",
+      "width": 1280,
+      "check": "Escape closes the dialog",
+      "pass": true,
+      "detail": "1 dialogs open"
+    },
+    {
+      "role": "member",
+      "page": "Delete comment confirm dialog",
+      "width": 1280,
+      "check": "Escape sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "board",
+      "width": 320,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "admin",
+      "page": "board",
+      "width": 320,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "17 controls"
+    },
+    {
+      "role": "admin",
+      "page": "board",
+      "width": 320,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "board",
+      "width": 320,
+      "check": "every card shows an Open button named after its title",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 320,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 320,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "11 controls"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 320,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 320,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "4 controls"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 320,
+      "check": "the wide dialog box is no wider than the viewport",
+      "pass": true,
+      "detail": "box 320px, viewport 320px"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 320,
+      "check": "nothing inside the dialog scrolls sideways (a long comment wraps)",
+      "pass": true,
+      "detail": "overflow 0px"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 320,
+      "check": "the close control is reachable at the top of the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 320,
+      "check": "the comment field is reachable by scrolling inside the dialog",
+      "pass": true,
+      "detail": "dialog scrolls inside itself"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 320,
+      "check": "pinch zoom stays enabled",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 320,
+      "check": "focus moves into the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 320,
+      "check": "Tab keeps focus inside the dialog (8 presses)",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 320,
+      "check": "Cancel closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 320,
+      "check": "Cancel sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 320,
+      "check": "focus returns to the opener after Cancel",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 320,
+      "check": "Escape closes the dialog",
+      "pass": true,
+      "detail": "0 dialogs open"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 320,
+      "check": "Escape sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 320,
+      "check": "focus returns to the opener after Escape",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details",
+      "width": 320,
+      "check": "the dialog is named Card details and lists the four comments",
+      "pass": true,
+      "detail": "{\"name\":\"Card details\",\"items\":4}"
+    },
+    {
+      "role": "admin",
+      "page": "Card details",
+      "width": 320,
+      "check": "Edit and Delete show only on the viewer's own comments (1)",
+      "pass": true,
+      "detail": "edit 1, delete 1"
+    },
+    {
+      "role": "admin",
+      "page": "Card details",
+      "width": 320,
+      "check": "the edited comment shows the Edited text marker and a multi-line comment keeps its lines",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 320,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 320,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "9 controls"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 320,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 320,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "4 controls"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 320,
+      "check": "the wide dialog box is no wider than the viewport",
+      "pass": true,
+      "detail": "box 320px, viewport 320px"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 320,
+      "check": "nothing inside the dialog scrolls sideways (a long comment wraps)",
+      "pass": true,
+      "detail": "overflow 0px"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 320,
+      "check": "the close control is reachable at the top of the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 320,
+      "check": "the comment field is reachable by scrolling inside the dialog",
+      "pass": true,
+      "detail": "dialog scrolls inside itself"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 320,
+      "check": "pinch zoom stays enabled",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 320,
+      "check": "focus moves into the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 320,
+      "check": "Tab keeps focus inside the dialog (8 presses)",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 320,
+      "check": "Cancel closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 320,
+      "check": "Cancel sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 320,
+      "check": "focus returns to the opener after Cancel",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 320,
+      "check": "Escape closes the dialog",
+      "pass": true,
+      "detail": "0 dialogs open"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 320,
+      "check": "Escape sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 320,
+      "check": "focus returns to the opener after Escape",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments)",
+      "width": 320,
+      "check": "shows No comments yet. and the add form",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "comment editor",
+      "width": 320,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "admin",
+      "page": "comment editor",
+      "width": 320,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "12 controls"
+    },
+    {
+      "role": "admin",
+      "page": "comment editor",
+      "width": 320,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "comment editor",
+      "width": 320,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "5 controls"
+    },
+    {
+      "role": "admin",
+      "page": "comment editor",
+      "width": 320,
+      "check": "focus moves into the editor field",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "comment editor",
+      "width": 320,
+      "check": "Cancel closes the editor, sends no request and returns focus to Edit",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Delete comment confirm dialog",
+      "width": 320,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "admin",
+      "page": "Delete comment confirm dialog",
+      "width": 320,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "admin",
+      "page": "Delete comment confirm dialog",
+      "width": 320,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Delete comment confirm dialog",
+      "width": 320,
+      "check": "focus moves into the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Delete comment confirm dialog",
+      "width": 320,
+      "check": "Tab keeps focus inside the dialog (8 presses)",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Delete comment confirm dialog",
+      "width": 320,
+      "check": "Cancel closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Delete comment confirm dialog",
+      "width": 320,
+      "check": "Cancel sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "Delete comment confirm dialog",
+      "width": 320,
+      "check": "Escape closes the dialog",
+      "pass": true,
+      "detail": "1 dialogs open"
+    },
+    {
+      "role": "admin",
+      "page": "Delete comment confirm dialog",
+      "width": 320,
+      "check": "Escape sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "board",
+      "width": 375,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "admin",
+      "page": "board",
+      "width": 375,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "17 controls"
+    },
+    {
+      "role": "admin",
+      "page": "board",
+      "width": 375,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "board",
+      "width": 375,
+      "check": "every card shows an Open button named after its title",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 375,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 375,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "11 controls"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 375,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 375,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "4 controls"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 375,
+      "check": "the wide dialog box is no wider than the viewport",
+      "pass": true,
+      "detail": "box 375px, viewport 375px"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 375,
+      "check": "nothing inside the dialog scrolls sideways (a long comment wraps)",
+      "pass": true,
+      "detail": "overflow 0px"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 375,
+      "check": "the close control is reachable at the top of the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 375,
+      "check": "the comment field is reachable by scrolling inside the dialog",
+      "pass": true,
+      "detail": "dialog scrolls inside itself"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 375,
+      "check": "pinch zoom stays enabled",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 375,
+      "check": "focus moves into the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 375,
+      "check": "Tab keeps focus inside the dialog (8 presses)",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 375,
+      "check": "Cancel closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 375,
+      "check": "Cancel sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 375,
+      "check": "focus returns to the opener after Cancel",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 375,
+      "check": "Escape closes the dialog",
+      "pass": true,
+      "detail": "0 dialogs open"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 375,
+      "check": "Escape sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 375,
+      "check": "focus returns to the opener after Escape",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details",
+      "width": 375,
+      "check": "the dialog is named Card details and lists the four comments",
+      "pass": true,
+      "detail": "{\"name\":\"Card details\",\"items\":4}"
+    },
+    {
+      "role": "admin",
+      "page": "Card details",
+      "width": 375,
+      "check": "Edit and Delete show only on the viewer's own comments (1)",
+      "pass": true,
+      "detail": "edit 1, delete 1"
+    },
+    {
+      "role": "admin",
+      "page": "Card details",
+      "width": 375,
+      "check": "the edited comment shows the Edited text marker and a multi-line comment keeps its lines",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 375,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 375,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "9 controls"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 375,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 375,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "4 controls"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 375,
+      "check": "the wide dialog box is no wider than the viewport",
+      "pass": true,
+      "detail": "box 375px, viewport 375px"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 375,
+      "check": "nothing inside the dialog scrolls sideways (a long comment wraps)",
+      "pass": true,
+      "detail": "overflow 0px"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 375,
+      "check": "the close control is reachable at the top of the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 375,
+      "check": "the comment field is reachable by scrolling inside the dialog",
+      "pass": true,
+      "detail": "dialog scrolls inside itself"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 375,
+      "check": "pinch zoom stays enabled",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 375,
+      "check": "focus moves into the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 375,
+      "check": "Tab keeps focus inside the dialog (8 presses)",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 375,
+      "check": "Cancel closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 375,
+      "check": "Cancel sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 375,
+      "check": "focus returns to the opener after Cancel",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 375,
+      "check": "Escape closes the dialog",
+      "pass": true,
+      "detail": "0 dialogs open"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 375,
+      "check": "Escape sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 375,
+      "check": "focus returns to the opener after Escape",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments)",
+      "width": 375,
+      "check": "shows No comments yet. and the add form",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "comment editor",
+      "width": 375,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "admin",
+      "page": "comment editor",
+      "width": 375,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "12 controls"
+    },
+    {
+      "role": "admin",
+      "page": "comment editor",
+      "width": 375,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "comment editor",
+      "width": 375,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "5 controls"
+    },
+    {
+      "role": "admin",
+      "page": "comment editor",
+      "width": 375,
+      "check": "focus moves into the editor field",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "comment editor",
+      "width": 375,
+      "check": "Cancel closes the editor, sends no request and returns focus to Edit",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Delete comment confirm dialog",
+      "width": 375,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "admin",
+      "page": "Delete comment confirm dialog",
+      "width": 375,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "admin",
+      "page": "Delete comment confirm dialog",
+      "width": 375,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Delete comment confirm dialog",
+      "width": 375,
+      "check": "focus moves into the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Delete comment confirm dialog",
+      "width": 375,
+      "check": "Tab keeps focus inside the dialog (8 presses)",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Delete comment confirm dialog",
+      "width": 375,
+      "check": "Cancel closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Delete comment confirm dialog",
+      "width": 375,
+      "check": "Cancel sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "Delete comment confirm dialog",
+      "width": 375,
+      "check": "Escape closes the dialog",
+      "pass": true,
+      "detail": "1 dialogs open"
+    },
+    {
+      "role": "admin",
+      "page": "Delete comment confirm dialog",
+      "width": 375,
+      "check": "Escape sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "board",
+      "width": 768,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 753, innerWidth 768"
+    },
+    {
+      "role": "admin",
+      "page": "board",
+      "width": 768,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "17 controls"
+    },
+    {
+      "role": "admin",
+      "page": "board",
+      "width": 768,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "board",
+      "width": 768,
+      "check": "every card shows an Open button named after its title",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 768,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 753, innerWidth 768"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 768,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "11 controls"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 768,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 768,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "4 controls"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 768,
+      "check": "the wide dialog box is no wider than the viewport",
+      "pass": true,
+      "detail": "box 672px, viewport 768px"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 768,
+      "check": "nothing inside the dialog scrolls sideways (a long comment wraps)",
+      "pass": true,
+      "detail": "overflow 0px"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 768,
+      "check": "the close control is reachable at the top of the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 768,
+      "check": "the comment field is reachable by scrolling inside the dialog",
+      "pass": true,
+      "detail": "dialog scrolls inside itself"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 768,
+      "check": "pinch zoom stays enabled",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 768,
+      "check": "focus moves into the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 768,
+      "check": "Tab keeps focus inside the dialog (8 presses)",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 768,
+      "check": "Cancel closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 768,
+      "check": "Cancel sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 768,
+      "check": "focus returns to the opener after Cancel",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 768,
+      "check": "Escape closes the dialog",
+      "pass": true,
+      "detail": "0 dialogs open"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 768,
+      "check": "Escape sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 768,
+      "check": "focus returns to the opener after Escape",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details",
+      "width": 768,
+      "check": "the dialog is named Card details and lists the four comments",
+      "pass": true,
+      "detail": "{\"name\":\"Card details\",\"items\":4}"
+    },
+    {
+      "role": "admin",
+      "page": "Card details",
+      "width": 768,
+      "check": "Edit and Delete show only on the viewer's own comments (1)",
+      "pass": true,
+      "detail": "edit 1, delete 1"
+    },
+    {
+      "role": "admin",
+      "page": "Card details",
+      "width": 768,
+      "check": "the edited comment shows the Edited text marker and a multi-line comment keeps its lines",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 768,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 753, innerWidth 768"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 768,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "9 controls"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 768,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 768,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "4 controls"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 768,
+      "check": "the wide dialog box is no wider than the viewport",
+      "pass": true,
+      "detail": "box 672px, viewport 768px"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 768,
+      "check": "nothing inside the dialog scrolls sideways (a long comment wraps)",
+      "pass": true,
+      "detail": "overflow 0px"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 768,
+      "check": "the close control is reachable at the top of the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 768,
+      "check": "the comment field is reachable by scrolling inside the dialog",
+      "pass": true,
+      "detail": "dialog fits without scrolling"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 768,
+      "check": "pinch zoom stays enabled",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 768,
+      "check": "focus moves into the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 768,
+      "check": "Tab keeps focus inside the dialog (8 presses)",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 768,
+      "check": "Cancel closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 768,
+      "check": "Cancel sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 768,
+      "check": "focus returns to the opener after Cancel",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 768,
+      "check": "Escape closes the dialog",
+      "pass": true,
+      "detail": "0 dialogs open"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 768,
+      "check": "Escape sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 768,
+      "check": "focus returns to the opener after Escape",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments)",
+      "width": 768,
+      "check": "shows No comments yet. and the add form",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "comment editor",
+      "width": 768,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 753, innerWidth 768"
+    },
+    {
+      "role": "admin",
+      "page": "comment editor",
+      "width": 768,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "12 controls"
+    },
+    {
+      "role": "admin",
+      "page": "comment editor",
+      "width": 768,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "comment editor",
+      "width": 768,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "5 controls"
+    },
+    {
+      "role": "admin",
+      "page": "comment editor",
+      "width": 768,
+      "check": "focus moves into the editor field",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "comment editor",
+      "width": 768,
+      "check": "Cancel closes the editor, sends no request and returns focus to Edit",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Delete comment confirm dialog",
+      "width": 768,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 753, innerWidth 768"
+    },
+    {
+      "role": "admin",
+      "page": "Delete comment confirm dialog",
+      "width": 768,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "admin",
+      "page": "Delete comment confirm dialog",
+      "width": 768,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Delete comment confirm dialog",
+      "width": 768,
+      "check": "focus moves into the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Delete comment confirm dialog",
+      "width": 768,
+      "check": "Tab keeps focus inside the dialog (8 presses)",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Delete comment confirm dialog",
+      "width": 768,
+      "check": "Cancel closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Delete comment confirm dialog",
+      "width": 768,
+      "check": "Cancel sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "Delete comment confirm dialog",
+      "width": 768,
+      "check": "Escape closes the dialog",
+      "pass": true,
+      "detail": "1 dialogs open"
+    },
+    {
+      "role": "admin",
+      "page": "Delete comment confirm dialog",
+      "width": 768,
+      "check": "Escape sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "board",
+      "width": 1280,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "admin",
+      "page": "board",
+      "width": 1280,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "18 controls"
+    },
+    {
+      "role": "admin",
+      "page": "board",
+      "width": 1280,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "board",
+      "width": 1280,
+      "check": "every card shows an Open button named after its title",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 1280,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 1280,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "11 controls"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 1280,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 1280,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "4 controls"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 1280,
+      "check": "the wide dialog box is no wider than the viewport",
+      "pass": true,
+      "detail": "box 672px, viewport 1280px"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 1280,
+      "check": "nothing inside the dialog scrolls sideways (a long comment wraps)",
+      "pass": true,
+      "detail": "overflow 0px"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 1280,
+      "check": "the close control is reachable at the top of the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 1280,
+      "check": "the comment field is reachable by scrolling inside the dialog",
+      "pass": true,
+      "detail": "dialog scrolls inside itself"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 1280,
+      "check": "pinch zoom stays enabled",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 1280,
+      "check": "focus moves into the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 1280,
+      "check": "Tab keeps focus inside the dialog (8 presses)",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 1280,
+      "check": "Cancel closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 1280,
+      "check": "Cancel sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 1280,
+      "check": "focus returns to the opener after Cancel",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 1280,
+      "check": "Escape closes the dialog",
+      "pass": true,
+      "detail": "0 dialogs open"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 1280,
+      "check": "Escape sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (with comments) dialog",
+      "width": 1280,
+      "check": "focus returns to the opener after Escape",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details",
+      "width": 1280,
+      "check": "the dialog is named Card details and lists the four comments",
+      "pass": true,
+      "detail": "{\"name\":\"Card details\",\"items\":4}"
+    },
+    {
+      "role": "admin",
+      "page": "Card details",
+      "width": 1280,
+      "check": "Edit and Delete show only on the viewer's own comments (1)",
+      "pass": true,
+      "detail": "edit 1, delete 1"
+    },
+    {
+      "role": "admin",
+      "page": "Card details",
+      "width": 1280,
+      "check": "the edited comment shows the Edited text marker and a multi-line comment keeps its lines",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 1280,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 1280,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "9 controls"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 1280,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 1280,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "4 controls"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 1280,
+      "check": "the wide dialog box is no wider than the viewport",
+      "pass": true,
+      "detail": "box 672px, viewport 1280px"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 1280,
+      "check": "nothing inside the dialog scrolls sideways (a long comment wraps)",
+      "pass": true,
+      "detail": "overflow 0px"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 1280,
+      "check": "the close control is reachable at the top of the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 1280,
+      "check": "the comment field is reachable by scrolling inside the dialog",
+      "pass": true,
+      "detail": "dialog fits without scrolling"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 1280,
+      "check": "pinch zoom stays enabled",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 1280,
+      "check": "focus moves into the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 1280,
+      "check": "Tab keeps focus inside the dialog (8 presses)",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 1280,
+      "check": "Cancel closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 1280,
+      "check": "Cancel sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 1280,
+      "check": "focus returns to the opener after Cancel",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 1280,
+      "check": "Escape closes the dialog",
+      "pass": true,
+      "detail": "0 dialogs open"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 1280,
+      "check": "Escape sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments) dialog",
+      "width": 1280,
+      "check": "focus returns to the opener after Escape",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Card details (no comments)",
+      "width": 1280,
+      "check": "shows No comments yet. and the add form",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "comment editor",
+      "width": 1280,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "admin",
+      "page": "comment editor",
+      "width": 1280,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "12 controls"
+    },
+    {
+      "role": "admin",
+      "page": "comment editor",
+      "width": 1280,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "comment editor",
+      "width": 1280,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "5 controls"
+    },
+    {
+      "role": "admin",
+      "page": "comment editor",
+      "width": 1280,
+      "check": "focus moves into the editor field",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "comment editor",
+      "width": 1280,
+      "check": "Cancel closes the editor, sends no request and returns focus to Edit",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Delete comment confirm dialog",
+      "width": 1280,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "admin",
+      "page": "Delete comment confirm dialog",
+      "width": 1280,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "admin",
+      "page": "Delete comment confirm dialog",
+      "width": 1280,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Delete comment confirm dialog",
+      "width": 1280,
+      "check": "focus moves into the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Delete comment confirm dialog",
+      "width": 1280,
+      "check": "Tab keeps focus inside the dialog (8 presses)",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Delete comment confirm dialog",
+      "width": 1280,
+      "check": "Cancel closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "Delete comment confirm dialog",
+      "width": 1280,
+      "check": "Cancel sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "admin",
+      "page": "Delete comment confirm dialog",
+      "width": 1280,
+      "check": "Escape closes the dialog",
+      "pass": true,
+      "detail": "1 dialogs open"
+    },
+    {
+      "role": "admin",
+      "page": "Delete comment confirm dialog",
+      "width": 1280,
+      "check": "Escape sends no request to /api/",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "member",
+      "page": "journey",
+      "width": 375,
+      "check": "open a card: Card details lists the four comments",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "journey",
+      "width": 375,
+      "check": "add a comment: it appears at the end of the list without a reload",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "journey",
+      "width": 375,
+      "check": "the new comment shows no Edited marker (N1)",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "journey",
+      "width": 375,
+      "check": "the field is cleared and keeps focus after the add",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "journey",
+      "width": 375,
+      "check": "edit the comment: the new text shows with the Edited marker",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "journey",
+      "width": 375,
+      "check": "delete the comment: it is removed from the list",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "journey",
+      "width": 375,
+      "check": "after the delete, focus moves to the comment field",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "journey",
+      "width": 375,
+      "check": "reload: the four kept comments are shown and the deleted one is gone",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "uncertain add",
+      "width": 375,
+      "check": "a lost response shows that the comment may have been posted",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "uncertain add",
+      "width": 375,
+      "check": "the refreshed list shows the saved comment exactly once",
+      "pass": true,
+      "detail": "1 copies"
+    },
+    {
+      "role": "member",
+      "page": "uncertain add",
+      "width": 375,
+      "check": "the draft is kept and Add comment is enabled again after the refresh",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "uncertain add",
+      "width": 375,
+      "check": "exactly one POST was sent, so there is no automatic retry",
+      "pass": true,
+      "detail": "1 POST"
+    },
+    {
+      "role": "member",
+      "page": "uncertain add state",
+      "width": 375,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "member",
+      "page": "uncertain add state",
+      "width": 375,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "17 controls"
+    },
+    {
+      "role": "member",
+      "page": "uncertain add state",
+      "width": 375,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "uncertain add state",
+      "width": 375,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "4 controls"
+    },
+    {
+      "role": "member",
+      "page": "uncertain add state",
+      "width": 375,
+      "check": "the wide dialog box is no wider than the viewport",
+      "pass": true,
+      "detail": "box 375px, viewport 375px"
+    },
+    {
+      "role": "member",
+      "page": "uncertain add state",
+      "width": 375,
+      "check": "nothing inside the dialog scrolls sideways (a long comment wraps)",
+      "pass": true,
+      "detail": "overflow 0px"
+    },
+    {
+      "role": "member",
+      "page": "uncertain add state",
+      "width": 375,
+      "check": "the close control is reachable at the top of the dialog",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "uncertain add state",
+      "width": 375,
+      "check": "the comment field is reachable by scrolling inside the dialog",
+      "pass": true,
+      "detail": "dialog scrolls inside itself"
+    },
+    {
+      "role": "member",
+      "page": "uncertain add state",
+      "width": 375,
+      "check": "pinch zoom stays enabled",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "uncertain add",
+      "width": 375,
+      "check": "a manual retry posts a second comment with the same text",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "journey",
+      "width": 375,
+      "check": "a second user sees the member's comments and no Edit or Delete on them",
+      "pass": true,
+      "detail": "5 comments, 0 controls"
+    },
+    {
+      "role": "admin",
+      "page": "journey",
+      "width": 375,
+      "check": "the admin has Edit and Delete only on their own comment",
+      "pass": true,
+      "detail": "2 controls"
+    }
+  ]
+}
