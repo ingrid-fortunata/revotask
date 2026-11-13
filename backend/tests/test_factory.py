@@ -49,6 +49,14 @@ def test_registered_routes_match_the_implemented_slices():
         "auth.login",
         "auth.logout",
         "users.get_me",
+        "boards.list_boards_view",
+        "boards.create_board_view",
+        "boards.get_board_view",
+        "boards.rename_board_view",
+        "boards.delete_board_view",
+        "boards.list_members_view",
+        "boards.add_member_view",
+        "boards.remove_member_view",
     }
 
 

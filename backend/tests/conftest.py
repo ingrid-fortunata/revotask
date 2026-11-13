@@ -72,6 +72,14 @@ def schema_at_head(app):
 
 
 @pytest.fixture
+def board_tracker(app, schema_at_head):
+    """Track and delete the boards test data. The finalizer runs even when an assertion fails."""
+    from tests.boards_helpers import tracked_boards
+
+    yield from tracked_boards(app)
+
+
+@pytest.fixture
 def db_session(app, schema_at_head):
     """A session inside an outer transaction. Each test rolls back, so data never persists."""
     with app.app_context():

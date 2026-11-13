@@ -80,3 +80,39 @@ class RateLimitedError(ApiError):
     status = 429
     code = "RATE_LIMITED"
     message = "Too many requests. Try again later."
+
+
+class NotFoundError(ApiError):
+    """A board or nested resource is missing, deleted, or not visible to the caller (404).
+
+    Missing boards, deleted boards, nonmembers and removed members all raise this class, so the
+    response cannot reveal which board IDs exist (DD1).
+    """
+
+    status = 404
+    code = "NOT_FOUND"
+    message = "Resource not found."
+
+
+class UserNotFoundError(ApiError):
+    """E11 email matches no registered user. Raised only after the admin check passes (404)."""
+
+    status = 404
+    code = "USER_NOT_FOUND"
+    message = "No registered user has this email."
+
+
+class UnauthorizedBoardAccessError(ApiError):
+    """A current participant lacks the role for the action (403)."""
+
+    status = 403
+    code = "FORBIDDEN"
+    message = "You do not have permission for this action."
+
+
+class StateConflictError(ApiError):
+    """The request conflicts with current state, such as a duplicate active member (409)."""
+
+    status = 409
+    code = "STATE_CONFLICT"
+    message = "The request conflicts with the current state."
