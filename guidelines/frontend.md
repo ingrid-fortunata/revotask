@@ -67,7 +67,7 @@ The app reads as a work dashboard: a dark ink sidebar, a cool grey canvas, white
 | FE-D8 | Keep one memorable thing per screen and keep the rest quiet. Here it is the board tiles on the dashboard and the ink sidebar. Motion only answers an action (dialog open, pending spinner). No entrance animations or hover effects on every card. | Tiles change only their border on hover. |
 | FE-D9 | Design never overrides FE-S4 to FE-S6. A UI slice records a screenshot check at 375, 768 and 1280 px (no horizontal page scroll, controls at least 44 px) next to the FE-S6 record. Component tests assert behavior, roles and text. Assert layout classes only for a mobile rule (FE-S4, FE-S5). | The boards screens were checked at 375, 768 and 1280 px. |
 
-Shared visual parts: `AppHeader` (shell), `BrandMark` (logo and name), `Avatar` (initials, decorative), `BaseBadge`, `BaseButton`, `BaseModal`, `ConfirmDialog` and `FormField`. A new screen composes these and the `.surface` utility. Add a new shared part only when two screens need it.
+Shared visual parts: `AppHeader` (shell), `BrandMark` (logo and name), `Avatar` (initials, decorative), `BaseBadge`, `BaseButton`, `BaseModal`, `ConfirmDialog`, `FormField` (a text input, or a textarea with `multiline`), `SelectField` (a labelled select) and `CheckboxField` (a labelled 44 px checkbox with a text hint). A new screen composes these and the `.surface` utility. Add a new shared part only when two screens need it.
 
 ## State Management
 

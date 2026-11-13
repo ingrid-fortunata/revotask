@@ -88,6 +88,24 @@ Local status only. The planned verification rows above stay the reference. Evide
 | NFR 3 (brief) | Absent, expired and revoked tokens rejected; private responses `no-store` | Passed locally for the auth surface. Board scoping arrives with T05 |
 | Rate limits (design D2) | 429 with `Retry-After` on register and login | Local behavior only. Shared storage and trusted client address handling are open for T16 |
 
+## Kanban evidence status (T07–T09)
+
+Local status only. The planned verification rows above stay the reference. Evidence: `evidence/kanban-T07-T09.md`. Local checks prove local behavior: no real phone, no on-screen keyboard, and the drag in the browser run used synthetic DOM events.
+
+| AC | Kanban contribution | Status |
+|---|---|---|
+| AC05.1 | E13–E15, the Done rules, the add and edit column forms and the delete confirm | Passed locally: backend tests (including a concurrent Done race that leaves one Done column) and UI tests. Browser run passed |
+| AC05.2 | E16 and the Move left and Move right buttons | Passed locally: order after reload, 409 on a stale version, anchor errors, rebalance. Browser run passed |
+| AC06.1 | E17–E19 and the card dialogs. Assignees limited to active participants | Passed locally: backend and UI tests. The scripted journey added, edited, assigned and deleted a card |
+| AC06.2 | E21 and `/my-tasks` | Not part of this slice (T11) |
+| AC07.1 | E20, desktop drag and the Move dialog share one function | Passed locally: unit and UI tests show identical requests. Real pointer drag pending (Playwright, T15) |
+| AC07.2 | Optimistic move, rollback, 409 refetch, unchanged place, cross-board destination refused | Passed locally: backend tests and hook tests. A forced 409 in Chrome showed the message and the refetched board |
+| AC13.1 | Every new control and dialog at 375 px and wider | Passed locally in emulation at 320, 375, 768 and 1280 px: 418 checks, 0 failed. Real phone and on-screen keyboard open (T15, T16) |
+| AC04.2 | E12 assignment clearing, narrowed to active cards in active columns (L7) | Passed locally: regression test and the E07 refresh test |
+| V04 | Column and card pytest | Passed locally: 1570 backend tests passed, 1 skipped |
+| V05 | Optimistic move, rollback, refetch, gate | Passed locally with Vitest. Playwright part pending (T15) |
+| V10 | Playwright Kanban journey | Pending (T15). The test IDs for it are in `evidence/kanban-T07-T09.md` |
+
 ## Boards-membership evidence status (T05–T06)
 
 Local status only. The planned verification rows above stay the reference. Evidence: `evidence/boards-membership-T05-T06.md`. The browser and mobile checks have not run.
@@ -96,7 +114,7 @@ Local status only. The planned verification rows above stay the reference. Evide
 | ---------------------- | --------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | AC03.1, AC03.2, AC03.3 | E05–E09, the dashboard and the board page. Role gate, 404 and 403 rules, validation before authorization              | Partial. Backend and frontend tests pass locally. Browser and mobile check at 320, 375, 768 and 1280 px pending (task 7.2)                                                                          |
 | AC04.1                 | E10–E12 and the members panel. Add, reactivation and list order                                                       | Partial. Backend and frontend tests pass locally. Browser check and manual journey pending (task 7.2)                                                                                               |
-| AC04.2                 | Removal clears the removed user's active card assignments on that board only, in one transaction under the board lock | Verified by tests only: `backend/tests/test_board_members_assignments.py` (3 tests, including rollback) and `backend/tests/test_boards_properties_scoping.py` Property 15. Not checked in a browser |
+| AC04.2                 | Removal clears the removed user's assignments on active cards in active columns of that board only, in one transaction under the board lock. Soft-deleted cards and cards in soft-deleted columns are preserved (kanban review L7) | Verified by tests only: `backend/tests/test_board_members_assignments.py` (including rollback) and `backend/tests/test_boards_properties_scoping.py` Property 15. The narrowed scope (L7) is covered by `test_e12_keeps_assignments_in_soft_deleted_columns_and_clears_active_columns` (4 tests in the file, 1147 passed in the full suite). Not checked in a browser |
 | AC13.1                 | Mobile classes on the new pages, dialogs and controls                                                                 | Partial. Classes applied. Measured check at 320, 375, 768 and 1280 px not run (task 7.2)                                                                                                            |
 
 ### Open risks and questions
@@ -105,5 +123,5 @@ Local status only. The planned verification rows above stay the reference. Evide
 | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- | ---------------------------------------------------------------------------------- |
 | Account enumeration: E11 returns `USER_NOT_FOUND` for an unregistered email, so a board Admin can learn whether an email is registered                                    | Accepted for v1. Returned only after the Admin check | Per-admin E11 rate limit with shared storage, tracked in T16 before public release |
 | E11 rate limit                                                                                                                                                            | Not implemented                                      | T16                                                                                |
-| Soft-deleted columns: E12 clears the removed user's assignments on cards whose column is on this board, even when that column is soft-deleted                             | Open question. The user has not decided              | User decision                                                                      |
+| Soft-deleted columns: E12 currently clears the removed user's assignments on cards whose column is on this board, even when that column is soft-deleted                   | Resolved 2026-11-13 (L7): E12 clears only active cards in active columns. Fixed and covered by a regression test (kanban task 1.1–1.3) | None |
 | Dashboard sort: new boards are sorted in JavaScript with `localeCompare`, while E05 uses database collation. The order may differ for mixed case or accents until refresh | Open, low risk                                       | No plan recorded                                                                   |

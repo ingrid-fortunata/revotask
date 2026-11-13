@@ -211,11 +211,11 @@ R1–R14 and C1–C5 are approved as written in `design.md` ("Review Items and D
     - **Property 14: Browser client sends only declared requests**, over a fixed table of UUID and non-UUID segments (including `..`, `/`, `?`, `#`). `apiRequest` throws before `fetch` for every non-UUID.
     - **Validates: Requirements 2.6, 7.4, 7.10**
 
-- [ ] 7. Browser and mobile verification (root T06)
+- [x] 7. Browser and mobile verification (root T06)
   - [x] 7.1 Write the measured mobile script (BM1)
     - Create `evidence/boards-membership-mobile-measure.mjs` in the style of `evidence/authentication-mobile-measure.mjs`. For `/`, `/boards/[id]` as Admin and as Member, the rename form, both Confirm_Dialog states (delete board and remove member) and the not-found state, at 320, 375, 768 and 1280 px, check every interactive box is at least 44 by 44 with `elementFromPoint` at its center, input font size at least 16 px, and `scrollWidth <= innerWidth`. In a real browser also check focus entry on Cancel, Tab containment, Escape without an API call and focus return to the opener (jsdom stubs `<dialog>`).
     - _Requirements: 6.1, 6.2, 6.3, 6.4, 6.5, 7.6_
-  - [-] 7.2 Run the mobile check and the manual journey, and record both
+  - [x] 7.2 Run the mobile check and the manual journey, and record both
     - Start the local stack manually (backend, frontend and test database; the user runs the long-running commands). Run 7.1 at 320, 375, 768 and 1280 px. Walk the journey create board, open, add member, remove member, delete board at 375 px.
     - Record in `evidence/boards-membership-T05-T06.md`: widths checked, whether each pass used an emulator or a real device, the commands, the journey steps with results, and the real outcomes. Leave any real-device check not performed marked open. No Playwright is added in this slice.
     - _Requirements: 6.5, 6.6, 6.7, 7.6; AC13.1_

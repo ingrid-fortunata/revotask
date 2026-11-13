@@ -10,15 +10,15 @@ Mark complete only after code review and verification. Every task that adds UI a
 | T04 | T03 | Implement Next server-only API client, same-origin auth Route Handlers, safe cookie, public-user AuthContext, typed ApiError, error feedback helper, login/register forms and protected shell. Verify all auth states before proceeding. Native spec: [authentication](../.kiro/specs/authentication/tasks.md). |
 | T05 | T03 | Implement boards and membership APIs. Test role and parent scoping, nonmember 404, and membership removal with assignment clearing in one transaction (seeded cards on two boards). Native spec: [boards-membership](../.kiro/specs/boards-membership/tasks.md). |
 | T06 | T04, T05 | Implement dashboard, board shell and membership controls using real API. Test user visibility and admin controls. Native spec: [boards-membership](../.kiro/specs/boards-membership/tasks.md). |
-| T07 | T05 | Implement ordered column CRUD and reorder; enforce Done constraints and stale version handling. |
-| T08 | T07 | Implement card CRUD, assignment and position service; test both move directions, rebalance, concurrent moves and invalid targets. |
-| T09 | T06, T08 | Add Kanban controls, desktop drag and Move action, optimistic state, rollback and refresh. Test reload and mobile/keyboard use. |
+| T07 | T05 | Implement ordered column CRUD and reorder; enforce Done constraints and stale version handling. Native spec: [kanban](../.kiro/specs/kanban/tasks.md). |
+| T08 | T07 | Implement card CRUD, assignment and position service; test both move directions, rebalance, concurrent moves and invalid targets. Native spec: [kanban](../.kiro/specs/kanban/tasks.md). |
+| T09 | T06, T08 | Add Kanban controls, desktop drag and Move action, optimistic state, rollback and refresh. Test reload and mobile/keyboard use. Native spec: [kanban](../.kiro/specs/kanban/tasks.md). |
 | T10 | T08, T09 | Implement comments routes and modal, tests for auth and ownership, and React tests for display components. |
 | T11 | T08, T09 | Implement My Tasks and board search, including 300 ms debounce and stale-response guard. |
 | T12 | T04 | Implement the profile update API (E31; the E30 read exists from T03) and the profile UI with conflict and forbidden-field tests. |
 | T13 | T10 | Add transactional notifications for assignment/comment, recipient read APIs and 30-second bell polling. |
 | T14 | T08, T10 | Implement analytics SQLAlchemy aggregates and UI. Validate zero columns, UTC week boundaries and distinct completions. |
-| T15 | T04, T09, T10, T11, T12, T13, T14 | Complete the local integration and Playwright suites, including the automated boards-membership journey (create board, open, add member, remove member, delete board) carried from T05–T06. Run local acceptance, capture warm timing, a 375 px check of every route and the core flow, error and rollback evidence, and record readiness for publishing. |
+| T15 | T04, T09, T10, T11, T12, T13, T14 | Complete the local integration and Playwright suites, including the automated boards-membership journey (create board, open, add member, remove member, delete board) carried from T05–T06 and the automated Kanban journey (add column, add card, edit and assign, desktop `dragTo()` and the Move button, reload, a forced 409, delete) carried from T07–T09, using the test IDs `card-<id>`, `dropzone-<columnId>-before-<cardId>` and `dropzone-<columnId>-end`. Run local acceptance, capture warm timing, a 375 px check of every route and the core flow, error and rollback evidence, and record readiness for publishing. |
 | T16 | T15 | When ready to publish, connect GitHub and configure CI with isolated PostgreSQL. Migrate Supabase once, deploy Render as a Docker Web Service from backend/Dockerfile and Vercel, verify the live API, record warm deployed timing, run live Playwright, save the sanitized full report and record tested revisions. Before production traffic, choose shared rate-limit storage and trusted client address handling for the login and register limits. Keep `GUNICORN_WORKERS=1` on Render (and locally, as Compose sets it) until the limiter uses shared storage, and do not run more workers before then. Local limiter checks prove local behavior only. Also add a per-admin rate limit on E11 using the shared storage, and note that E11 `USER_NOT_FOUND` lets a board admin test whether an email is registered (account enumeration, accepted for v1). |
 | T17 | T16 | Verify the four documentation files, real review corrections and submission evidence. Update changelogs and tag the verified deployed application revision. Record the evidence revision. |
 
@@ -28,11 +28,11 @@ Mark complete only after code review and verification. Every task that adds UI a
 - [x] T02
 - [x] T03
 - [x] T04
-- [ ] T05
-- [ ] T06
-- [ ] T07
-- [ ] T08
-- [ ] T09
+- [x] T05
+- [x] T06
+- [x] T07
+- [x] T08
+- [x] T09
 - [ ] T10
 - [ ] T11
 - [ ] T12

@@ -18,7 +18,7 @@ Use `routes.py`, `service.py` and `schema.py` in each feature directory. Reject 
 
 ## Reorder request and conflict
 
-E20 accepts this JSON body after JWT and board authorization:
+Column and card writes (E13–E20) follow one order: JWT, path IDs and body shape (400), board access (404 nonmember, 403 member on admin-only routes), board lock, recheck of membership, role and the addressed resource under the lock (404), version comparison (409), then destination and anchor validation (400 `VALIDATION_ERROR`, "Choose a valid destination.", no `fields`). An unchanged position returns 200 and writes nothing. A request that would raise `position_version` past 2147483647 returns 409 `STATE_CONFLICT` and writes nothing. E20 accepts this JSON body after JWT and board authorization:
 
 ```json
 {
@@ -49,7 +49,7 @@ A successful response returns `data.card`, `data.columns` for the affected colum
 | 403 | `FORBIDDEN` | Authenticated board participant lacks the required role (for example a member calling an admin-only route), or lacks ownership. |
 | 404 | `NOT_FOUND`, `USER_NOT_FOUND` | `NOT_FOUND`: source card, board or another addressed resource is missing or deleted, or the caller is not an active participant of the board (identical to a missing board). `USER_NOT_FOUND`: E11 email matches no registered user, returned only to an admin of the target board; plain envelope without `fields`. |
 | 405 | `METHOD_NOT_ALLOWED` | A known path is called with an unsupported method. Keep the `Allow` header that lists the supported methods. |
-| 409 | `POSITION_CONFLICT`, `EMAIL_ALREADY_EXISTS`, `STATE_CONFLICT` | Stale order version, duplicate normalized email, or conflicting board state. |
+| 409 | `POSITION_CONFLICT`, `EMAIL_ALREADY_EXISTS`, `STATE_CONFLICT` | Stale order version, duplicate normalized email, or conflicting board state (a second Done column, a nonempty column deleted, or a Done flag changed on a nonempty column). |
 | 413 | `CONTENT_TOO_LARGE` | Request body over 64 KiB. Checked before field validation. |
 | 415 | `UNSUPPORTED_MEDIA_TYPE` | Missing or non-JSON `Content-Type` on a JSON endpoint. `application/json` with parameters such as `charset=utf-8` is accepted. |
 | 429 | `RATE_LIMITED` | Login or registration throttled. Forward Retry-After when available. |

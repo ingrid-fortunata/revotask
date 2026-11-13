@@ -16,6 +16,7 @@ Define `ApiError` in `lib/errors.ts` with `statusCode` (nullable for transport f
 | 403 forbidden | Show access feedback and keep the existing safe view. For a protected page read, render an access-denied state. |
 | 404 missing resource | Page reads render a not-found state. A failed action shows a toast and refreshes or closes the affected view where appropriate. |
 | 409 `POSITION_CONFLICT` | Roll back the optimistic move, refetch the authoritative board, and explain that the board changed. |
+| 409 `STATE_CONFLICT` | Show the message next to the control (a second Done column, a nonempty column), preserve input and refetch the board. |
 | Other 409 | Show an inline duplicate-email error or action-specific conflict feedback. Preserve input. |
 | 429 | Explain the temporary limit and honor Retry-After when present. |
 | 413 `CONTENT_TOO_LARGE`, 415 `UNSUPPORTED_MEDIA_TYPE` | Show fixed retry copy in a toast. These indicate a client defect and are not user-fixable. |

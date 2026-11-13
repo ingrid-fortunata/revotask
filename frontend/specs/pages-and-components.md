@@ -13,11 +13,12 @@ Next.js App Router pages render on the server and compose client components for 
 | `/profile` | Protected server page and controlled client `ProfileForm` | E30–E31. Seed from the safe user DTO, show field errors and toast on save, then refresh public user context. |
 | Shared header | Client `NotificationBell` and account controls | E04, E27–E28. Show unread count, page through notifications, mark read, and sign out. |
 
-`BoardCard`, `ColumnHeader` and `CommentList` are props-driven and server-compatible. They enter the client graph when imported by a client island. `AddCardForm` is a Client Component because it handles input and submission. Use `BaseButton`, `BaseBadge` and `BaseModal` for common controls. Keep focus indicators, labels, Escape behavior and focus return, and verify keyboard interaction.
+The Kanban island is built from `KanbanColumn`, `AddColumnForm`, `ColumnEditDialog`, `CardEditDialog` and `MoveCardDialog`, with the shared `SelectField` for selects and `CheckboxField` for the Done flag, and `FormField` with `multiline` for the description. `BoardCard`, `ColumnHeader` and `CommentList` are props-driven and server-compatible. They enter the client graph when imported by a client island. `AddCardForm` is a Client Component because it handles input and submission. Use `BaseButton`, `BaseBadge` and `BaseModal` for common controls. Keep focus indicators, labels, Escape behavior and focus return, and verify keyboard interaction.
 
 | Hook | Responsibility |
 |---|---|
-| `useDragAndDrop` | Translate desktop drag and visible Move actions to the same E20 request. Snapshot affected lists, apply the optimistic move, reconcile the server response, and roll back or refetch as specified in the error matrix. |
+| `useKanbanBoard` | Own the board state seeded from the server read. Run every Kanban write and refetch through one gate, so only one runs at a time. Provide the single `moveCard` function used by drag and the Move dialog: snapshot affected lists, apply the optimistic move, reconcile the server response, and roll back or refetch as specified in the error matrix. Queue a refetch requested during a pending write and discard a refetch response older than a later write. |
+| `useDragAndDrop` | Hold desktop drag state and the drop targets (before a card, end of a column), and call `moveCard`. Keep no request logic. |
 | `useNotifications` | Fetch on mount, poll every 30 seconds, refresh after mark-read and clean up timers and in-flight requests. Avoid overlapping polls and stale state updates. |
 | `useCardSearch` | Apply a 300 ms debounce, cancel or ignore stale requests, clear results for blank queries, and distinguish empty query from zero matches. Keep SearchBar.tsx focused on rendering and input events. |
 | `useErrorHandler` | Map typed API errors to visible outcomes, using the [error handling matrix](error-handling.md). |

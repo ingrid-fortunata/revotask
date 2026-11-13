@@ -24,15 +24,15 @@ Routes below are Flask endpoints relative to `API_BASE_URL`, which contains the 
 | E09 | DELETE `/api/boards/{id}` | Admin → 200 with `{"data": null}`; the board is soft-deleted. |
 | E10 | GET `/api/boards/{id}/members` | Participant → 200 active participants with public IDs, names and board roles. |
 | E11 | POST `/api/boards/{id}/members` | Admin. Registered `email` → 201 membership; a previously removed user is reactivated as `member` with 201; already active 409 `STATE_CONFLICT`; unregistered email 404 `USER_NOT_FOUND` (plain envelope, no `fields`, returned only to an admin of the board). |
-| E12 | DELETE `/api/boards/{id}/members/{user_id}` | Admin → 200 with `{"data": null}`; the membership is removed and the user's active card assignments on this board are cleared in the same transaction (other boards unaffected). Target without an active membership 404; admin removal 409 `STATE_CONFLICT`. |
-| E13 | POST `/api/boards/{id}/columns` | Admin. `name` 1–80, optional `is_done` default false → 201 column and version. |
-| E14 | PATCH `/api/columns/{id}` | Admin. `name`, `is_done` → 200 column. Changing Done flag on nonempty column or creating a second Done column returns 409. |
-| E15 | DELETE `/api/columns/{id}` | Admin → 200 with new `position_version` in `data`. Nonempty column 409. |
-| E16 | PATCH `/api/boards/{id}/columns/reorder` | Admin. `column_id,before_column_id,expected_position_version` → 200 version and authoritative columns in order. |
-| E17 | POST `/api/columns/{id}/cards` | Participant. `title` 1–160, optional nullable `description` ≤2,000, optional nullable `assignee_id` → 201 card and version. |
-| E18 | PATCH `/api/cards/{id}` | Participant. Editable fields from E17 → 200 card. |
-| E19 | DELETE `/api/cards/{id}` | Participant → 200 with new `position_version` in `data`. |
-| E20 | PATCH `/api/cards/{id}/position` | Participant. `column_id,before_card_id,expected_position_version` → 200 card, version and affected column lists. |
+| E12 | DELETE `/api/boards/{id}/members/{user_id}` | Admin → 200 with `{"data": null}`; the membership is removed and the user's assignments on active cards in active columns of this board are cleared in the same transaction. Soft-deleted cards, cards in soft-deleted columns and other boards are unaffected. Target without an active membership 404; admin removal 409 `STATE_CONFLICT`. |
+| E13 | POST `/api/boards/{id}/columns` | Admin. `name` 1–80, optional `is_done` default false → 201 `{column, position_version}`; the column is appended at the end. `is_done` true while the board has a Done column 409 `STATE_CONFLICT`. |
+| E14 | PATCH `/api/columns/{id}` | Admin. `name`, `is_done`, at least one → 200 column; `position_version` does not change. Changing `is_done` on a nonempty column, or setting it true while another Done column exists, returns 409 `STATE_CONFLICT` and writes nothing. Submitting the current `is_done` value is not a change; other valid fields in the request still apply. |
+| E15 | DELETE `/api/columns/{id}` | Admin → 200 with `{"data": {"position_version": n}}`. Nonempty column 409 `STATE_CONFLICT`. |
+| E16 | PATCH `/api/boards/{id}/columns/reorder` | Admin. `column_id,before_column_id,expected_position_version` → 200 `{columns, position_version}` with every active column in authoritative order. An unchanged position returns 200 with the same version and writes nothing. A `column_id` that is not an active column of this board 404. |
+| E17 | POST `/api/columns/{id}/cards` | Participant. `title` 1–160, optional nullable `description` ≤2,000 (blank is stored as null), optional nullable `assignee_id` → 201 `{card, position_version}`; the card is appended at the end. An `assignee_id` that is not an active participant of the board 400 `VALIDATION_ERROR` with `fields.assignee_id`. |
+| E18 | PATCH `/api/cards/{id}` | Participant. Editable fields from E17, at least one → 200 card; column, order and `position_version` do not change. The `assignee_id` rule of E17 applies. |
+| E19 | DELETE `/api/cards/{id}` | Participant → 200 with `{"data": {"position_version": n}}`; the card is soft-deleted. |
+| E20 | PATCH `/api/cards/{id}/position` | Participant. `column_id,before_card_id,expected_position_version` → 200 `{card, columns, position_version}`. An unchanged position returns 200 with the same version and writes nothing. |
 | E21 | GET `/api/cards?assignee=me` | Signed-in user → 200 list of active cards assigned to current user with board ID/name. `assignee=me` required for v1. |
 | E22 | GET `/api/boards/{id}/cards/search?q=...` | Participant. `q` 1–100 chars → 200 up to 20 active title matches with column IDs. |
 | E23 | GET `/api/cards/{id}/comments` | Participant → 200 active comments sorted by creation time and ID. |
@@ -45,7 +45,11 @@ Routes below are Flask endpoints relative to `API_BASE_URL`, which contains the 
 | E30 | GET `/api/users/me` | Current user → 200 `{id,name,email}`. |
 | E31 | PATCH `/api/users/me` | Current user. `name` or `email` (E02 constraints) → 200 public user. `password` or unknown fields 400, duplicate email 409. |
 
-E15 and E19 return position metadata for synchronizing clients. E16 and E20 require a nonnegative integer version and explicit nullable anchor. Order conflicts return `POSITION_CONFLICT` with 409. Invalid targets/anchors on another board return 400 if visible through validation of a move the caller is allowed to attempt, with a generic invalid destination message and no details about that board. Missing source and forbidden access follow the normal 404/403 rules.
+E15 and E19 return position metadata for synchronizing clients. E16 and E20 require a nonnegative integer version (0 to 2147483647, not a boolean) and an explicit nullable anchor. Order conflicts return `POSITION_CONFLICT` with 409.
+
+Check order for E13–E20: authenticate (401), validate path IDs and the body shape (400), resolve the board and check the caller's access (404 for a nonmember, 403 for a member on E13–E16), take the board lock, recheck membership, role and the addressed resource under the lock (404), compare the version (409 `POSITION_CONFLICT`), then validate the destination and anchor. An invalid destination column, an anchor that is the card itself, deleted, in another column or on another board returns 400 `VALIDATION_ERROR` with the fixed message "Choose a valid destination." and no `fields`, so nothing about another board is disclosed. The source resource is the card (E18–E20), the column (E14, E15) or, for E16, the `column_id` in the body; a missing source returns the normal 404.
+
+Only a request that changes a position, or creates or deletes a column or card, changes `position_version` (by 1). E14, E18 and an unchanged E16 or E20 leave it alone. When `position_version` is already 2147483647, a request that would change it returns 409 `STATE_CONFLICT` with a fixed message and writes nothing; reads still work. Events (`card_created`, `card_moved`, `column_reordered`, `entered_done`) are written in the same transaction and only for a real change. `entered_done` is written for a card created in a Done column and for a card moved from a column that is not Done into the Done column.
 
 ## Representative data shapes
 

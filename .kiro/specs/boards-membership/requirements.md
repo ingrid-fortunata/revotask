@@ -8,7 +8,7 @@ Authentication (T03–T04) already provides the JWT guard, the public user DTO, 
 
 Decisions confirmed during clarification:
 
-- E12 removes the membership and clears the removed user's active card assignments on that board in one transaction under the existing board lock, implemented in T05. Tests seed cards on two boards and confirm that assignments on the other board are preserved.
+- E12 removes the membership and clears the removed user's assignments on active cards in active columns of that board in one transaction under the existing board lock, implemented in T05. (Scope narrowed to active columns by the kanban design review, L7; soft-deleted cards and cards in soft-deleted columns keep their assignments.) Tests seed cards on two boards and confirm that assignments on the other board are preserved.
 - Authenticated Nonmembers receive the same 404 status and error envelope as a missing board on board-scoped endpoints in this slice (contract clarification C1, approved).
 - Request authentication runs first. Request-body validation then runs and may return 400 before board authorization. Body validation is independent of board and user lookups.
 - E10 orders participants Admin first, then name, then `user_id`. Name sorting uses the database collation, which the design documents. Deterministic tests use collation-neutral names.
@@ -125,7 +125,7 @@ Decisions confirmed during clarification:
 
 #### Acceptance Criteria
 
-1. WHEN an Admin calls E12 for an active Member, THE Boards_API SHALL, under the Board_Lock and in one transaction, soft-delete that membership, clear the removed user's active card assignments on that board and return 200 with `{"data": null}`.
+1. WHEN an Admin calls E12 for an active Member, THE Boards_API SHALL, under the Board_Lock and in one transaction, soft-delete that membership, clear the removed user's assignments on active cards in active columns of that board (kanban review L7) and return 200 with `{"data": null}`.
 2. WHEN E12 succeeds, THE Boards_API SHALL return the Nonmember 404 to the removed user for E07 through E12 on that board and omit the board from that user's E05 listing.
 3. IF the E12 target is the board's admin, THEN THE Boards_API SHALL return 409 and keep the membership active.
 4. IF the E12 target has no active membership on the board, THEN THE Boards_API SHALL return 404.
