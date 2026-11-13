@@ -39,10 +39,17 @@ def test_engine_options_bound_connection_and_pool_waits():
     assert options["connect_args"] == {"connect_timeout": 2}
 
 
-def test_only_the_health_route_is_registered_in_this_slice():
+def test_registered_routes_match_the_implemented_slices():
+    """Foundation registered health only. The authentication slice (T03) adds the routes below."""
     app = create_app(VALID_ENV)
     endpoints = {rule.endpoint for rule in app.url_map.iter_rules() if rule.endpoint != "static"}
-    assert endpoints == {"health.get_health"}
+    assert endpoints == {
+        "health.get_health",
+        "auth.register",
+        "auth.login",
+        "auth.logout",
+        "users.get_me",
+    }
 
 
 def test_each_factory_call_returns_an_independent_app():

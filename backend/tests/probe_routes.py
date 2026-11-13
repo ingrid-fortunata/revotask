@@ -1,8 +1,15 @@
 """Test-only routes shared by the request context and error tests. Not part of the app."""
 
-from flask import Flask, abort, jsonify, request
+from flask import Flask, abort, g, jsonify, request
+from marshmallow import Schema, fields
 
+from app.auth_guard import token_required
 from app.exceptions import ApiError, ServiceUnavailableError
+from app.validation import load_json_body
+
+
+class ProbeSchema(Schema):
+    name = fields.String(required=True, error_messages={"required": "Required."})
 
 
 class ValidationProbe(ApiError):
@@ -40,3 +47,25 @@ def add_probe_routes(app: Flask) -> None:
     @app.get("/_t/bad")
     def bad():
         abort(400)
+
+    @app.post("/_t/json")
+    def json_body():
+        return jsonify(data=load_json_body(ProbeSchema()))
+
+    @app.get("/_t/not-acceptable")
+    def not_acceptable():
+        abort(406)
+
+    @app.get("/api/_t/private")
+    def api_private():
+        return jsonify(data={"ok": True})
+
+    @app.get("/_t/protected")
+    @token_required
+    def protected():
+        return jsonify(data={"user_id": str(g.current_user.id)})
+
+    @app.post("/_t/protected")
+    @token_required
+    def protected_post():
+        return jsonify(data={"user_id": str(g.current_user.id)})

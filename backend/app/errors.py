@@ -11,9 +11,23 @@ import logging
 
 from flask import Flask, g, jsonify
 from flask import Response as FlaskResponse
-from werkzeug.exceptions import HTTPException, MethodNotAllowed, NotFound
+from werkzeug.exceptions import (
+    BadRequest,
+    HTTPException,
+    MethodNotAllowed,
+    NotFound,
+    RequestEntityTooLarge,
+    TooManyRequests,
+    UnsupportedMediaType,
+)
 
-from app.exceptions import ApiError
+from app.exceptions import (
+    ApiError,
+    ContentTooLargeError,
+    RateLimitedError,
+    RequestValidationError,
+    UnsupportedMediaTypeError,
+)
 from app.extensions import db
 
 logger = logging.getLogger("revotask.errors")
@@ -46,7 +60,9 @@ def error_response(
 def register_error_handlers(app: Flask) -> None:
     @app.errorhandler(ApiError)
     def handle_api_error(exc: ApiError) -> FlaskResponse:
-        return error_response(exc.status, exc.code, exc.message, fields=exc.fields)
+        return error_response(
+            exc.status, exc.code, exc.message, fields=exc.fields, headers=exc.headers
+        )
 
     @app.errorhandler(HTTPException)
     def handle_http_exception(exc: HTTPException) -> FlaskResponse:
@@ -56,10 +72,22 @@ def register_error_handlers(app: Flask) -> None:
             allowed = ", ".join(sorted(exc.valid_methods or []))
             headers = {"Allow": allowed} if allowed else None
             return error_response(405, "METHOD_NOT_ALLOWED", "Method not allowed.", headers=headers)
+        # Request-body failures use the shared envelope (AUTH-AC7.1, AUTH-AC7.5).
+        if isinstance(exc, UnsupportedMediaType):
+            return handle_api_error(UnsupportedMediaTypeError())
+        if isinstance(exc, RequestEntityTooLarge):
+            return handle_api_error(ContentTooLargeError())
+        if isinstance(exc, BadRequest):
+            return handle_api_error(
+                RequestValidationError("The request body must be a JSON object.")
+            )
+        if isinstance(exc, TooManyRequests):
+            retry_after = dict(exc.get_headers()).get("Retry-After")
+            headers = {"Retry-After": retry_after} if retry_after else None
+            return handle_api_error(RateLimitedError(headers=headers))
         if exc.code is not None and exc.code >= 500:
             return error_response(exc.code, "INTERNAL_ERROR", "Something went wrong.")
-        # Other framework errors (400, 413, 415 and similar) keep Flask's default response
-        # until T03 defines their JSON envelope (requirements open item 4).
+        # Other framework 4xx errors (406, 414 and similar) keep Flask's default response.
         return exc.get_response()
 
     @app.errorhandler(Exception)

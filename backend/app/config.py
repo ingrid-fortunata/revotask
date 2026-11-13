@@ -24,6 +24,19 @@ APP_ENVS = ("development", "test", "production")
 LOG_LEVELS = ("DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL")
 PRODUCTION_MIN_SECRET_LENGTH = 32
 
+# Authentication (T03). The same values are mirrored in frontend/lib/authRules.ts.
+ACCESS_TOKEN_TTL_SECONDS = 3600
+MAX_REQUEST_BODY_BYTES = 64 * 1024
+NAME_MAX = 80
+EMAIL_MAX = 254
+PASSWORD_MIN = 12
+PASSWORD_MAX = 128
+# Rate limits (local development, in-memory storage). Shared storage and trusted client
+# address handling are decided before production traffic (root T16).
+REGISTER_RATE_LIMIT = "5 per minute"
+LOGIN_ADDRESS_RATE_LIMIT = "20 per minute"
+LOGIN_EMAIL_RATE_LIMIT = "5 per minute"
+
 
 class ConfigError(RuntimeError):
     """A required setting is missing or invalid. The message names the variable only."""
@@ -35,6 +48,7 @@ class Settings:
     database_url: str
     jwt_secret_key: str
     log_level: str
+    rate_limit_enabled: bool = True
 
     @classmethod
     def from_env(cls, env: Mapping[str, str] | None = None) -> Settings:
@@ -63,12 +77,26 @@ class Settings:
         if log_level not in LOG_LEVELS:
             raise ConfigError(f"LOG_LEVEL: must be one of {', '.join(LOG_LEVELS)}.")
 
+        rate_limit_enabled = _rate_limit_flag(source, app_env)
         return cls(
             app_env=app_env,
             database_url=database_url,
             jwt_secret_key=jwt_secret_key,
             log_level=log_level,
+            rate_limit_enabled=rate_limit_enabled,
         )
+
+
+def _rate_limit_flag(source: Mapping[str, str], app_env: str) -> bool:
+    """Optional RATE_LIMIT_ENABLED, default true. It may not be false in production (AUTH-AC6.4)."""
+    raw = source.get("RATE_LIMIT_ENABLED", "").strip().lower()
+    if raw in ("", "true"):
+        return True
+    if raw != "false":
+        raise ConfigError("RATE_LIMIT_ENABLED: must be true or false.")
+    if app_env == "production":
+        raise ConfigError("RATE_LIMIT_ENABLED: cannot be false when APP_ENV is production.")
+    return False
 
 
 def _required(source: Mapping[str, str], name: str) -> str:

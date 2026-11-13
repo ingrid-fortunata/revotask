@@ -87,8 +87,15 @@ def test_api_error_subclass_carries_field_errors(client):
     assert error["fields"] == {"title": "Required."}
 
 
-def test_other_framework_400_keeps_flask_default_response_until_t03(client):
+def test_bare_abort_400_returns_the_json_validation_envelope(client):
+    # Replaces the foundation test that kept Flask's HTML 400 "until T03" (P3, AUTH-AC7.1).
     response = client.get("/_t/bad")
     assert response.status_code == 400
+    assert response.mimetype == "application/json"
+    assert envelope(response)["code"] == "VALIDATION_ERROR"
+
+
+def test_other_framework_4xx_keeps_flask_default_response(client):
+    response = client.get("/_t/not-acceptable")
+    assert response.status_code == 406
     assert response.mimetype == "text/html"
-    assert "error" not in (response.get_json(silent=True) or {})

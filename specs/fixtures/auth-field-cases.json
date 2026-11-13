@@ -1,0 +1,808 @@
+{
+ "_note": "Shared boundary cases for the auth field rules (design 4.4, AUTH-AC10.7). The Flask schema tests and the frontend authRules tests both read this file. Each case starts from the form's base body, applies 'set' then 'drop', and expects either 'accepted' (fields whose normalized value is checked; the output keys must equal the form's key set) or the exact 'fields' map of messages. Values: {\"repeat\": s, \"times\": n} is s repeated n times; {\"concat\": [a, b]} joins parts. Lengths count Unicode code points.",
+ "register": {
+  "base": {
+   "name": "Ada Lovelace",
+   "email": "ada@example.com",
+   "password": "correct horse battery"
+  },
+  "cases": [
+   {
+    "id": "name-empty",
+    "set": {
+     "name": ""
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "name": "Must be 1 to 80 characters."
+     }
+    }
+   },
+   {
+    "id": "name-spaces-only",
+    "set": {
+     "name": "   "
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "name": "Must be 1 to 80 characters."
+     }
+    }
+   },
+   {
+    "id": "name-1-char",
+    "set": {
+     "name": "A"
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "name": "A"
+     }
+    }
+   },
+   {
+    "id": "name-80-chars",
+    "set": {
+     "name": {
+      "repeat": "a",
+      "times": 80
+     }
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "name": {
+       "repeat": "a",
+       "times": 80
+      }
+     }
+    }
+   },
+   {
+    "id": "name-81-chars",
+    "set": {
+     "name": {
+      "repeat": "a",
+      "times": 81
+     }
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "name": "Must be 1 to 80 characters."
+     }
+    }
+   },
+   {
+    "id": "name-padded-internal-spaces-kept",
+    "set": {
+     "name": "  Ada  Lovelace  "
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "name": "Ada  Lovelace"
+     }
+    }
+   },
+   {
+    "id": "name-80-emoji-counts-as-80",
+    "set": {
+     "name": {
+      "repeat": "😀",
+      "times": 80
+     }
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "name": {
+       "repeat": "😀",
+       "times": 80
+      }
+     }
+    }
+   },
+   {
+    "id": "name-81-emoji",
+    "set": {
+     "name": {
+      "repeat": "😀",
+      "times": 81
+     }
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "name": "Must be 1 to 80 characters."
+     }
+    }
+   },
+   {
+    "id": "name-number",
+    "set": {
+     "name": 5
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "name": "Must be text."
+     }
+    }
+   },
+   {
+    "id": "name-null",
+    "set": {
+     "name": null
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "name": "Required."
+     }
+    }
+   },
+   {
+    "id": "name-missing",
+    "set": {},
+    "drop": [
+     "name"
+    ],
+    "expect": {
+     "fields": {
+      "name": "Required."
+     }
+    }
+   },
+   {
+    "id": "email-padded-and-mixed-case",
+    "set": {
+     "email": "  Ada@Example.COM "
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "email": "ada@example.com"
+     }
+    }
+   },
+   {
+    "id": "email-254-chars",
+    "set": {
+     "email": {
+      "concat": [
+       {
+        "repeat": "a",
+        "times": 242
+       },
+       "@example.com"
+      ]
+     }
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "email": {
+       "concat": [
+        {
+         "repeat": "a",
+         "times": 242
+        },
+        "@example.com"
+       ]
+      }
+     }
+    }
+   },
+   {
+    "id": "email-255-chars",
+    "set": {
+     "email": {
+      "concat": [
+       {
+        "repeat": "a",
+        "times": 243
+       },
+       "@example.com"
+      ]
+     }
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "email": "Must be at most 254 characters."
+     }
+    }
+   },
+   {
+    "id": "email-no-at",
+    "set": {
+     "email": "ada.example.com"
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "email": "Enter a valid email address."
+     }
+    }
+   },
+   {
+    "id": "email-two-at",
+    "set": {
+     "email": "a@b@c.com"
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "email": "Enter a valid email address."
+     }
+    }
+   },
+   {
+    "id": "email-no-domain-dot",
+    "set": {
+     "email": "ada@examplecom"
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "email": "Enter a valid email address."
+     }
+    }
+   },
+   {
+    "id": "email-space-inside",
+    "set": {
+     "email": "ada@exa mple.com"
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "email": "Enter a valid email address."
+     }
+    }
+   },
+   {
+    "id": "email-empty",
+    "set": {
+     "email": ""
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "email": "Enter a valid email address."
+     }
+    }
+   },
+   {
+    "id": "email-number",
+    "set": {
+     "email": 5
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "email": "Must be text."
+     }
+    }
+   },
+   {
+    "id": "email-null",
+    "set": {
+     "email": null
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "email": "Required."
+     }
+    }
+   },
+   {
+    "id": "email-missing",
+    "set": {},
+    "drop": [
+     "email"
+    ],
+    "expect": {
+     "fields": {
+      "email": "Required."
+     }
+    }
+   },
+   {
+    "id": "password-11-chars",
+    "set": {
+     "password": {
+      "repeat": "a",
+      "times": 11
+     }
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "password": "Must be 12 to 128 characters."
+     }
+    }
+   },
+   {
+    "id": "password-12-chars",
+    "set": {
+     "password": {
+      "repeat": "a",
+      "times": 12
+     }
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "password": {
+       "repeat": "a",
+       "times": 12
+      }
+     }
+    }
+   },
+   {
+    "id": "password-128-chars",
+    "set": {
+     "password": {
+      "repeat": "a",
+      "times": 128
+     }
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "password": {
+       "repeat": "a",
+       "times": 128
+      }
+     }
+    }
+   },
+   {
+    "id": "password-129-chars",
+    "set": {
+     "password": {
+      "repeat": "a",
+      "times": 129
+     }
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "password": "Must be 12 to 128 characters."
+     }
+    }
+   },
+   {
+    "id": "password-12-spaces-kept",
+    "set": {
+     "password": {
+      "repeat": " ",
+      "times": 12
+     }
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "password": {
+       "repeat": " ",
+       "times": 12
+      }
+     }
+    }
+   },
+   {
+    "id": "password-leading-trailing-spaces-kept",
+    "set": {
+     "password": "  padded password  "
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "password": "  padded password  "
+     }
+    }
+   },
+   {
+    "id": "password-128-emoji",
+    "set": {
+     "password": {
+      "repeat": "😀",
+      "times": 128
+     }
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "password": {
+       "repeat": "😀",
+       "times": 128
+      }
+     }
+    }
+   },
+   {
+    "id": "password-129-emoji",
+    "set": {
+     "password": {
+      "repeat": "😀",
+      "times": 129
+     }
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "password": "Must be 12 to 128 characters."
+     }
+    }
+   },
+   {
+    "id": "password-empty",
+    "set": {
+     "password": ""
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "password": "Must be 12 to 128 characters."
+     }
+    }
+   },
+   {
+    "id": "password-number",
+    "set": {
+     "password": 5
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "password": "Must be text."
+     }
+    }
+   },
+   {
+    "id": "password-null",
+    "set": {
+     "password": null
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "password": "Required."
+     }
+    }
+   },
+   {
+    "id": "password-missing",
+    "set": {},
+    "drop": [
+     "password"
+    ],
+    "expect": {
+     "fields": {
+      "password": "Required."
+     }
+    }
+   },
+   {
+    "id": "extra-key",
+    "set": {
+     "role": "admin"
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "role": "Unknown field."
+     }
+    }
+   },
+   {
+    "id": "extra-key-and-bad-field",
+    "set": {
+     "role": "admin",
+     "name": ""
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "role": "Unknown field.",
+      "name": "Must be 1 to 80 characters."
+     }
+    }
+   },
+   {
+    "id": "all-missing",
+    "set": {},
+    "drop": [
+     "name",
+     "email",
+     "password"
+    ],
+    "expect": {
+     "fields": {
+      "name": "Required.",
+      "email": "Required.",
+      "password": "Required."
+     }
+    }
+   }
+  ]
+ },
+ "login": {
+  "base": {
+   "email": "ada@example.com",
+   "password": "x"
+  },
+  "cases": [
+   {
+    "id": "email-padded-and-mixed-case",
+    "set": {
+     "email": "  Ada@Example.COM "
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "email": "ada@example.com"
+     }
+    }
+   },
+   {
+    "id": "email-254-chars",
+    "set": {
+     "email": {
+      "concat": [
+       {
+        "repeat": "a",
+        "times": 242
+       },
+       "@example.com"
+      ]
+     }
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "email": {
+       "concat": [
+        {
+         "repeat": "a",
+         "times": 242
+        },
+        "@example.com"
+       ]
+      }
+     }
+    }
+   },
+   {
+    "id": "email-255-chars",
+    "set": {
+     "email": {
+      "concat": [
+       {
+        "repeat": "a",
+        "times": 243
+       },
+       "@example.com"
+      ]
+     }
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "email": "Must be at most 254 characters."
+     }
+    }
+   },
+   {
+    "id": "email-empty",
+    "set": {
+     "email": ""
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "email": "Required."
+     }
+    }
+   },
+   {
+    "id": "email-spaces-only",
+    "set": {
+     "email": "   "
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "email": "Required."
+     }
+    }
+   },
+   {
+    "id": "email-without-at-is-not-format-checked",
+    "set": {
+     "email": "not-an-email"
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "email": "not-an-email"
+     }
+    }
+   },
+   {
+    "id": "email-number",
+    "set": {
+     "email": 5
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "email": "Must be text."
+     }
+    }
+   },
+   {
+    "id": "email-null",
+    "set": {
+     "email": null
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "email": "Required."
+     }
+    }
+   },
+   {
+    "id": "email-missing",
+    "set": {},
+    "drop": [
+     "email"
+    ],
+    "expect": {
+     "fields": {
+      "email": "Required."
+     }
+    }
+   },
+   {
+    "id": "password-empty",
+    "set": {
+     "password": ""
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "password": "Must be 1 to 128 characters."
+     }
+    }
+   },
+   {
+    "id": "password-1-char",
+    "set": {
+     "password": "x"
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "password": "x"
+     }
+    }
+   },
+   {
+    "id": "password-single-space-kept",
+    "set": {
+     "password": " "
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "password": " "
+     }
+    }
+   },
+   {
+    "id": "password-128-chars",
+    "set": {
+     "password": {
+      "repeat": "a",
+      "times": 128
+     }
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "password": {
+       "repeat": "a",
+       "times": 128
+      }
+     }
+    }
+   },
+   {
+    "id": "password-129-chars",
+    "set": {
+     "password": {
+      "repeat": "a",
+      "times": 129
+     }
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "password": "Must be 1 to 128 characters."
+     }
+    }
+   },
+   {
+    "id": "password-number",
+    "set": {
+     "password": 5
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "password": "Must be text."
+     }
+    }
+   },
+   {
+    "id": "password-null",
+    "set": {
+     "password": null
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "password": "Required."
+     }
+    }
+   },
+   {
+    "id": "password-missing",
+    "set": {},
+    "drop": [
+     "password"
+    ],
+    "expect": {
+     "fields": {
+      "password": "Required."
+     }
+    }
+   },
+   {
+    "id": "extra-key",
+    "set": {
+     "remember": true
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "remember": "Unknown field."
+     }
+    }
+   },
+   {
+    "id": "all-missing",
+    "set": {},
+    "drop": [
+     "email",
+     "password"
+    ],
+    "expect": {
+     "fields": {
+      "email": "Required.",
+      "password": "Required."
+     }
+    }
+   }
+  ]
+ }
+}

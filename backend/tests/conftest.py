@@ -35,6 +35,7 @@ def app(test_db_url):
             "DATABASE_URL": test_db_url,
             "JWT_SECRET_KEY": JWT_TEST_SECRET,
             "LOG_LEVEL": "WARNING",
+            "RATE_LIMIT_ENABLED": "false",
         }
     )
 

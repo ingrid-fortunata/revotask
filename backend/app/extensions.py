@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 from flask_jwt_extended import JWTManager
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import MetaData
@@ -21,3 +23,7 @@ NAMING_CONVENTION = {
 db = SQLAlchemy(metadata=MetaData(schema=DB_SCHEMA, naming_convention=NAMING_CONVENTION))
 migrate = Migrate()
 jwt = JWTManager()
+# Rate limits for register and login. Memory storage is for local development only and keeps
+# counters per process. Shared storage and trusted client address handling are decided
+# before production traffic (root T16, AUTH-AC6.6).
+limiter = Limiter(key_func=get_remote_address)

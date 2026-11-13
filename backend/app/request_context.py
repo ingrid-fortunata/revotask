@@ -52,12 +52,13 @@ def register_request_context(app: Flask) -> None:
         level = logging.ERROR if response.status_code >= 500 else logging.INFO
         request_logger.log(
             level,
-            "request_id=%s method=%s route=%s status=%d error_code=%s duration_ms=%.1f",
+            "request_id=%s method=%s route=%s status=%d error_code=%s duration_ms=%.1f actor_id=%s",
             g.get("request_id", ""),
             request.method,
             route,
             response.status_code,
             g.get("error_code") or "-",
             duration_ms,
+            g.get("actor_id") or "-",
         )
         return response
