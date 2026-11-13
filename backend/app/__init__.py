@@ -15,6 +15,8 @@ from flask import Flask
 from app.auth_guard import register_jwt_handlers
 from app.blueprints.auth import auth_bp
 from app.blueprints.boards import boards_bp
+from app.blueprints.cards import cards_bp
+from app.blueprints.columns import columns_bp
 from app.blueprints.health import health_bp
 from app.blueprints.users import users_bp
 from app.cli import bootstrap_schema_command
@@ -70,6 +72,8 @@ def create_app(env: Mapping[str, str] | None = None) -> Flask:
     app.register_blueprint(auth_bp)
     app.register_blueprint(users_bp)
     app.register_blueprint(boards_bp)
+    app.register_blueprint(columns_bp)
+    app.register_blueprint(cards_bp)
     app.cli.add_command(bootstrap_schema_command)
     # Register every model on db.metadata for Alembic autogenerate and the tests (DB01).
     from app import models  # noqa: F401

@@ -12,6 +12,7 @@ to explicit schemas, so no ORM object reaches a response (DD9).
 from __future__ import annotations
 
 import uuid
+from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Any
 
@@ -101,7 +102,7 @@ def authorize_board(
     )
 
 
-def _commit() -> None:
+def commit_or_rollback() -> None:
     """Commit the transaction. Roll back and re-raise on any SQLAlchemy failure (BE06)."""
     try:
         db.session.commit()
@@ -123,7 +124,7 @@ def create_board(user_id: uuid.UUID, name: str) -> dict:
     board = Board(name=name, creator_id=user_id)
     board.members.append(BoardMember(user_id=user_id, role="admin"))
     db.session.add(board)
-    _commit()
+    commit_or_rollback()
     return _summary(board.id, board.name, "admin", board.position_version)
 
 
@@ -148,14 +149,37 @@ def list_boards(user_id: uuid.UUID) -> list[dict]:
 def get_board_detail(board_id: uuid.UUID, user_id: uuid.UUID) -> dict:
     """Return the board with its active columns and nested active cards (E07, DD10).
 
-    Three statements run whatever the board contains: the membership and board check, the
-    columns and the cards. Each read excludes soft-deleted rows and rows under a deleted column.
-    With no columns, the card query returns no rows and `columns` is an empty list.
+    Three statements run whatever the board contains: the membership and board check, then the
+    columns and the cards from `read_columns`. Each read excludes soft-deleted rows and rows under
+    a deleted column. With no columns, `columns` is an empty list.
     """
     access = authorize_board(board_id, user_id)
+    columns = read_columns(board_id)
+    return _summary(board_id, access.name, access.role, access.position_version) | {
+        "columns": columns
+    }
+
+
+def read_columns(board_id: uuid.UUID, column_ids: Sequence[uuid.UUID] | None = None) -> list[dict]:
+    """Return the board's active columns with their active cards, in `(order, id)` order.
+
+    Two statements run whatever the board contains. With `column_ids` only those columns (and their
+    cards) are returned, which is how E20 sends the affected lists. The caller has already
+    authorized access to `board_id`. Rows of soft-deleted columns and soft-deleted cards are never
+    read.
+    """
+    column_filter = [BoardColumn.board_id == board_id, BoardColumn.deleted_at.is_(None)]
+    card_filter = [
+        BoardColumn.board_id == board_id,
+        BoardColumn.deleted_at.is_(None),
+        Card.deleted_at.is_(None),
+    ]
+    if column_ids is not None:
+        column_filter.append(BoardColumn.id.in_(column_ids))
+        card_filter.append(BoardColumn.id.in_(column_ids))
     column_rows = db.session.execute(
         select(BoardColumn.id, BoardColumn.name, BoardColumn.is_done, BoardColumn.order)
-        .where(BoardColumn.board_id == board_id, BoardColumn.deleted_at.is_(None))
+        .where(*column_filter)
         .order_by(BoardColumn.order, BoardColumn.id)
     ).all()
     card_rows = db.session.execute(
@@ -170,11 +194,7 @@ def get_board_detail(board_id: uuid.UUID, user_id: uuid.UUID) -> dict:
         )
         .join(BoardColumn, BoardColumn.id == Card.column_id)
         .outerjoin(User, User.id == Card.assignee_id)
-        .where(
-            BoardColumn.board_id == board_id,
-            BoardColumn.deleted_at.is_(None),
-            Card.deleted_at.is_(None),
-        )
+        .where(*card_filter)
         .order_by(Card.order, Card.id)
     ).all()
 
@@ -201,16 +221,14 @@ def get_board_detail(board_id: uuid.UUID, user_id: uuid.UUID) -> dict:
                 "order": card.order,
             }
         )
-    return _summary(board_id, access.name, access.role, access.position_version) | {
-        "columns": list(columns.values())
-    }
+    return list(columns.values())
 
 
 def rename_board(board_id: uuid.UUID, user_id: uuid.UUID, name: str) -> dict:
     """Rename an active board as its admin under the board lock (E08)."""
     access = authorize_board(board_id, user_id, role="admin", lock=True)
     db.session.execute(update(Board).where(Board.id == board_id).values(name=name))
-    _commit()
+    commit_or_rollback()
     return _summary(board_id, name, access.role, access.position_version)
 
 
@@ -221,7 +239,7 @@ def delete_board(board_id: uuid.UUID, user_id: uuid.UUID) -> None:
     """
     authorize_board(board_id, user_id, role="admin", lock=True)
     db.session.execute(update(Board).where(Board.id == board_id).values(deleted_at=utcnow()))
-    _commit()
+    commit_or_rollback()
 
 
 ALREADY_MEMBER_MESSAGE = "This user is already a member of the board."
@@ -295,7 +313,7 @@ def add_member(board_id: uuid.UUID, user_id: uuid.UUID, email: str) -> dict:
         row.deleted_at = None
         row.role = "member"
     try:
-        _commit()
+        commit_or_rollback()
     except IntegrityError as exc:
         # Backstop for a duplicate insert the board lock did not serialize (E11, 409).
         if _is_membership_conflict(exc):
@@ -308,8 +326,9 @@ def remove_member(board_id: uuid.UUID, user_id: uuid.UUID, target_id: uuid.UUID)
     """Soft-delete a member and clear that user's card assignments on this board (E12, DD6).
 
     Under the board lock, the membership is soft-deleted and every active card assigned to the
-    target in a column of this board is unassigned. Both writes commit together (DD6, R1). Cards on
-    other boards keep their assignments (Requirements 5.9).
+    target in an active column of this board is unassigned. Both writes commit together (DD6, R1).
+    Cards on other boards, soft-deleted cards and cards in soft-deleted columns keep their
+    assignments (Requirements 5.9, kanban review L7).
     """
     authorize_board(board_id, user_id, role="admin", lock=True)
     row = _membership_row(board_id, target_id, active_only=True)
@@ -323,9 +342,13 @@ def remove_member(board_id: uuid.UUID, user_id: uuid.UUID, target_id: uuid.UUID)
         .where(
             Card.assignee_id == target_id,
             Card.deleted_at.is_(None),
-            Card.column_id.in_(select(BoardColumn.id).where(BoardColumn.board_id == board_id)),
+            Card.column_id.in_(
+                select(BoardColumn.id).where(
+                    BoardColumn.board_id == board_id, BoardColumn.deleted_at.is_(None)
+                )
+            ),
         )
         .values(assignee_id=None)
         .execution_options(synchronize_session=False)
     )
-    _commit()
+    commit_or_rollback()

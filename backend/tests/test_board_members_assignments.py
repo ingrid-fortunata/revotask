@@ -21,6 +21,7 @@ from sqlalchemy.exc import OperationalError
 
 from app.extensions import db
 from app.models.base import utcnow
+from app.models.board_column import BoardColumn
 from app.models.board_member import BoardMember
 from app.models.card import Card
 from tests.auth_helpers import bearer
@@ -103,6 +104,17 @@ def _soft_delete_card(app, card_id: uuid.UUID) -> None:
             db.session.remove()
 
 
+def _soft_delete_column(app, column_id: uuid.UUID) -> None:
+    with app.app_context():
+        try:
+            db.session.execute(
+                update(BoardColumn).where(BoardColumn.id == column_id).values(deleted_at=utcnow())
+            )
+            db.session.commit()
+        finally:
+            db.session.remove()
+
+
 def _card_state(app, card_ids: list[uuid.UUID]) -> dict[uuid.UUID, tuple[Any, Any]]:
     """Each card as (assignee_id, deleted_at), read from the database."""
     with app.app_context():
@@ -156,6 +168,38 @@ def test_e12_on_board_one_clears_only_the_removed_members_active_board_one_assig
     assert after[seed.card_b1_deleted][0] == seed.member_id
     assert after[seed.card_a1] == before[seed.card_a1]
     assert after[seed.card_a1][0] == seed.admin_id
+
+
+def test_e12_keeps_assignments_in_soft_deleted_columns_and_clears_active_columns(
+    client, board_tracker, app
+):
+    """L7: only active cards in active columns are cleared. Soft-deleted history is preserved."""
+    seed = _seed(board_tracker, app)
+    active_column = board_tracker.make_column(seed.board_one, name="Doing", order=2.0)
+    gone_column = board_tracker.make_column(seed.board_one, name="Gone", order=3.0)
+    card_in_active = board_tracker.make_card(
+        active_column, title="B in second active column", assignee_id=seed.member_id
+    )
+    card_in_gone = board_tracker.make_card(
+        gone_column, title="B in a soft-deleted column", assignee_id=seed.member_id
+    )
+    _soft_delete_column(app, gone_column)
+    ids = [*seed.card_ids, card_in_active, card_in_gone]
+    before = _card_state(app, ids)
+
+    response = client.delete(
+        _remove_url(seed.board_one, seed.member_id),
+        headers=_headers(board_tracker, seed.admin_id),
+    )
+
+    assert response.status_code == 200
+    after = _card_state(app, ids)
+    assert after[card_in_active] == (None, None)
+    assert after[card_in_gone] == before[card_in_gone]
+    assert after[card_in_gone][0] == seed.member_id
+    assert after[seed.card_b1_deleted] == before[seed.card_b1_deleted]
+    assert after[seed.card_b2] == before[seed.card_b2]
+    assert after[seed.card_a1] == before[seed.card_a1]
 
 
 def test_e12_soft_deletes_membership_on_board_one_and_keeps_board_two_membership(

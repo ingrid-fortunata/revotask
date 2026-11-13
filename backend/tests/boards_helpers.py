@@ -17,6 +17,7 @@ from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 
 from app.extensions import db
+from app.models.base import utcnow
 from app.models.board import Board
 from app.models.board_column import BoardColumn
 from app.models.board_event import BoardEvent
@@ -91,6 +92,24 @@ class BoardTracker(Tracker):
         board_id = uuid.UUID(response.get_json()["data"]["id"])
         self.board_ids.append(board_id)
         return board_id
+
+    def record_column_from_response(self, response: Any) -> uuid.UUID:
+        """Track the column ID from an E13 201 response (`{"data": {"column": {"id": ...}}}`).
+
+        The column belongs to a tracked board, so cleanup also removes it by board. Recording its
+        ID keeps the tracker's lists complete for assertions.
+        """
+        assert response.status_code == 201, response.status_code
+        column_id = uuid.UUID(response.get_json()["data"]["column"]["id"])
+        self.column_ids.append(column_id)
+        return column_id
+
+    def record_card_from_response(self, response: Any) -> uuid.UUID:
+        """Track the card ID from an E17 201 response (`{"data": {"card": {"id": ...}}}`)."""
+        assert response.status_code == 201, response.status_code
+        card_id = uuid.UUID(response.get_json()["data"]["card"]["id"])
+        self.card_ids.append(card_id)
+        return card_id
 
     # Removal
 
@@ -195,7 +214,7 @@ def tracked_boards(app: Flask) -> Iterator[BoardTracker]:
 
 
 def seed_untracked_sentinel(app: Flask) -> dict[str, uuid.UUID]:
-    """Insert a user, board, column, card and membership that no tracker records.
+    """Insert a user, board, column, card, event and membership that no tracker records.
 
     Returns their IDs. The caller must remove them with `remove_untracked_sentinel`.
     """
@@ -216,6 +235,15 @@ def seed_untracked_sentinel(app: Flask) -> dict[str, uuid.UUID]:
         db.session.flush()
         card = Card(column_id=column.id, title="Sentinel card", assignee_id=user.id, order=1.0)
         db.session.add(card)
+        db.session.flush()
+        event = BoardEvent(
+            board_id=board.id,
+            actor_id=user.id,
+            card_id=card.id,
+            kind="card_created",
+            occurred_at=utcnow(),
+        )
+        db.session.add(event)
         db.session.commit()
         ids = {
             "user": user.id,
@@ -223,6 +251,7 @@ def seed_untracked_sentinel(app: Flask) -> dict[str, uuid.UUID]:
             "membership": membership.id,
             "column": column.id,
             "card": card.id,
+            "event": event.id,
         }
         db.session.remove()
         return ids
@@ -232,6 +261,7 @@ def remove_untracked_sentinel(app: Flask, ids: dict[str, uuid.UUID]) -> None:
     """Remove the sentinel rows by their own IDs, after the assertions are done."""
     with app.app_context():
         try:
+            db.session.execute(delete(BoardEvent).where(BoardEvent.id == ids["event"]))
             db.session.execute(delete(Card).where(Card.id == ids["card"]))
             db.session.execute(delete(BoardColumn).where(BoardColumn.id == ids["column"]))
             db.session.execute(delete(BoardMember).where(BoardMember.id == ids["membership"]))

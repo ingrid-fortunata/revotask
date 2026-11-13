@@ -14,8 +14,10 @@ from dotenv import dotenv_values
 from sqlalchemy import make_url
 
 from app.extensions import db
+from app.models.base import utcnow
 from app.models.board import Board
 from app.models.board_column import BoardColumn
+from app.models.board_event import BoardEvent
 from app.models.board_member import BoardMember
 from app.models.card import Card
 from app.models.card_comment import CardComment
@@ -49,6 +51,20 @@ def _fail_after_tracked_setup(tracker: BoardTracker, state: dict) -> None:
             state["comment_id"] = comment.id
         finally:
             db.session.remove()
+    with tracker.app.app_context():
+        try:
+            event = BoardEvent(
+                board_id=board_id,
+                actor_id=member.id,
+                card_id=card_id,
+                kind="card_moved",
+                occurred_at=utcnow(),
+            )
+            db.session.add(event)
+            db.session.commit()
+            state["event_id"] = event.id
+        finally:
+            db.session.remove()
     state["board_id"] = board_id
     state["column_id"] = column_id
     state["card_id"] = card_id
@@ -68,6 +84,7 @@ def test_teardown_removes_tracked_rows_after_failed_harness(app, schema_at_head)
             # Precondition: the harness really created the rows before the failure.
             assert count_rows(app, Board, [state["board_id"]]) == 1
             assert count_rows(app, Card, [state["card_id"]]) == 1
+            assert count_rows(app, BoardEvent, [state["event_id"]]) == 1
             assert len(tracker.user_ids) == 2
             assert count_rows(app, BoardMember, tracker.membership_ids) == 2
         finally:
@@ -78,6 +95,7 @@ def test_teardown_removes_tracked_rows_after_failed_harness(app, schema_at_head)
         assert count_rows(app, BoardColumn, [state["column_id"]]) == 0
         assert count_rows(app, Card, [state["card_id"]]) == 0
         assert count_rows(app, CardComment, [state["comment_id"]]) == 0
+        assert count_rows(app, BoardEvent, [state["event_id"]]) == 0
         assert count_rows(app, BoardMember, tracker.membership_ids) == 0
 
         # The untracked sentinel rows are still there.
@@ -86,6 +104,7 @@ def test_teardown_removes_tracked_rows_after_failed_harness(app, schema_at_head)
         assert count_rows(app, BoardMember, [sentinel["membership"]]) == 1
         assert count_rows(app, BoardColumn, [sentinel["column"]]) == 1
         assert count_rows(app, Card, [sentinel["card"]]) == 1
+        assert count_rows(app, BoardEvent, [sentinel["event"]]) == 1
     finally:
         remove_untracked_sentinel(app, sentinel)
 
@@ -106,3 +125,41 @@ def test_guard_refuses_a_test_url_equal_to_database_url(test_db_url):
     assert dev_url != test_db_url, "DATABASE_URL and TEST_DATABASE_URL must differ"
     with pytest.raises(UnsafeTestDatabaseError, match="same database"):
         assert_safe_test_database(dev_url, dev_url)
+
+
+class _FakeResponse:
+    """The two members `record_*_from_response` read from a Flask test response."""
+
+    def __init__(self, status_code: int, body: dict):
+        self.status_code = status_code
+        self._body = body
+
+    def get_json(self) -> dict:
+        return self._body
+
+
+def test_record_helpers_read_ids_from_the_201_bodies(app, schema_at_head):
+    """E13 and E17 do not exist yet, so the helpers run on stand-in responses (task 2.4).
+
+    Groups 3 and 5 use them on real responses.
+    """
+    import uuid
+
+    column_id, card_id = uuid.uuid4(), uuid.uuid4()
+    tracker = BoardTracker(app)
+    assert (
+        tracker.record_column_from_response(
+            _FakeResponse(201, {"data": {"column": {"id": str(column_id)}, "position_version": 1}})
+        )
+        == column_id
+    )
+    assert (
+        tracker.record_card_from_response(
+            _FakeResponse(201, {"data": {"card": {"id": str(card_id)}, "position_version": 2}})
+        )
+        == card_id
+    )
+    assert tracker.column_ids == [column_id]
+    assert tracker.card_ids == [card_id]
+    with pytest.raises(AssertionError):
+        tracker.record_card_from_response(_FakeResponse(400, {}))
