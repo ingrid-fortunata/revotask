@@ -15,6 +15,10 @@ services:
       APP_ENV: development
       LOG_LEVEL: INFO
       PORT: "5001"
+      # One Gunicorn worker locally. The login and register limiter counters live in each
+      # worker process, so two workers would let up to twice the limit through (AUTH-AC6.6,
+      # evidence F-AUTH-11). Shared limiter storage is a T16 item before more workers run.
+      GUNICORN_WORKERS: "1"
       DATABASE_URL: ${DOCKER_DATABASE_URL:?Set DOCKER_DATABASE_URL in the root .env file}
     ports:
       - "127.0.0.1:5001:5001"
