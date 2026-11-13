@@ -30,7 +30,7 @@ Render builds the same `backend/Dockerfile` that local Compose uses (`compose.ya
 
 1. Create a Web Service from the GitHub repository. Set **Language** to **Docker**, **Root Directory** to `backend` (so `backend/.dockerignore` applies to the build), and **Dockerfile Path** to `./Dockerfile`. Choose a plan that supports Docker services.
 2. Do not set a build or start command. The image's `CMD` runs `gunicorn --bind 0.0.0.0:${PORT} 'app:create_app()'`, and Render provides `PORT`. Optionally set `GUNICORN_WORKERS` (default 2). Render provides `PORT` (default 10000). Gunicorn binds `0.0.0.0` on that port, which is what Render requires for web services.
-3. Set **Health Check Path** to `/api/health`. Set `APP_ENV=production`, the runtime `DATABASE_URL` (the Supabase session pooler URL from section 2 with `sslmode=verify-full` and `sslrootcert=/etc/secrets/supabase-ca.crt`), `JWT_SECRET_KEY` (at least 32 characters, generated for production only) and `LOG_LEVEL`. Install the CA certificate as Render Secret File `supabase-ca.crt`. Do not put `DOCKER_DATABASE_URL`, `TEST_DATABASE_URL` or any local `.env` value in Render.
+3. Set **Health Check Path** to `/api/health`. Set `APP_ENV=production`, the runtime `DATABASE_URL` (the Supabase session pooler URL from section 2 with `sslmode=verify-full` and `sslrootcert=/etc/secrets/supabase-ca.crt`), `JWT_SECRET_KEY` (at least 32 characters, generated for production only) and `LOG_LEVEL`. Install the CA certificate as Render Secret File `supabase-ca.crt`. Do not put `DOCKER_DATABASE_URL`, `TEST_DATABASE_URL` or any local `.env` value in Render. Open release item (T16): the login and register rate limits use in-memory storage in the current code, which proves local behavior only. Before production traffic, choose shared limiter storage and decide how the trusted client address is derived behind Vercel and Render, then record the decision and the live check in the evidence log.
 4. Run the migration as a separate one-off step with the migration role, before triggering a deploy that needs a new revision. Use the candidate commit's image or a local checkout of it:
 
    ```bash
@@ -50,7 +50,7 @@ References: [Render Docker deploys](https://render.com/docs/docker), [Render web
 ## 4. Next.js on Vercel
 
 1. Import the repo with the Next.js preset and set **Root Directory** to `frontend`.
-2. Set the server-only `API_BASE_URL=https://<render-service-host>` and `APP_ORIGIN=https://<canonical-vercel-host>`. Configure preview origin and isolated preview data separately if you use previews.
+2. Set the server-only `API_BASE_URL=https://<render-service-host>` and `APP_ORIGIN=https://<canonical-vercel-host>` (the session cookie is `Secure` on https, and an http origin is accepted only for loopback development). Configure preview origin and isolated preview data separately if you use previews.
 3. Deploy the same candidate revision. Check registration, login, protected Server Components, browser mutations through same-origin handlers and logout on the canonical URL.
 4. Run live Playwright and a mobile walkthrough. Record URL, commit, time, browser and results.
 

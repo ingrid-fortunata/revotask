@@ -4,8 +4,8 @@ All results are **Pending** until executed. Record commands, environment, revisi
 
 | ID | Layer | Verification |
 |---|---|---|
-| V01 | pytest | Registration returns 201 and omits password fields, invalid input returns 400, normalized duplicates return 409, and only one insert succeeds during concurrent registrations. |
-| V02 | pytest and Next integration | Valid/invalid login, 401 for absent/expired/revoked JWTs, logout revocation, cookie flags, upstream logout failure, SSR 401 redirect and BFF 401 cleanup. |
+| V01 | pytest | Registration returns 201 and omits password fields, invalid input and unexpected fields return 400, an unsupported content type returns 415, an oversized body returns 413, normalized duplicates return 409, and only one insert succeeds during concurrent registrations. |
+| V02 | pytest and Next integration | Valid/invalid login, exact form fields, 401 for absent/expired/revoked JWTs, logout revocation, cookie flags, unsafe redirect targets, upstream logout failure, SSR 401 redirect and BFF 401 cleanup. |
 | V03 | pytest and UI | Admin/member/nonmember access, board list/detail, nested IDs from other boards, rename/delete, member reactivation and assignment clearing on removal. |
 | V04 | pytest | Column/card CRUD, Done uniqueness and nonempty rules, moves within/across columns, unauthorized and missing resources, FLOAT precision, invalid anchors, concurrent version conflict and rebalance. |
 | V05 | React/Playwright | Optimistic move, rollback on 500, refresh on 409 or uncertain network outcome, and synchronization with canonical order. |
@@ -14,7 +14,7 @@ All results are **Pending** until executed. Record commands, environment, revisi
 | V08 | pytest and RTL | Atomic assignment/comment notifications, recipient isolation, pagination, idempotent mark-read, zero analytics counts, distinct completions, UTC boundaries and access checks. |
 | V09 | Playwright | Four auth scenarios below. |
 | V10 | Playwright | Eight-step Kanban journey below. |
-| V11 | Browser/RTL/Playwright | 375 px viewport, keyboard Move, modal focus, search debounce, 30-second polling and cleanup, real fetch integration and visible errors. |
+| V11 | Browser/RTL/Playwright | Every route and dialog at 375 px and wider with no horizontal page scroll outside the Kanban region, 44 px touch targets and 16 px inputs; keyboard Move, modal focus, search debounce, 30-second polling and cleanup, real fetch integration and visible errors. |
 | V12 | Performance | Warm up with a demo account. Time 30 sequential E07 requests against a board with ≤100 cards. Document the environment and fixture size. Nearest-rank p95 is the 29th sorted value. Target ≤800 ms. Record local and warm deployed measurements independently. |
 | V13 | Integration/local checks | Valid, cross-origin and absent Origin behavior, private no-store caching, repository and bundle secret checks, fresh and prior-schema migrations. |
 | V14 | Live Postman and smoke | Verify Render health/register/login and one endpoint per Blueprint with a test account. |

@@ -1,6 +1,6 @@
 # RevoTask Feature Queue
 
-Use these slices with the two feature prompts. Choose the next row whose prerequisites are verified. Review the generated spec against the [project baseline](requirements.md) and [task plan](tasks.md). Use the actual Kiro folder slug in the implementation prompt.
+Use these slices with the two feature prompts. Choose the next row whose prerequisites are verified. Review the generated spec against the [project baseline](requirements.md) and [task plan](tasks.md). Every slice that adds UI carries its own 375 px criterion, task and check (AC13.1, FE-S4–S6). Use the actual Kiro folder slug in the implementation prompt.
 
 | Feature slug | Root tasks | Goal for the spec prompt | Prerequisites |
 |---|---|---|---|

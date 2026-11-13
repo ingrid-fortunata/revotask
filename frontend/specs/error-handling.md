@@ -18,10 +18,11 @@ Define `ApiError` in `lib/errors.ts` with `statusCode` (nullable for transport f
 | 409 `POSITION_CONFLICT` | Roll back the optimistic move, refetch the authoritative board, and explain that the board changed. |
 | Other 409 | Show an inline duplicate-email error or action-specific conflict feedback. Preserve input. |
 | 429 | Explain the temporary limit and honor Retry-After when present. |
+| 413 `CONTENT_TOO_LARGE`, 415 `UNSUPPORTED_MEDIA_TYPE` | Show fixed retry copy in a toast. These indicate a client defect and are not user-fixable. |
 | 500, 503 or transport failure | Show safe retry feedback. Roll back optimistic changes. Refetch after an uncertain write outcome before allowing a retry. |
 | Deliberately aborted search or poll | Suppress feedback and ignore stale results. |
 
-Preserve a consistent pending state on forms. Present errors in text and use appropriate live regions for async feedback. Use Next.js route error boundaries for unexpected rendering failures, alongside explicit loading and not-found states.
+Preserve a consistent pending state on forms. Present errors in text and use appropriate live regions for async feedback. Use Next.js route error boundaries for unexpected rendering failures, alongside explicit loading and not-found states. A boundary's Try again button calls `retry()`, which re-fetches the segment. `reset()` only clears the error and re-renders without re-fetching (Next.js 16.4), so it cannot recover from a failed server load. Do not add `loading.tsx` under a protected route group: the Next.js docs say `redirect()` in a streaming context emits a meta tag on the client side and not an HTTP redirect. The authentication slice keeps a plain 307 and did not test the `loading.tsx` case.
 
 ## Verification
 

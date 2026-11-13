@@ -4,19 +4,19 @@ Routes below are Flask endpoints relative to `API_BASE_URL`, which contains the 
 
 ## Request and response conventions
 
-- JSON bodies use `Content-Type: application/json`. Reject unknown fields, invalid UUIDs and unsupported values with 400. Query inputs are validated and pagination caps are applied.
+- JSON bodies use `Content-Type: application/json`. Reject unknown fields, invalid UUIDs and unsupported values with 400. A malformed JSON body returns 400, a missing or non-JSON `Content-Type` returns 415 and a body over 64 KiB returns 413. Query inputs are validated and pagination caps are applied.
 - Flask public routes are health, register and login. All other Flask routes use `Authorization: Bearer <access-token>`. For browser writes, the Next handler verifies exact Origin.
 - Success returns `{"data": ...}`. Delete and logout operations without response metadata return 200 with `{"data": null}`. Error example: `{"error":{"code":"VALIDATION_ERROR","message":"Check the submitted fields.","fields":{"title":"Required."},"request_id":"example-id"}}`. Omit `fields` where inapplicable. Timestamps are ISO 8601 UTC. PATCH modifies only submitted fields, except that explicit null clears fields documented as nullable.
-- Status conventions: 400 invalid input, 401 invalid authentication, 403 forbidden, 404 missing/deleted resource, 405 method not allowed (the response keeps the `Allow` header), 409 duplicate or state conflict, 429 rate limited, 503 unavailable. Unexpected internal errors return sanitized 500. Field limits below use trimmed length for names, titles and content. Preserve password bytes as entered.
+- Status conventions: 400 invalid input, 401 invalid authentication, 403 forbidden, 404 missing/deleted resource, 405 method not allowed (the response keeps the `Allow` header), 409 duplicate or state conflict, 413 request body too large (`CONTENT_TOO_LARGE`), 415 unsupported content type (`UNSUPPORTED_MEDIA_TYPE`), 429 rate limited, 503 unavailable. Unexpected internal errors return sanitized 500. Field limits below use trimmed length for names, titles and content. Preserve password bytes as entered.
 
 ## Endpoints
 
 | ID | Method and path | Request → successful result |
 |---|---|---|
 | E01 | GET `/api/health` | Public → 200 status; bounded DB check, 503 on failure. |
-| E02 | POST `/api/auth/register` | Public. `name` 1–80, valid `email` ≤254, `password` 12–128 → 201 public user. Duplicate normalized email 409. |
-| E03 | POST `/api/auth/login` | Public. `email,password` → 200 `{access_token,expires_in,user}` on Flask, `{user}` on Next. Bad credentials 401. |
-| E04 | POST `/api/auth/logout` | Authenticated → 200 after JWT revocation. |
+| E02 | POST `/api/auth/register` | Public. Exactly `name` 1–80, valid `email` ≤254, `password` 12–128; any other field is 400. `name` and `email` are trimmed, `email` is lowercased, `password` is kept as entered → 201 public user. Duplicate normalized email 409. |
+| E03 | POST `/api/auth/login` | Public. Exactly `email` ≤254 and `password` 1–128; any other field is 400 → 200 `{access_token,expires_in,user}` on Flask. On Next the body is `{"data":{"user"}}` and the handler sets the session cookie. Bad credentials 401. |
+| E04 | POST `/api/auth/logout` | Authenticated → 200 after JWT revocation. The Next handler also returns 200 and clears the cookie when the cookie is absent or the session is already invalid. It returns 503 and keeps the cookie when revocation fails. |
 | E05 | GET `/api/boards` | Accessible active board summaries, sorted by name and ID → 200. |
 | E06 | POST `/api/boards` | `name` 1–100 → 201 board summary with admin membership. |
 | E07 | GET `/api/boards/{id}` | Participant → 200 board with role, version, columns and nested cards. |

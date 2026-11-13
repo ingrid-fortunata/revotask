@@ -12,7 +12,7 @@ The shared [HTTP endpoint reference](../../docs/API.md) defines methods, paths, 
 | `comments_bp` | E23–E26 | Comment create/update schemas. Require current board participation and check author on edit/delete. |
 | `notifications_bp` | E27–E28 | Page and page-size schema. Reads and writes use current recipient and visible board/card ancestry. |
 | `analytics_bp` | E29 | Validate board UUID and active participation. Aggregate counts in SQLAlchemy. |
-| `users_bp` | E30–E31 | Profile update schema allows name/email. Reject password and unexpected fields. Serialize the public user DTO. |
+| `users_bp` | E30–E31 | E30 read ships with T03 for the protected shell. E31 ships with T12: the update schema allows name/email and rejects password and unexpected fields. Serialize the public user DTO. |
 
 Use `routes.py`, `service.py` and `schema.py` in each feature directory. Reject unknown JSON fields, non-object bodies and empty update payloads with 400. Omitted PATCH fields keep their current values. An explicit null is allowed for card description, assignee and the nullable position anchors where defined. Public DTOs exclude password hash and credentials. Flask auth and Next browser auth responses differ as documented in E03.
 
@@ -44,12 +44,14 @@ A successful response returns `data.card`, `data.columns` for the affected colum
 
 | Status | Stable code | Example |
 |---|---|---|
-| 400 | `VALIDATION_ERROR` | Invalid UUID, missing content, or forbidden profile field. Include `fields` for invalid field values. |
+| 400 | `VALIDATION_ERROR` | Invalid UUID, missing content, malformed JSON, a non-object body, or an unexpected or forbidden field. Include `fields` for invalid field values. |
 | 401 | `INVALID_CREDENTIALS`, `AUTH_REQUIRED` | Rejected login, or absent, invalid, expired or revoked session on a protected route. |
 | 403 | `FORBIDDEN` | Authenticated caller lacks the board role, membership or ownership. |
 | 404 | `NOT_FOUND` | Source card, board or another addressed resource is missing or deleted. |
 | 405 | `METHOD_NOT_ALLOWED` | A known path is called with an unsupported method. Keep the `Allow` header that lists the supported methods. |
 | 409 | `POSITION_CONFLICT`, `EMAIL_ALREADY_EXISTS`, `STATE_CONFLICT` | Stale order version, duplicate normalized email, or conflicting board state. |
+| 413 | `CONTENT_TOO_LARGE` | Request body over 64 KiB. Checked before field validation. |
+| 415 | `UNSUPPORTED_MEDIA_TYPE` | Missing or non-JSON `Content-Type` on a JSON endpoint. `application/json` with parameters such as `charset=utf-8` is accepted. |
 | 429 | `RATE_LIMITED` | Login or registration throttled. Forward Retry-After when available. |
 | 500 / 503 | `INTERNAL_ERROR` / `SERVICE_UNAVAILABLE` | Unexpected failure or unavailable dependency. Use a safe message and request ID. |
 
