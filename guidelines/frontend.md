@@ -6,7 +6,7 @@
 |---|---|---|---|
 | FE-C1 | Keep page files as Server Components. Add a client boundary for hooks, events or browser APIs. | Keeps authenticated data access server-side and limits hydration. | `app/boards/[id]/page.tsx` fetches the board and renders interactive `KanbanBoard.tsx`. |
 | FE-C2 | Give components one responsibility, type props above the function, and pass serializable data across the server/client boundary. | Allows independent testing and predictable composition. | `BoardCard` renders card data, while a client wrapper supplies drag and click actions. |
-| FE-C3 | Reuse `BaseButton`, `BaseBadge` and `BaseModal` for repeated controls. Modal closes with Escape, traps focus while open and restores it on close. | Makes interactions and accessibility consistent. | `CardDetailModal` composes `BaseModal` and `CommentList`. |
+| FE-C3 | Reuse `BaseButton`, `BaseBadge` and `BaseModal` for repeated controls. Modal closes with Escape, traps focus while open and restores it on close. | Makes interactions and accessibility consistent. | `CardDetailModal` composes `BaseModal` and `CommentList`. A nested confirmation closes alone on Escape. |
 | FE-C4 | Provide accessible labels, clear error text and a non-drag way to move a card. | Keeps the workflow available on touch and with a keyboard. | A Move button opens a column picker. |
 
 | Component | Runtime boundary | Single responsibility |
@@ -14,7 +14,11 @@
 | `BoardCard.tsx` | Server-compatible, props-only. When imported by the client Kanban island it runs within the client graph. | Render card summary. |
 | `ColumnHeader.tsx` | Server-compatible, props-only. Interactive controls are separate children. | Render the column title and count. |
 | `AddCardForm.tsx` | Client. Handles input, submit and pending state. | Create a card in one column. |
-| `CommentList.tsx` | Server-compatible, props-only. Included in the client graph when composed by the modal. | Render supplied comments. |
+| `CommentList.tsx` | Server-compatible, props-only. Included in the client graph when composed by the modal. | Render supplied comments, or the empty text. |
+| `CardDetailModal.tsx` | Client. Owns the comment state through `useCardComments`. | Show one card's edit form and comments in a `BaseModal` (`wide`). |
+| `CardEditForm.tsx` | Client. Handles input, submit and delete confirmation. | Edit, assign and delete one card. |
+| `CommentItem.tsx` | Client. Holds only the editor draft and the delete confirmation. | Show one comment and, for its author, edit and delete it. |
+| `CommentForm.tsx` | Client. Handles input and submit. | Add a comment. |
 
 ## Naming Conventions
 

@@ -17,6 +17,9 @@ Define `ApiError` in `lib/errors.ts` with `statusCode` (nullable for transport f
 | 404 missing resource | Page reads render a not-found state. A failed action shows a toast and refreshes or closes the affected view where appropriate. |
 | 409 `POSITION_CONFLICT` | Roll back the optimistic move, refetch the authoritative board, and explain that the board changed. |
 | 409 `STATE_CONFLICT` | Show the message next to the control (a second Done column, a nonempty column), preserve input and refetch the board. |
+| Comment 404 (E23–E26) | The 404 is the same for a missing comment, a missing card and lost access. Refetch the board: lost access shows the access toast and goes to the dashboard, a missing card closes the card detail modal with a toast, an existing card reloads the comments. A failed refetch or a repeated 404 shows a Retry notice and does not loop. |
+| Comment 403 (E25, E26) | Show that only the author can change a comment and reload the list. |
+| Uncertain comment add (5xx or transport failure on E24) | Keep the draft and the current list, say the comment may have been posted, refetch the comments, keep Add comment disabled until a refresh succeeds, then let the user retry by hand. Never retry automatically and never hide a duplicate by comparing text. |
 | Other 409 | Show an inline duplicate-email error or action-specific conflict feedback. Preserve input. |
 | 429 | Explain the temporary limit and honor Retry-After when present. |
 | 413 `CONTENT_TOO_LARGE`, 415 `UNSUPPORTED_MEDIA_TYPE` | Show fixed retry copy in a toast. These indicate a client defect and are not user-fixable. |

@@ -106,6 +106,20 @@ Local status only. The planned verification rows above stay the reference. Evide
 | V05 | Optimistic move, rollback, refetch, gate | Passed locally with Vitest. Playwright part pending (T15) |
 | V10 | Playwright Kanban journey | Pending (T15). The test IDs for it are in `evidence/kanban-T07-T09.md` |
 
+## Comments evidence status (T10)
+
+Local status only. The planned verification rows above stay the reference. Evidence: `evidence/comments-T10.md`. Local checks prove local behavior: no real phone, no on-screen keyboard.
+
+| AC | Comments contribution | Status |
+|---|---|---|
+| AC08.1 | E24 and the add form: valid content creates a comment (201), missing or blank content is 400, a nonmember is 404, no authentication is 401 | Passed locally: backend and UI tests, and the browser journey |
+| AC08.2 | E25 and E26: only the author with current access may edit or delete (403 for a non-author including an admin, 404 for a removed author). A changed edit moves `updated_at`, the same text leaves it | Passed locally: backend tests (author matrix, unchanged timestamp), UI tests and the browser run |
+| AC13.1 | The Card details dialog, the comment editor and the delete confirmation at 375 px and wider | Passed locally in emulation at 320, 375, 768 and 1280 px: 480 checks, 0 failed, including the wide dialog fitting 375 px. Real phone and on-screen keyboard open (T15, T16) |
+| V05 | Card details modal states, uncertain add, 404 resolution | Passed locally with Vitest. Playwright part pending (T15) |
+| V06 | E24 with 201, 400, 401, 404 and E25 and E26 with 403 for a non-author (admin included), `updated_at` rules, omission after delete, no `position_version` change, one `comment_created` event | Passed locally: 1706 backend tests passed, 1 skipped. The create-path status difference from the handbook (404 instead of 403 for a nonmember) is recorded in `docs/RUBRIC.md` |
+| V11 | Mobile and accessibility of the new dialogs | Passed locally in emulation (see AC13.1) |
+| V10 | Playwright comments steps | Pending (T15). The steps are in `evidence/comments-T10.md` |
+
 ## Boards-membership evidence status (T05–T06)
 
 Local status only. The planned verification rows above stay the reference. Evidence: `evidence/boards-membership-T05-T06.md`. The browser and mobile checks have not run.
