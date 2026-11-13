@@ -1,4 +1,4 @@
-import { render, screen, waitFor, within } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { apiRequest } from "@/lib/apiClient";
@@ -32,8 +32,14 @@ beforeEach(() => {
   vi.mocked(notifyError).mockReset();
 });
 
+function openMembers() {
+  fireEvent.click(screen.getByRole("button", { name: /^Members \(/ }));
+}
+
+// Renders the panel and opens the Members modal, where the list and the forms live.
 function renderPanel(viewerRole: BoardRole, members: Membership[] = MEMBERS) {
   render(<MembersPanel boardId={BOARD_ID} viewerRole={viewerRole} members={members} />);
+  openMembers();
 }
 
 function rowFor(name: string): HTMLElement {
@@ -51,6 +57,30 @@ async function openRemoveFor(name: string) {
   await user.click(screen.getByRole("button", { name: `Remove ${name}` }));
   return user;
 }
+
+describe("MembersPanel avatars", () => {
+  it("shows initials under the title and keeps the list closed until clicked", () => {
+    render(<MembersPanel boardId={BOARD_ID} viewerRole="member" members={[{ ...ADA, name: "Ada Lovelace" }, BEN]} />);
+    expect(screen.getByText("AL")).toBeInTheDocument();
+    expect(screen.getByText("B")).toBeInTheDocument();
+    expect(screen.queryByRole("dialog", { name: "Members" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Add member" })).not.toBeInTheDocument();
+    openMembers();
+    expect(screen.getByRole("dialog", { name: "Members" })).toBeInTheDocument();
+  });
+
+  it("shows +N after five avatars", () => {
+    const many = Array.from({ length: 7 }, (_, i) => ({ user_id: `id-${i}`, name: `User${i}`, role: "member" as const }));
+    render(<MembersPanel boardId={BOARD_ID} viewerRole="member" members={many} />);
+    expect(screen.getByText("+2")).toBeInTheDocument();
+  });
+
+  it("opens the same modal from the admin Add member button", () => {
+    render(<MembersPanel boardId={BOARD_ID} viewerRole="admin" members={MEMBERS} />);
+    fireEvent.click(screen.getByRole("button", { name: "Add member" }));
+    expect(screen.getByLabelText("Member email")).toBeInTheDocument();
+  });
+});
 
 describe("MembersPanel list (Requirement 4.9)", () => {
   it("lists each participant's name and role in the order given", () => {
@@ -94,7 +124,7 @@ describe("MembersPanel add through the form (Requirements 4.11, 4.15)", () => {
     renderPanel("admin");
     const user = userEvent.setup();
     await user.type(screen.getByLabelText("Member email"), "dee@example.com");
-    await user.click(screen.getByRole("button", { name: "Add member" }));
+    await user.click(within(screen.getByRole("form", { name: "Add member" })).getByRole("button", { name: "Add member" }));
     await waitFor(() => expect(rowFor("Dee")).toHaveTextContent("Member"));
     expect(screen.getByLabelText("Member email")).toHaveValue("");
     expect(refresh).toHaveBeenCalledTimes(1);
@@ -187,5 +217,39 @@ describe("MembersPanel mobile controls", () => {
     renderPanel("admin");
     expect(screen.getByRole("button", { name: "Remove Ben" })).toHaveClass("min-h-11", "min-w-11");
     expect(screen.getByLabelText("Member email")).toHaveClass("text-base", "min-h-11", "min-w-11");
+  });
+});
+
+
+describe("onMemberRemoved (K12)", () => {
+  async function confirmRemoveBen() {
+    openMembers();
+    const user = userEvent.setup();
+    await user.click(screen.getByRole("button", { name: "Remove Ben" }));
+    await user.click(within(screen.getByRole("dialog", { name: "Remove member?" })).getByRole("button", { name: "Remove member" }));
+  }
+
+  it("is called once after a successful removal", async () => {
+    vi.mocked(apiRequest).mockResolvedValue(null);
+    const onMemberRemoved = vi.fn();
+    render(<MembersPanel boardId={BOARD_ID} viewerRole="admin" members={MEMBERS} onMemberRemoved={onMemberRemoved} />);
+    await confirmRemoveBen();
+    await waitFor(() => expect(onMemberRemoved).toHaveBeenCalledTimes(1));
+  });
+
+  it("is not called when the removal fails", async () => {
+    vi.mocked(apiRequest).mockRejectedValue(new ApiError({ statusCode: 500, code: "INTERNAL_ERROR", message: "x" }));
+    const onMemberRemoved = vi.fn();
+    render(<MembersPanel boardId={BOARD_ID} viewerRole="admin" members={MEMBERS} onMemberRemoved={onMemberRemoved} />);
+    await confirmRemoveBen();
+    await waitFor(() => expect(apiRequest).toHaveBeenCalled());
+    expect(onMemberRemoved).not.toHaveBeenCalled();
+  });
+
+  it("is optional", async () => {
+    vi.mocked(apiRequest).mockResolvedValue(null);
+    renderPanel("admin");
+    await confirmRemoveBen();
+    await waitFor(() => expect(screen.queryByRole("button", { name: "Remove Ben" })).not.toBeInTheDocument());
   });
 });

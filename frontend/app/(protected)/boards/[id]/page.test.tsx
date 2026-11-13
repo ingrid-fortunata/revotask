@@ -83,7 +83,28 @@ describe("BoardDetailPage", () => {
     expect(
       screen.getByRole("heading", { level: 1, name: "Launch plan" }),
     ).toBeInTheDocument();
-    expect(screen.getAllByText("Grace Member").length).toBeGreaterThan(0);
+    expect(screen.getByRole("button", { name: `Members (${MEMBERS.length})` })).toBeInTheDocument();
+    expect(screen.getByText("GM")).toBeInTheDocument();
+  });
+
+  it("passes the columns and cards of the board to the Kanban island", async () => {
+    const withColumns = {
+      ...BOARD,
+      columns: [
+        {
+          id: "c1",
+          board_id: BOARD_ID,
+          name: "To do",
+          is_done: false,
+          order: 1024,
+          cards: [{ id: "k1", column_id: "c1", title: "Write spec", description: null, assignee_id: null, assignee_name: null, order: 1024 }],
+        },
+      ],
+    };
+    vi.mocked(fetchPrivate).mockImplementation(async (route) => (route === "board" ? ok(withColumns) : ok(MEMBERS)));
+    render(await renderPage(BOARD_ID));
+    expect(screen.getByRole("region", { name: "To do" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Edit Write spec" })).toBeInTheDocument();
   });
 
   it("verifies the session and reads the board and its members through the helpers", async () => {

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { RefObject } from "react";
+import type { ReactNode, RefObject } from "react";
 import { BaseBadge } from "@/components/shared/BaseBadge";
 import { BaseButton } from "@/components/shared/BaseButton";
 import { boardControls } from "@/lib/boardPermissions";
@@ -12,6 +12,8 @@ export interface BoardHeaderProps {
   renameButtonRef: RefObject<HTMLButtonElement | null>;
   onToggleRename: () => void;
   onRequestDelete: () => void;
+  /** Rendered under the title, for the member avatars. */
+  children?: ReactNode;
 }
 
 const ROLE_LABEL: Record<BoardRole, string> = { admin: "Admin", member: "Member" };
@@ -25,6 +27,7 @@ export function BoardHeader({
   renameButtonRef,
   onToggleRename,
   onRequestDelete,
+  children,
 }: BoardHeaderProps) {
   const controls = boardControls(role);
   return (
@@ -43,6 +46,7 @@ export function BoardHeader({
           <h1 className="min-w-0 break-words text-2xl font-semibold tracking-tight sm:text-3xl">{name}</h1>
           <BaseBadge variant={role === "admin" ? "primary" : "ghost"}>{ROLE_LABEL[role]}</BaseBadge>
         </div>
+        {children}
       </div>
       {controls.canRename || controls.canDelete ? (
         <div className="flex flex-wrap gap-2">

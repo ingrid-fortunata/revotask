@@ -1,18 +1,17 @@
-import { render, screen, waitFor, within } from "@testing-library/react";
+import { act, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import type { ReactNode } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { apiRequest } from "@/lib/apiClient";
+import { apiGet, apiRequest } from "@/lib/apiClient";
 import { BOARD_ACCESS_MESSAGE } from "@/lib/boardErrors";
 import { ApiError } from "@/lib/errors";
 import { notifyError } from "@/lib/toast";
-import type { BoardSummary, Membership } from "@/lib/types";
+import type { BoardSummary, ColumnWithCards, Membership } from "@/lib/types";
 import { BoardShell } from "./BoardShell";
 
 const push = vi.fn();
 const refresh = vi.fn();
 vi.mock("next/navigation", () => ({ useRouter: () => ({ push, refresh }) }));
-vi.mock("@/lib/apiClient", () => ({ apiRequest: vi.fn() }));
+vi.mock("@/lib/apiClient", () => ({ apiRequest: vi.fn(), apiGet: vi.fn() }));
 vi.mock("@/lib/toast", () => ({
   notifyError: vi.fn(),
   notifySuccess: vi.fn(),
@@ -38,13 +37,17 @@ beforeEach(() => {
   push.mockReset();
   refresh.mockReset();
   vi.mocked(apiRequest).mockReset();
+  vi.mocked(apiGet).mockReset();
   vi.mocked(notifyError).mockReset();
 });
 
-function renderShell(board: BoardSummary, membersPanel?: ReactNode) {
-  render(
-    <BoardShell board={board} members={MEMBERS} membersPanel={membersPanel} />,
-  );
+function renderShell(board: BoardSummary, columns: ColumnWithCards[] = []) {
+  render(<BoardShell board={board} columns={columns} members={MEMBERS} />);
+}
+
+// The board header block that holds the name and the role badge.
+function headerOf(): HTMLElement {
+  return screen.getByRole("heading", { level: 1 }).parentElement as HTMLElement;
 }
 
 function deleteDialog() {
@@ -52,35 +55,40 @@ function deleteDialog() {
 }
 
 describe("BoardShell layout (Requirement 2.7)", () => {
-  it("shows the name header, role badge, members fallback and columns placeholder", () => {
+  it("shows the name header, role badge, members panel and the Kanban columns area", () => {
     renderShell(ADMIN_BOARD);
     expect(
       screen.getByRole("heading", { level: 1, name: "Alpha" }),
     ).toBeInTheDocument();
-    expect(screen.getByText("Admin")).toBeInTheDocument();
-    expect(screen.getByText("2 members")).toBeInTheDocument();
-    expect(
-      screen.getByRole("heading", { name: "Columns" }),
-    ).toBeInTheDocument();
-    expect(screen.getByText("Columns will appear here.")).toBeInTheDocument();
+    expect(within(headerOf()).getByText("Admin")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: `Members (${MEMBERS.length})` })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Add member" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Columns" })).toBeInTheDocument();
+    expect(screen.getByText("Add your first column")).toBeInTheDocument();
   });
 
-  it("renders the supplied members panel in place of the fallback", () => {
-    renderShell(
-      ADMIN_BOARD,
-      <section aria-label="Panel stub">Members list</section>,
-    );
-    expect(
-      screen.getByRole("region", { name: "Panel stub" }),
-    ).toBeInTheDocument();
-    expect(screen.queryByText("2 members")).not.toBeInTheDocument();
+  it("shows the board's columns and cards from the server read", () => {
+    renderShell(ADMIN_BOARD, [
+      {
+        id: "c1",
+        board_id: BOARD_ID,
+        name: "To do",
+        is_done: false,
+        order: 1024,
+        cards: [
+          { id: "k1", column_id: "c1", title: "Write spec", description: null, assignee_id: null, assignee_name: null, order: 1024 },
+        ],
+      },
+    ]);
+    expect(screen.getByRole("region", { name: "To do" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Edit Write spec" })).toBeInTheDocument();
   });
 });
 
 describe("BoardShell member view (Requirement 3.10)", () => {
   it("hides the rename and delete controls from a member", () => {
     renderShell(MEMBER_BOARD);
-    expect(screen.getByText("Member")).toBeInTheDocument();
+    expect(within(headerOf()).getByText("Member")).toBeInTheDocument();
     expect(
       screen.queryByRole("button", { name: "Rename board" }),
     ).not.toBeInTheDocument();
@@ -279,5 +287,89 @@ describe("BoardShell mobile controls", () => {
       "min-h-11",
       "min-w-11",
     );
+  });
+});
+
+describe("BoardShell member removal refreshes the board (Requirement 6.8, K12, Property 16)", () => {
+  const assigned: ColumnWithCards[] = [
+    {
+      id: "c1",
+      board_id: BOARD_ID,
+      name: "To do",
+      is_done: false,
+      order: 1024,
+      cards: [
+        { id: "k1", column_id: "c1", title: "Write spec", description: null, assignee_id: BEN_ID, assignee_name: "Ben", order: 1024 },
+        { id: "k2", column_id: "c1", title: "Review", description: null, assignee_id: null, assignee_name: null, order: 2048 },
+      ],
+    },
+    { id: "c2", board_id: BOARD_ID, name: "Doing", is_done: false, order: 2048, cards: [] },
+  ];
+  const cleared = (): ColumnWithCards[] => [
+    { ...assigned[0], cards: [{ ...assigned[0].cards[0], assignee_id: null, assignee_name: null }, assigned[0].cards[1]] },
+    assigned[1],
+  ];
+  const refetched = (columns: ColumnWithCards[], version: number) => ({ ...ADMIN_BOARD, position_version: version, columns });
+
+  async function removeBen() {
+    const user = userEvent.setup();
+    await user.click(screen.getByRole("button", { name: /^Members \(/ }));
+    await user.click(screen.getByRole("button", { name: "Remove Ben" }));
+    await user.click(within(screen.getByRole("dialog", { name: "Remove member?" })).getByRole("button", { name: "Remove member" }));
+  }
+
+  it("refetches the board after a successful removal, so cleared assignments show Unassigned", async () => {
+    vi.mocked(apiRequest).mockResolvedValue(null);
+    vi.mocked(apiGet).mockResolvedValue(refetched(cleared(), 5));
+    renderShell(ADMIN_BOARD, assigned);
+    const todo = within(screen.getByRole("region", { name: "To do" }));
+    expect(todo.getByText("Ben")).toBeInTheDocument();
+    await removeBen();
+    await waitFor(() => expect(apiGet).toHaveBeenCalledExactlyOnceWith(`/api/boards/${BOARD_ID}`));
+    await waitFor(() => expect(todo.getAllByText("Unassigned")).toHaveLength(2));
+    expect(refresh).toHaveBeenCalled(); // the members list still refreshes through the server
+  });
+
+  it("does not refetch the board when the removal fails", async () => {
+    vi.mocked(apiRequest).mockRejectedValue(new ApiError({ statusCode: 500, code: "INTERNAL_ERROR", message: "x" }));
+    renderShell(ADMIN_BOARD, assigned);
+    await removeBen();
+    await waitFor(() => expect(apiRequest).toHaveBeenCalled());
+    expect(apiGet).not.toHaveBeenCalled();
+  });
+
+  it("waits for a pending move, then refetches, and the older move answer does not win", async () => {
+    let finishMove!: (value: unknown) => void;
+    vi.mocked(apiRequest).mockImplementation((method: string, path: string) => {
+      if (path.includes("/position")) return new Promise((resolve) => (finishMove = resolve));
+      return Promise.resolve(null); // DELETE member
+    });
+    vi.mocked(apiGet).mockResolvedValue(refetched(cleared(), 9));
+    renderShell(ADMIN_BOARD, assigned);
+    const user = userEvent.setup();
+
+    // Start a move through the Move dialog. It stays pending.
+    await user.click(screen.getByRole("button", { name: "Move Review" }));
+    const dialog = screen.getByRole("dialog", { name: "Move card" });
+    await user.selectOptions(within(dialog).getByLabelText("Column"), "Doing");
+    await user.click(within(dialog).getByRole("button", { name: "Move card" }));
+    await waitFor(() => expect(screen.getByRole("region", { name: "Kanban columns" })).toHaveAttribute("aria-busy", "true"));
+
+    await removeBen();
+    await waitFor(() => expect(vi.mocked(apiRequest).mock.calls.some(([m]) => m === "DELETE")).toBe(true));
+    expect(apiGet).not.toHaveBeenCalled(); // the refetch waits for the move
+
+    const movedColumns = [
+      { ...assigned[0], cards: [assigned[0].cards[0]] },
+      { ...assigned[1], cards: [{ ...assigned[0].cards[1], column_id: "c2", order: 1024 }] },
+    ];
+    await act(async () => {
+      finishMove({ card: movedColumns[1].cards[0], columns: movedColumns, position_version: 6 });
+    });
+    await waitFor(() => expect(apiGet).toHaveBeenCalledTimes(1));
+    // The refreshed board is the final state: Ben's card is unassigned and Review is where the
+    // server put it. The move answer, which still showed Ben, did not overwrite it.
+    await waitFor(() => expect(within(screen.getByRole("region", { name: "To do" })).queryByText("Ben")).not.toBeInTheDocument());
+    expect(screen.getByRole("region", { name: "Kanban columns" })).toHaveAttribute("aria-busy", "false");
   });
 });

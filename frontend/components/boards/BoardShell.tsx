@@ -1,32 +1,35 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { type ReactNode, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { BoardHeader } from "@/components/boards/BoardHeader";
-import { ColumnsPlaceholder } from "@/components/boards/ColumnsPlaceholder";
+import { MembersPanel } from "@/components/boards/MembersPanel";
 import { RenameBoardForm } from "@/components/boards/RenameBoardForm";
+import { KanbanBoard } from "@/components/kanban/KanbanBoard";
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { useErrorHandler } from "@/hooks/useErrorHandler";
+import { useKanbanBoard } from "@/hooks/useKanbanBoard";
 import { apiRequest } from "@/lib/apiClient";
 import { BOARD_ACCESS_MESSAGE, isBoardAccessError, isForbiddenError } from "@/lib/boardErrors";
 import { boardControls } from "@/lib/boardPermissions";
 import { notifyError } from "@/lib/toast";
-import type { BoardSummary, Membership } from "@/lib/types";
+import type { BoardSummary, ColumnWithCards, Membership } from "@/lib/types";
 
 export interface BoardShellProps {
-  /** Board summary only. The page keeps the columns on the server (FE-C1). */
+  /** Board summary: the name, the viewer's role and the position version. */
   board: BoardSummary;
+  /** Active columns with their active cards from E07, read on the server. State is seeded once. */
+  columns: ColumnWithCards[];
   /** Active participants from E10, read on the server. */
   members: Membership[];
-  /** Members_Panel from task 5.4. Without it the shell shows the member count. */
-  membersPanel?: ReactNode;
 }
 
 // Client island for the board page (FE-C1, FE-C2). It owns the header name after a rename, the
-// rename form and the delete confirmation (Requirements 2.7, 3.7–3.9). Member controls are
-// supplied through membersPanel so task 5.4 can add them without changing this API. Columns come
-// first in the DOM and form the wide column from 1024 px; members sit in the 22 rem side column.
-export function BoardShell({ board, members, membersPanel }: BoardShellProps) {
+// rename form, the delete confirmation (Requirements 2.7, 3.7–3.9) and the Kanban state. The
+// Kanban hook lives here, so a member removal in the Members_Panel can ask it to refetch the
+// board (Requirement 6.8, K12). The members avatars sit in the header under the title, and the
+// columns take the full page width below it.
+export function BoardShell({ board, columns, members }: BoardShellProps) {
   const router = useRouter();
   const { handleError } = useErrorHandler();
   const [name, setName] = useState(board.name);
@@ -36,6 +39,10 @@ export function BoardShell({ board, members, membersPanel }: BoardShellProps) {
   const deletePendingRef = useRef(false);
   const renameButtonRef = useRef<HTMLButtonElement>(null);
   const controls = boardControls(board.role);
+  const kanban = useKanbanBoard({
+    boardId: board.id,
+    initial: { columns, version: board.position_version },
+  });
 
   function closeRename() {
     setRenameOpen(false);
@@ -82,7 +89,14 @@ export function BoardShell({ board, members, membersPanel }: BoardShellProps) {
         renameButtonRef={renameButtonRef}
         onToggleRename={() => setRenameOpen((open) => !open)}
         onRequestDelete={() => setDeleteOpen(true)}
-      />
+      >
+        <MembersPanel
+          boardId={board.id}
+          viewerRole={board.role}
+          members={members}
+          onMemberRemoved={kanban.requestRefresh}
+        />
+      </BoardHeader>
       {renameOpen && controls.canRename ? (
         <div className="surface p-4 sm:p-5">
           <RenameBoardForm
@@ -93,21 +107,7 @@ export function BoardShell({ board, members, membersPanel }: BoardShellProps) {
           />
         </div>
       ) : null}
-      <div className="grid gap-4 sm:gap-6 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-start">
-        <ColumnsPlaceholder />
-        <div className="min-w-0">
-          {membersPanel ?? (
-            <section aria-labelledby="members-heading" className="surface flex flex-col gap-2 p-4 sm:p-5">
-              <h2 id="members-heading" className="text-lg font-semibold">
-                Members
-              </h2>
-              <p className="break-words">
-                {members.length} {members.length === 1 ? "member" : "members"}
-              </p>
-            </section>
-          )}
-        </div>
-      </div>
+      <KanbanBoard role={board.role} members={members} kanban={kanban} />
       {controls.canDelete ? (
         <ConfirmDialog
           open={deleteOpen}
