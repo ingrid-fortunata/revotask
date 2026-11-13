@@ -13,7 +13,7 @@ vi.mock("@/lib/apiClient", () => ({ apiPost: vi.fn() }));
 vi.mock("@/lib/navigation", () => ({ hardRedirect: vi.fn() }));
 vi.mock("@/lib/toast", () => ({ notifyError: vi.fn(), notifySuccess: vi.fn() }));
 
-const PASSWORD = "correct horse battery";
+const PASSWORD = "Horse-Battery-42";
 
 beforeEach(() => {
   push.mockReset();
@@ -57,7 +57,7 @@ describe("RegisterForm", () => {
     await user.click(screen.getByRole("button", { name: "Create account" }));
     expect(screen.getByText("Must be 1 to 80 characters.")).toBeInTheDocument();
     expect(screen.getByText("Enter a valid email address.")).toBeInTheDocument();
-    expect(screen.getByText("Must be 12 to 128 characters.")).toBeInTheDocument();
+    expect(screen.getByText("Must be 8 to 128 characters.")).toBeInTheDocument();
     expect(screen.getByLabelText("Name")).toHaveFocus();
     expect(screen.getByLabelText("Email")).toHaveValue("not-an-email");
     expect(apiPost).not.toHaveBeenCalled();
@@ -124,5 +124,35 @@ describe("RegisterForm", () => {
     await user.click(screen.getByRole("button", { name: "Create account" }));
     expect(await screen.findByRole("button", { name: /Creating account/ })).toBeDisabled();
     expect(container.querySelector("form")).toHaveAttribute("aria-busy", "true");
+  });
+});
+
+describe("RegisterForm password rules", () => {
+  it("shows the password rules as a hint linked to the password input", () => {
+    render(<RegisterForm />);
+    const input = screen.getByLabelText(/^Password/);
+    const hint = screen.getByText(/At least 8 characters, with an uppercase letter/);
+    expect(input).toHaveAttribute("aria-describedby", hint.id);
+    expect(screen.getByLabelText("Password")).toHaveAttribute("name", "password");
+  });
+
+  it("shows the composition message when a long password lacks a special character", async () => {
+    render(<RegisterForm />);
+    const user = await fill("Ada", "ada@example.com", "Abcdefgh1");
+    await user.click(screen.getByRole("button", { name: "Create account" }));
+    expect(
+      await screen.findByText("Must include an uppercase letter, a lowercase letter and a special character."),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText(/^Password/)).toHaveFocus();
+    expect(apiPost).not.toHaveBeenCalled();
+  });
+
+  it("accepts an 8-character password with every required kind and sends it unchanged", async () => {
+    vi.mocked(apiPost).mockResolvedValue({});
+    render(<RegisterForm />);
+    const user = await fill("Ada", "ada@example.com", "Aa1!aaaa");
+    await user.click(screen.getByRole("button", { name: "Create account" }));
+    await waitFor(() => expect(apiPost).toHaveBeenCalledTimes(1));
+    expect(vi.mocked(apiPost).mock.calls[0][1]).toMatchObject({ password: "Aa1!aaaa" });
   });
 });

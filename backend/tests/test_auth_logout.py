@@ -14,7 +14,7 @@ from app.models.revoked_token import RevokedToken
 from app.models.user import User
 from tests.auth_helpers import bearer, decode_unverified, unique_email
 
-PASSWORD = "correct horse battery staple"
+PASSWORD = "Horse-Battery-42"
 
 
 @pytest.fixture

@@ -7,6 +7,8 @@ export interface FormFieldProps {
   type?: "text" | "email" | "password";
   value: string;
   error?: string;
+  /** Visible help text, linked to the input with aria-describedby. */
+  hint?: string;
   autoComplete?: string;
   inputRef?: Ref<HTMLInputElement>;
   onChange: (value: string) => void;
@@ -22,11 +24,14 @@ export function FormField({
   type = "text",
   value,
   error,
+  hint,
   autoComplete,
   inputRef,
   onChange,
 }: FormFieldProps) {
   const errorId = `${id}-error`;
+  const hintId = `${id}-hint`;
+  const describedBy = [hint ? hintId : null, error ? errorId : null].filter(Boolean).join(" ") || undefined;
   return (
     <div className="flex w-full flex-col gap-1">
       <label htmlFor={id} className="text-sm font-medium">
@@ -41,9 +46,14 @@ export function FormField({
         autoComplete={autoComplete}
         onChange={(event) => onChange(event.target.value)}
         aria-invalid={error ? true : undefined}
-        aria-describedby={error ? errorId : undefined}
+        aria-describedby={describedBy}
         className={`input input-bordered min-h-11 min-w-11 w-full text-base${error ? " input-error" : ""}`}
       />
+      {hint ? (
+        <p id={hintId} className="break-words text-sm opacity-80">
+          {hint}
+        </p>
+      ) : null}
       {error ? (
         <p id={errorId} className="break-words text-sm text-error">
           {error}

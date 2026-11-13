@@ -5,7 +5,7 @@ import { type FormEvent, useRef, useState } from "react";
 import { BaseButton } from "@/components/shared/BaseButton";
 import { FormField } from "@/components/shared/FormField";
 import { apiPost } from "@/lib/apiClient";
-import { type FieldErrors, REGISTER_FIELDS, validateRegister } from "@/lib/authRules";
+import { type FieldErrors, PASSWORD_HINT, REGISTER_FIELDS, validateRegister } from "@/lib/authRules";
 import { notifySuccess } from "@/lib/toast";
 import { useErrorHandler } from "@/hooks/useErrorHandler";
 
@@ -83,10 +83,11 @@ export function RegisterForm() {
       <FormField
         id="register-password"
         name="password"
-        label="Password (12 to 128 characters)"
+        label="Password"
         type="password"
         autoComplete="new-password"
         value={values.password}
+        hint={PASSWORD_HINT}
         error={fieldErrors.password}
         inputRef={passwordRef}
         onChange={(password) => setValues((current) => ({ ...current, password }))}

@@ -42,3 +42,22 @@ describe("FormField", () => {
     expect(input).not.toHaveAttribute("maxlength");
   });
 });
+
+describe("FormField hint", () => {
+  it("links both the hint and the error to the input", () => {
+    render(
+      <FormField id="pw" name="password" label="Password" value="" hint="Use 8 characters." error="Too short." onChange={() => {}} />,
+    );
+    const input = screen.getByLabelText("Password");
+    const hint = screen.getByText("Use 8 characters.");
+    const error = screen.getByText("Too short.");
+    expect(input.getAttribute("aria-describedby")).toBe(`${hint.id} ${error.id}`);
+  });
+
+  it("links only the hint when there is no error", () => {
+    render(<FormField id="pw" name="password" label="Password" value="" hint="Use 8 characters." onChange={() => {}} />);
+    const hint = screen.getByText("Use 8 characters.");
+    expect(screen.getByLabelText("Password")).toHaveAttribute("aria-describedby", hint.id);
+    expect(screen.getByLabelText("Password")).not.toHaveAttribute("aria-invalid");
+  });
+});

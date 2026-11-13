@@ -66,7 +66,7 @@ def test_messages_never_echo_the_submitted_value():
 
 
 def test_password_is_kept_exactly_as_entered():
-    body = {"name": "Ada", "email": "ada@example.com", "password": "\t spaced \u00a0 pass \n"}
+    body = {"name": "Ada", "email": "ada@example.com", "password": " Spaced Pass 1! "}
     assert RegisterSchema().load(body)["password"] == body["password"]
     assert (
         LoginSchema().load({"email": "a@b.co", "password": body["password"]})["password"]
@@ -80,7 +80,7 @@ def test_normalize_email_trims_and_lowercases():
 
 def test_register_and_login_normalize_email_the_same_way():
     raw = "  MiXed@Case.Example  "
-    reg = RegisterSchema().load({"name": "A", "email": raw, "password": "x" * 12})["email"]
+    reg = RegisterSchema().load({"name": "A", "email": raw, "password": "Xxxxxxx1!"})["email"]
     log = LoginSchema().load({"email": raw, "password": "x"})["email"]
     assert reg == log == normalize_email(raw)
 
@@ -97,3 +97,32 @@ def test_public_user_schema_dumps_exactly_id_name_and_email():
     dumped = PublicUserSchema().dump(Row())
     assert set(dumped) == {"id", "name", "email"}
     assert dumped == {"id": str(Row.id), "name": "Ada", "email": "ada@example.com"}
+
+
+ASCII_PUNCTUATION = "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~"
+
+
+@pytest.mark.parametrize("special", list(ASCII_PUNCTUATION))
+def test_every_ascii_punctuation_character_counts_as_special(special):
+    body = {"name": "Ada", "email": "ada@example.com", "password": f"Aa1{special}aaaa"}
+    assert RegisterSchema().load(body)["password"] == body["password"]
+
+
+def test_space_and_non_ascii_symbols_do_not_count_as_special():
+    for filler in (" ", "€", "é", "😀"):
+        with pytest.raises(ValidationError) as caught:
+            RegisterSchema().load(
+                {"name": "Ada", "email": "a@b.co", "password": f"Aa1{filler}aaaa"}
+            )
+        assert caught.value.messages == {
+            "password": [
+                "Must include an uppercase letter, a lowercase letter and a special character."
+            ]
+        }
+
+
+def test_password_length_message_comes_first_when_both_rules_fail():
+    with pytest.raises(ValidationError) as caught:
+        RegisterSchema().load({"name": "Ada", "email": "a@b.co", "password": "abc"})
+    fields = first_messages(caught.value.messages)
+    assert fields == {"password": "Must be 8 to 128 characters."}

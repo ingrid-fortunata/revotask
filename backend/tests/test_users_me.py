@@ -67,7 +67,7 @@ def test_patch_is_not_implemented_until_t12_and_returns_405_with_allow(client, t
 
 def test_login_then_logout_then_me_is_rejected_end_to_end(client):
     email = f"e2e-{uuid.uuid4().hex[:10]}@example.test"
-    password = "correct horse battery staple"
+    password = "Horse-Battery-42"
     client.post("/api/auth/register", json={"name": "E2E", "email": email, "password": password})
     try:
         token = client.post(

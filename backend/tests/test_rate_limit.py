@@ -14,7 +14,7 @@ from app.extensions import db
 from app.models.user import User
 from tests.auth_helpers import JWT_TEST_SECRET, unique_email
 
-PASSWORD = "correct horse battery staple"
+PASSWORD = "Horse-Battery-42"
 
 
 def make_app(test_db_url, enabled="true"):

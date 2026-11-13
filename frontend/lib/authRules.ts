@@ -5,7 +5,7 @@
 
 export const NAME_MAX = 80;
 export const EMAIL_MAX = 254;
-export const PASSWORD_MIN = 12;
+export const PASSWORD_MIN = 8; // register only; login accepts 1 to 128 (AUTH-AC2.4)
 export const PASSWORD_MAX = 128;
 
 export const MESSAGES = {
@@ -16,11 +16,23 @@ export const MESSAGES = {
   emailLength: `Must be at most ${EMAIL_MAX} characters.`,
   emailFormat: "Enter a valid email address.",
   registerPasswordLength: `Must be ${PASSWORD_MIN} to ${PASSWORD_MAX} characters.`,
+  passwordComposition: "Must include an uppercase letter, a lowercase letter and a special character.",
   loginPasswordLength: `Must be 1 to ${PASSWORD_MAX} characters.`,
 } as const;
 
 // The same expression as the Python schema, matched against the whole normalized value.
 export const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// Password composition, ASCII only (the same ranges as backend/app/blueprints/auth/schema.py).
+// Special characters are ASCII punctuation: 0x21-0x2F, 0x3A-0x40, 0x5B-0x60, 0x7B-0x7E.
+// A space is not special, and accented letters and emoji do not count.
+export const PASSWORD_UPPERCASE = /[A-Z]/;
+export const PASSWORD_LOWERCASE = /[a-z]/;
+export const PASSWORD_SPECIAL = /[\x21-\x2f\x3a-\x40\x5b-\x60\x7b-\x7e]/;
+
+/** The hint shown under the register password field. It states the same rules as the messages. */
+export const PASSWORD_HINT =
+  "At least 8 characters, with an uppercase letter, a lowercase letter and a special character such as ! ? # or %.";
 
 export const REGISTER_FIELDS = ["name", "email", "password"] as const;
 export const LOGIN_FIELDS = ["email", "password"] as const;
@@ -50,6 +62,10 @@ const lengthBetween = (min: number, max: number, message: string): Rule => (valu
 };
 
 const notBlank: Rule = (value) => (value === "" ? MESSAGES.required : null);
+const passwordComposition: Rule = (value) =>
+  PASSWORD_UPPERCASE.test(value) && PASSWORD_LOWERCASE.test(value) && PASSWORD_SPECIAL.test(value)
+    ? null
+    : MESSAGES.passwordComposition;
 const emailFormat: Rule = (value) => (EMAIL_PATTERN.test(value) ? null : MESSAGES.emailFormat);
 const identity = (value: string) => value;
 
@@ -61,7 +77,11 @@ const REGISTER_SPEC: Record<(typeof REGISTER_FIELDS)[number], FieldSpec> = {
   },
   password: {
     normalize: identity, // the password is never trimmed
-    rules: [lengthBetween(PASSWORD_MIN, PASSWORD_MAX, MESSAGES.registerPasswordLength)],
+    // Length first, then composition: the first failing message is reported, like Flask.
+    rules: [
+      lengthBetween(PASSWORD_MIN, PASSWORD_MAX, MESSAGES.registerPasswordLength),
+      passwordComposition,
+    ],
   },
 };
 

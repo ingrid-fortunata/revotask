@@ -12,7 +12,7 @@ from app.models.user import User
 from tests.auth_cases import load_cases
 from tests.auth_helpers import unique_email
 
-PASSWORD = "correct horse battery staple"
+PASSWORD = "Horse-Battery-42"
 
 
 @pytest.fixture

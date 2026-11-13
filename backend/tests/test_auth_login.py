@@ -13,7 +13,7 @@ from app.models.user import User
 from tests.auth_cases import load_cases
 from tests.auth_helpers import JWT_TEST_SECRET, unique_email
 
-PASSWORD = "correct horse battery staple"
+PASSWORD = "Horse-Battery-42"
 
 
 @pytest.fixture
@@ -69,6 +69,14 @@ def test_token_claims(client, account):
 def test_email_matches_after_trim_and_lowercase(client, account, variant):
     response = login(client, email=variant(account["email"]), password=PASSWORD)
     assert response.status_code == 200
+
+
+def test_login_does_not_apply_the_register_password_rules(client, account):
+    # Login accepts any length from 1 and no composition check (AUTH-AC2.4). A short or
+    # simple password gets the normal 401, never a policy message.
+    response = login(client, email=account["email"], password="abc")
+    assert response.status_code == 401
+    assert response.get_json()["error"]["code"] == "INVALID_CREDENTIALS"
 
 
 def test_wrong_password_and_unknown_email_return_identical_401s(client, account):

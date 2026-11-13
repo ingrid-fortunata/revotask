@@ -21,10 +21,19 @@ NAME_LENGTH = f"Must be 1 to {NAME_MAX} characters."
 EMAIL_LENGTH = f"Must be at most {EMAIL_MAX} characters."
 EMAIL_FORMAT = "Enter a valid email address."
 REGISTER_PASSWORD_LENGTH = f"Must be {PASSWORD_MIN} to {PASSWORD_MAX} characters."
+PASSWORD_COMPOSITION = (
+    "Must include an uppercase letter, a lowercase letter and a special character."
+)
 LOGIN_PASSWORD_LENGTH = f"Must be 1 to {PASSWORD_MAX} characters."
 
 # One simple rule, written the same way in frontend/lib/authRules.ts.
 EMAIL_PATTERN = re.compile(r"[^\s@]+@[^\s@]+\.[^\s@]+")
+# Password composition (register only). ASCII only, so accented letters and emoji do not count.
+# Special characters are the ASCII punctuation ranges 0x21-0x2F, 0x3A-0x40, 0x5B-0x60, 0x7B-0x7E.
+# A space is not a special character.
+PASSWORD_UPPERCASE = re.compile(r"[A-Z]")
+PASSWORD_LOWERCASE = re.compile(r"[a-z]")
+PASSWORD_SPECIAL = re.compile(r"[\x21-\x2f\x3a-\x40\x5b-\x60\x7b-\x7e]")
 
 _MESSAGES = {"required": REQUIRED, "null": REQUIRED, "invalid": NOT_TEXT}
 
@@ -56,6 +65,15 @@ def _email_format(value: str) -> None:
         raise ValidationError(EMAIL_FORMAT)
 
 
+def _password_composition(value: str) -> None:
+    if not (
+        PASSWORD_UPPERCASE.search(value)
+        and PASSWORD_LOWERCASE.search(value)
+        and PASSWORD_SPECIAL.search(value)
+    ):
+        raise ValidationError(PASSWORD_COMPOSITION)
+
+
 class RegisterSchema(Schema):
     """Exactly `name`, `email` and `password`. Any other key is `Unknown field.`"""
 
@@ -75,9 +93,11 @@ class RegisterSchema(Schema):
     password = fields.String(
         required=True,
         error_messages=_MESSAGES,
-        validate=validate.Length(
-            min=PASSWORD_MIN, max=PASSWORD_MAX, error=REGISTER_PASSWORD_LENGTH
-        ),
+        # Length first, then composition: the first message reported matches authRules.ts.
+        validate=[
+            validate.Length(min=PASSWORD_MIN, max=PASSWORD_MAX, error=REGISTER_PASSWORD_LENGTH),
+            _password_composition,
+        ],
     )
 
 

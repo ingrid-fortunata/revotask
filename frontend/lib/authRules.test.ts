@@ -5,6 +5,7 @@ import { describe, expect, it } from "vitest";
 import {
   codePointLength,
   LOGIN_FIELDS,
+  MESSAGES,
   normalizeEmail,
   normalizeName,
   REGISTER_FIELDS,
@@ -60,8 +61,8 @@ describe("normalization and lengths", () => {
   it("trims names and trims and lowercases emails, but never touches the password", () => {
     expect(normalizeName("  Ada  Lovelace ")).toBe("Ada  Lovelace");
     expect(normalizeEmail("  Ada@Example.COM\t")).toBe("ada@example.com");
-    const result = validateRegister({ name: "A", email: "a@b.co", password: "  spaced password  " });
-    expect(result.body.password).toBe("  spaced password  ");
+    const result = validateRegister({ name: "A", email: "a@b.co", password: "  Spaced Pass 1!  " });
+    expect(result.body.password).toBe("  Spaced Pass 1!  ");
     expect(result.fields).toEqual({});
   });
 
@@ -72,7 +73,7 @@ describe("normalization and lengths", () => {
   });
 
   it("reports only the first failing message per field", () => {
-    expect(validateRegister({ name: "A", email: "x".repeat(300), password: "p".repeat(12) }).fields).toEqual({
+    expect(validateRegister({ name: "A", email: "x".repeat(300), password: "Horse-Battery-42" }).fields).toEqual({
       email: "Must be at most 254 characters.",
     });
   });
@@ -87,6 +88,38 @@ describe("normalization and lengths", () => {
   it("returns a body with exactly the form's keys when the input is valid", () => {
     const login = validateLogin({ email: " A@B.Co ", password: "x" });
     expect(login.body).toEqual({ email: "a@b.co", password: "x" });
-    expect(Object.keys(validateRegister({ name: "Ada", email: "a@b.co", password: "p".repeat(12) }).body)).toEqual(["name", "email", "password"]);
+    expect(Object.keys(validateRegister({ name: "Ada", email: "a@b.co", password: "Horse-Battery-42" }).body)).toEqual(["name", "email", "password"]);
+  });
+});
+
+describe("password composition", () => {
+  const register = (password: string) => validateRegister({ name: "Ada", email: "a@b.co", password });
+
+  it("requires an uppercase letter, a lowercase letter and an ASCII special character", () => {
+    expect(register("Aa1!aaaa").fields).toEqual({});
+    expect(register("aa1!aaaa").fields).toEqual({ password: MESSAGES.passwordComposition });
+    expect(register("AA1!AAAA").fields).toEqual({ password: MESSAGES.passwordComposition });
+    expect(register("Aa1aaaaa").fields).toEqual({ password: MESSAGES.passwordComposition });
+  });
+
+  it("reports the length message first when both rules fail", () => {
+    expect(register("abc").fields).toEqual({ password: "Must be 8 to 128 characters." });
+    expect(register("").fields).toEqual({ password: "Must be 8 to 128 characters." });
+  });
+
+  it("does not count a space, an accented letter or an emoji as special", () => {
+    for (const filler of [" ", "é", "€", "😀"]) {
+      expect(register(`Aa1${filler}aaaa`).fields).toEqual({ password: MESSAGES.passwordComposition });
+    }
+  });
+
+  it("counts every ASCII punctuation character as special", () => {
+    for (const special of "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~") {
+      expect(register(`Aa1${special}aaaa`).fields).toEqual({});
+    }
+  });
+
+  it("does not apply the register rules to login", () => {
+    expect(validateLogin({ email: "a@b.co", password: "abc" }).fields).toEqual({});
   });
 });

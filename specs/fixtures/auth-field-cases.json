@@ -1,10 +1,10 @@
 {
- "_note": "Shared boundary cases for the auth field rules (design 4.4, AUTH-AC10.7). The Flask schema tests and the frontend authRules tests both read this file. Each case starts from the form's base body, applies 'set' then 'drop', and expects either 'accepted' (fields whose normalized value is checked; the output keys must equal the form's key set) or the exact 'fields' map of messages. Values: {\"repeat\": s, \"times\": n} is s repeated n times; {\"concat\": [a, b]} joins parts. Lengths count Unicode code points.",
+ "_note": "Shared boundary cases for the auth field rules (design 4.4, AUTH-AC10.7). The Flask schema tests and the frontend authRules tests both read this file. Each case starts from the form's base body, applies 'set' then 'drop', and expects either 'accepted' (fields whose normalized value is checked; the output keys must equal the form's key set) or the exact 'fields' map of messages. Values: {\"repeat\": s, \"times\": n} is s repeated n times; {\"concat\": [a, b]} joins parts. Lengths count Unicode code points. Password rules: register requires 8 to 128 characters with at least one ASCII uppercase letter, one ASCII lowercase letter and one ASCII special character (0x21-0x2F, 0x3A-0x40, 0x5B-0x60, 0x7B-0x7E; a space is not special). Login accepts 1 to 128 characters and no composition check.",
  "register": {
   "base": {
    "name": "Ada Lovelace",
    "email": "ada@example.com",
-   "password": "correct horse battery"
+   "password": "Horse-Battery-42"
   },
   "cases": [
    {
@@ -314,35 +314,38 @@
     }
    },
    {
-    "id": "password-11-chars",
+    "id": "password-empty",
     "set": {
-     "password": {
-      "repeat": "a",
-      "times": 11
-     }
+     "password": ""
     },
     "drop": [],
     "expect": {
      "fields": {
-      "password": "Must be 12 to 128 characters."
+      "password": "Must be 8 to 128 characters."
      }
     }
    },
    {
-    "id": "password-12-chars",
+    "id": "password-7-chars",
     "set": {
-     "password": {
-      "repeat": "a",
-      "times": 12
+     "password": "Aa1!aaa"
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "password": "Must be 8 to 128 characters."
      }
+    }
+   },
+   {
+    "id": "password-8-chars",
+    "set": {
+     "password": "Aa1!aaaa"
     },
     "drop": [],
     "expect": {
      "accepted": {
-      "password": {
-       "repeat": "a",
-       "times": 12
-      }
+      "password": "Aa1!aaaa"
      }
     }
    },
@@ -350,16 +353,26 @@
     "id": "password-128-chars",
     "set": {
      "password": {
-      "repeat": "a",
-      "times": 128
+      "concat": [
+       "Aa1!",
+       {
+        "repeat": "a",
+        "times": 124
+       }
+      ]
      }
     },
     "drop": [],
     "expect": {
      "accepted": {
       "password": {
-       "repeat": "a",
-       "times": 128
+       "concat": [
+        "Aa1!",
+        {
+         "repeat": "a",
+         "times": 124
+        }
+       ]
       }
      }
     }
@@ -368,44 +381,106 @@
     "id": "password-129-chars",
     "set": {
      "password": {
-      "repeat": "a",
-      "times": 129
+      "concat": [
+       "Aa1!",
+       {
+        "repeat": "a",
+        "times": 125
+       }
+      ]
      }
     },
     "drop": [],
     "expect": {
      "fields": {
-      "password": "Must be 12 to 128 characters."
+      "password": "Must be 8 to 128 characters."
      }
     }
    },
    {
-    "id": "password-12-spaces-kept",
+    "id": "password-8-spaces-around-kept",
+    "set": {
+     "password": " Aa1!bc "
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "password": " Aa1!bc "
+     }
+    }
+   },
+   {
+    "id": "password-8-spaces-only-fails-composition",
     "set": {
      "password": {
       "repeat": " ",
-      "times": 12
+      "times": 8
      }
     },
     "drop": [],
     "expect": {
-     "accepted": {
-      "password": {
-       "repeat": " ",
-       "times": 12
-      }
+     "fields": {
+      "password": "Must include an uppercase letter, a lowercase letter and a special character."
      }
     }
    },
    {
-    "id": "password-leading-trailing-spaces-kept",
+    "id": "password-no-uppercase",
     "set": {
-     "password": "  padded password  "
+     "password": "aa1!aaaa"
     },
     "drop": [],
     "expect": {
-     "accepted": {
-      "password": "  padded password  "
+     "fields": {
+      "password": "Must include an uppercase letter, a lowercase letter and a special character."
+     }
+    }
+   },
+   {
+    "id": "password-no-lowercase",
+    "set": {
+     "password": "AA1!AAAA"
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "password": "Must include an uppercase letter, a lowercase letter and a special character."
+     }
+    }
+   },
+   {
+    "id": "password-no-special",
+    "set": {
+     "password": "Aa1aaaaa"
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "password": "Must include an uppercase letter, a lowercase letter and a special character."
+     }
+    }
+   },
+   {
+    "id": "password-accented-letters-are-not-cased-or-special",
+    "set": {
+     "password": "Éééééééé1"
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "password": "Must include an uppercase letter, a lowercase letter and a special character."
+     }
+    }
+   },
+   {
+    "id": "password-emoji-is-not-special",
+    "set": {
+     "password": "Aaaaaaa😀"
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "password": "Must include an uppercase letter, a lowercase letter and a special character."
      }
     }
    },
@@ -413,16 +488,26 @@
     "id": "password-128-emoji",
     "set": {
      "password": {
-      "repeat": "😀",
-      "times": 128
+      "concat": [
+       "Aa1!",
+       {
+        "repeat": "😀",
+        "times": 124
+       }
+      ]
      }
     },
     "drop": [],
     "expect": {
      "accepted": {
       "password": {
-       "repeat": "😀",
-       "times": 128
+       "concat": [
+        "Aa1!",
+        {
+         "repeat": "😀",
+         "times": 124
+        }
+       ]
       }
      }
     }
@@ -431,26 +516,19 @@
     "id": "password-129-emoji",
     "set": {
      "password": {
-      "repeat": "😀",
-      "times": 129
+      "concat": [
+       "Aa1!",
+       {
+        "repeat": "😀",
+        "times": 125
+       }
+      ]
      }
     },
     "drop": [],
     "expect": {
      "fields": {
-      "password": "Must be 12 to 128 characters."
-     }
-    }
-   },
-   {
-    "id": "password-empty",
-    "set": {
-     "password": ""
-    },
-    "drop": [],
-    "expect": {
-     "fields": {
-      "password": "Must be 12 to 128 characters."
+      "password": "Must be 8 to 128 characters."
      }
     }
    },
