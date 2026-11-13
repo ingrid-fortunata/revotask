@@ -28,7 +28,6 @@ PRODUCTION_MIN_SECRET_LENGTH = 32
 ACCESS_TOKEN_TTL_SECONDS = 3600
 MAX_REQUEST_BODY_BYTES = 64 * 1024
 NAME_MAX = 80
-EMAIL_MAX = 254
 PASSWORD_MIN = 8  # register only; login accepts any length from 1 (AUTH-AC2.4)
 PASSWORD_MAX = 128
 # Rate limits (local development, in-memory storage). Shared storage and trusted client
