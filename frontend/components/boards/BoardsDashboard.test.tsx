@@ -61,24 +61,38 @@ describe("BoardsDashboard list", () => {
     expect(screen.queryByText("You have no boards yet.")).toBeNull();
   });
 
-  it("shows the empty state and the create form when there are no boards", () => {
+  it("shows the empty state and a Create board button when there are no boards", () => {
     render(<BoardsDashboard initialBoards={[]} />);
     expect(screen.getByText("You have no boards yet.")).toBeInTheDocument();
     expect(screen.queryByRole("list", { name: "Your boards" })).toBeNull();
-    expect(
-      screen.getByRole("heading", { name: "Create a board" }),
-    ).toBeInTheDocument();
-    expect(screen.getByLabelText("Board name")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Create board" })).toBeInTheDocument();
+    expect(screen.queryByLabelText("Board name")).not.toBeInTheDocument();
+  });
+
+  it("opens the create form in a modal and closes it on Cancel", async () => {
+    render(<BoardsDashboard initialBoards={[ALPHA]} />);
+    const user = userEvent.setup();
+    await user.click(screen.getByRole("button", { name: "Create board" }));
+    expect(screen.getByRole("dialog", { name: "Create a board" })).toBeInTheDocument();
+    expect(screen.getByLabelText("Board name")).toHaveFocus();
+    await user.click(screen.getByRole("button", { name: "Cancel" }));
+    expect(screen.queryByLabelText("Board name")).not.toBeInTheDocument();
   });
 });
+
+// Opens the create modal, types the name and submits from inside the modal.
+async function createBoard(user: ReturnType<typeof userEvent.setup>, name: string) {
+  await user.click(screen.getByRole("button", { name: "Create board" }));
+  await user.type(screen.getByLabelText("Board name"), name);
+  await user.click(within(screen.getByRole("dialog", { name: "Create a board" })).getByRole("button", { name: "Create board" }));
+}
 
 describe("BoardsDashboard create", () => {
   it("inserts the new board in name order and opens its page", async () => {
     vi.mocked(apiRequest).mockResolvedValue(CHARLIE);
     render(<BoardsDashboard initialBoards={[ALPHA, DELTA]} />);
     const user = userEvent.setup();
-    await user.type(screen.getByLabelText("Board name"), "Charlie");
-    await user.click(screen.getByRole("button", { name: "Create board" }));
+    await createBoard(user, "Charlie");
 
     await waitFor(() =>
       expect(push).toHaveBeenCalledExactlyOnceWith(`/boards/${CHARLIE_ID}`),
@@ -97,8 +111,7 @@ describe("BoardsDashboard create", () => {
     vi.mocked(apiRequest).mockResolvedValue({ ...CHARLIE, name: "Bravo" });
     render(<BoardsDashboard initialBoards={[ALPHA, DELTA]} />);
     const user = userEvent.setup();
-    await user.type(screen.getByLabelText("Board name"), "Bravo");
-    await user.click(screen.getByRole("button", { name: "Create board" }));
+    await createBoard(user, "Bravo");
 
     await waitFor(() => expect(push).toHaveBeenCalled());
     expect(listedNames()).toEqual([
@@ -112,8 +125,7 @@ describe("BoardsDashboard create", () => {
     vi.mocked(apiRequest).mockResolvedValue(CHARLIE);
     render(<BoardsDashboard initialBoards={[]} />);
     const user = userEvent.setup();
-    await user.type(screen.getByLabelText("Board name"), "Charlie");
-    await user.click(screen.getByRole("button", { name: "Create board" }));
+    await createBoard(user, "Charlie");
 
     await waitFor(() => expect(push).toHaveBeenCalled());
     expect(screen.queryByText("You have no boards yet.")).toBeNull();
@@ -131,8 +143,7 @@ describe("BoardsDashboard create", () => {
     );
     render(<BoardsDashboard initialBoards={[ALPHA]} />);
     const user = userEvent.setup();
-    await user.type(screen.getByLabelText("Board name"), "Charlie");
-    await user.click(screen.getByRole("button", { name: "Create board" }));
+    await createBoard(user, "Charlie");
 
     expect(
       await screen.findByText("Must be 1 to 100 characters."),

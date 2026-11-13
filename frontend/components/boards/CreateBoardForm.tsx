@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { type FormEvent, useRef, useState } from "react";
+import { type FormEvent, type Ref, useRef, useState } from "react";
 import { BaseButton } from "@/components/shared/BaseButton";
 import { FormField } from "@/components/shared/FormField";
 import { useErrorHandler } from "@/hooks/useErrorHandler";
@@ -13,12 +13,14 @@ import type { BoardSummary } from "@/lib/types";
 export interface CreateBoardFormProps {
   /** Called with the server's board before navigation, so the dashboard list can show it. */
   onCreated: (board: BoardSummary) => void;
+  /** Lets the modal that holds the form focus the name field on open. */
+  inputRef?: Ref<HTMLInputElement>;
 }
 
 // Browser write for E06 through the same-origin Route Handler (DD13). The token stays in the
 // HttpOnly cookie. A 400 keeps the typed name and shows the field message (Requirement 1.8).
 // Stacked below 640 px with a full-width submit, in a row from sm up (Mobile design table).
-export function CreateBoardForm({ onCreated }: CreateBoardFormProps) {
+export function CreateBoardForm({ onCreated, inputRef }: CreateBoardFormProps) {
   const router = useRouter();
   const [name, setName] = useState("");
   const [fieldError, setFieldError] = useState<string | undefined>(undefined);
@@ -70,6 +72,7 @@ export function CreateBoardForm({ onCreated }: CreateBoardFormProps) {
           label="Board name"
           value={name}
           error={fieldError}
+          inputRef={inputRef}
           onChange={setName}
         />
       </div>

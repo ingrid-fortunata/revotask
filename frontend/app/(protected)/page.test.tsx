@@ -56,12 +56,12 @@ describe("HomePage dashboard", () => {
     expect(screen.getByText("Member")).toBeInTheDocument();
   });
 
-  it("shows the empty state and the create form when the user has no boards", async () => {
+  it("shows the empty state and the Create board button when the user has no boards", async () => {
     vi.mocked(getBoards).mockResolvedValue([]);
     render(await HomePage());
     expect(screen.getByText("You have no boards yet.")).toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { level: 2, name: "Create a board" }),
+      screen.getByRole("button", { name: "Create board" }),
     ).toBeInTheDocument();
   });
 
