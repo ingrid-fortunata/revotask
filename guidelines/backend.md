@@ -1,0 +1,12 @@
+# Backend Steering Guidelines
+
+| ID | Rule | Rationale | RevoTask example |
+|---|---|---|---|
+| BE01 | Use a Flask application factory. Organize each feature in a Blueprint with `routes.py`, `service.py` and `schema.py` where needed. | Enables isolated app configuration and ownership by feature. | Register `auth`, `boards`, `columns`, `cards`, `comments`, `notifications`, `analytics` and `users` from `create_app`. |
+| BE02 | Keep route bodies thin. Decode/validate, call the service, serialize the response. Put authorization decisions and business transactions in the service. | Allows tests to exercise policy without HTTP glue. | A position handler delegates to `reorder_card`. Aim for about five executable lines when readable. |
+| BE03 | Validate JSON and query parameters with Marshmallow. Explicitly allowlist fields on input and output. | Preserves a stable wire contract and limits data exposure. | `CardPositionSchema` validates UUIDs, nullable anchor and version. `PATCH /api/users/me` rejects password fields. |
+| BE04 | Require a verified, unrevoked JWT on protected routes and check board membership or resource ownership before reading/writing data. | Valid sessions can still lack resource access. | Verify comment author and active board membership on edit. |
+| BE05 | Raise typed domain exceptions in services and convert them centrally to the API envelope. Include safe structured log fields. | Keeps errors consistent and diagnosable. | `CardNotFoundException` → 404, `UnauthorizedBoardAccessError` → 403, `InvalidCredentialsError` → 401. Log request ID, route, error code and safe actor ID. |
+| BE06 | Use one transaction per mutation including associated data writes. Flush as needed and commit at the service boundary. | A failed action leaves no partial effects. | Assignment and its notification commit together. |
+| BE07 | Add route integration tests that verify response, authorization and resulting state. Use isolated fixtures. | Prevents authorization and persistence regressions. | Comment creation returns 201, 400, 401 or 403 for the four planned scenarios. |
+| BE08 | Use PEP 8 names, a pinned lint/format tool and server-side environment validation. | Makes reviews and deployments reproducible. | `reorder_card` is snake_case. Flask startup fails clearly if a production secret is missing. |
