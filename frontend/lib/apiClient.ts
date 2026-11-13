@@ -13,6 +13,7 @@ export const API_PATHS = [
 export type ApiPath = (typeof API_PATHS)[number];
 
 export type ApiMethod = "POST" | "PATCH" | "DELETE";
+type SendMethod = ApiMethod | "GET";
 
 // Board and member IDs must be canonical UUIDs, so a segment cannot carry `..`, `/`, `?` or `#` (DD13).
 const UUID =
@@ -30,7 +31,27 @@ const DECLARED_BOARD_REQUESTS: ReadonlyArray<{
     method: "DELETE",
     pattern: new RegExp(`^/api/boards/${UUID}/members/${UUID}$`),
   },
+  // Kanban writes (E13 to E20).
+  { method: "POST", pattern: new RegExp(`^/api/boards/${UUID}/columns$`) },
+  { method: "PATCH", pattern: new RegExp(`^/api/boards/${UUID}/columns/reorder$`) },
+  { method: "PATCH", pattern: new RegExp(`^/api/columns/${UUID}$`) },
+  { method: "DELETE", pattern: new RegExp(`^/api/columns/${UUID}$`) },
+  { method: "POST", pattern: new RegExp(`^/api/columns/${UUID}/cards$`) },
+  { method: "PATCH", pattern: new RegExp(`^/api/cards/${UUID}$`) },
+  { method: "DELETE", pattern: new RegExp(`^/api/cards/${UUID}$`) },
+  { method: "PATCH", pattern: new RegExp(`^/api/cards/${UUID}/position$`) },
 ];
+
+// The only browser reads: the board (E07) and its members (E10), for refetches (DD11).
+const DECLARED_GETS: readonly RegExp[] = [
+  new RegExp(`^/api/boards/${UUID}$`),
+  new RegExp(`^/api/boards/${UUID}/members$`),
+];
+
+/** True only for a declared GET path. */
+export function isDeclaredApiGet(path: string): boolean {
+  return typeof path === "string" && DECLARED_GETS.some((pattern) => pattern.test(path));
+}
 
 /** True only for a declared method and path pair. The auth paths are declared for POST only. */
 export function isDeclaredApiRequest(method: ApiMethod, path: string): boolean {
@@ -51,7 +72,7 @@ function isAbort(error: unknown): boolean {
 }
 
 async function send<T>(
-  method: ApiMethod,
+  method: SendMethod,
   path: string,
   body?: unknown,
   signal?: AbortSignal,
@@ -117,4 +138,13 @@ export async function apiRequest<T>(
   if (!isDeclaredApiRequest(method, path))
     throw new Error("apiRequest: method and path are not declared.");
   return send<T>(method, path, body, signal);
+}
+
+/**
+ * GET a declared path (the board or its members) and return the unwrapped `data`. A path outside
+ * the allowlist throws before fetch is called. Failures throw ApiError.
+ */
+export async function apiGet<T>(path: string, signal?: AbortSignal): Promise<T> {
+  if (!isDeclaredApiGet(path)) throw new Error("apiGet: path is not declared.");
+  return send<T>("GET", path, undefined, signal);
 }

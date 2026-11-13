@@ -1,0 +1,1319 @@
+{
+ "_note": "Shared boundary cases for the kanban request bodies (kanban design 'Request rules'; Requirements 1.2, 1.5, 2.6, 2.7, 3.4, 3.12, 4.7). The Flask schema tests (task 3.6, 5.6) and the frontend kanbanRules tests (task 7.2) both read this file, as auth-field-cases.json and board-field-cases.json are read. Each case starts from its form's base body, applies 'set' then 'drop', and expects one of: 'accepted' (a map of the normalized values the schema must return for the keys it lists; the other base keys keep their base values; the output keys must equal the body's key set), 'fields' (the exact map of field messages), or 'rejected_without_fields' (a 400 with a body-level message and no 'fields', for an empty PATCH body). Values: {\"repeat\": s, \"times\": n} is s repeated n times. Lengths count Unicode code points. Forms: column_create (E13), column_update (E14), column_reorder (E16), card_create (E17), card_update (E18), card_position (E20). A blank or whitespace-only description normalizes to null (L6). expected_position_version accepts integers 0 to 2147483647 and rejects booleans, floats, strings and null. before_column_id and before_card_id must be present and may be null. Messages are fixed strings and never echo a value.",
+ "column_create": {
+  "base": {
+   "name": "To do"
+  },
+  "cases": [
+   {
+    "id": "name-empty",
+    "set": {
+     "name": ""
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "name": "Must be 1 to 80 characters."
+     }
+    }
+   },
+   {
+    "id": "name-spaces-only",
+    "set": {
+     "name": "   "
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "name": "Must be 1 to 80 characters."
+     }
+    }
+   },
+   {
+    "id": "name-1-char",
+    "set": {
+     "name": "A"
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "name": "A"
+     }
+    }
+   },
+   {
+    "id": "name-trimmed",
+    "set": {
+     "name": "  Doing  "
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "name": "Doing"
+     }
+    }
+   },
+   {
+    "id": "name-max-chars",
+    "set": {
+     "name": {
+      "repeat": "a",
+      "times": 80
+     }
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "name": {
+       "repeat": "a",
+       "times": 80
+      }
+     }
+    }
+   },
+   {
+    "id": "name-over-max",
+    "set": {
+     "name": {
+      "repeat": "a",
+      "times": 81
+     }
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "name": "Must be 1 to 80 characters."
+     }
+    }
+   },
+   {
+    "id": "name-null",
+    "set": {
+     "name": null
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "name": "Required."
+     }
+    }
+   },
+   {
+    "id": "name-number",
+    "set": {
+     "name": 7
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "name": "Must be text."
+     }
+    }
+   },
+   {
+    "id": "name-missing",
+    "set": {},
+    "drop": [
+     "name"
+    ],
+    "expect": {
+     "fields": {
+      "name": "Required."
+     }
+    }
+   },
+   {
+    "id": "is-done-true",
+    "set": {
+     "is_done": true
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "name": "To do",
+      "is_done": true
+     }
+    }
+   },
+   {
+    "id": "is-done-false",
+    "set": {
+     "is_done": false
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "name": "To do",
+      "is_done": false
+     }
+    }
+   },
+   {
+    "id": "is-done-string",
+    "set": {
+     "is_done": "true"
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "is_done": "Must be true or false."
+     }
+    }
+   },
+   {
+    "id": "is-done-number",
+    "set": {
+     "is_done": 1
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "is_done": "Must be true or false."
+     }
+    }
+   },
+   {
+    "id": "is-done-null",
+    "set": {
+     "is_done": null
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "is_done": "Must be true or false."
+     }
+    }
+   },
+   {
+    "id": "unknown-field",
+    "set": {
+     "color": "red"
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "color": "Unknown field."
+     }
+    }
+   },
+   {
+    "id": "unknown-order-field",
+    "set": {
+     "order": 5
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "order": "Unknown field."
+     }
+    }
+   }
+  ]
+ },
+ "column_update": {
+  "base": {
+   "name": "Doing"
+  },
+  "cases": [
+   {
+    "id": "name-empty",
+    "set": {
+     "name": ""
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "name": "Must be 1 to 80 characters."
+     }
+    }
+   },
+   {
+    "id": "name-spaces-only",
+    "set": {
+     "name": "   "
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "name": "Must be 1 to 80 characters."
+     }
+    }
+   },
+   {
+    "id": "name-1-char",
+    "set": {
+     "name": "A"
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "name": "A"
+     }
+    }
+   },
+   {
+    "id": "name-trimmed",
+    "set": {
+     "name": "  Doing  "
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "name": "Doing"
+     }
+    }
+   },
+   {
+    "id": "name-max-chars",
+    "set": {
+     "name": {
+      "repeat": "a",
+      "times": 80
+     }
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "name": {
+       "repeat": "a",
+       "times": 80
+      }
+     }
+    }
+   },
+   {
+    "id": "name-over-max",
+    "set": {
+     "name": {
+      "repeat": "a",
+      "times": 81
+     }
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "name": "Must be 1 to 80 characters."
+     }
+    }
+   },
+   {
+    "id": "is-done-only",
+    "set": {
+     "is_done": true
+    },
+    "drop": [
+     "name"
+    ],
+    "expect": {
+     "accepted": {
+      "is_done": true
+     }
+    }
+   },
+   {
+    "id": "both-fields",
+    "set": {
+     "is_done": false
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "name": "Doing",
+      "is_done": false
+     }
+    }
+   },
+   {
+    "id": "is-done-string",
+    "set": {
+     "is_done": "false"
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "is_done": "Must be true or false."
+     }
+    }
+   },
+   {
+    "id": "empty-body",
+    "set": {},
+    "drop": [
+     "name"
+    ],
+    "expect": {
+     "rejected_without_fields": true
+    }
+   },
+   {
+    "id": "unknown-field",
+    "set": {
+     "color": "red"
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "color": "Unknown field."
+     }
+    }
+   }
+  ]
+ },
+ "column_reorder": {
+  "base": {
+   "column_id": "3b4a1e3b-95cf-4814-a530-f913986d87ef",
+   "before_column_id": "9d7c2f4a-0b1e-4c53-8a6d-5e1f2a3b4c5d",
+   "expected_position_version": 3
+  },
+  "cases": [
+   {
+    "id": "column_id-missing",
+    "set": {},
+    "drop": [
+     "column_id"
+    ],
+    "expect": {
+     "fields": {
+      "column_id": "Required."
+     }
+    }
+   },
+   {
+    "id": "column_id-malformed",
+    "set": {
+     "column_id": "not-a-uuid"
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "column_id": "Must be a valid ID."
+     }
+    }
+   },
+   {
+    "id": "column_id-null",
+    "set": {
+     "column_id": null
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "column_id": "Required."
+     }
+    }
+   },
+   {
+    "id": "before_column_id-null-means-end",
+    "set": {
+     "before_column_id": null
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "before_column_id": null
+     }
+    }
+   },
+   {
+    "id": "before_column_id-missing",
+    "set": {},
+    "drop": [
+     "before_column_id"
+    ],
+    "expect": {
+     "fields": {
+      "before_column_id": "Required."
+     }
+    }
+   },
+   {
+    "id": "before_column_id-malformed",
+    "set": {
+     "before_column_id": "nope"
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "before_column_id": "Must be a valid ID."
+     }
+    }
+   },
+   {
+    "id": "before_column_id-number",
+    "set": {
+     "before_column_id": 5
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "before_column_id": "Must be a valid ID."
+     }
+    }
+   },
+   {
+    "id": "unknown-field",
+    "set": {
+     "color": "red"
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "color": "Unknown field."
+     }
+    }
+   },
+   {
+    "id": "version-0",
+    "set": {
+     "expected_position_version": 0
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "expected_position_version": 0,
+      "column_id": "3b4a1e3b-95cf-4814-a530-f913986d87ef",
+      "before_column_id": "9d7c2f4a-0b1e-4c53-8a6d-5e1f2a3b4c5d"
+     }
+    }
+   },
+   {
+    "id": "version-max",
+    "set": {
+     "expected_position_version": 2147483647
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "expected_position_version": 2147483647,
+      "column_id": "3b4a1e3b-95cf-4814-a530-f913986d87ef",
+      "before_column_id": "9d7c2f4a-0b1e-4c53-8a6d-5e1f2a3b4c5d"
+     }
+    }
+   },
+   {
+    "id": "version-over-max",
+    "set": {
+     "expected_position_version": 2147483648
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "expected_position_version": "Must be a whole number from 0 to 2147483647."
+     }
+    }
+   },
+   {
+    "id": "version-negative",
+    "set": {
+     "expected_position_version": -1
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "expected_position_version": "Must be a whole number from 0 to 2147483647."
+     }
+    }
+   },
+   {
+    "id": "version-float",
+    "set": {
+     "expected_position_version": 1.5
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "expected_position_version": "Must be a whole number from 0 to 2147483647."
+     }
+    }
+   },
+   {
+    "id": "version-whole-float",
+    "set": {
+     "expected_position_version": 3.0
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "expected_position_version": "Must be a whole number from 0 to 2147483647."
+     }
+    }
+   },
+   {
+    "id": "version-true",
+    "set": {
+     "expected_position_version": true
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "expected_position_version": "Must be a whole number from 0 to 2147483647."
+     }
+    }
+   },
+   {
+    "id": "version-false",
+    "set": {
+     "expected_position_version": false
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "expected_position_version": "Must be a whole number from 0 to 2147483647."
+     }
+    }
+   },
+   {
+    "id": "version-string",
+    "set": {
+     "expected_position_version": "1"
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "expected_position_version": "Must be a whole number from 0 to 2147483647."
+     }
+    }
+   },
+   {
+    "id": "version-null",
+    "set": {
+     "expected_position_version": null
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "expected_position_version": "Required."
+     }
+    }
+   },
+   {
+    "id": "version-missing",
+    "set": {},
+    "drop": [
+     "expected_position_version"
+    ],
+    "expect": {
+     "fields": {
+      "expected_position_version": "Required."
+     }
+    }
+   }
+  ]
+ },
+ "card_create": {
+  "base": {
+   "title": "Fix login"
+  },
+  "cases": [
+   {
+    "id": "title-empty",
+    "set": {
+     "title": ""
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "title": "Must be 1 to 160 characters."
+     }
+    }
+   },
+   {
+    "id": "title-spaces-only",
+    "set": {
+     "title": "   "
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "title": "Must be 1 to 160 characters."
+     }
+    }
+   },
+   {
+    "id": "title-1-char",
+    "set": {
+     "title": "A"
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "title": "A"
+     }
+    }
+   },
+   {
+    "id": "title-trimmed",
+    "set": {
+     "title": "  Doing  "
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "title": "Doing"
+     }
+    }
+   },
+   {
+    "id": "title-max-chars",
+    "set": {
+     "title": {
+      "repeat": "a",
+      "times": 160
+     }
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "title": {
+       "repeat": "a",
+       "times": 160
+      }
+     }
+    }
+   },
+   {
+    "id": "title-over-max",
+    "set": {
+     "title": {
+      "repeat": "a",
+      "times": 161
+     }
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "title": "Must be 1 to 160 characters."
+     }
+    }
+   },
+   {
+    "id": "title-null",
+    "set": {
+     "title": null
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "title": "Required."
+     }
+    }
+   },
+   {
+    "id": "title-number",
+    "set": {
+     "title": 7
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "title": "Must be text."
+     }
+    }
+   },
+   {
+    "id": "title-missing",
+    "set": {},
+    "drop": [
+     "title"
+    ],
+    "expect": {
+     "fields": {
+      "title": "Required."
+     }
+    }
+   },
+   {
+    "id": "description-text",
+    "set": {
+     "description": "Steps to reproduce"
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "title": "Fix login",
+      "description": "Steps to reproduce"
+     }
+    }
+   },
+   {
+    "id": "description-trimmed",
+    "set": {
+     "description": "  x  "
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "title": "Fix login",
+      "description": "x"
+     }
+    }
+   },
+   {
+    "id": "description-empty-is-null",
+    "set": {
+     "description": ""
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "title": "Fix login",
+      "description": null
+     }
+    }
+   },
+   {
+    "id": "description-spaces-is-null",
+    "set": {
+     "description": "   \n\t "
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "title": "Fix login",
+      "description": null
+     }
+    }
+   },
+   {
+    "id": "description-null",
+    "set": {
+     "description": null
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "title": "Fix login",
+      "description": null
+     }
+    }
+   },
+   {
+    "id": "description-max-chars",
+    "set": {
+     "description": {
+      "repeat": "d",
+      "times": 2000
+     }
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "title": "Fix login",
+      "description": {
+       "repeat": "d",
+       "times": 2000
+      }
+     }
+    }
+   },
+   {
+    "id": "description-over-max",
+    "set": {
+     "description": {
+      "repeat": "d",
+      "times": 2001
+     }
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "description": "Must be at most 2000 characters."
+     }
+    }
+   },
+   {
+    "id": "description-number",
+    "set": {
+     "description": 4
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "description": "Must be text."
+     }
+    }
+   },
+   {
+    "id": "assignee-uuid",
+    "set": {
+     "assignee_id": "3b4a1e3b-95cf-4814-a530-f913986d87ef"
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "title": "Fix login",
+      "assignee_id": "3b4a1e3b-95cf-4814-a530-f913986d87ef"
+     }
+    }
+   },
+   {
+    "id": "assignee-null",
+    "set": {
+     "assignee_id": null
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "title": "Fix login",
+      "assignee_id": null
+     }
+    }
+   },
+   {
+    "id": "assignee-malformed",
+    "set": {
+     "assignee_id": "someone"
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "assignee_id": "Must be a valid ID."
+     }
+    }
+   },
+   {
+    "id": "assignee-number",
+    "set": {
+     "assignee_id": 3
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "assignee_id": "Must be a valid ID."
+     }
+    }
+   },
+   {
+    "id": "unknown-field",
+    "set": {
+     "column_id": "3b4a1e3b-95cf-4814-a530-f913986d87ef"
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "column_id": "Unknown field."
+     }
+    }
+   }
+  ]
+ },
+ "card_update": {
+  "base": {
+   "title": "Fix login"
+  },
+  "cases": [
+   {
+    "id": "title-empty",
+    "set": {
+     "title": ""
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "title": "Must be 1 to 160 characters."
+     }
+    }
+   },
+   {
+    "id": "title-spaces-only",
+    "set": {
+     "title": "   "
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "title": "Must be 1 to 160 characters."
+     }
+    }
+   },
+   {
+    "id": "title-1-char",
+    "set": {
+     "title": "A"
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "title": "A"
+     }
+    }
+   },
+   {
+    "id": "title-trimmed",
+    "set": {
+     "title": "  Doing  "
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "title": "Doing"
+     }
+    }
+   },
+   {
+    "id": "title-max-chars",
+    "set": {
+     "title": {
+      "repeat": "a",
+      "times": 160
+     }
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "title": {
+       "repeat": "a",
+       "times": 160
+      }
+     }
+    }
+   },
+   {
+    "id": "title-over-max",
+    "set": {
+     "title": {
+      "repeat": "a",
+      "times": 161
+     }
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "title": "Must be 1 to 160 characters."
+     }
+    }
+   },
+   {
+    "id": "description-only",
+    "set": {
+     "description": "New text"
+    },
+    "drop": [
+     "title"
+    ],
+    "expect": {
+     "accepted": {
+      "description": "New text"
+     }
+    }
+   },
+   {
+    "id": "description-spaces-is-null",
+    "set": {
+     "description": "  "
+    },
+    "drop": [
+     "title"
+    ],
+    "expect": {
+     "accepted": {
+      "description": null
+     }
+    }
+   },
+   {
+    "id": "assignee-null-only",
+    "set": {
+     "assignee_id": null
+    },
+    "drop": [
+     "title"
+    ],
+    "expect": {
+     "accepted": {
+      "assignee_id": null
+     }
+    }
+   },
+   {
+    "id": "assignee-uuid-only",
+    "set": {
+     "assignee_id": "9d7c2f4a-0b1e-4c53-8a6d-5e1f2a3b4c5d"
+    },
+    "drop": [
+     "title"
+    ],
+    "expect": {
+     "accepted": {
+      "assignee_id": "9d7c2f4a-0b1e-4c53-8a6d-5e1f2a3b4c5d"
+     }
+    }
+   },
+   {
+    "id": "assignee-malformed",
+    "set": {
+     "assignee_id": "x"
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "assignee_id": "Must be a valid ID."
+     }
+    }
+   },
+   {
+    "id": "empty-body",
+    "set": {},
+    "drop": [
+     "title"
+    ],
+    "expect": {
+     "rejected_without_fields": true
+    }
+   },
+   {
+    "id": "unknown-field",
+    "set": {
+     "order": 1
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "order": "Unknown field."
+     }
+    }
+   }
+  ]
+ },
+ "card_position": {
+  "base": {
+   "column_id": "3b4a1e3b-95cf-4814-a530-f913986d87ef",
+   "before_card_id": "9d7c2f4a-0b1e-4c53-8a6d-5e1f2a3b4c5d",
+   "expected_position_version": 3
+  },
+  "cases": [
+   {
+    "id": "column_id-missing",
+    "set": {},
+    "drop": [
+     "column_id"
+    ],
+    "expect": {
+     "fields": {
+      "column_id": "Required."
+     }
+    }
+   },
+   {
+    "id": "column_id-malformed",
+    "set": {
+     "column_id": "not-a-uuid"
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "column_id": "Must be a valid ID."
+     }
+    }
+   },
+   {
+    "id": "column_id-null",
+    "set": {
+     "column_id": null
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "column_id": "Required."
+     }
+    }
+   },
+   {
+    "id": "before_card_id-null-means-end",
+    "set": {
+     "before_card_id": null
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "before_card_id": null
+     }
+    }
+   },
+   {
+    "id": "before_card_id-missing",
+    "set": {},
+    "drop": [
+     "before_card_id"
+    ],
+    "expect": {
+     "fields": {
+      "before_card_id": "Required."
+     }
+    }
+   },
+   {
+    "id": "before_card_id-malformed",
+    "set": {
+     "before_card_id": "nope"
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "before_card_id": "Must be a valid ID."
+     }
+    }
+   },
+   {
+    "id": "before_card_id-number",
+    "set": {
+     "before_card_id": 5
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "before_card_id": "Must be a valid ID."
+     }
+    }
+   },
+   {
+    "id": "unknown-field",
+    "set": {
+     "color": "red"
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "color": "Unknown field."
+     }
+    }
+   },
+   {
+    "id": "version-0",
+    "set": {
+     "expected_position_version": 0
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "expected_position_version": 0,
+      "column_id": "3b4a1e3b-95cf-4814-a530-f913986d87ef",
+      "before_card_id": "9d7c2f4a-0b1e-4c53-8a6d-5e1f2a3b4c5d"
+     }
+    }
+   },
+   {
+    "id": "version-max",
+    "set": {
+     "expected_position_version": 2147483647
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "expected_position_version": 2147483647,
+      "column_id": "3b4a1e3b-95cf-4814-a530-f913986d87ef",
+      "before_card_id": "9d7c2f4a-0b1e-4c53-8a6d-5e1f2a3b4c5d"
+     }
+    }
+   },
+   {
+    "id": "version-over-max",
+    "set": {
+     "expected_position_version": 2147483648
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "expected_position_version": "Must be a whole number from 0 to 2147483647."
+     }
+    }
+   },
+   {
+    "id": "version-negative",
+    "set": {
+     "expected_position_version": -1
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "expected_position_version": "Must be a whole number from 0 to 2147483647."
+     }
+    }
+   },
+   {
+    "id": "version-float",
+    "set": {
+     "expected_position_version": 1.5
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "expected_position_version": "Must be a whole number from 0 to 2147483647."
+     }
+    }
+   },
+   {
+    "id": "version-whole-float",
+    "set": {
+     "expected_position_version": 3.0
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "expected_position_version": "Must be a whole number from 0 to 2147483647."
+     }
+    }
+   },
+   {
+    "id": "version-true",
+    "set": {
+     "expected_position_version": true
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "expected_position_version": "Must be a whole number from 0 to 2147483647."
+     }
+    }
+   },
+   {
+    "id": "version-false",
+    "set": {
+     "expected_position_version": false
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "expected_position_version": "Must be a whole number from 0 to 2147483647."
+     }
+    }
+   },
+   {
+    "id": "version-string",
+    "set": {
+     "expected_position_version": "1"
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "expected_position_version": "Must be a whole number from 0 to 2147483647."
+     }
+    }
+   },
+   {
+    "id": "version-null",
+    "set": {
+     "expected_position_version": null
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "expected_position_version": "Required."
+     }
+    }
+   },
+   {
+    "id": "version-missing",
+    "set": {},
+    "drop": [
+     "expected_position_version"
+    ],
+    "expect": {
+     "fields": {
+      "expected_position_version": "Required."
+     }
+    }
+   }
+  ]
+ }
+}

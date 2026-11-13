@@ -122,7 +122,9 @@ describe("parseMembershipList", () => {
 
 describe("parseBoardDetail", () => {
   it("keeps the summary fields and the columns array", () => {
-    const columns = [{ id: "c1", board_id: "b1", name: "To do", is_done: false, order: 0 }];
+    const columns = [
+      { id: "c1", board_id: "b1", name: "To do", is_done: false, order: 1024, cards: [] },
+    ];
     const parsed = parseBoardDetail({ ...summary, columns, extra: 1 });
     expect(parsed).toEqual({ ...summary, columns });
   });

@@ -15,8 +15,28 @@ export type BoardSummary = {
   position_version: number;
 };
 
-// Columns are typed fully in the board-columns slice (T07–T08).
-export type BoardDetail = BoardSummary & { columns: unknown[] };
+// Kanban shapes from docs/API.md (Card, Column, ColumnWithCards, BoardDetail).
+export type Card = {
+  id: string;
+  column_id: string;
+  title: string;
+  description: string | null;
+  assignee_id: string | null;
+  assignee_name: string | null;
+  order: number;
+};
+
+export type Column = {
+  id: string;
+  board_id: string;
+  name: string;
+  is_done: boolean;
+  order: number;
+};
+
+export type ColumnWithCards = Column & { cards: Card[] };
+
+export type BoardDetail = BoardSummary & { columns: ColumnWithCards[] };
 
 export type Membership = {
   user_id: string;

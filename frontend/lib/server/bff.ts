@@ -83,13 +83,17 @@ async function readCapped(request: Request): Promise<Uint8Array | "too-large"> {
 
 /**
  * Check the request before any upstream call, in this order (AUTH-AC8.5):
- * content type (415), size (413), JSON object (400), exact key set (400 with `fields`).
+ * content type (415), size (413), JSON object (400), key set (400 with `fields`).
+ * Keys outside `allowedKeys` are unknown. Every key in `requiredKeys` (default: all allowed keys,
+ * the exact-key-set rule of the auth and member handlers) must be present. A handler with optional
+ * keys passes a shorter `requiredKeys`.
  * The size is counted while reading, so a missing or wrong Content-Length does not help.
  */
 export async function readJsonObject(
   request: Request,
   allowedKeys: readonly string[],
   requestId: string,
+  requiredKeys: readonly string[] = allowedKeys,
 ): Promise<ReadResult> {
   const mediaType = (request.headers.get("content-type") ?? "").split(";")[0].trim().toLowerCase();
   if (mediaType !== "application/json") {
@@ -125,7 +129,7 @@ export async function readJsonObject(
     ...Object.keys(parsed)
       .filter((key) => !allowedKeys.includes(key))
       .map((key): [string, string] => [key, "Unknown field."]),
-    ...allowedKeys
+    ...requiredKeys
       .filter((key) => !Object.hasOwn(parsed as object, key))
       .map((key): [string, string] => [key, "Required."]),
   ];

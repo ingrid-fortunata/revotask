@@ -33,8 +33,10 @@ export type PrivateWriteSpec = {
   route: FlaskRoute;
   method: "POST" | "PATCH" | "DELETE";
   params?: FlaskParams;
-  /** Present: the body must be a JSON object with exactly these keys. Absent: no body is read. */
+  /** Present: the body must be a JSON object that uses only these keys. Absent: no body is read. */
   allowedKeys?: readonly string[];
+  /** Keys that must be present. Defaults to every allowed key (an exact key set). */
+  requiredKeys?: readonly string[];
 };
 
 // Every `:name` token in the route template needs a UUID value in `params`.
@@ -87,7 +89,12 @@ export async function handlePrivateWrite(
 
   let body: unknown;
   if (spec.allowedKeys !== undefined) {
-    const parsed = await readJsonObject(request, spec.allowedKeys, requestId);
+    const parsed = await readJsonObject(
+      request,
+      spec.allowedKeys,
+      requestId,
+      spec.requiredKeys,
+    );
     if (!parsed.ok) return parsed.response;
     body = parsed.body;
   }
@@ -100,6 +107,53 @@ export async function handlePrivateWrite(
 
   const response = passThrough(upstream.value, requestId);
   // Flask rejected the token, so the browser cookie is stale and is cleared.
+  if (upstream.value.status === 401) {
+    response.headers.append(
+      "Set-Cookie",
+      serializeCookie(clearedSessionCookie(env.value.secureCookie)),
+    );
+  }
+  return response;
+}
+
+export type PrivateReadSpec = {
+  route: FlaskRoute;
+  params?: FlaskParams;
+};
+
+/**
+ * Same-origin GET for the browser (design DD11): the session cookie becomes the bearer token, the
+ * upstream reply is rebuilt from its known parts, and the response is `private, no-store`.
+ * A safe method has no Origin check. A 401 clears the stale cookie, as for the writes.
+ */
+export async function handlePrivateRead(
+  request: NextRequest,
+  spec: PrivateReadSpec,
+): Promise<NextResponse> {
+  const requestId = newRequestId();
+  const env = loadServerEnv(requestId);
+  if (!env.ok) return env.response;
+
+  const token = request.cookies.get(SESSION_COOKIE)?.value;
+  if (!token) return signedOut(requestId, env.value.secureCookie);
+
+  const params = spec.params ?? {};
+  if (!paramsAreUuids(spec.route, params)) {
+    return errorResponse(
+      400,
+      "VALIDATION_ERROR",
+      "The board ID is not valid.",
+      requestId,
+    );
+  }
+
+  const upstream = await callFlask(
+    { route: spec.route, method: "GET", params, token },
+    requestId,
+  );
+  if (!upstream.ok) return upstream.response;
+
+  const response = passThrough(upstream.value, requestId);
   if (upstream.value.status === 401) {
     response.headers.append(
       "Set-Cookie",

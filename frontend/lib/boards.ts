@@ -1,4 +1,5 @@
 import { malformedApiError } from "./errors";
+import { parseColumnWithCardsList } from "./kanban";
 import type { BoardDetail, BoardRole, BoardSummary, Membership } from "./types";
 
 // Allowlist parsers for board and membership payloads (Requirements 7.3, FE-A1).
@@ -63,9 +64,8 @@ export function parseMembershipList(value: unknown): Membership[] {
   return value.map(parseMembership);
 }
 
-// Columns are typed in T07–T08. Until then only the array shape is checked.
 export function parseBoardDetail(value: unknown): BoardDetail {
-  if (!isRecord(value) || !Array.isArray(value.columns)) throw malformedApiError();
+  if (!isRecord(value)) throw malformedApiError();
   const summary = parseBoardSummary(value);
-  return { ...summary, columns: value.columns };
+  return { ...summary, columns: parseColumnWithCardsList(value.columns) };
 }
