@@ -14,7 +14,7 @@ export default async function ProtectedLayout({ children }: Readonly<{ children:
     <AuthProvider user={user}>
       <AppHeader />
       <SessionRevalidator />
-      {children}
+      <div className="lg:pl-64">{children}</div>
     </AuthProvider>
   );
 }

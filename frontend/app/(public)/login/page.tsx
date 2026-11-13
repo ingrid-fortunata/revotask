@@ -14,9 +14,9 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   const { next } = await searchParams;
   const redirectTo = safeRedirectPath(next);
   return (
-    <section className="card w-full bg-base-100 shadow">
-      <div className="card-body gap-4">
-        <h1 className="card-title">Sign in to RevoTask</h1>
+    <section className="surface w-full">
+      <div className="flex flex-col gap-4 p-5 sm:p-6">
+        <h1 className="text-2xl font-semibold">Sign in to RevoTask</h1>
         <LoginForm redirectTo={redirectTo} />
         <p className="text-sm">
           New here?{" "}

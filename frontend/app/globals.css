@@ -1,2 +1,59 @@
 @import "tailwindcss";
-@plugin "daisyui";
+@plugin "daisyui" {
+  themes: false;
+}
+
+/* RevoTask design tokens (guidelines/frontend.md, "Visual design system", FE-D1). Colors are
+   daisyUI semantic tokens, so components use bg-base-100, text-primary and so on, never hex. */
+@plugin "daisyui/theme" {
+  name: "revotask";
+  default: true;
+  color-scheme: light;
+  --color-base-100: #ffffff;
+  --color-base-200: #f1f4f3;
+  --color-base-300: #dde3e0;
+  --color-base-content: #18242a;
+  --color-primary: #0b7a75;
+  --color-primary-content: #ffffff;
+  --color-secondary: #c2410c;
+  --color-secondary-content: #ffffff;
+  --color-accent: #b45309;
+  --color-accent-content: #ffffff;
+  --color-neutral: #10262b;
+  --color-neutral-content: #d6e3e1;
+  --color-info: #0369a1;
+  --color-info-content: #ffffff;
+  --color-success: #1a7f4b;
+  --color-success-content: #ffffff;
+  --color-warning: #b7791f;
+  --color-warning-content: #ffffff;
+  --color-error: #b42318;
+  --color-error-content: #ffffff;
+  --radius-selector: 0.5rem;
+  --radius-field: 0.5rem;
+  --radius-box: 0.75rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
+
+@theme inline {
+  --font-sans: var(--font-figtree), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* The one panel style: white, hairline border, box radius. Every card and section uses it. */
+@utility surface {
+  background-color: var(--color-base-100);
+  border: 1px solid var(--color-base-300);
+  border-radius: var(--radius-box);
+}
+
+/* Visible keyboard focus on every link and button (FE-S3). */
+@layer base {
+  :where(a, button, input, summary):focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+}

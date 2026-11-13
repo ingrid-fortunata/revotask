@@ -4,7 +4,7 @@ import { getCurrentUser } from "@/lib/server/session";
 import ProtectedLayout from "./layout";
 
 vi.mock("@/lib/server/session", () => ({ getCurrentUser: vi.fn() }));
-vi.mock("next/navigation", () => ({ useRouter: () => ({ refresh: vi.fn() }) }));
+vi.mock("next/navigation", () => ({ useRouter: () => ({ refresh: vi.fn() }), usePathname: () => "/" }));
 vi.mock("@/lib/apiClient", () => ({ apiPost: vi.fn() }));
 vi.mock("@/lib/navigation", () => ({ hardRedirect: vi.fn() }));
 vi.mock("@/lib/toast", () => ({ notifyError: vi.fn(), notifySuccess: vi.fn() }));

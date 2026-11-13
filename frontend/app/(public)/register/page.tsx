@@ -6,9 +6,9 @@ export const metadata: Metadata = { title: "Create an account · RevoTask" };
 
 export default function RegisterPage() {
   return (
-    <section className="card w-full bg-base-100 shadow">
-      <div className="card-body gap-4">
-        <h1 className="card-title">Create your account</h1>
+    <section className="surface w-full">
+      <div className="flex flex-col gap-4 p-5 sm:p-6">
+        <h1 className="text-2xl font-semibold">Create your account</h1>
         <RegisterForm />
         <p className="text-sm">
           Already registered?{" "}

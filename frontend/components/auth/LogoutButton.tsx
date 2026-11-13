@@ -8,7 +8,7 @@ import { hardRedirect } from "@/lib/navigation";
 
 // Sign out revokes the token in Flask through the same-origin handler, then does a full page
 // load of /login. If revocation fails, the session stays and the user can retry (P9).
-export function LogoutButton() {
+export function LogoutButton({ className }: { className?: string }) {
   const [pending, setPending] = useState(false);
   const { handleError } = useErrorHandler();
 
@@ -25,7 +25,7 @@ export function LogoutButton() {
   }
 
   return (
-    <BaseButton variant="ghost" loading={pending} onClick={handleClick}>
+    <BaseButton variant="ghost" className={className} loading={pending} onClick={handleClick}>
       {pending ? "Signing out…" : "Sign out"}
     </BaseButton>
   );

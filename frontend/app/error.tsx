@@ -10,10 +10,12 @@ import { BaseButton } from "@/components/shared/BaseButton";
 // load. A real-browser check found that bug (evidence/authentication-T03-T04.md).
 export default function ErrorPage({ retry }: { error: unknown; retry: () => void }) {
   return (
-    <main className="mx-auto flex w-full max-w-md flex-col items-start gap-4 p-4 sm:p-6">
-      <h1 className="text-xl font-semibold">Something went wrong</h1>
-      <p className="break-words">We could not load this page. Your session is unchanged. Try again.</p>
-      <BaseButton onClick={() => retry()}>Try again</BaseButton>
+    <main className="mx-auto w-full max-w-md p-4 sm:p-6">
+      <div className="surface flex flex-col items-start gap-4 p-6">
+        <h1 className="text-xl font-semibold">Something went wrong</h1>
+        <p className="break-words text-base-content/80">We could not load this page. Your session is unchanged. Try again.</p>
+        <BaseButton onClick={() => retry()}>Try again</BaseButton>
+      </div>
     </main>
   );
 }
