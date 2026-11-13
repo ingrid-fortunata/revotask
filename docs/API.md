@@ -14,8 +14,8 @@ Routes below are Flask endpoints relative to `API_BASE_URL`, which contains the 
 | ID | Method and path | Request → successful result |
 |---|---|---|
 | E01 | GET `/api/health` | Public → 200 status; bounded DB check, 503 on failure. |
-| E02 | POST `/api/auth/register` | Public. Exactly `name` 1–80, valid `email` ≤254, `password` 12–128; any other field is 400. `name` and `email` are trimmed, `email` is lowercased, `password` is kept as entered → 201 public user. Duplicate normalized email 409. |
-| E03 | POST `/api/auth/login` | Public. Exactly `email` ≤254 and `password` 1–128; any other field is 400 → 200 `{access_token,expires_in,user}` on Flask. On Next the body is `{"data":{"user"}}` and the handler sets the session cookie. Bad credentials 401. |
+| E02 | POST `/api/auth/register` | Public. Exactly `name` 1–80, valid `email` ≤254, `password` 8–128 with at least one uppercase letter, one lowercase letter and one ASCII special character (a space does not count); any other field is 400. `name` and `email` are trimmed, `email` is lowercased, `password` is kept as entered → 201 public user. Duplicate normalized email 409. |
+| E03 | POST `/api/auth/login` | Public. Exactly `email` ≤254 and `password` 1–128 with no composition rule; any other field is 400 → 200 `{access_token,expires_in,user}` on Flask. On Next the body is `{"data":{"user"}}` and the handler sets the session cookie. Bad credentials 401. |
 | E04 | POST `/api/auth/logout` | Authenticated → 200 after JWT revocation. The Next handler also returns 200 and clears the cookie when the cookie is absent or the session is already invalid. It returns 503 and keeps the cookie when revocation fails. |
 | E05 | GET `/api/boards` | Accessible active board summaries, sorted by name and ID → 200. |
 | E06 | POST `/api/boards` | `name` 1–100 → 201 board summary with admin membership. |

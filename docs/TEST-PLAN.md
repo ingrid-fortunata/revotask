@@ -4,7 +4,7 @@ All results are **Pending** until executed. Record commands, environment, revisi
 
 | ID | Layer | Verification |
 |---|---|---|
-| V01 | pytest | Registration returns 201 and omits password fields, invalid input and unexpected fields return 400, an unsupported content type returns 415, an oversized body returns 413, normalized duplicates return 409, and only one insert succeeds during concurrent registrations. |
+| V01 | pytest | Registration returns 201 and omits password fields, invalid input, a password that breaks the rules and unexpected fields return 400, an unsupported content type returns 415, an oversized body returns 413, normalized duplicates return 409, and only one insert succeeds during concurrent registrations. |
 | V02 | pytest and Next integration | Valid/invalid login, exact form fields, 401 for absent/expired/revoked JWTs, logout revocation, cookie flags, unsafe redirect targets, upstream logout failure, SSR 401 redirect and BFF 401 cleanup. |
 | V03 | pytest and UI | Admin/member/nonmember access, board list/detail, nested IDs from other boards, rename/delete, member reactivation and assignment clearing on removal. |
 | V04 | pytest | Column/card CRUD, Done uniqueness and nonempty rules, moves within/across columns, unauthorized and missing resources, FLOAT precision, invalid anchors, concurrent version conflict and rebalance. |

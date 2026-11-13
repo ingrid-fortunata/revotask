@@ -5,7 +5,7 @@ The shared [HTTP endpoint reference](../../docs/API.md) defines methods, paths, 
 | Blueprint | Endpoint IDs | Main validation schemas and checks |
 |---|---|---|
 | Health route | E01 | Public. Return `data.status` as `ok` on 200. A bounded DB failure returns 503 `SERVICE_UNAVAILABLE`. |
-| `auth_bp` | E02–E04 | Register/Login schemas validate bounded inputs. Login returns expiring JWT and safe user DTO. Logout requires an active JWT and persists its revocation. |
+| `auth_bp` | E02–E04 | Register/Login schemas validate bounded inputs. Register enforces 8–128 characters with an uppercase letter, a lowercase letter and an ASCII special character. Login accepts 1–128 characters with no composition rule, so a stored account is never locked out by a later policy change. Login returns expiring JWT and safe user DTO. Logout requires an active JWT and persists its revocation. |
 | `boards_bp` | E05–E12 | Board create/update and member add schemas. Reads scope active membership. Rename/delete and membership changes require admin. |
 | `columns_bp` | E13–E16 | Column create/update and position schemas. Admin-only writes with Done and position-version checks. |
 | `cards_bp` | E17–E22 | Card create/update, CardPositionSchema, My Tasks query and card search schema. Validate assignee participation, anchor ownership and board scope. |

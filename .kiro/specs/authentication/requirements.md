@@ -1,6 +1,6 @@
 # Requirements · authentication (T03–T04)
 
-**Status:** Implemented and verified locally. Decisions P1–P10 and changes C1–C10 are applied ("Decisions confirmed in review", "Changes to review"). The shared documents were updated in the spec round and are recorded in `specs/CHANGELOG.md`. Results, findings and open items are in `evidence/authentication-T03-T04.md`. Rate-limit results prove local behavior only.
+**Status:** Implemented and verified locally. Revision 4 runs one Gunicorn worker locally so the rate limits are exact (AUTH-AC6.6). Revision 3 changes the password policy (decision P11, change C11): register now needs 8 to 128 characters with an uppercase letter, a lowercase letter and a special character. Decisions P1–P10 and changes C1–C10 are applied ("Decisions confirmed in review", "Changes to review"). The shared documents were updated in the spec round and are recorded in `specs/CHANGELOG.md`. Results, findings and open items are in `evidence/authentication-T03-T04.md`. Rate-limit results prove local behavior only.
 
 **Root tasks:** T03 (Flask auth, public DTO, validation and errors, JWT guard, revocation) and T04 (Next server-only API client, same-origin auth Route Handlers, safe cookie, public-user `AuthContext`, typed `ApiError`, error feedback helper, login and register forms, protected shell).
 
@@ -44,7 +44,7 @@ _As a visitor, I can create an account through the Flask API._
 - **AUTH-AC1.3** Invalid input returns 400 `VALIDATION_ERROR` with `fields` mapping each bad field to one fixed message that does not echo the submitted value:
   - `name`: required, 1–80 characters after trimming.
   - `email`: required, valid address, at most 254 characters after trimming and lowercasing.
-  - `password`: required, 12–128 characters. Whitespace is kept and counts toward the length.
+  - `password`: required, 8–128 characters, with at least one uppercase letter, one lowercase letter and one ASCII special character (see DD15). Whitespace is kept and counts toward the length, but a space is not a special character. Login applies none of these rules (AUTH-AC2.4).
   - The body holds exactly `name`, `email` and `password`. A missing field is `Required.`, a non-string value is `Must be text.` and any other key is `Unknown field.` (BE03)
   - The UI applies these same rules (AUTH-AC10.7). The messages in `design.md` §4.4 are the single table.
 - **AUTH-AC1.4** WHEN the normalized email already exists, including a case or whitespace variant of it, THEN the response is 409 `EMAIL_ALREADY_EXISTS` and no second row exists. (Root AC01.2, DB04)
@@ -57,7 +57,7 @@ _As an account holder, I can exchange credentials for an expiring token._
 - **AUTH-AC2.1** WHEN `POST /api/auth/login` receives an existing email (matched after trim and lowercase) and the correct password, THEN it returns 200 with `{"data": {"access_token", "expires_in": 3600, "user": {"id", "name", "email"}}}`. The token is an HS256 JWT with a UUID-string `sub` equal to the user ID, an `exp` 3600 seconds after issue, and a UUID-string `jti`. The token carries no name, email or password data. Registration, login and the per-email limit key all normalize email the same way (trim, lowercase). (Root AC02.1, D2)
 - **AUTH-AC2.2** A wrong password and an unknown email return the same 401 `INVALID_CREDENTIALS` response: same status, code, message, no `fields`. (Root AC02.2)
 - **AUTH-AC2.3** WHEN the email is unknown, THEN the service still verifies the submitted password against a dummy Argon2id hash, so the two failures cost about the same time.
-- **AUTH-AC2.4** The body holds exactly `email` and `password`. `email` must be a string of at most 254 characters and `password` a string of 1–128 characters. Anything else, a missing field or an unknown field returns 400 `VALIDATION_ERROR`. Login does not apply register's 12-character minimum or its email-format check.
+- **AUTH-AC2.4** The body holds exactly `email` and `password`. `email` must be a string of at most 254 characters and `password` a string of 1–128 characters with no composition rule. Anything else, a missing field or an unknown field returns 400 `VALIDATION_ERROR`. Login does not apply register's 12-character minimum or its email-format check.
 - **AUTH-AC2.5** Responses and logs never contain a password, hash or, on failure, a token.
 
 ### AUTH-R3 · JWT guard (T03)
@@ -91,7 +91,7 @@ _As the API owner, I limit guessing attempts and keep private responses out of s
 - **AUTH-AC6.3** WHEN a limit is exceeded, THEN the response is 429 `RATE_LIMITED` in the standard envelope with a non-empty `request_id` and a `Retry-After` header in seconds. The request is not processed, and the next request after the window succeeds.
 - **AUTH-AC6.4** Limits are on by default. `RATE_LIMIT_ENABLED=false` turns them off for tests. IF `APP_ENV` is `production` and `RATE_LIMIT_ENABLED` is false, THEN `create_app()` raises a configuration error that names the variable and not its value. (BE08)
 - **AUTH-AC6.5** Every response under `/api/` except E01 carries `Cache-Control: private, no-store`, including error responses. E01 is unchanged. (Root AC13.3, D2)
-- **AUTH-AC6.6** The limiter checks prove local behavior only. Shared limiter storage and trusted client address handling are open production-release items in root T16 and `docs/DEPLOYMENT.md`. This slice does not claim them done. (P2)
+- **AUTH-AC6.6** The limiter checks prove local behavior only. Shared limiter storage and trusted client address handling are open production-release items in root T16 and `docs/DEPLOYMENT.md`. This slice does not claim them done. Counters are per Gunicorn worker. Local Compose runs one worker, so the stated limit is exact locally, and a live check on that stack records five 401s then 429 (evidence F-AUTH-11). With more workers the effective limit can be up to a multiple of the stated number, so more workers wait for shared storage (T16). Responses other than 429 carry no `Retry-After` (RFC 9110). (P2)
 
 ### AUTH-R7 · Request parsing and error envelope (T03)
 _As a client developer, I get the same JSON envelope for every auth failure._
@@ -148,6 +148,7 @@ _As a visitor, I can register and sign in from forms that explain what went wron
 - **AUTH-AC10.5** `/login` and `/register` never read the cookie and never redirect, so a stale cookie cannot cause a loop. A signed-in visitor who opens them sees the form. (D2)
 - **AUTH-AC10.6** The pages are single-column and meet AUTH-R13 at 320, 375, 768 and 1280 px. (FE-S2, FE-S4)
 - **AUTH-AC10.7** The UI validates before sending with one rules module that mirrors `design.md` §4.4: the same limits counted in Unicode code points, the same trim for `name` and `email`, the same lowercase for `email`, no trimming of `password`, and the same fixed messages. The request body has exactly the form's fields. A passing client check never replaces the API check, and server field errors still display. The same boundary cases run against the UI rules and the API schemas.
+- **AUTH-AC10.8** The register password field shows the rules as visible help text linked to the input with `aria-describedby`. A password that breaks the rules shows the fixed message in the same place as the API's message and takes focus. The login form shows no password rules. (Revision 3, DD15)
 
 ### AUTH-R11 · Protected shell and session lifecycle (T04)
 _As a signed-in user, I see private pages only while my session is valid._
@@ -197,7 +198,7 @@ Native task numbers refer to `tasks.md`. Verification IDs are defined in design 
 | AUTH-R7 | 7.1–7.5 | Shared envelope | 1.2, 1.11 | AUTH-V3 | V02 |
 | AUTH-R8 | 8.1–8.8 | Next `/api/auth/*` | 2.3, 2.4, 2.5, 2.10 | AUTH-V4, AUTH-V6 | V02, V13 |
 | AUTH-R9 | 9.1–9.3 | `ApiError`, `useErrorHandler`, toast | 2.2, 2.6, 2.10 | AUTH-V4, AUTH-V5 | V02 |
-| AUTH-R10 | 10.1–10.7 | `/register`, `/login` | 1.5, 2.6, 2.7, 2.8, 2.10, 2.11 | AUTH-V5, AUTH-V7 | V01, V02 |
+| AUTH-R10 | 10.1–10.8 | `/register`, `/login` | 1.5, 2.6, 2.7, 2.8, 2.10, 2.11 | AUTH-V5, AUTH-V7 | V01, V02 |
 | AUTH-R11 | 11.1–11.9 | Protected shell on `/` | 2.9, 2.10, 2.11 | AUTH-V5, AUTH-V6, AUTH-V7, AUTH-V8 | V02, V13 |
 | AUTH-R12 | 12.1–12.5 | Evidence, docs | 1.11, 2.10, 2.11, 3.1, 3.2 | AUTH-V9 | V15 (partial) |
 | AUTH-R13 | 13.1–13.7 | `/login`, `/register`, `/` shell, `app/error.tsx`, toasts | 2.6, 2.7, 2.8, 2.9, 2.10, 2.11 | AUTH-V5, AUTH-V7 | V11 |
@@ -226,6 +227,7 @@ Native task numbers refer to `tasks.md`. Verification IDs are defined in design 
 | P6–P8 | **Accepted.** Vitest, HTTP smoke checks and a manual browser check in this slice. Playwright stays in T15. `/` is protected, `/login` and `/register` are public, and session verification is centralized close to protected data and actions. The `(protected)` layout renders the shell. Authorization is checked at the data boundary. | AUTH-AC11.9, design DD6, tasks 2.9, 2.11. |
 | P9–P10 | **Accepted.** Browser logout is idempotent when the cookie is absent or the session is already invalid. A valid JWT is revoked in Flask, then the cookie is cleared. If revocation fails upstream the session stays and retry feedback shows. Server redirects use `/login`. `next` is accepted only when it resolves to a safe same-origin path, otherwise login lands on `/`. | AUTH-AC8.3, AUTH-AC10.3, AUTH-AC11.4. `frontend/specs/api-integration.md` and `docs/API.md` updated. |
 | Forms | **Decided.** Login accepts exactly `email` and `password`. Registration accepts exactly `name`, `email` and `password`, then redirects to `/login` with the user signed out. The UI and API schemas share field rules. Unexpected fields are rejected. Email is normalized the same way everywhere. The password is preserved as entered. | AUTH-AC1.3, 2.4, 8.5, AUTH-AC10.1, 10.2, 10.7. `docs/API.md` E02 and E03 updated. |
+| P11 | **Revised (revision 3).** The register password policy is 8 to 128 characters with an uppercase letter, a lowercase letter and an ASCII special character. Before, it was 12 to 128 characters, which the owner judged too long. The 128 maximum is kept. Login accepts 1 to 128 characters and no composition rule, so existing or mistyped passwords get the normal 401. | AUTH-AC1.3, AUTH-AC2.4, AUTH-AC10.7, AUTH-AC10.8, DD15. `specs/design.md` D2, `docs/API.md` E02 and E03, `docs/USER_GUIDE.md`, `backend/specs/api-contract.md`, `frontend/specs/pages-and-components.md`, `docs/TEST-PLAN.md` V01 updated. Shared case file revised. |
 | Layout | **Decided.** Follow the existing monorepo layout (no `src/` directory exists). Flask keeps `create_app()` in `backend/app/`, the auth Blueprint in `backend/app/blueprints/auth/` (`routes.py`, `service.py`, `schema.py`), and models, migrations and tests where they are. Next uses route groups for public and protected pages, `app/api/auth/` for Route Handlers and `lib/server/` for session and upstream helpers. | `design.md` §3. |
 
 ## Changes to review
@@ -243,6 +245,7 @@ New or refined items since the first draft that go beyond the decisions above. E
 | C7 | Password hashing lives in `auth/service.py`, not a fourth file. `app/(public)` replaces `app/(auth)`. Auth UI lives in `components/auth/`, shared UI in `components/shared/`. | Matches the folder instructions. |
 | C8 | Root T16 gets a clause for the shared limiter store and trusted client address handling. | Tracks the P2 production items where the release work is planned. |
 | C10 | AUTH-R13 is new, and it sets 44 px touch targets (stricter than WCAG 2.2 AA's 24 px) and 16 px inputs. A regex guard test scans for mobile-hostile patterns, and a manual width-by-route check records the rest. | You asked for mobile to hold in every feature. jsdom cannot measure layout, and Playwright stays in T15 (P6). The guard test keeps later slices from regressing in the meantime. |
+| C11 | The password hint is visible help text under the register password field, linked with `aria-describedby`. Its wording lists the same rules as the messages. The composition rule is ASCII only, and a space is not special. The shared case file uses `Horse-Battery-42` as its valid base password. | The owner asked for the rule to be stated in the frontend. Visible text is the only way a user learns the rule before submitting. An ASCII-only rule makes the Python and TypeScript character sets identical, so no font or keyboard decides what counts. |
 | C9 | A shared boundary-case file, `specs/fixtures/auth-field-cases.json`, is read by the Flask schema tests and the `authRules.ts` tests. | Keeps the two implementations of the field rules from drifting. Placing it under `specs/` marks it as part of the field contract. |
 
 ## Assumptions
@@ -251,7 +254,7 @@ Routine choices taken from project references and steering. Each can be reversed
 
 | ID | Assumption | Why |
 |---|---|---|
-| A1 | Password length counts Unicode code points (Python `len`). | `API.md` says 12–128 and "preserve password bytes as entered" without defining the unit. |
+| A1 | Password length counts Unicode code points (Python `len`). | `API.md` says 8–128 after revision 3 and "preserve password bytes as entered" without defining the unit. |
 | A2 | Name keeps internal whitespace. Only the ends are trimmed. Email is lowercased in full. | `API.md` says trim, and D2 says trim and lowercase. The database `CHECK` requires `lower(btrim(email))`. |
 | A3 | Password hashing uses `argon2-cffi` defaults (Argon2id, RFC 9106 low-memory profile). No tuning. | D2 asks for Argon2id through a maintained library without parameters. The parameters used are recorded in evidence. |
 | A4 | Access token lifetime is the constant 3600 seconds. There is no refresh. | D2 sets 60 minutes. |
@@ -272,7 +275,7 @@ Routine choices taken from project references and steering. Each can be reversed
 No unresolved decision blocks design or tasks. Seven items stay open and are tracked, not assumed away:
 
 1. **Client address behind proxies (tracked, T16).** Browser traffic reaches Flask from Vercel's servers through Render's proxy. The per-address limits therefore act as a ceiling per egress address, and the per-email login limit is the real brute-force control. Trusted-proxy handling is a production-release decision.
-2. **Limiter state per worker (tracked, T16).** In-memory counters reset on restart and are not shared between Gunicorn workers. A shared store is chosen before production traffic.
+2. **Limiter state per worker (tracked, T16).** In-memory counters reset on restart and are not shared between Gunicorn workers. Local Compose runs one worker, so the limits are exact there. The image default of two workers would admit up to ten attempts (F-AUTH-11). Shared storage is needed before more workers run in production.
 3. **Revoked-token cleanup.** No job deletes expired rows. Add one when the table size matters.
 4. **Other framework 4xx responses** (for example 406, 414) keep Flask defaults. Only the cases in AUTH-AC7.1, 7.5 and 429 are converted.
 5. **Back-navigation behavior varies by browser.** `no-store` and the `pageshow` re-check are the design. Task 2.11 records what a real browser did. Playwright proof is T15.

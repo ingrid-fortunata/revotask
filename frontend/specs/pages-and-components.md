@@ -4,7 +4,7 @@ Next.js App Router pages render on the server and compose client components for 
 
 | Route or surface | Component boundary | API and expected behavior |
 |---|---|---|
-| `/register` | Server page and client `RegisterForm` | E02. Exactly `name`, `email` and `password`, validated with the same rules as the API. Controlled inputs, pending submit, inline validation, then redirect to login with the user still signed out. |
+| `/register` | Server page and client `RegisterForm` | E02. Exactly `name`, `email` and `password`, validated with the same rules as the API. The password field shows the rules as help text linked to the input. Controlled inputs, pending submit, inline validation, then redirect to login with the user still signed out. |
 | `/login` | Server page and client `LoginForm` | E03. Exactly `email` and `password`. Session cookie set by the Route Handler. Invalid credentials stay on the form. Successful login opens the dashboard, or a safe same-origin `next` path. |
 | `/` | Protected Server Component with client create dialog | E05–E06. Show accessible board summaries or an empty state. |
 | `/boards/[id]` | Protected Server Component with `KanbanBoard` client island | E07–E20, E22 and E29 as applicable. Show ordered columns and cards, member controls, board search, analytics and a touch/keyboard Move action. |
