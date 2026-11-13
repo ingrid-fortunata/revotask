@@ -39,21 +39,35 @@ def app(test_db_url):
     )
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def schema_at_head(app):
     """Build the schema through the same code path as the CLI (FND-AC8.2).
 
     Creates the schema when missing, then applies Alembic revisions to head. The test
-    suite never calls create_all.
+    suite never calls create_all. The check runs for every test (one query when the schema
+    is already at head), because the migration tests drop and rebuild the schema and a
+    once-per-session setup would leave later tests without it.
     """
+    from alembic.script import ScriptDirectory
     from flask_migrate import upgrade
+    from sqlalchemy import text
+    from sqlalchemy.exc import ProgrammingError
 
     from app.cli import ensure_schema
     from app.extensions import db
 
+    head = ScriptDirectory(str(BACKEND_DIR / "migrations")).get_current_head()
     with app.app_context():
-        ensure_schema(db.engine)
-        upgrade(directory=str(BACKEND_DIR / "migrations"))
+        try:
+            with db.engine.connect() as connection:
+                current = connection.execute(
+                    text("SELECT version_num FROM revotask.alembic_version")
+                ).scalar()
+        except ProgrammingError:
+            current = None
+        if current != head:
+            ensure_schema(db.engine)
+            upgrade(directory=str(BACKEND_DIR / "migrations"))
 
 
 @pytest.fixture
