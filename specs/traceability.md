@@ -15,7 +15,7 @@ Every row is planned. E codes refer to the [API](../docs/API.md), T codes to [ta
 | AC08.1, AC08.2         | D2, D5 · E23–E26 · Card detail modal                                                                                                                                                                            | T10                                       | V06, V10           |
 | AC09.1                 | D5–D6 · E22 · Board search (`.kiro/specs/my-tasks-search`)                                                                                                                                                                                      | T11                                       | V07, V11           |
 | AC10.1, AC10.2         | D3, D6 · E17–E18, E24, E27–E28 · Notification bell (`.kiro/specs/notifications`)                                                                                                                                                              | T13                                       | V08, V11           |
-| AC11.1                 | D3, D6 · E29 · Analytics panel                                                                                                                                                                                  | T14                                       | V08                |
+| AC11.1                 | D3, D6 · E29 · Analytics panel (`.kiro/specs/analytics`)                                                                                                                                                       | T14                                       | V08, V11           |
 | AC12.1                 | D2, D5 · E30–E31 · `/profile`                                                                                                                                                                                   | T03 (E30 read), T04 (shell consumer), T12 | V07                |
 | AC13.1                 | D5 · every page, dialog and control, and the Move control                                                                                                                                                       | T04, T06, T09–T14 (each UI task), T15     | V11                |
 | AC13.2                 | D1, D6 · E07                                                                                                                                                                                                    | T15, T16                                  | V12                |
@@ -44,7 +44,7 @@ Use this map to verify that every route and page has a task. The acceptance matr
 | E30 consumption by the protected shell   | T04                 |
 | E31 profile update and profile UI        | T12 (done locally)  |
 | E27–E28 notifications and the bell       | T13 (done locally)  |
-| E29 analytics                            | T14                 |
+| E29 analytics and the board panel        | T14                 |
 | /register and /login                     | T04                 |
 | / and /boards/[id]                       | T06, T09            |
 | /my-tasks                                | T11                 |
@@ -132,6 +132,18 @@ Local status only. The planned verification rows above stay the reference. Evide
 | V07 | E21 and E22 pytest and the UI tests; E31 pytest (99 tests) and the profile UI tests | Passed locally (T11, T12) |
 | V11 | Mobile and accessibility of the new screens, search debounce | Passed locally in emulation. Playwright part pending (T15) |
 | NFR 1 (reference) | E22 and E21 on 100 cards | Recorded locally: E22 p95 4.8 ms, E21 p95 5.8 ms (direct to Flask). Not a T11 gate. Deployed timing is T16 |
+
+## Analytics evidence status (T14)
+
+Local status only. The planned verification rows above stay the reference. Evidence: `evidence/analytics-T14.md`. Local checks prove local behavior: no real phone, and the Playwright journey is pending (T15).
+
+| AC | Analytics contribution | Status |
+| --- | --- | --- |
+| AC11.1 | E29 and the Analytics panel: active cards per active column (left join, 0 for an empty column), distinct `entered_done` cards in the UTC week, activity by actor over the four counted kinds (former members kept, current name), week boundaries, query rule, read-only, panel states and failure isolation | Passed locally: backend tests (64, four mutation checks), hook, panel and `BoardShell` tests, and a 128-check Chrome run |
+| AC13.1 | The Analytics button in the board header and its dialog at 320, 375, 768 and 1280 px (44 px controls, no horizontal scroll, long names wrap). The shared header brand link is 28 px wide below 400 px | Partial locally in emulation: the brand link fails FE-S5 at 320 and 375 px (open). No real phone |
+| V08 | E29 pytest (UTC week, distinct completions, removed member, join inflation, access) and the frontend tests | Passed locally (T14) |
+| V11 | The panel's mobile and keyboard checks, the version-rise re-read and Refresh | Passed locally in emulation. Playwright part pending (T15) |
+| NFR 1 (reference) | E29 on 100 cards with a week of events | Recorded locally: p95 6.2 ms, max 7.4 ms (direct to Flask). Not a T14 gate. Deployed timing is T16 |
 
 ## Boards-membership evidence status (T05–T06)
 
