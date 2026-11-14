@@ -46,16 +46,21 @@ const DECLARED_BOARD_REQUESTS: ReadonlyArray<{
   { method: "POST", pattern: new RegExp(`^/api/cards/${UUID}/comments$`) },
   { method: "PATCH", pattern: new RegExp(`^/api/comments/${UUID}$`) },
   { method: "DELETE", pattern: new RegExp(`^/api/comments/${UUID}$`) },
+  // Mark a notification read (E28). It sends no body.
+  { method: "PATCH", pattern: new RegExp(`^/api/notifications/${UUID}/read$`) },
 ];
 
 // The only browser reads: the board (E07) and its members (E10) for refetches (DD11), a
-// card's comments (E23) when the detail modal opens, and the board search (E22).
+// card's comments (E23) when the detail modal opens, the board search (E22) and the
+// notification page (E27).
 const DECLARED_GETS: readonly RegExp[] = [
   new RegExp(`^/api/boards/${UUID}$`),
   new RegExp(`^/api/boards/${UUID}/members$`),
   new RegExp(`^/api/cards/${UUID}/comments$`),
   // The board search (E22): exactly one `q`, already percent-encoded by `cardSearchPath`.
   new RegExp(`^/api/boards/${UUID}/cards/search\\?q=[^&#]*$`),
+  // The notification page (E27): exactly `page` and `per_page`, both written by `notificationsPath`.
+  /^\/api\/notifications\?page=[1-9][0-9]*&per_page=[1-9][0-9]*$/,
 ];
 
 /** True only for a declared GET path. */

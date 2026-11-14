@@ -249,6 +249,32 @@ describe("flaskRequest UUID-only path substitution", () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
+  it("fills :notificationId with a UUID and rejects any other value before a request", async () => {
+    fetchMock.mockResolvedValue(reply(200, "{}"));
+    await flaskRequest({
+      route: "notificationRead",
+      method: "PATCH",
+      params: { notificationId: MEMBER_ID },
+      token: "tok",
+      requestId: "u-n1",
+    });
+    expect(String(fetchMock.mock.calls[0][0])).toBe(
+      `http://127.0.0.1:5001/api/notifications/${MEMBER_ID}/read`,
+    );
+    fetchMock.mockClear();
+    for (const value of ["..", "a/b", "abc?x=1", "", `${MEMBER_ID}/extra`]) {
+      await expect(
+        flaskRequest({
+          route: "notificationRead",
+          method: "PATCH",
+          params: { notificationId: value },
+          requestId: "u-n2",
+        }),
+      ).rejects.toThrow(/notificationId must be a UUID/);
+    }
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
   it("rejects a missing boardId", async () => {
     await expect(
       flaskRequest({ route: "board", method: "PATCH", requestId: "u-4" }),

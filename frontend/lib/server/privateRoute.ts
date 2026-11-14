@@ -82,7 +82,7 @@ export async function handlePrivateWrite(
     return errorResponse(
       400,
       "VALIDATION_ERROR",
-      "The board ID is not valid.",
+      "The ID is not valid.",
       requestId,
     );
   }
@@ -147,7 +147,7 @@ export async function handlePrivateRead(
     return errorResponse(
       400,
       "VALIDATION_ERROR",
-      "The board ID is not valid.",
+      "The ID is not valid.",
       requestId,
     );
   }

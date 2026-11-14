@@ -74,3 +74,27 @@ export type ErrorEnvelope = {
     fields?: Record<string, string>;
   };
 };
+
+// Notification shapes from docs/API.md (E27 item and page, E28 item). The display fields are the
+// current names resolved by Flask for visible rows only. Named `NotificationItem` so it does not
+// shadow the browser's `Notification` global.
+export type NotificationKind = "assigned" | "commented";
+export type NotificationItem = {
+  id: string;
+  kind: NotificationKind;
+  board_id: string;
+  card_id: string;
+  actor_id: string;
+  actor_name: string;
+  board_name: string;
+  card_title: string;
+  created_at: string;
+  read_at: string | null;
+};
+export type NotificationPage = {
+  items: NotificationItem[];
+  page: number;
+  per_page: number;
+  total: number;
+  unread_count: number;
+};

@@ -4,6 +4,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { LogoutButton } from "@/components/auth/LogoutButton";
+import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { Avatar } from "@/components/shared/Avatar";
 import { BrandMark } from "@/components/shared/BrandMark";
 import { useAuth } from "@/hooks/useAuth";
@@ -29,7 +30,11 @@ function NavLink({ href, current, label, children }: { href: string; current: bo
 // 1024 px up. The page content sits at lg:pl-64 in the protected layout. Mobile first: the row wraps,
 // the user's name truncates, and every control keeps a 44 px target (FE-S4, FE-S5, FE-D2). The Boards
 // and My tasks links show at every width: a second row of the top bar below 1024 px (S10). The account
-// block (Avatar and name) is a link to /profile at every width (T12, P5).
+// block (Avatar and name) is a link to /profile at every width (T12, P5). The notification bell
+// sits at the right end of the brand block at every width (T13, DD14). The block sizes to its
+// content (`flex-auto`), so the row wraps before anything overlaps. Below 400 px the RevoTask
+// wordmark is visually hidden (it stays the link's accessible name) and the name is shorter, so the
+// logo, bell, Profile and Sign out share one row at 320 px.
 export function AppHeader() {
   const { user } = useAuth();
   const pathname = usePathname() ?? "";
@@ -38,10 +43,11 @@ export function AppHeader() {
   const onProfile = pathname === "/profile" || pathname.startsWith("/profile/");
   return (
     <header className="sticky top-0 z-20 flex flex-wrap items-center gap-x-3 gap-y-1 bg-neutral px-4 py-2 text-neutral-content lg:fixed lg:inset-y-0 lg:left-0 lg:w-64 lg:flex-col lg:flex-nowrap lg:items-stretch lg:gap-6 lg:px-3 lg:py-5">
-      <div className="min-w-0 flex-1 lg:flex-none lg:px-3">
+      <div className="flex min-w-0 flex-auto items-center justify-between gap-2 lg:flex-none lg:px-3">
         <Link href="/" className="inline-flex min-h-11 items-center text-white">
-          <BrandMark />
+          <BrandMark className="max-[400px]:[&>span:last-child]:sr-only" />
         </Link>
+        <NotificationBell />
       </div>
       <nav aria-label="Main" className="order-last basis-full lg:order-none lg:basis-auto">
         <ul className="flex gap-1 lg:flex-col">
@@ -76,7 +82,7 @@ export function AppHeader() {
           <span className="hidden sm:inline-flex">
             <Avatar name={user.name} tone="dark" />
           </span>
-          <span className="min-w-0 max-w-[28vw] truncate text-sm font-medium text-white sm:max-w-[50vw] lg:max-w-none" title={user.name}>
+          <span className="min-w-0 max-w-[18vw] truncate text-sm font-medium text-white sm:max-w-[50vw] lg:max-w-none" title={user.name}>
             {user.name}
           </span>
         </Link>

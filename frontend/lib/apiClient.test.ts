@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { apiPost, apiRequest, isDeclaredApiRequest } from "./apiClient";
+import { apiGet, apiPost, apiRequest, isDeclaredApiGet, isDeclaredApiRequest } from "./apiClient";
 import { ApiError } from "./errors";
 
 const fetchMock = vi.fn();
@@ -311,5 +311,64 @@ describe("apiRequest requests", () => {
     await expect(apiRequest("DELETE", `/api/boards/${BOARD_ID}`)).rejects.toBe(
       abort,
     );
+  });
+});
+
+// The notification pairs (T13; Requirement 10.3): one GET for the page and one PATCH to mark read.
+describe("notification allowlist", () => {
+  const NOTE_ID = "33333333-3333-4333-8333-333333333333";
+
+  it.each([
+    "/api/notifications?page=1&per_page=20",
+    "/api/notifications?page=12&per_page=20",
+  ])("declares the GET %s", (path) => {
+    expect(isDeclaredApiGet(path)).toBe(true);
+  });
+
+  it.each([
+    "/api/notifications",
+    "/api/notifications?page=0&per_page=20",
+    "/api/notifications?page=01&per_page=20",
+    "/api/notifications?page=1",
+    "/api/notifications?per_page=20&page=1",
+    "/api/notifications?page=1&per_page=20&x=1",
+    "/api/notifications?page=-1&per_page=20",
+    "/api/notifications/?page=1&per_page=20",
+    `/api/notifications/${NOTE_ID}/read`,
+    "https://evil.example/api/notifications?page=1&per_page=20",
+  ])("refuses the GET %s", (path) => {
+    expect(isDeclaredApiGet(path)).toBe(false);
+  });
+
+  it("declares the PATCH to mark read and no other notification pair", () => {
+    expect(isDeclaredApiRequest("PATCH", `/api/notifications/${NOTE_ID}/read`)).toBe(true);
+    for (const [method, path] of [
+      ["GET", `/api/notifications/${NOTE_ID}/read`],
+      ["POST", `/api/notifications/${NOTE_ID}/read`],
+      ["DELETE", `/api/notifications/${NOTE_ID}/read`],
+      ["PATCH", `/api/notifications/${NOTE_ID}`],
+      ["PATCH", "/api/notifications/read"],
+      ["PATCH", "/api/notifications"],
+      ["PATCH", "/api/notifications/not-a-uuid/read"],
+      ["PATCH", `/api/notifications/${NOTE_ID}/read?x=1`],
+    ] as const) {
+      expect(isDeclaredApiRequest(method as never, path)).toBe(false);
+    }
+  });
+
+  it("throws before fetch for a non-UUID segment and for an undeclared GET", async () => {
+    await expect(apiRequest("PATCH", "/api/notifications/not-a-uuid/read")).rejects.toThrow(/not declared/);
+    await expect(apiGet("/api/notifications")).rejects.toThrow(/not declared/);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("sends the PATCH with no body and no content type", async () => {
+    fetchMock.mockResolvedValue(json(200, { data: { id: NOTE_ID } }));
+    await expect(apiRequest("PATCH", `/api/notifications/${NOTE_ID}/read`)).resolves.toEqual({ id: NOTE_ID });
+    const [path, init] = fetchMock.mock.calls[0];
+    expect(path).toBe(`/api/notifications/${NOTE_ID}/read`);
+    expect(init.method).toBe("PATCH");
+    expect(init.body).toBeUndefined();
+    expect(init.headers["Content-Type"]).toBeUndefined();
   });
 });

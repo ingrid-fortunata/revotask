@@ -6,7 +6,12 @@ import { AppHeader } from "./AppHeader";
 
 const path = vi.hoisted(() => ({ current: "/" }));
 vi.mock("next/navigation", () => ({ usePathname: () => path.current }));
-vi.mock("@/lib/apiClient", () => ({ apiPost: vi.fn() }));
+// The bell reads E27 on mount. A request that never settles keeps these tests about the header.
+vi.mock("@/lib/apiClient", () => ({
+  apiPost: vi.fn(),
+  apiGet: vi.fn(() => new Promise(() => {})),
+  apiRequest: vi.fn(),
+}));
 vi.mock("@/lib/navigation", () => ({ hardRedirect: vi.fn() }));
 vi.mock("@/lib/toast", () => ({ notifyError: vi.fn(), notifySuccess: vi.fn() }));
 
@@ -176,5 +181,31 @@ describe("AppHeader account link (T12, P5)", () => {
     act(() => setUser({ id: "1", name: "Grace Hopper", email: "ada@example.com" }));
     expect(screen.getByRole("link", { name: "Profile, Grace Hopper" })).toBeVisible();
     expect(screen.queryByRole("link", { name: "Profile, Ada" })).toBeNull();
+  });
+});
+
+describe("AppHeader notification bell (T13, DD14)", () => {
+  beforeEach(() => {
+    path.current = "/";
+  });
+
+  it("shows the bell with the brand, beside the account controls", () => {
+    renderHeader("Ada");
+    const header = screen.getByRole("banner");
+    const bell = within(header).getByRole("button", { name: "Notifications" });
+    const brand = within(header).getByRole("link", { name: /RevoTask/ });
+    expect(brand.parentElement).toBe(bell.parentElement); // the brand block holds both
+    expect(bell).toHaveClass("min-h-11", "min-w-11");
+  });
+
+  it("keeps all five controls in one header, each reachable", () => {
+    renderHeader("Ada");
+    const header = screen.getByRole("banner");
+    expect(within(header).getByRole("button", { name: "Notifications" })).toBeVisible();
+    expect(within(header).getByRole("link", { name: "Profile, Ada" })).toBeVisible();
+    expect(within(header).getByRole("link", { name: "Boards" })).toBeVisible();
+    expect(within(header).getByRole("link", { name: "My tasks" })).toBeVisible();
+    expect(within(header).getByRole("button", { name: "Sign out" })).toBeVisible();
+    expect(header).toHaveClass("flex-wrap", "lg:fixed", "lg:w-64");
   });
 });

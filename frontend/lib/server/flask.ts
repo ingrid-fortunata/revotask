@@ -5,7 +5,7 @@ import { getServerEnv } from "./env";
 
 // The only place the access token leaves the Next.js process, and it goes to one fixed origin
 // (D1, D2). Callers pick a route key from FLASK_PATHS, never a free string or URL.
-// Path parameters (`:boardId`, `:userId`, `:columnId`, `:cardId`, `:commentId`) are filled only with UUIDs (DD13, Property 14).
+// Path parameters (`:boardId`, `:userId`, `:columnId`, `:cardId`, `:commentId`, `:notificationId`) are filled only with UUIDs (DD13, Property 14).
 export const FLASK_PATHS = {
   register: "/api/auth/register",
   login: "/api/auth/login",
@@ -25,11 +25,19 @@ export const FLASK_PATHS = {
   comment: "/api/comments/:commentId",
   myTasks: "/api/cards",
   boardCardSearch: "/api/boards/:boardId/cards/search",
+  notifications: "/api/notifications",
+  notificationRead: "/api/notifications/:notificationId/read",
 } as const;
 
 export type FlaskRoute = keyof typeof FLASK_PATHS;
 
-export type FlaskParamName = "boardId" | "userId" | "columnId" | "cardId" | "commentId";
+export type FlaskParamName =
+  | "boardId"
+  | "userId"
+  | "columnId"
+  | "cardId"
+  | "commentId"
+  | "notificationId";
 export type FlaskParams = Partial<Record<FlaskParamName, string>>;
 
 const FLASK_PARAM_NAMES: readonly FlaskParamName[] = [
@@ -38,6 +46,7 @@ const FLASK_PARAM_NAMES: readonly FlaskParamName[] = [
   "columnId",
   "cardId",
   "commentId",
+  "notificationId",
 ];
 
 const UUID_PATTERN =

@@ -5,7 +5,12 @@ import ProtectedLayout from "./layout";
 
 vi.mock("@/lib/server/session", () => ({ getCurrentUser: vi.fn() }));
 vi.mock("next/navigation", () => ({ useRouter: () => ({ refresh: vi.fn() }), usePathname: () => "/" }));
-vi.mock("@/lib/apiClient", () => ({ apiPost: vi.fn() }));
+// The bell reads E27 on mount. A request that never settles keeps these tests about the header.
+vi.mock("@/lib/apiClient", () => ({
+  apiPost: vi.fn(),
+  apiGet: vi.fn(() => new Promise(() => {})),
+  apiRequest: vi.fn(),
+}));
 vi.mock("@/lib/navigation", () => ({ hardRedirect: vi.fn() }));
 vi.mock("@/lib/toast", () => ({ notifyError: vi.fn(), notifySuccess: vi.fn() }));
 
