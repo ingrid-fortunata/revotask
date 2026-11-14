@@ -59,15 +59,15 @@ See [pages and components](../frontend/specs/pages-and-components.md), [API inte
 | `/` | Protected Server Component lists boards. A client dialog creates a board. |
 | `/boards/[id]` | Protected Server Component fetches initial board data. `KanbanBoard` is a client island for interaction. Use native desktop drag with stable drop zones and a visible Move action for touch and keyboard. Both dispatch one move function. |
 | Card detail | Client `CardDetailModal` composes `BaseModal`, the card edit form and a props-driven `CommentList`. It opens from the card title and replaces `CardEditDialog`. The modal owns form and comment state, loads E23 through a same-origin `GET` handler when it opens and uses local pending state, not the board gate. |
-| `/my-tasks` | Protected Server Component groups assignment results by board and links back to board detail. |
+| `/my-tasks` | Protected Server Component groups assignment results by board in API order and links the group heading and each row back to board detail (no card deep link). |
 | `/profile` | Protected page with a controlled client form seeded by the public profile. A save updates the profile UI and safe user context. |
-| Board tools and header | Admin member controls, 300 ms debounced card search with abort or latest-request guard, analytics panel, and notification polling every 30 seconds with cleanup. Marking read immediately refreshes list and count. |
+| Board tools and header | Admin member controls, 300 ms debounced card search with abort or latest-request guard (independent of the Kanban gate, results resolved against the live board state), analytics panel, and notification polling every 30 seconds with cleanup. Marking read immediately refreshes list and count. |
 
 Share `BaseButton`, `BaseBadge` and `BaseModal` using daisyUI class names. Use semantic labels and keyboard focus handling. For component props, code imported into a client graph becomes part of that graph even when the file has no client directive. See [frontend guidelines](../guidelines/frontend.md).
 
 ## D6. Reporting, error handling and operations
 
-- Search is board-scoped, case-insensitive, by card title. Escape wildcard literals and cap to 20 results. My Tasks uses active membership and group headers sorted by board name then ID.
+- Search is board-scoped, case-insensitive, by card title. Escape wildcard literals and cap to 20 results. My Tasks uses active membership, includes Done cards, and is sorted by case-insensitive board name, board ID, column order, card order and card ID, so groups appear in that order. E21 and E22 are read-only (no lock, event or version change) and reject a missing, repeated or unknown query parameter with 400. The shell shows the Boards and My tasks links at every width.
 - Notify the assignee for a new assignment by another user, or a new comment from another user on an assigned card. Create notifications in the same DB transaction as the triggering change. Do not generate a notification when re-saving the same assignee.
 - Analytics counts current active cards per active column using a left join. Use UTC Monday-to-Monday for weekly reporting. Count distinct card IDs with `entered_done` in the week. Include historical completion events even if a card is later removed. For activity, count all recorded board events in the week grouped by actor. Aggregate separately before composing the response to prevent inflated counts.
 - Standardize errors via the [API contract](../docs/API.md). Global Flask handlers log request ID, route, error code and safe actor ID where available. The Next client maps typed errors to form feedback, login redirects, conflict refresh, or toast. Use a visible error state if the error affects the whole page.

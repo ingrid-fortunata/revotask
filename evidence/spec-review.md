@@ -246,3 +246,135 @@ The handbook and `docs/TEST-PLAN.md` V06 said comment create returns 201/400/401
 ### Comments implementation record (2026-11-13)
 
 All native groups of `.kiro/specs/comments/tasks.md` were implemented by Claude Code (`/revotask-feature implement comments T10`). The plan approval was the user's invocation of `implement comments T10` for all tasks. The decisions M1–M13 and the clarifications N1–N5 held without change. Deviations that touched the spec (no behavior or contract change) are in `specs/CHANGELOG.md`. The browser check found two real defects, F-CMT-1 (Escape on a nested confirmation closed the dialog behind it) and F-CMT-2 (focus after an add), both fixed with tests. Evidence: `evidence/comments-T10.md`. Root T10 is checked in `specs/tasks.md`. Open: Playwright V10, real-device checks (T15), deployment (T16).
+
+## My Tasks and search review record (T11)
+
+Review of `.kiro/specs/my-tasks-search/` (requirements.md, design.md). Requirements and design were produced by Claude Code (`/revotask-feature spec my-tasks-search T11`, 2026-11-13 and 2026-11-14). Spec review only: no source code, test, README or application changelog was changed and no test was run. Implementation checks and outcomes will go in `evidence/my-tasks-search-T11.md`. Root T11 stays unchecked. Prerequisite check: the kanban slice is verified (root T07 to T09 checked, `evidence/kanban-T07-T09.md`) and comments (T10) is done.
+
+| Phase | Status | Note |
+| --- | --- | --- |
+| Requirements | Approved 2026-11-14 | 8 requirements. Decisions S1–S11 approved with the clarifications below. |
+| Design | Approved 2026-11-14 with clarifications Q1–Q6 | `design.md`: DD1–DD12, 12 properties, work packages WP-B1 to WP-D, contract clarifications C18–C22. |
+| Tasks | Approved 2026-11-14 (user, in chat, by invoking `implement my-tasks-search` for all tasks) | `tasks.md`: groups 0 to 10, 34 sub-tasks, each with an acceptance check. Gates: backend checks before the frontend calls the API (B), full verification before the mobile record is final (C), root T11 last (D). |
+| Finalize | Done 2026-11-14 | `specs/tasks.md` T11 links `.kiro/specs/my-tasks-search/tasks.md`. The other shared documents were synchronized with the design (see below) and with the implementation (task 10). |
+| Implementation | Done 2026-11-14, local checks | See "My Tasks and search implementation record" below and `evidence/my-tasks-search-T11.md`. |
+
+### Decisions S1–S11
+
+| ID | Decision | Resolution | Where applied |
+| --- | --- | --- | --- |
+| S1 | E21 scope and order | All active tasks assigned to the caller on boards they can currently access, unpaginated. Sort by case-insensitive board name, board ID, column order, card order, card ID. The page keeps that order. | `requirements.md` 1.1–1.4, 4.1; `design.md` DD3, Service sketch; `docs/API.md` E21 |
+| S2 | Done cards | Include active cards in the Done column. Exclude soft-deleted cards and cards in soft-deleted columns. | `requirements.md` 1.2; `design.md` Property 1; `docs/API.md` E21 |
+| S3 | Query strictness | A missing, repeated, invalid or unknown parameter returns `400 VALIDATION_ERROR` (`fields.assignee` or `fields.q` for known ones, the standard message for an unknown one). `q` trimmed, 1–100. The Next.js E22 handler preserves duplicate and unknown parameters so Flask validates them. | `requirements.md` 1.7, 2.5, 8.1; `design.md` DD2, DD5, Query validation; `docs/API.md` query rule |
+| S4 | Search order and cap | Up to 20 in board order, card ID as tie-breaker. "Showing 20 results." at the cap. 100 cards is a performance measurement target. | `requirements.md` 2.3, 5.6, 8.9; `design.md` Service sketch, States, Browser checks |
+| S5 | Read-only | No board write lock, event, notification or `position_version` update. | `requirements.md` 3.3; `design.md` DD1, Property 5 |
+| S6 | Debounce | 300 ms. A blank query clears results at once. Superseded requests are aborted and a late response cannot overwrite current results. | `requirements.md` 5.2–5.4; `design.md` Hook, Properties 9, 10 |
+| S7 | Open from a result | The existing Card Detail Modal opens from the current card state. | `requirements.md` 5.7; `design.md` DD8, States and screens |
+| S8 | Search and the gate | Independent of the Kanban gate. Returned IDs are resolved against the live board state. Current title and column show. A gone card or one whose edited title no longer matches is omitted. Visibility derives from live state, so a rolled-back delete restores a result. A new match appears on the next search. | `requirements.md` 5.8–5.10; `design.md` DD7–DD9, Search state and the live board, Properties 6–8 |
+| S9 | My Tasks links | The task row and the group heading link to the board. No card deep link. | `requirements.md` 4.2, 4.5; `design.md` Frontend layout |
+| S10 | Mobile navigation | Boards and My tasks reachable at every width, in the wrapping AppHeader row below 1024 px. Verified at 375 px with 44 by 44 CSS px targets and no horizontal overflow. | `requirements.md` 6.1–6.3, 7.2; `design.md` DD12, AppHeader, Property 12; `guidelines/frontend.md` FE-D2 |
+| S11 | Reads | E21 from the Server Component through the server-only helper. E22 through a same-origin GET handler. Existing board access rules, including the generic 404 for a nonmember (C1). | `requirements.md` 3.2, 8.1, 8.2; `design.md` Next handlers and client allowlist |
+
+### Design synchronization (2026-11-14)
+
+Applied at the user's request while the task plan is still open: `specs/requirements.md` AC06.2 and AC09.1, `specs/design.md` D5 and D6, `docs/API.md` (E21, E22 and the query rule), `backend/specs/api-contract.md`, `frontend/specs/api-integration.md`, `frontend/specs/pages-and-components.md`, `guidelines/frontend.md` FE-D2, `docs/TEST-PLAN.md` V07 and V11, `specs/traceability.md` and `specs/CHANGELOG.md`. Root `specs/tasks.md`, the README and the application changelogs are unchanged. Spec review only: no source code or test was changed and no test was run.
+
+### Design review clarifications Q1–Q6 (2026-11-14)
+
+The user approved the design with these decisions. Applied to `design.md` ("Review Items and Decisions"), `requirements.md` (5.6, 6.2, 8.6) and `tasks.md`. Spec review only: no source code or test was changed and no test was run.
+
+| ID | Decision | Resolution | Where applied |
+| --- | --- | --- | --- |
+| Q1 | Visible result count | At 20 returned results the line shows the visible count ("Showing 19 results." with one hidden). All hidden shows the empty state and no line. | `design.md` States and screens; `requirements.md` 5.6; `tasks.md` 5.1, 5.2 |
+| Q2 | Unchanged titles | Trust the server match when the live title equals the title E22 returned. Re-test only a changed title. Show the current title and column. | `design.md` Search state and the live board; `tasks.md` 3.1, 5.2 |
+| Q3 | Loading | Clear the held results when the normalized query changes. "Searching…" for the debounce and the request of a valid query. A blank query clears results and loading at once. Debounce, cancellation and the latest-response guard stay. | `design.md` Hook; `tasks.md` 4.1, 4.2 |
+| Q4 | NUL in `q` | 400 `fields.q` for a decoded NUL. Verified in Flask and through the same-origin GET handler. | `design.md` Query validation, test files, browser checks; `requirements.md` 8.6; `tasks.md` 1.1, 1.4, 2.1, 3.2 |
+| Q5 | Sort order | S1 order with the card ID last. No column ID tie-breaker. | `design.md`; `tasks.md` 1.3, 2.2 |
+| Q6 | Sticky mobile header | Wrapping nav row approved. At 320 and 375 px both links reachable, each at least 44 by 44 CSS px, no horizontal overflow and no content overlap. | `design.md` Browser checks; `requirements.md` 6.2; `tasks.md` 7.1, 8.1 |
+
+### My Tasks and search implementation record (2026-11-14)
+
+All native groups of `.kiro/specs/my-tasks-search/tasks.md` were implemented by Claude Code (`/revotask-feature implement my-tasks-search`, all tasks). The plan approval was the user's invocation. The decisions S1–S11 and the clarifications Q1–Q6 held without change. Deviations that touched the spec (no behavior or contract change) are in `specs/CHANGELOG.md`: the search live region is `aria-live` without `role="status"`, `FormField` gained the `search` type and `maxLength`, and `KanbanBoard` takes a `boardId` prop. Checks: backend 1808 passed and 1 skipped, frontend 1733 passed, `next build` succeeds, a 359-check Chrome run (device emulation) passed with 0 failed, E22 and E21 timed on 100 cards. Root T11 is checked in `specs/tasks.md`. Open: Playwright (V10), real-device checks (T15) and deployment (T16). Evidence: `evidence/my-tasks-search-T11.md`.
+
+## Profile review record (T12)
+
+Review of `.kiro/specs/profile/`. Requirements were drafted by Claude Code (`/revotask-feature spec profile T12`, 2026-11-14). Spec review only: no source code, test, README, root spec or changelog was changed and no test was run. Implementation checks and outcomes will go in `evidence/profile-T12.md`. Root T12 stays unchecked. Prerequisite check: authentication is verified (root T03 and T04 checked, `evidence/authentication-T03-T04.md`). The working tree holds uncommitted T11 changes in shared files (`AppHeader.tsx`, `flask.ts`, `privateRoute.ts`, `apiClient.ts`, `types.ts`); the profile slice must build on them.
+
+| Phase | Status | Note |
+| --- | --- | --- |
+| Requirements | Approved 2026-11-14 with clarifications | 8 requirements. Decisions P1–P11 approved (see below). `requirements.md` updated with the clarifications. |
+| Design | Approved 2026-11-14 (user, in chat) | `design.md`: DD1–DD9, 14 properties, contract clarifications C23–C27, review items R1–R5. Approved without changes. |
+| Tasks | Approved 2026-11-14 (user, by invoking `implement profile T12` for all tasks) | `tasks.md`: groups 0 to 10, 34 sub-tasks, each with an acceptance check. Gates: backend checks before the frontend calls E31 (B), full verification before the mobile record is final (C), root T12 last (D). |
+| Finalize | Done 2026-11-14 | `specs/tasks.md` T12 links `.kiro/specs/profile/tasks.md`. The shared documents were synchronized with the design and later with the implementation. |
+| Implementation | Done 2026-11-14, local checks | See "Profile implementation record" below and `evidence/profile-T12.md`. |
+
+### Decisions P1–P11 (approved 2026-11-14)
+
+| ID | Decision | Resolution | Where applied |
+| --- | --- | --- | --- |
+| P1 | E31 body | A JSON object with `name`, `email` or both. An empty object, a non-object body and unknown fields are `400 VALIDATION_ERROR`. | `requirements.md` 1.1, 2.1, 2.2; `design.md` DD2; `docs/API.md` E31 (C23) |
+| P2 | Unchanged values | Compare after normalization. All unchanged: 200, current user, `updated_at` kept. A case-only change of one's own email is a no-op. | `requirements.md` 1.4, 1.5, 2.6; `design.md` DD1; C24 |
+| P3 | Duplicate email | `uq_users_email` decides under concurrency. 23505 on it is `409 EMAIL_ALREADY_EXISTS`, the whole update rolls back, the error is inline under Email. A duplicate email with a name change leaves the name intact. | `requirements.md` 1.6, 2.5, 5.5, 8.5; `design.md` DD4; C25 |
+| P4 | Browser path | Existing same-origin write helper with its Origin and authentication checks. The page reads E30 through the existing server-only helper. Field rules shared between Next.js and Flask through one fixture. | `requirements.md` 4.1, 8.1–8.3; `design.md` DD3, Next handler |
+| P5 | Entry point | The AppHeader account block links to `/profile` at every width. FE-D2 is updated at implementation. Profile, Boards, My tasks and Log out are measured at 320 and 375 px (44 by 44 CSS px, visible focus, no overflow). | `requirements.md` 6.1–6.5, 7.6; `design.md` DD7, Mobile design |
+| P6 | After a save | Reseed the form and update the context from the response, `router.refresh()`, toast "Profile updated.", stay on `/profile`. Save disabled while pristine or pending. Values kept on failure. | `requirements.md` 4.5, 5.1–5.7; `design.md` DD5, DD6, ProfileForm |
+| P7 | Client body | Only fields that differ from the last saved values, with the `authRules.ts` rules. Flask authoritative. | `requirements.md` 4.6; `design.md` DD5, Rules |
+| P8 | Scope | Name and email only. `password` rejected. The page says password changes are unavailable. An email change is effective at once and leaves sessions valid (identity is the user ID). Tests: E30 with the old token, a fresh login with the new email, a failed login with the old. Reauthentication, new-address confirmation and old-address notice are tracked in T16 for public release. | `requirements.md` 2.2, 3.4–3.6, 3.9, 4.2–4.3; `design.md` DD8, `test_users_profile_session.py`; C27 |
+| P9 | Names elsewhere | Reads that resolve names from the user row show the new name on the next load. Open views refresh through their existing behavior. | `requirements.md` 1.9, 5.9; `test_users_profile_names.py` |
+| P10 | Concurrent edits | Last write wins per submitted field. An omitted field survives a concurrent update. Both fields are applied atomically. The service locks the user row (design review item R1). Tests: concurrent name-only and email-only updates, and a deterministic lock test. | `requirements.md` 1.2, 1.8; `design.md` DD1, `test_users_profile_concurrency.py`; C26 |
+| P11 | Abuse limits | The E31 rate limit is deferred to T16. The docs say the 409 is an additional account-enumeration path next to E02. | `requirements.md` 3.8; `docs/API.md` (C27); `specs/CHANGELOG.md` |
+
+### Design synchronization (2026-11-14)
+
+Applied at the user's request while the task plan is still open: `docs/API.md` (E31 row and the C23–C27 paragraph), `backend/specs/api-contract.md` (`users_bp`), `specs/requirements.md` (AC12.1), `docs/TEST-PLAN.md` (V07 and V11) and `specs/CHANGELOG.md`. Root `specs/tasks.md`, `specs/traceability.md`, `guidelines/frontend.md`, the README and the application changelogs are unchanged. Spec review only: no source code or test was changed and no test was run. Test data rule recorded in the design: database-writing tests use `TEST_DATABASE_URL` through `db_guard`, track every user they create and clean up automatically, with an untracked sentinel user surviving.
+
+### Profile finalize (2026-11-14)
+
+The user's invocation `/revotask-feature implement profile T12` (all tasks) was the plan approval, as for T10 and T11. Claude Code completed task 0.2: `specs/tasks.md` T12 links the native spec, and `specs/traceability.md` (AC12.1), `frontend/specs/pages-and-components.md`, `frontend/specs/api-integration.md`, `guidelines/frontend.md` FE-D2 and `specs/CHANGELOG.md` were synchronized. Tasks: Approved 2026-11-14 (user, by invoking `implement profile T12` for all tasks). Finalize: done. Implementation record follows when the work is verified (`evidence/profile-T12.md`).
+
+### Profile implementation record (2026-11-14)
+
+All native groups of `.kiro/specs/profile/tasks.md` were implemented by Claude Code (`/revotask-feature implement profile T12`, all tasks). The plan approval was the user's invocation. The decisions P1–P11 and the design held without change. Deviations that touched the spec (no behavior or contract change) are in `specs/CHANGELOG.md`: the names test covers E10, E21 and E23 (E22 returns no names), `ProfileForm` shows a form-level message for a 400 key that has no field, and `profileChanges` takes a plain `{name, email}` record. Checks: backend 1907 passed and 1 skipped, frontend 1845 passed, `next build` succeeds, a 376-check Chrome run (device emulation) passed with 0 failed, and removing the row lock makes the lock test fail. Root T12 is checked in `specs/tasks.md`. Open: Playwright (V10), real-device checks (T15), deployment (T16), and the T16 security items from P8 and P11 (reauthentication, new-address confirmation, old-address notice, E31 rate limit). Evidence: `evidence/profile-T12.md`.
+
+## Notifications review record (T13)
+
+Review of `.kiro/specs/notifications/`. Requirements were drafted by Claude Code (`/revotask-feature spec notifications T13`, 2026-11-14), revised with the user's clarifications the same day, the design and the task plan were drafted by Claude Code afterwards (design approved by the user on 2026-11-14). Spec review only: no source code, test, README, root `specs/tasks.md` or changelog was changed and no test was run. Root T13 stays unchecked. Prerequisite check: kanban and comments are verified (root T07 to T10 checked in `specs/tasks.md`, `evidence/kanban-T07-T09.md`, `evidence/comments-T10.md`). The `notifications` table, its indexes and the `User.notifications` relationship already exist, so no migration is planned. The working tree holds uncommitted T11 and T12 changes in shared files (`AppHeader.tsx`, `flask.ts`, `privateRoute.ts`, `apiClient.ts`, `types.ts`, `cards/service.py`); this slice must build on them.
+
+| Phase | Status | Note |
+| --- | --- | --- |
+| Requirements | Approved 2026-11-14 with clarifications (user, in chat) | 10 requirements. Decisions B1–B10 approved. `requirements.md` updated: the unassigned → A → B → A example, the 64-bit offset, the `id` tie-break, counts on an empty page, the E28 item and scoped conditional update, rejoin with the original read status, the exact count in the accessible name, link-follow and Mark as read failure behavior, the stale-response rule and the header controls checked at 320 and 375 px. |
+| Design | Approved 2026-11-14 (user, in chat) | `design.md`: DD1–DD15, 15 properties, contract clarifications C28–C33, review items R1–R8. Approved without changes. |
+| Tasks | Drafted 2026-11-14, awaiting approval | `tasks.md`: groups 0 to 8, 34 sub-tasks, each with an acceptance check. Gates: backend checks before the frontend calls E27 and E28 (B), full verification before the mobile record is final (C), root T13 last (D). |
+| Finalize | Not started | Root `specs/tasks.md` T13 link, traceability and the layer specs follow the task approval. |
+
+### Decisions B1–B10 (approved 2026-11-14)
+
+| ID | Decision | Resolution | Where applied |
+| --- | --- | --- | --- |
+| B1 | Notification shape | `actor_name`, `board_name` and `card_title` added to E27 and E28, current values resolved on read for visible rows only. Existing fields kept. | `requirements.md` 3.5, 5.6; `design.md` DD8, C33; `docs/API.md` |
+| B2 | Triggers | E17 and E18: the new assignee when the assignment changes and differs from the caller. E24: the current assignee when they differ from the author. Same transaction, so a rollback leaves none. Exclusions kept. | `requirements.md` 1.1–1.8, 2.1–2.7; `design.md` DD1, DD2, C28 |
+| B3 | Duplicates | One per qualifying event. `unassigned → A → B → A` by another user notifies A twice. | `requirements.md` 1.6, 2.3; `design.md` C29 |
+| B4 | Visibility | One filter for items, both counts and E28: active board, column, card and recipient membership. Rows kept, so a rejoin shows them with the original read status. | `requirements.md` 5.4, 5.5; `design.md` DD3, C30 |
+| B5 | E27 query | Defaults and strict validation kept. Both ranges stated. Offset in 64-bit arithmetic. Empty 200 past the end. `created_at` then `id` descending. | `requirements.md` 3.1, 3.2, 3.6; `design.md` DD4, C31 |
+| B6 | Counts | `total` and `unread_count` cover all visible rows, whatever the page, and stay on an empty page. | `requirements.md` 3.3, 3.7; `design.md` DD5 |
+| B7 | E28 | No body, 200 with the item, conditional update scoped to a visible notification of the caller, original `read_at` on a repeat, one generic 404, no lock, no mark-all. | `requirements.md` 4.1–4.7; `design.md` DD6, DD7, C32 |
+| B8 | UI | `BaseModal`, board links, "Newer" and "Older" at 20 per page. A link click marks read without blocking navigation, even if it fails. "Mark as read" shows retry feedback on failure and keeps the row Unread. Focus, Escape and 44 by 44 targets at 320 and 375 px, with the existing header controls. | `requirements.md` 7.1–7.9, 9.3, 9.6; `design.md` DD12–DD14 |
+| B9 | Polling | 30 seconds for the shown page, one E27 in flight, quiet failures, refresh after a successful E28, a response for an earlier page or requested before a completed E28 is dropped. | `requirements.md` 8.1–8.8; `design.md` DD9–DD11 |
+| B10 | Badge | Hidden at 0, `99+` above 99, exact count in the accessible name, FE-S3 updated. | `requirements.md` 6.2; `design.md` NotificationBell; `guidelines/frontend.md` FE-S3 |
+
+### Design synchronization (2026-11-14)
+
+Applied at the user's request while the design is under review: `docs/API.md` (E17, E18, E24, E27, E28, the `Notification` shape and the C28–C33 paragraph), `backend/specs/api-contract.md` (`notifications_bp`), `specs/requirements.md` (AC10.1, AC10.2), `docs/TEST-PLAN.md` (V08 and V11), `guidelines/frontend.md` (FE-S3) and `specs/CHANGELOG.md`. Root `specs/tasks.md`, `specs/traceability.md`, FE-D2, the layer specs, the README and the application changelogs are unchanged. Spec review only: no source code or test was changed and no test was run. Test data rule recorded in the design: database-writing tests use `TEST_DATABASE_URL` through `db_guard`, track every row they create and clean up automatically, with an untracked sentinel notification surviving.
+
+### Design review items R1–R8 (approved 2026-11-14)
+
+| ID | Item | Proposal |
+| --- | --- | --- |
+| R1 | `page` and `per_page` text | Digits only, no sign, no leading zero, at most 10 digits. |
+| R2 | Items and counts | Separate statements. A count may differ by one concurrent commit from the items. The next poll corrects it. |
+| R3 | Bell at 320 px | In the brand block. The existing `flex-wrap` is the fallback. The measured check decides. |
+| R4 | One E28 at a time | The other "Mark as read" buttons are disabled while one runs. |
+| R5 | Removal between the E28 update and select | Roll back and return 404. |
+| R6 | Model relationships | None. Keep plain foreign keys and explicit joins. |
+| R7 | Poll timer | One timer, restarted by every E27 request. |
+| R8 | Invalid-ID message | "The board ID is not valid." becomes "The ID is not valid." in `privateRoute.ts`. |
