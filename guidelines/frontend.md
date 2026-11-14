@@ -16,6 +16,8 @@
 | `AddCardForm.tsx` | Client. Handles input, submit and pending state. | Create a card in one column. |
 | `CommentList.tsx` | Server-compatible, props-only. Included in the client graph when composed by the modal. | Render supplied comments, or the empty text. |
 | `CardDetailModal.tsx` | Client. Owns the comment state through `useCardComments`. | Show one card's edit form and comments in a `BaseModal` (`wide`). |
+| `AnalyticsPanel.tsx` | Client. Owns `useBoardAnalytics`, the Refresh button, the loading and error states and one live region. Props: `boardId`, `version`, `onAccessLost`. | Show the board's weekly analytics below the Kanban region without disturbing the board. |
+| `AnalyticsFigures.tsx` | Server-compatible, props only. The week line, the completed figure and the two divided lists with decorative bars. | Render the analytics figures as text. |
 | `CardSearch.tsx` | Client. Owns the field and the search states through `useCardSearch`. Props: the live columns and `onOpenCard`. | Search a board by title and list the results from the live board state. |
 | `MyTasks.tsx` | Server-compatible, props-only. | Render the My tasks title, summary, groups and empty state. |
 | `TaskGroup.tsx` | Server-compatible, props-only. | Render one board's tasks with links to the board. |
