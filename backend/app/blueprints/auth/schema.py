@@ -18,8 +18,7 @@ from app.config import NAME_MAX, PASSWORD_MAX, PASSWORD_MIN
 from app.validation import (
     EMAIL_LENGTH,
     EMAIL_MAX,
-    NOT_TEXT,
-    REQUIRED,
+    FIELD_MESSAGES,
     NormalizedString,
     TrimmedString,
     email_format,
@@ -41,7 +40,7 @@ PASSWORD_UPPERCASE = re.compile(r"[A-Z]")
 PASSWORD_LOWERCASE = re.compile(r"[a-z]")
 PASSWORD_SPECIAL = re.compile(r"[\x21-\x2f\x3a-\x40\x5b-\x60\x7b-\x7e]")
 
-_MESSAGES = {"required": REQUIRED, "null": REQUIRED, "invalid": NOT_TEXT}
+_MESSAGES = FIELD_MESSAGES
 
 
 def _password_composition(value: str) -> None:

@@ -1,4 +1,6 @@
-"""AUTH-AC5.1–5.2, AUTH-AC4.2: the current-user read and replay of a revoked token."""
+"""AUTH-AC5.1–5.2, AUTH-AC4.2: the current-user read and replay of a revoked token.
+
+The profile update (E31, T12) is tested in test_users_profile*.py."""
 
 import uuid
 
@@ -55,13 +57,13 @@ def test_token_for_an_unknown_user_is_rejected(client, tracker):
     )
 
 
-def test_patch_is_not_implemented_until_t12_and_returns_405_with_allow(client, tracker):
+def test_unsupported_methods_return_405_with_allow(client, tracker):
     user = tracker.make_user()
-    response = client.patch(
+    response = client.put(
         "/api/users/me", json={"name": "x"}, headers=bearer(tracker.token_for(user.id))
     )
     assert response.status_code == 405
-    assert "GET" in response.headers["Allow"]
+    assert {"GET", "PATCH"} <= set(response.headers["Allow"].replace(" ", "").split(","))
     assert response.get_json()["error"]["code"] == "METHOD_NOT_ALLOWED"
 
 

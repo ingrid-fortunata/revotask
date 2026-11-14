@@ -29,6 +29,9 @@ NOT_TEXT = "Must be text."
 UNKNOWN = "Unknown field."
 EMAIL_LENGTH = f"Must be at most {EMAIL_MAX} characters."
 EMAIL_FORMAT = "Enter a valid email address."
+# Error messages for a required, null or non-text value. Shared by the auth and profile schemas.
+FIELD_MESSAGES = {"required": REQUIRED, "null": REQUIRED, "invalid": NOT_TEXT}
+REPEATED = "Send one value."
 
 # One simple rule, written the same way in frontend/lib/authRules.ts.
 EMAIL_PATTERN = re.compile(r"[^\s@]+@[^\s@]+\.[^\s@]+")

@@ -1,4 +1,4 @@
-"""users_bp: the current-user read (E30). Profile updates (E31) arrive with T12."""
+"""users_bp: the current-user read (E30) and the profile update (E31)."""
 
 from flask import Blueprint
 
