@@ -13,6 +13,7 @@ from datetime import timedelta
 from flask import Flask
 
 from app.auth_guard import register_jwt_handlers
+from app.blueprints.analytics import analytics_bp
 from app.blueprints.auth import auth_bp
 from app.blueprints.boards import boards_bp
 from app.blueprints.cards import cards_bp
@@ -78,6 +79,7 @@ def create_app(env: Mapping[str, str] | None = None) -> Flask:
     app.register_blueprint(cards_bp)
     app.register_blueprint(comments_bp)
     app.register_blueprint(notifications_bp)
+    app.register_blueprint(analytics_bp)
     app.cli.add_command(bootstrap_schema_command)
     # Register every model on db.metadata for Alembic autogenerate and the tests (DB01).
     from app import models  # noqa: F401

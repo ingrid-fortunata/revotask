@@ -74,6 +74,7 @@ def test_registered_routes_match_the_implemented_slices():
         "comments.delete_comment_view",
         "notifications.list_notifications",
         "notifications.mark_read_view",
+        "analytics.board_analytics_view",
     }
 
 
