@@ -1,0 +1,1534 @@
+{
+  "slice": "notifications (T13)",
+  "started": "2026-11-14T02:47:37.999Z",
+  "browser": "Chrome/157.0.8103.51",
+  "device": "Chrome headless with device-metrics emulation (not a real phone)",
+  "widths": [
+    320,
+    375,
+    768,
+    1280
+  ],
+  "checks": 205,
+  "failed": 0,
+  "results": [
+    {
+      "role": "recipient",
+      "page": "/",
+      "width": 320,
+      "check": "the badge shows the unread count",
+      "pass": true,
+      "detail": "badge 3"
+    },
+    {
+      "role": "recipient",
+      "page": "/",
+      "width": 320,
+      "check": "the accessible name carries the exact count",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "header with a count",
+      "width": 320,
+      "check": "bell, Profile, Boards, My tasks and Sign out are all present",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "header with a count",
+      "width": 320,
+      "check": "no two header controls overlap",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "header with a count",
+      "width": 320,
+      "check": "each header control is at least 44x44 CSS px",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "header with a count",
+      "width": 320,
+      "check": "the content below starts under the header (no overlap)",
+      "pass": true,
+      "detail": "header height 108px, 2 distinct top edges"
+    },
+    {
+      "role": "recipient",
+      "page": "header with a count",
+      "width": 320,
+      "check": "no horizontal page scroll with the bell in the header",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "recipient",
+      "page": "panel loading",
+      "width": 320,
+      "check": "the panel shows a loading state while E27 is slow",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "panel loading",
+      "width": 320,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "recipient",
+      "page": "panel loading",
+      "width": 320,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "1 controls"
+    },
+    {
+      "role": "recipient",
+      "page": "panel loading",
+      "width": 320,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "panel list",
+      "width": 320,
+      "check": "the panel lists assigned and commented rows with Unread text and the long unbroken title",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "panel list",
+      "width": 320,
+      "check": "the panel names the dialog 'Notifications' and shows the counts",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "panel list",
+      "width": 320,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "recipient",
+      "page": "panel list",
+      "width": 320,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "7 controls"
+    },
+    {
+      "role": "recipient",
+      "page": "panel list",
+      "width": 320,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "panel list",
+      "width": 320,
+      "check": "a long unbroken title wraps inside its row and does not widen the dialog",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "panel list",
+      "width": 320,
+      "check": "the panel heading uses the dark body text color (readable on the white dialog)",
+      "pass": true,
+      "detail": "rgb(24, 36, 42)"
+    },
+    {
+      "role": "recipient",
+      "page": "panel",
+      "width": 320,
+      "check": "Escape closes the panel",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "panel",
+      "width": 320,
+      "check": "focus returns to the bell",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "panel",
+      "width": 320,
+      "check": "Escape sends no notification request",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "panel error",
+      "width": 320,
+      "check": "a failed E27 shows an error message with Retry",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "panel error",
+      "width": 320,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "recipient",
+      "page": "panel error",
+      "width": 320,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "8 controls"
+    },
+    {
+      "role": "recipient",
+      "page": "panel error",
+      "width": 320,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "panel error",
+      "width": 320,
+      "check": "Retry loads the rows",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "header keyboard",
+      "width": 320,
+      "check": "Tab reaches the bell, Boards, My tasks, Profile and Sign out",
+      "pass": true,
+      "detail": "RevoTask | Notifications, 3 unread | Boards | My tasks | Profile, Check Recipient | Sign out"
+    },
+    {
+      "role": "recipient",
+      "page": "header keyboard",
+      "width": 320,
+      "check": "every focused header control shows a visible focus ring",
+      "pass": true
+    },
+    {
+      "role": "empty user",
+      "page": "/",
+      "width": 320,
+      "check": "no badge and the plain name",
+      "pass": true
+    },
+    {
+      "role": "empty user",
+      "page": "header with no count",
+      "width": 320,
+      "check": "bell, Profile, Boards, My tasks and Sign out are all present",
+      "pass": true
+    },
+    {
+      "role": "empty user",
+      "page": "header with no count",
+      "width": 320,
+      "check": "no two header controls overlap",
+      "pass": true
+    },
+    {
+      "role": "empty user",
+      "page": "header with no count",
+      "width": 320,
+      "check": "each header control is at least 44x44 CSS px",
+      "pass": true
+    },
+    {
+      "role": "empty user",
+      "page": "header with no count",
+      "width": 320,
+      "check": "the content below starts under the header (no overlap)",
+      "pass": true,
+      "detail": "header height 108px, 2 distinct top edges"
+    },
+    {
+      "role": "empty user",
+      "page": "header with no count",
+      "width": 320,
+      "check": "no horizontal page scroll with the bell in the header",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "empty user",
+      "page": "panel empty",
+      "width": 320,
+      "check": "the panel shows the empty state",
+      "pass": true
+    },
+    {
+      "role": "empty user",
+      "page": "panel empty",
+      "width": 320,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "empty user",
+      "page": "panel empty",
+      "width": 320,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "1 controls"
+    },
+    {
+      "role": "empty user",
+      "page": "panel empty",
+      "width": 320,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "/",
+      "width": 375,
+      "check": "the badge shows the unread count",
+      "pass": true,
+      "detail": "badge 3"
+    },
+    {
+      "role": "recipient",
+      "page": "/",
+      "width": 375,
+      "check": "the accessible name carries the exact count",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "header with a count",
+      "width": 375,
+      "check": "bell, Profile, Boards, My tasks and Sign out are all present",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "header with a count",
+      "width": 375,
+      "check": "no two header controls overlap",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "header with a count",
+      "width": 375,
+      "check": "each header control is at least 44x44 CSS px",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "header with a count",
+      "width": 375,
+      "check": "the content below starts under the header (no overlap)",
+      "pass": true,
+      "detail": "header height 108px, 2 distinct top edges"
+    },
+    {
+      "role": "recipient",
+      "page": "header with a count",
+      "width": 375,
+      "check": "no horizontal page scroll with the bell in the header",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "recipient",
+      "page": "panel loading",
+      "width": 375,
+      "check": "the panel shows a loading state while E27 is slow",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "panel loading",
+      "width": 375,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "recipient",
+      "page": "panel loading",
+      "width": 375,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "1 controls"
+    },
+    {
+      "role": "recipient",
+      "page": "panel loading",
+      "width": 375,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "panel list",
+      "width": 375,
+      "check": "the panel lists assigned and commented rows with Unread text and the long unbroken title",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "panel list",
+      "width": 375,
+      "check": "the panel names the dialog 'Notifications' and shows the counts",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "panel list",
+      "width": 375,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "recipient",
+      "page": "panel list",
+      "width": 375,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "7 controls"
+    },
+    {
+      "role": "recipient",
+      "page": "panel list",
+      "width": 375,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "panel list",
+      "width": 375,
+      "check": "a long unbroken title wraps inside its row and does not widen the dialog",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "panel list",
+      "width": 375,
+      "check": "the panel heading uses the dark body text color (readable on the white dialog)",
+      "pass": true,
+      "detail": "rgb(24, 36, 42)"
+    },
+    {
+      "role": "recipient",
+      "page": "panel",
+      "width": 375,
+      "check": "Escape closes the panel",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "panel",
+      "width": 375,
+      "check": "focus returns to the bell",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "panel",
+      "width": 375,
+      "check": "Escape sends no notification request",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "panel error",
+      "width": 375,
+      "check": "a failed E27 shows an error message with Retry",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "panel error",
+      "width": 375,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "recipient",
+      "page": "panel error",
+      "width": 375,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "8 controls"
+    },
+    {
+      "role": "recipient",
+      "page": "panel error",
+      "width": 375,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "panel error",
+      "width": 375,
+      "check": "Retry loads the rows",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "header keyboard",
+      "width": 375,
+      "check": "Tab reaches the bell, Boards, My tasks, Profile and Sign out",
+      "pass": true,
+      "detail": "RevoTask | Notifications, 3 unread | Boards | My tasks | Profile, Check Recipient | Sign out"
+    },
+    {
+      "role": "recipient",
+      "page": "header keyboard",
+      "width": 375,
+      "check": "every focused header control shows a visible focus ring",
+      "pass": true
+    },
+    {
+      "role": "empty user",
+      "page": "/",
+      "width": 375,
+      "check": "no badge and the plain name",
+      "pass": true
+    },
+    {
+      "role": "empty user",
+      "page": "header with no count",
+      "width": 375,
+      "check": "bell, Profile, Boards, My tasks and Sign out are all present",
+      "pass": true
+    },
+    {
+      "role": "empty user",
+      "page": "header with no count",
+      "width": 375,
+      "check": "no two header controls overlap",
+      "pass": true
+    },
+    {
+      "role": "empty user",
+      "page": "header with no count",
+      "width": 375,
+      "check": "each header control is at least 44x44 CSS px",
+      "pass": true
+    },
+    {
+      "role": "empty user",
+      "page": "header with no count",
+      "width": 375,
+      "check": "the content below starts under the header (no overlap)",
+      "pass": true,
+      "detail": "header height 108px, 2 distinct top edges"
+    },
+    {
+      "role": "empty user",
+      "page": "header with no count",
+      "width": 375,
+      "check": "no horizontal page scroll with the bell in the header",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "empty user",
+      "page": "panel empty",
+      "width": 375,
+      "check": "the panel shows the empty state",
+      "pass": true
+    },
+    {
+      "role": "empty user",
+      "page": "panel empty",
+      "width": 375,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "empty user",
+      "page": "panel empty",
+      "width": 375,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "1 controls"
+    },
+    {
+      "role": "empty user",
+      "page": "panel empty",
+      "width": 375,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "/",
+      "width": 768,
+      "check": "the badge shows the unread count",
+      "pass": true,
+      "detail": "badge 3"
+    },
+    {
+      "role": "recipient",
+      "page": "/",
+      "width": 768,
+      "check": "the accessible name carries the exact count",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "header with a count",
+      "width": 768,
+      "check": "bell, Profile, Boards, My tasks and Sign out are all present",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "header with a count",
+      "width": 768,
+      "check": "no two header controls overlap",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "header with a count",
+      "width": 768,
+      "check": "each header control is at least 44x44 CSS px",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "header with a count",
+      "width": 768,
+      "check": "the content below starts under the header (no overlap)",
+      "pass": true,
+      "detail": "header height 108px, 2 distinct top edges"
+    },
+    {
+      "role": "recipient",
+      "page": "header with a count",
+      "width": 768,
+      "check": "no horizontal page scroll with the bell in the header",
+      "pass": true,
+      "detail": "scrollWidth 768, innerWidth 768"
+    },
+    {
+      "role": "recipient",
+      "page": "panel loading",
+      "width": 768,
+      "check": "the panel shows a loading state while E27 is slow",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "panel loading",
+      "width": 768,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 768, innerWidth 768"
+    },
+    {
+      "role": "recipient",
+      "page": "panel loading",
+      "width": 768,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "1 controls"
+    },
+    {
+      "role": "recipient",
+      "page": "panel loading",
+      "width": 768,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "panel list",
+      "width": 768,
+      "check": "the panel lists assigned and commented rows with Unread text and the long unbroken title",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "panel list",
+      "width": 768,
+      "check": "the panel names the dialog 'Notifications' and shows the counts",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "panel list",
+      "width": 768,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 768, innerWidth 768"
+    },
+    {
+      "role": "recipient",
+      "page": "panel list",
+      "width": 768,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "7 controls"
+    },
+    {
+      "role": "recipient",
+      "page": "panel list",
+      "width": 768,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "panel list",
+      "width": 768,
+      "check": "a long unbroken title wraps inside its row and does not widen the dialog",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "panel list",
+      "width": 768,
+      "check": "the panel heading uses the dark body text color (readable on the white dialog)",
+      "pass": true,
+      "detail": "rgb(24, 36, 42)"
+    },
+    {
+      "role": "recipient",
+      "page": "panel",
+      "width": 768,
+      "check": "Escape closes the panel",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "panel",
+      "width": 768,
+      "check": "focus returns to the bell",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "panel",
+      "width": 768,
+      "check": "Escape sends no notification request",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "panel error",
+      "width": 768,
+      "check": "a failed E27 shows an error message with Retry",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "panel error",
+      "width": 768,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 768, innerWidth 768"
+    },
+    {
+      "role": "recipient",
+      "page": "panel error",
+      "width": 768,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "8 controls"
+    },
+    {
+      "role": "recipient",
+      "page": "panel error",
+      "width": 768,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "panel error",
+      "width": 768,
+      "check": "Retry loads the rows",
+      "pass": true
+    },
+    {
+      "role": "empty user",
+      "page": "/",
+      "width": 768,
+      "check": "no badge and the plain name",
+      "pass": true
+    },
+    {
+      "role": "empty user",
+      "page": "header with no count",
+      "width": 768,
+      "check": "bell, Profile, Boards, My tasks and Sign out are all present",
+      "pass": true
+    },
+    {
+      "role": "empty user",
+      "page": "header with no count",
+      "width": 768,
+      "check": "no two header controls overlap",
+      "pass": true
+    },
+    {
+      "role": "empty user",
+      "page": "header with no count",
+      "width": 768,
+      "check": "each header control is at least 44x44 CSS px",
+      "pass": true
+    },
+    {
+      "role": "empty user",
+      "page": "header with no count",
+      "width": 768,
+      "check": "the content below starts under the header (no overlap)",
+      "pass": true,
+      "detail": "header height 108px, 2 distinct top edges"
+    },
+    {
+      "role": "empty user",
+      "page": "header with no count",
+      "width": 768,
+      "check": "no horizontal page scroll with the bell in the header",
+      "pass": true,
+      "detail": "scrollWidth 768, innerWidth 768"
+    },
+    {
+      "role": "empty user",
+      "page": "panel empty",
+      "width": 768,
+      "check": "the panel shows the empty state",
+      "pass": true
+    },
+    {
+      "role": "empty user",
+      "page": "panel empty",
+      "width": 768,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 768, innerWidth 768"
+    },
+    {
+      "role": "empty user",
+      "page": "panel empty",
+      "width": 768,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "1 controls"
+    },
+    {
+      "role": "empty user",
+      "page": "panel empty",
+      "width": 768,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "/",
+      "width": 1280,
+      "check": "the badge shows the unread count",
+      "pass": true,
+      "detail": "badge 3"
+    },
+    {
+      "role": "recipient",
+      "page": "/",
+      "width": 1280,
+      "check": "the accessible name carries the exact count",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "header with a count",
+      "width": 1280,
+      "check": "bell, Profile, Boards, My tasks and Sign out are all present",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "header with a count",
+      "width": 1280,
+      "check": "no two header controls overlap",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "header with a count",
+      "width": 1280,
+      "check": "each header control is at least 44x44 CSS px",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "header with a count",
+      "width": 1280,
+      "check": "the content below starts under the header (no overlap)",
+      "pass": true,
+      "detail": "header height 900px, 5 distinct top edges"
+    },
+    {
+      "role": "recipient",
+      "page": "header with a count",
+      "width": 1280,
+      "check": "no horizontal page scroll with the bell in the header",
+      "pass": true,
+      "detail": "scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "recipient",
+      "page": "panel loading",
+      "width": 1280,
+      "check": "the panel shows a loading state while E27 is slow",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "panel loading",
+      "width": 1280,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "recipient",
+      "page": "panel loading",
+      "width": 1280,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "1 controls"
+    },
+    {
+      "role": "recipient",
+      "page": "panel loading",
+      "width": 1280,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "panel list",
+      "width": 1280,
+      "check": "the panel lists assigned and commented rows with Unread text and the long unbroken title",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "panel list",
+      "width": 1280,
+      "check": "the panel names the dialog 'Notifications' and shows the counts",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "panel list",
+      "width": 1280,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "recipient",
+      "page": "panel list",
+      "width": 1280,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "7 controls"
+    },
+    {
+      "role": "recipient",
+      "page": "panel list",
+      "width": 1280,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "panel list",
+      "width": 1280,
+      "check": "a long unbroken title wraps inside its row and does not widen the dialog",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "panel list",
+      "width": 1280,
+      "check": "the panel heading uses the dark body text color (readable on the white dialog)",
+      "pass": true,
+      "detail": "rgb(24, 36, 42)"
+    },
+    {
+      "role": "recipient",
+      "page": "panel",
+      "width": 1280,
+      "check": "Escape closes the panel",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "panel",
+      "width": 1280,
+      "check": "focus returns to the bell",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "panel",
+      "width": 1280,
+      "check": "Escape sends no notification request",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "panel error",
+      "width": 1280,
+      "check": "a failed E27 shows an error message with Retry",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "panel error",
+      "width": 1280,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "recipient",
+      "page": "panel error",
+      "width": 1280,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "8 controls"
+    },
+    {
+      "role": "recipient",
+      "page": "panel error",
+      "width": 1280,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "panel error",
+      "width": 1280,
+      "check": "Retry loads the rows",
+      "pass": true
+    },
+    {
+      "role": "empty user",
+      "page": "/",
+      "width": 1280,
+      "check": "no badge and the plain name",
+      "pass": true
+    },
+    {
+      "role": "empty user",
+      "page": "header with no count",
+      "width": 1280,
+      "check": "bell, Profile, Boards, My tasks and Sign out are all present",
+      "pass": true
+    },
+    {
+      "role": "empty user",
+      "page": "header with no count",
+      "width": 1280,
+      "check": "no two header controls overlap",
+      "pass": true
+    },
+    {
+      "role": "empty user",
+      "page": "header with no count",
+      "width": 1280,
+      "check": "each header control is at least 44x44 CSS px",
+      "pass": true
+    },
+    {
+      "role": "empty user",
+      "page": "header with no count",
+      "width": 1280,
+      "check": "the content below starts under the header (no overlap)",
+      "pass": true,
+      "detail": "header height 900px, 5 distinct top edges"
+    },
+    {
+      "role": "empty user",
+      "page": "header with no count",
+      "width": 1280,
+      "check": "no horizontal page scroll with the bell in the header",
+      "pass": true,
+      "detail": "scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "empty user",
+      "page": "panel empty",
+      "width": 1280,
+      "check": "the panel shows the empty state",
+      "pass": true
+    },
+    {
+      "role": "empty user",
+      "page": "panel empty",
+      "width": 1280,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "empty user",
+      "page": "panel empty",
+      "width": 1280,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "1 controls"
+    },
+    {
+      "role": "empty user",
+      "page": "panel empty",
+      "width": 1280,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "journey",
+      "page": "/",
+      "width": 375,
+      "check": "the bell count equals the stored unread count",
+      "pass": true,
+      "detail": "bell Notifications, 3 unread, stored 3"
+    },
+    {
+      "role": "journey",
+      "page": "panel",
+      "width": 375,
+      "check": "an unread row has a Mark as read button",
+      "pass": true
+    },
+    {
+      "role": "journey",
+      "page": "panel",
+      "width": 375,
+      "check": "marking read lowers the bell count and the stored count",
+      "pass": true,
+      "detail": "stored 2"
+    },
+    {
+      "role": "journey",
+      "page": "panel",
+      "width": 375,
+      "check": "an unread row has a link",
+      "pass": true
+    },
+    {
+      "role": "journey",
+      "page": "link",
+      "width": 375,
+      "check": "following the link opens the board",
+      "pass": true
+    },
+    {
+      "role": "journey",
+      "page": "link",
+      "width": 375,
+      "check": "the followed row was marked read",
+      "pass": true,
+      "detail": "stored 1"
+    },
+    {
+      "role": "journey",
+      "page": "reload",
+      "width": 375,
+      "check": "after a reload the bell count equals the stored count",
+      "pass": true,
+      "detail": "bell Notifications, 1 unread, stored 1"
+    },
+    {
+      "role": "journey",
+      "page": "poll",
+      "width": 375,
+      "check": "the bell shows 99+ within one poll of the new notifications",
+      "pass": true,
+      "detail": "28s after seeding"
+    },
+    {
+      "role": "journey",
+      "page": "poll",
+      "width": 375,
+      "check": "the accessible name keeps the exact count above 99",
+      "pass": true,
+      "detail": "Notifications, 104 unread"
+    },
+    {
+      "role": "recipient",
+      "page": "/",
+      "width": 320,
+      "check": "the badge caps at 99+",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "header with 99+",
+      "width": 320,
+      "check": "bell, Profile, Boards, My tasks and Sign out are all present",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "header with 99+",
+      "width": 320,
+      "check": "no two header controls overlap",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "header with 99+",
+      "width": 320,
+      "check": "each header control is at least 44x44 CSS px",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "header with 99+",
+      "width": 320,
+      "check": "the content below starts under the header (no overlap)",
+      "pass": true,
+      "detail": "header height 108px, 2 distinct top edges"
+    },
+    {
+      "role": "recipient",
+      "page": "header with 99+",
+      "width": 320,
+      "check": "no horizontal page scroll with the bell in the header",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "recipient",
+      "page": "panel paging",
+      "width": 320,
+      "check": "the panel shows 'Page 1 of n' and Older, with Newer disabled",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "panel last page",
+      "width": 320,
+      "check": "on the last page Older is disabled and the rows show",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "panel last page",
+      "width": 320,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "recipient",
+      "page": "panel last page",
+      "width": 320,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "13 controls"
+    },
+    {
+      "role": "recipient",
+      "page": "panel last page",
+      "width": 320,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "/",
+      "width": 375,
+      "check": "the badge caps at 99+",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "header with 99+",
+      "width": 375,
+      "check": "bell, Profile, Boards, My tasks and Sign out are all present",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "header with 99+",
+      "width": 375,
+      "check": "no two header controls overlap",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "header with 99+",
+      "width": 375,
+      "check": "each header control is at least 44x44 CSS px",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "header with 99+",
+      "width": 375,
+      "check": "the content below starts under the header (no overlap)",
+      "pass": true,
+      "detail": "header height 108px, 2 distinct top edges"
+    },
+    {
+      "role": "recipient",
+      "page": "header with 99+",
+      "width": 375,
+      "check": "no horizontal page scroll with the bell in the header",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "recipient",
+      "page": "panel paging",
+      "width": 375,
+      "check": "the panel shows 'Page 1 of n' and Older, with Newer disabled",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "panel last page",
+      "width": 375,
+      "check": "on the last page Older is disabled and the rows show",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "panel last page",
+      "width": 375,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "recipient",
+      "page": "panel last page",
+      "width": 375,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "13 controls"
+    },
+    {
+      "role": "recipient",
+      "page": "panel last page",
+      "width": 375,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "/",
+      "width": 768,
+      "check": "the badge caps at 99+",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "header with 99+",
+      "width": 768,
+      "check": "bell, Profile, Boards, My tasks and Sign out are all present",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "header with 99+",
+      "width": 768,
+      "check": "no two header controls overlap",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "header with 99+",
+      "width": 768,
+      "check": "each header control is at least 44x44 CSS px",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "header with 99+",
+      "width": 768,
+      "check": "the content below starts under the header (no overlap)",
+      "pass": true,
+      "detail": "header height 108px, 2 distinct top edges"
+    },
+    {
+      "role": "recipient",
+      "page": "header with 99+",
+      "width": 768,
+      "check": "no horizontal page scroll with the bell in the header",
+      "pass": true,
+      "detail": "scrollWidth 768, innerWidth 768"
+    },
+    {
+      "role": "recipient",
+      "page": "panel paging",
+      "width": 768,
+      "check": "the panel shows 'Page 1 of n' and Older, with Newer disabled",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "panel last page",
+      "width": 768,
+      "check": "on the last page Older is disabled and the rows show",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "panel last page",
+      "width": 768,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 768, innerWidth 768"
+    },
+    {
+      "role": "recipient",
+      "page": "panel last page",
+      "width": 768,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "13 controls"
+    },
+    {
+      "role": "recipient",
+      "page": "panel last page",
+      "width": 768,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "/",
+      "width": 1280,
+      "check": "the badge caps at 99+",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "header with 99+",
+      "width": 1280,
+      "check": "bell, Profile, Boards, My tasks and Sign out are all present",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "header with 99+",
+      "width": 1280,
+      "check": "no two header controls overlap",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "header with 99+",
+      "width": 1280,
+      "check": "each header control is at least 44x44 CSS px",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "header with 99+",
+      "width": 1280,
+      "check": "the content below starts under the header (no overlap)",
+      "pass": true,
+      "detail": "header height 900px, 5 distinct top edges"
+    },
+    {
+      "role": "recipient",
+      "page": "header with 99+",
+      "width": 1280,
+      "check": "no horizontal page scroll with the bell in the header",
+      "pass": true,
+      "detail": "scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "recipient",
+      "page": "panel paging",
+      "width": 1280,
+      "check": "the panel shows 'Page 1 of n' and Older, with Newer disabled",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "panel last page",
+      "width": 1280,
+      "check": "on the last page Older is disabled and the rows show",
+      "pass": true
+    },
+    {
+      "role": "recipient",
+      "page": "panel last page",
+      "width": 1280,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "recipient",
+      "page": "panel last page",
+      "width": 1280,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "13 controls"
+    },
+    {
+      "role": "recipient",
+      "page": "panel last page",
+      "width": 1280,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "removal",
+      "page": "poll",
+      "width": 375,
+      "check": "after removal the bell count drops to none within one poll",
+      "pass": true
+    },
+    {
+      "role": "removal",
+      "page": "api",
+      "width": 375,
+      "check": "after removal Flask returns no notification",
+      "pass": true,
+      "detail": "total 0"
+    },
+    {
+      "role": "rejoin",
+      "page": "poll",
+      "width": 375,
+      "check": "after the member is added again the same count returns within one poll",
+      "pass": true,
+      "detail": "expected 104"
+    },
+    {
+      "role": "rejoin",
+      "page": "api",
+      "width": 375,
+      "check": "after rejoining the stored counts match the earlier ones (read status kept)",
+      "pass": true,
+      "detail": "total 106, unread 104"
+    }
+  ]
+}
