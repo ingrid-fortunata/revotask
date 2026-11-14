@@ -1,0 +1,1150 @@
+{
+  "slice": "analytics (T14)",
+  "started": "2026-11-14T03:44:03.009Z",
+  "browser": "Chrome/157.0.8103.51",
+  "device": "Chrome headless with device-metrics emulation (not a real phone)",
+  "widths": [
+    320,
+    375,
+    768,
+    1280
+  ],
+  "checks": 153,
+  "failed": 2,
+  "results": [
+    {
+      "role": "admin",
+      "page": "board header",
+      "width": 320,
+      "check": "the Analytics button is in the header, outside the title row",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "board header",
+      "width": 320,
+      "check": "below 640 px the button stacks under the name",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "board header",
+      "width": 320,
+      "check": "the Analytics button comes before Rename board",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "board header",
+      "width": 320,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "admin",
+      "page": "board header",
+      "width": 320,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": false,
+      "detail": "too small: a RevoTask 28x44"
+    },
+    {
+      "role": "admin",
+      "page": "board header",
+      "width": 320,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "dialog loading",
+      "width": 320,
+      "check": "the dialog shows a loading state while E29 is held",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "dialog loading",
+      "width": 320,
+      "check": "exactly one read starts when the dialog opens",
+      "pass": true,
+      "detail": "requests 0 -> 1"
+    },
+    {
+      "role": "admin",
+      "page": "dialog loading",
+      "width": 320,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "admin",
+      "page": "dialog loading",
+      "width": 320,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "admin",
+      "page": "dialog loading",
+      "width": 320,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "dialog figures",
+      "width": 320,
+      "check": "the figures appear after the read",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "dialog figures",
+      "width": 320,
+      "check": "week range, completed figure, column list and activity list are text",
+      "pass": true,
+      "detail": "Analytics | Refresh | Close"
+    },
+    {
+      "role": "admin",
+      "page": "dialog figures",
+      "width": 320,
+      "check": "no horizontal page scroll with the dialog open",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "dialog figures",
+      "width": 320,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "admin",
+      "page": "dialog figures",
+      "width": 320,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "admin",
+      "page": "dialog figures",
+      "width": 320,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "dialog figures",
+      "width": 320,
+      "check": "Refresh shows a visible focus ring for keyboard focus",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "dialog refresh",
+      "width": 320,
+      "check": "a refresh keeps the figures and marks the dialog busy",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "dialog error",
+      "width": 320,
+      "check": "a failed read shows the error and a Retry button",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "dialog error",
+      "width": 320,
+      "check": "the last figures stay beside the error",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "dialog error",
+      "width": 320,
+      "check": "the board behind the dialog shows no error",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "dialog error",
+      "width": 320,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "admin",
+      "page": "dialog error",
+      "width": 320,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "3 controls"
+    },
+    {
+      "role": "admin",
+      "page": "dialog error",
+      "width": 320,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "dialog error",
+      "width": 320,
+      "check": "Retry reads again and clears the error",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "empty board",
+      "width": 320,
+      "check": "a board with columns and no cards shows zeros and the empty activity text",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "empty board",
+      "width": 320,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "admin",
+      "page": "empty board",
+      "width": 320,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "admin",
+      "page": "empty board",
+      "width": 320,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "no columns",
+      "width": 320,
+      "check": "a board with no columns shows 'No columns yet.' and 0 completed",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "no columns",
+      "width": 320,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "admin",
+      "page": "no columns",
+      "width": 320,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "admin",
+      "page": "no columns",
+      "width": 320,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "keyboard",
+      "width": 320,
+      "check": "Enter on Refresh reads E29 again",
+      "pass": true,
+      "detail": "requests 6 -> 7"
+    },
+    {
+      "role": "admin",
+      "page": "keyboard",
+      "width": 320,
+      "check": "Escape closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "keyboard",
+      "width": 320,
+      "check": "focus returns to the Analytics button",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "board header",
+      "width": 375,
+      "check": "the Analytics button is in the header, outside the title row",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "board header",
+      "width": 375,
+      "check": "below 640 px the button stacks under the name",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "board header",
+      "width": 375,
+      "check": "the Analytics button comes before Rename board",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "board header",
+      "width": 375,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "admin",
+      "page": "board header",
+      "width": 375,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": false,
+      "detail": "too small: a RevoTask 28x44"
+    },
+    {
+      "role": "admin",
+      "page": "board header",
+      "width": 375,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "dialog loading",
+      "width": 375,
+      "check": "the dialog shows a loading state while E29 is held",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "dialog loading",
+      "width": 375,
+      "check": "exactly one read starts when the dialog opens",
+      "pass": true,
+      "detail": "requests 7 -> 8"
+    },
+    {
+      "role": "admin",
+      "page": "dialog loading",
+      "width": 375,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "admin",
+      "page": "dialog loading",
+      "width": 375,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "admin",
+      "page": "dialog loading",
+      "width": 375,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "dialog figures",
+      "width": 375,
+      "check": "the figures appear after the read",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "dialog figures",
+      "width": 375,
+      "check": "week range, completed figure, column list and activity list are text",
+      "pass": true,
+      "detail": "Analytics | Refresh | Close"
+    },
+    {
+      "role": "admin",
+      "page": "dialog figures",
+      "width": 375,
+      "check": "no horizontal page scroll with the dialog open",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "dialog figures",
+      "width": 375,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "admin",
+      "page": "dialog figures",
+      "width": 375,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "admin",
+      "page": "dialog figures",
+      "width": 375,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "dialog figures",
+      "width": 375,
+      "check": "Refresh shows a visible focus ring for keyboard focus",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "dialog refresh",
+      "width": 375,
+      "check": "a refresh keeps the figures and marks the dialog busy",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "dialog error",
+      "width": 375,
+      "check": "a failed read shows the error and a Retry button",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "dialog error",
+      "width": 375,
+      "check": "the last figures stay beside the error",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "dialog error",
+      "width": 375,
+      "check": "the board behind the dialog shows no error",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "dialog error",
+      "width": 375,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "admin",
+      "page": "dialog error",
+      "width": 375,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "3 controls"
+    },
+    {
+      "role": "admin",
+      "page": "dialog error",
+      "width": 375,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "dialog error",
+      "width": 375,
+      "check": "Retry reads again and clears the error",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "empty board",
+      "width": 375,
+      "check": "a board with columns and no cards shows zeros and the empty activity text",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "empty board",
+      "width": 375,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "admin",
+      "page": "empty board",
+      "width": 375,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "admin",
+      "page": "empty board",
+      "width": 375,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "no columns",
+      "width": 375,
+      "check": "a board with no columns shows 'No columns yet.' and 0 completed",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "no columns",
+      "width": 375,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "admin",
+      "page": "no columns",
+      "width": 375,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "admin",
+      "page": "no columns",
+      "width": 375,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "keyboard",
+      "width": 375,
+      "check": "Enter on Refresh reads E29 again",
+      "pass": true,
+      "detail": "requests 13 -> 14"
+    },
+    {
+      "role": "admin",
+      "page": "keyboard",
+      "width": 375,
+      "check": "Escape closes the dialog",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "keyboard",
+      "width": 375,
+      "check": "focus returns to the Analytics button",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "board header",
+      "width": 768,
+      "check": "the Analytics button is in the header, outside the title row",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "board header",
+      "width": 768,
+      "check": "the Analytics button is right of the board name",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "board header",
+      "width": 768,
+      "check": "the Analytics button comes before Rename board",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "board header",
+      "width": 768,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 753, innerWidth 768"
+    },
+    {
+      "role": "admin",
+      "page": "board header",
+      "width": 768,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "6 controls"
+    },
+    {
+      "role": "admin",
+      "page": "board header",
+      "width": 768,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "dialog loading",
+      "width": 768,
+      "check": "the dialog shows a loading state while E29 is held",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "dialog loading",
+      "width": 768,
+      "check": "exactly one read starts when the dialog opens",
+      "pass": true,
+      "detail": "requests 14 -> 15"
+    },
+    {
+      "role": "admin",
+      "page": "dialog loading",
+      "width": 768,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 753, innerWidth 768"
+    },
+    {
+      "role": "admin",
+      "page": "dialog loading",
+      "width": 768,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "admin",
+      "page": "dialog loading",
+      "width": 768,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "dialog figures",
+      "width": 768,
+      "check": "the figures appear after the read",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "dialog figures",
+      "width": 768,
+      "check": "week range, completed figure, column list and activity list are text",
+      "pass": true,
+      "detail": "Analytics | Refresh | Close"
+    },
+    {
+      "role": "admin",
+      "page": "dialog figures",
+      "width": 768,
+      "check": "no horizontal page scroll with the dialog open",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "dialog figures",
+      "width": 768,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 753, innerWidth 768"
+    },
+    {
+      "role": "admin",
+      "page": "dialog figures",
+      "width": 768,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "admin",
+      "page": "dialog figures",
+      "width": 768,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "dialog figures",
+      "width": 768,
+      "check": "Refresh shows a visible focus ring for keyboard focus",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "dialog refresh",
+      "width": 768,
+      "check": "a refresh keeps the figures and marks the dialog busy",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "dialog error",
+      "width": 768,
+      "check": "a failed read shows the error and a Retry button",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "dialog error",
+      "width": 768,
+      "check": "the last figures stay beside the error",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "dialog error",
+      "width": 768,
+      "check": "the board behind the dialog shows no error",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "dialog error",
+      "width": 768,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 753, innerWidth 768"
+    },
+    {
+      "role": "admin",
+      "page": "dialog error",
+      "width": 768,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "3 controls"
+    },
+    {
+      "role": "admin",
+      "page": "dialog error",
+      "width": 768,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "dialog error",
+      "width": 768,
+      "check": "Retry reads again and clears the error",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "empty board",
+      "width": 768,
+      "check": "a board with columns and no cards shows zeros and the empty activity text",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "empty board",
+      "width": 768,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 768, innerWidth 768"
+    },
+    {
+      "role": "admin",
+      "page": "empty board",
+      "width": 768,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "admin",
+      "page": "empty board",
+      "width": 768,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "no columns",
+      "width": 768,
+      "check": "a board with no columns shows 'No columns yet.' and 0 completed",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "no columns",
+      "width": 768,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 768, innerWidth 768"
+    },
+    {
+      "role": "admin",
+      "page": "no columns",
+      "width": 768,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "admin",
+      "page": "no columns",
+      "width": 768,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "board header",
+      "width": 1280,
+      "check": "the Analytics button is in the header, outside the title row",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "board header",
+      "width": 1280,
+      "check": "the Analytics button is right of the board name",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "board header",
+      "width": 1280,
+      "check": "the Analytics button comes before Rename board",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "board header",
+      "width": 1280,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 1265, innerWidth 1280"
+    },
+    {
+      "role": "admin",
+      "page": "board header",
+      "width": 1280,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "6 controls"
+    },
+    {
+      "role": "admin",
+      "page": "board header",
+      "width": 1280,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "dialog loading",
+      "width": 1280,
+      "check": "the dialog shows a loading state while E29 is held",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "dialog loading",
+      "width": 1280,
+      "check": "exactly one read starts when the dialog opens",
+      "pass": true,
+      "detail": "requests 19 -> 20"
+    },
+    {
+      "role": "admin",
+      "page": "dialog loading",
+      "width": 1280,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 1265, innerWidth 1280"
+    },
+    {
+      "role": "admin",
+      "page": "dialog loading",
+      "width": 1280,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "admin",
+      "page": "dialog loading",
+      "width": 1280,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "dialog figures",
+      "width": 1280,
+      "check": "the figures appear after the read",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "dialog figures",
+      "width": 1280,
+      "check": "week range, completed figure, column list and activity list are text",
+      "pass": true,
+      "detail": "Analytics | Refresh | Close"
+    },
+    {
+      "role": "admin",
+      "page": "dialog figures",
+      "width": 1280,
+      "check": "no horizontal page scroll with the dialog open",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "dialog figures",
+      "width": 1280,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 1265, innerWidth 1280"
+    },
+    {
+      "role": "admin",
+      "page": "dialog figures",
+      "width": 1280,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "admin",
+      "page": "dialog figures",
+      "width": 1280,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "dialog figures",
+      "width": 1280,
+      "check": "Refresh shows a visible focus ring for keyboard focus",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "dialog refresh",
+      "width": 1280,
+      "check": "a refresh keeps the figures and marks the dialog busy",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "dialog error",
+      "width": 1280,
+      "check": "a failed read shows the error and a Retry button",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "dialog error",
+      "width": 1280,
+      "check": "the last figures stay beside the error",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "dialog error",
+      "width": 1280,
+      "check": "the board behind the dialog shows no error",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "dialog error",
+      "width": 1280,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 1265, innerWidth 1280"
+    },
+    {
+      "role": "admin",
+      "page": "dialog error",
+      "width": 1280,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "3 controls"
+    },
+    {
+      "role": "admin",
+      "page": "dialog error",
+      "width": 1280,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "dialog error",
+      "width": 1280,
+      "check": "Retry reads again and clears the error",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "empty board",
+      "width": 1280,
+      "check": "a board with columns and no cards shows zeros and the empty activity text",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "empty board",
+      "width": 1280,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "admin",
+      "page": "empty board",
+      "width": 1280,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "admin",
+      "page": "empty board",
+      "width": 1280,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "no columns",
+      "width": 1280,
+      "check": "a board with no columns shows 'No columns yet.' and 0 completed",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "no columns",
+      "width": 1280,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "admin",
+      "page": "no columns",
+      "width": 1280,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "admin",
+      "page": "no columns",
+      "width": 1280,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "journey",
+      "page": "step 1",
+      "width": 375,
+      "check": "the figures appear on opening the dialog",
+      "pass": true
+    },
+    {
+      "role": "journey",
+      "page": "step 1",
+      "width": 375,
+      "check": "the dialog matches the stored E29 values",
+      "pass": true,
+      "detail": "completed 1, todo 2"
+    },
+    {
+      "role": "journey",
+      "page": "step 2",
+      "width": 375,
+      "check": "opening the dialog after a move shows the new completed count",
+      "pass": true,
+      "detail": "completed 1 -> 2"
+    },
+    {
+      "role": "journey",
+      "page": "step 2",
+      "width": 375,
+      "check": "the reopen sent exactly one E29 read",
+      "pass": true,
+      "detail": "requests 25 -> 26"
+    },
+    {
+      "role": "journey",
+      "page": "step 2",
+      "width": 375,
+      "check": "the column counts changed with it",
+      "pass": true
+    },
+    {
+      "role": "journey",
+      "page": "step 2",
+      "width": 375,
+      "check": "the admin's activity counts the move once",
+      "pass": true,
+      "detail": "activity 3"
+    },
+    {
+      "role": "journey",
+      "page": "step 3",
+      "width": 375,
+      "check": "no new read happens by itself while open (no polling)",
+      "pass": true
+    },
+    {
+      "role": "journey",
+      "page": "step 3",
+      "width": 375,
+      "check": "Refresh shows the other user's new comment",
+      "pass": true,
+      "detail": "activity 3 -> 4"
+    },
+    {
+      "role": "journey",
+      "page": "step 4",
+      "width": 375,
+      "check": "after the member is removed their activity stays under their name",
+      "pass": true
+    },
+    {
+      "role": "journey",
+      "page": "step 5",
+      "width": 375,
+      "check": "the dialog shows its error after the failed read",
+      "pass": true
+    },
+    {
+      "role": "journey",
+      "page": "step 5",
+      "width": 375,
+      "check": "the move was stored although E29 failed",
+      "pass": true
+    }
+  ]
+}

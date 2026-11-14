@@ -1,0 +1,53 @@
+{
+  "slice": "analytics (T14)",
+  "conditions": "local Flask dev server (python app.run), one client, sequential requests, direct to Flask (no Next.js), test database, warm after 5 warm-up requests",
+  "fixture": {
+    "cards": 100,
+    "columns": 4,
+    "actors": 3,
+    "moves": 40,
+    "movesIntoDone": 10,
+    "comments": 30,
+    "columnReorders": 3,
+    "completedCards": 10,
+    "activityRows": 3
+  },
+  "referenceMs": 800,
+  "e29": {
+    "rawMs": [
+      5.8,
+      5.4,
+      5.4,
+      4.4,
+      4.4,
+      5,
+      4.8,
+      5.5,
+      5.4,
+      4.4,
+      5.5,
+      5.4,
+      5.4,
+      4.9,
+      5.2,
+      5.6,
+      4.9,
+      5.8,
+      5.7,
+      6.2,
+      5.4,
+      5.8,
+      5.6,
+      5.6,
+      5.6,
+      7.4,
+      5.2,
+      4.9,
+      5.3,
+      5.4
+    ],
+    "p95Ms": 6.2,
+    "maxMs": 7.4,
+    "medianMs": 5.4
+  }
+}

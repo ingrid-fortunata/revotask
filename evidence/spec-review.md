@@ -383,3 +383,52 @@ Applied at the user's request while the design is under review: `docs/API.md` (E
 ### Notifications finalize and implementation record (2026-11-14)
 
 The user's invocation `/revotask-feature implement notification T13` (all tasks) was the plan approval, as for T10 to T12. Claude Code completed task 0.2 (the root T13 link, traceability, FE-D2 and the layer specs) and then every native group of `.kiro/specs/notifications/tasks.md`. The decisions B1–B10 and the design held without change to behavior or contract. Deviations that touched the spec (no behavior or contract change) are in `specs/CHANGELOG.md`: `UtcDateTime` moved to `app/validation.py` (an import cycle), and the header layout (a `flex-auto` brand block, a shorter account name and a wordmark hidden below 400 px), the panel text color and the long-title wrapping, all three found by the browser check. Checks: backend 1986 passed and 1 skipped with ruff clean, frontend 1958 passed in 93 files with lint and typecheck clean and `next build` succeeding, a 205-check Chrome run (device emulation) with 0 failed after three real defects were fixed, and two mutation checks that made the matching tests fail. Root T13 is checked in `specs/tasks.md`. Open: Playwright (V10), real-device checks (T15), deployment (T16) and a limit on notification volume per user (T16). Evidence: `evidence/notifications-T13.md`.
+
+## Analytics review record (T14)
+
+Review of `.kiro/specs/analytics/`. Requirements and design were drafted by Claude Code (`/revotask-feature spec analytics T14`, 2026-11-14). The spec phases were spec review only. The implementation record is at the end of this section, and root T14 is checked in `specs/tasks.md`. Prerequisite check: kanban and comments are verified (root T07 to T10 are checked, `evidence/kanban-T07-T09.md`, `evidence/comments-T10.md`) and the event writers exist. The `analytics` Blueprint and the panel do not exist yet.
+
+| Phase | Status | Note |
+| --- | --- | --- |
+| Requirements | Approved 2026-11-14 with clarifications (user, in chat) | 8 requirements. Decisions A1–A10 approved. `requirements.md` updated: the four counted kinds listed explicitly (A1), a version that must rise before a re-read and a board switch that drops stale responses (A8), 320 px added beside 375 px (A9), the E29-failure-leaves-the-board-usable test (8.5). |
+| Design | Approved 2026-11-14 (user, in chat) | `design.md`: DD1–DD12, 14 properties, contract clarifications C34–C38, review items R1–R8. Approved without changes. |
+| Tasks | Approved 2026-11-14 (user, by invoking `implement analytics T14` for all tasks) | `tasks.md`: groups 0 to 7, 30 sub-tasks, each with an acceptance check and requirement, root and design links. Gates: backend checks before the frontend calls E29 (B), full verification before the mobile record is final (C), root T14 last (D). |
+| Finalize | Done 2026-11-14 | `specs/tasks.md` T14 links `.kiro/specs/analytics/tasks.md`. `specs/traceability.md`, `frontend/specs/`, `guidelines/frontend.md` and `specs/CHANGELOG.md` were synchronized. |
+| Implementation | Done 2026-11-14, local checks | See "Analytics finalize and implementation record" below and `evidence/analytics-T14.md`. |
+
+### Decisions A1–A10 (approved 2026-11-14)
+
+| ID | Decision | Resolution | Where applied |
+| --- | --- | --- | --- |
+| A1 | `member_activity` | Counts `card_created`, `card_moved`, `column_reordered` and `comment_created`. `entered_done` is used only for `completed_cards`, so creating a card in Done or moving one into Done adds one activity event. D6 and `docs/API.md` list the four kinds. | `requirements.md` 3.1, 3.2, 5.6; `design.md` DD6, C36; `specs/design.md` D6; `docs/API.md` |
+| A2 | Week | Server clock, current UTC week, Monday 00:00 inclusive to the next Monday 00:00 exclusive, ISO 8601 timestamps ending in `Z`. | `requirements.md` 4.1–4.5; `design.md` DD2, C34, R1 |
+| A3 | Completions | A card ID counts once per week if it has an `entered_done` event. The count survives a later move out of Done or a delete. | `requirements.md` 2.1–2.3; `design.md` DD5, C35 |
+| A4 | Actors | Every actor with a counted event, former members included, under the current name, sorted by count descending, lower-cased name, user ID. Zero-event actors omitted. | `requirements.md` 3.1, 3.3–3.5; `design.md` DD6, C36 |
+| A5 | Check order | Authenticate, then the board ID and any query parameter (400), then board access (404, C1). | `requirements.md` 5.1, 5.2; `design.md` DD8, C38 |
+| A6 | Read-only | No lock, event, notification or version change. `private, no-store` kept through the same-origin handler. | `requirements.md` 5.4, 5.5, 8.1; `design.md` DD7 |
+| A7 | Roles | Every current participant, member or admin. | `requirements.md` 5.3; `design.md` C38 |
+| A8 | Panel reads | Through a same-origin handler on mount, after a successful local change that advances `position_version`, and on Refresh. No polling. Loading and errors stay in the panel. Stale responses after a newer request or a board switch are ignored. | `requirements.md` 6.4–6.8; `design.md` DD9, DD11, R4, R5, R8 |
+| A9 | Presentation | One `.surface` panel, text figures, existing tokens, decorative bars, 44 by 44 CSS px Refresh, usable at 320 and 375 px. | `requirements.md` 6.2, 7.1–7.3; `design.md` DD10, DD12, "Mobile design" |
+| A10 | Timing | Record observed E29 latency on a 100-card board. A measurement only. | `requirements.md` 8.8; `design.md` "Browser checks" |
+
+### Design synchronization (2026-11-14)
+
+Applied at the user's request while the design is under review: `docs/API.md` (the E29 row, the data shapes and the C34–C38 paragraph), `specs/design.md` (D6), `specs/requirements.md` (AC11.1), `backend/specs/api-contract.md` (`analytics_bp`), `docs/TEST-PLAN.md` (V08 and V11) and `specs/CHANGELOG.md`. Root `specs/tasks.md`, `specs/traceability.md`, `guidelines/frontend.md`, the layer specs, the README and the application changelogs are unchanged. Spec review only: no source code or test was changed and no test was run.
+
+### Design review items R1–R8 (approved 2026-11-14)
+
+| ID | Item | Proposal |
+| --- | --- | --- |
+| R1 | Timestamp format | Format the two bounds in the service with `strftime(...Z)`. `UtcDateTime` writes `+00:00` and stays unchanged. |
+| R2 | Three statements, no snapshot | Accept. A concurrent commit may differ by one event between figures. The next read corrects it. |
+| R3 | Panel placement | Below the Kanban region in `BoardShell`. |
+| R4 | A version rise during a read | Compare with the version current when the last read started. A rise aborts the read and starts a new one. |
+| R5 | Refresh and Retry | Keep both. Both call the same function. |
+| R6 | Index | No new index. `ix_board_events_board_occurred` serves both event queries. |
+| R7 | Clock source | `utcnow` imported by name in the service and replaced in tests. |
+| R8 | Polling | None in this slice. |
+
+### Analytics finalize and implementation record (2026-11-14)
+
+The user's invocation `/revotask-feature implement analytics T14` (all tasks) was the plan approval, as for T10 to T13. Claude Code completed task 0.2 (the root T14 link, traceability, the layer specs and the guideline component table) and then every native group of `.kiro/specs/analytics/tasks.md`. The decisions A1–A10 and the design held without change to behavior or contract. Deviations that touched the spec (no behavior or contract change) are in `specs/CHANGELOG.md`: Refresh and Retry use the `ghost` button variant, a failed first read shows the error and not the loading text, and one lint suppression guards the in-flight flag. Evidence: `evidence/analytics-T14.md`. Backend 2050 passed and 1 skipped (64 new tests, four mutation checks each made a test fail), frontend 2031 passed with lint, typecheck and `next build` clean, a 128-check Chrome run (emulation) at 320, 375, 768 and 1280 px with 0 failed, and an E29 timing of p95 6.2 ms on 100 cards (a measurement). One mutation check first passed all tests, which exposed a missing case (a column holding only deleted cards), and the test was added. Open: Playwright (V10), real-device checks (T15), deployed timing and deployment (T16). Tool attribution: requirements, design, tasks, code, tests, measurement scripts and documentation by Claude Code. No Kiro generation is recorded for this slice.
+
