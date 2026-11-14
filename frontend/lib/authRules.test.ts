@@ -9,7 +9,10 @@ import {
   normalizeEmail,
   normalizeName,
   REGISTER_FIELDS,
+  PROFILE_FIELDS,
+  profileChanges,
   validateLogin,
+  validateProfile,
   validateRegister,
 } from "./authRules";
 
@@ -31,9 +34,13 @@ function expand(value: Expand): unknown {
 type Case = { id: string; set: Record<string, unknown>; drop: string[]; expect: { accepted?: Record<string, unknown>; fields?: Record<string, string> } };
 const file = JSON.parse(
   readFileSync(join(process.cwd(), "..", "specs", "fixtures", "auth-field-cases.json"), "utf8"),
-) as Record<"register" | "login", { base: Record<string, unknown>; cases: Case[] }>;
+) as Record<"register" | "login" | "profile", { base: Record<string, unknown>; cases: Case[] }>;
 
-function runCases(form: "register" | "login", validate: (raw: Record<string, unknown>) => { body: Record<string, string>; fields: Record<string, string> }, keys: readonly string[]) {
+function runCases(
+  form: "register" | "login" | "profile",
+  validate: (raw: Record<string, unknown>) => { body: Record<string, string>; fields: Record<string, string> },
+  keys: readonly string[] | null,
+) {
   const { base, cases } = file[form];
   describe(`${form} shared cases`, () => {
     it.each(cases.map((c) => [c.id, c] as const))("%s", (_id, c) => {
@@ -45,7 +52,8 @@ function runCases(form: "register" | "login", validate: (raw: Record<string, unk
         expect(result.fields).toEqual(expected.fields);
       } else {
         expect(result.fields).toEqual({});
-        expect(Object.keys(result.body).sort()).toEqual([...keys].sort());
+        // A profile body holds only the keys that were sent (a partial update).
+        expect(Object.keys(result.body).sort()).toEqual([...(keys ?? Object.keys(body))].sort());
         for (const [name, value] of Object.entries(expected.accepted ?? {})) {
           expect(result.body[name]).toBe(value);
         }
@@ -56,6 +64,40 @@ function runCases(form: "register" | "login", validate: (raw: Record<string, unk
 
 runCases("register", validateRegister, REGISTER_FIELDS);
 runCases("login", validateLogin, LOGIN_FIELDS);
+runCases("profile", validateProfile, null);
+
+describe("profile rules", () => {
+  const saved = { name: "Ada Lovelace", email: "ada@example.com" };
+
+  it("lists the two profile fields", () => {
+    expect([...PROFILE_FIELDS]).toEqual(["name", "email"]);
+  });
+
+  it("sends nothing when the normalized values equal the saved ones", () => {
+    expect(profileChanges({ name: "  Ada Lovelace ", email: " ADA@Example.com " }, saved)).toEqual({});
+  });
+
+  it("sends only the field that changed, as typed (the caller normalizes through validateProfile)", () => {
+    expect(profileChanges({ name: "Grace", email: "ada@example.com" }, saved)).toEqual({ name: "Grace" });
+    expect(profileChanges({ name: "Ada Lovelace", email: "grace@example.com" }, saved)).toEqual({
+      email: "grace@example.com",
+    });
+    expect(profileChanges({ name: "Grace", email: "grace@example.com" }, saved)).toEqual({
+      name: "Grace",
+      email: "grace@example.com",
+    });
+  });
+
+  it("treats a case-only change of the email as no change", () => {
+    expect(profileChanges({ name: saved.name, email: "Ada@EXAMPLE.com" }, saved)).toEqual({});
+  });
+
+  it("validates a partial body: an absent key is not an error, an unknown key is", () => {
+    expect(validateProfile({})).toEqual({ body: {}, fields: {} });
+    expect(validateProfile({ name: "  Grace " })).toEqual({ body: { name: "Grace" }, fields: {} });
+    expect(validateProfile({ password: "x" }).fields).toEqual({ password: "Unknown field." });
+  });
+});
 
 describe("normalization and lengths", () => {
   it("trims names and trims and lowercases emails, but never touches the password", () => {

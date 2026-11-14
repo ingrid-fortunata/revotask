@@ -96,7 +96,12 @@ const LOGIN_SPEC: Record<(typeof LOGIN_FIELDS)[number], FieldSpec> = {
   },
 };
 
-function validate<K extends string>(spec: Record<K, FieldSpec>, raw: Record<string, unknown>): Validated<K> {
+// `partial` is for a profile update: a key that is absent is not an error and not in the body.
+function validate<K extends string>(
+  spec: Record<K, FieldSpec>,
+  raw: Record<string, unknown>,
+  partial = false,
+): Validated<K> {
   const keys = Object.keys(spec) as K[];
   const body = {} as Record<K, string>;
   const problems: [string, string][] = [];
@@ -106,6 +111,7 @@ function validate<K extends string>(spec: Record<K, FieldSpec>, raw: Record<stri
     if (!keys.includes(key as K)) problems.push([key, MESSAGES.unknown]);
   }
   for (const key of keys) {
+    if (partial && !Object.hasOwn(raw, key)) continue;
     const value = Object.hasOwn(raw, key) ? raw[key] : undefined;
     if (value === undefined || value === null) {
       problems.push([key, MESSAGES.required]);
@@ -134,4 +140,28 @@ export function validateRegister(raw: Record<string, unknown>) {
 
 export function validateLogin(raw: Record<string, unknown>) {
   return validate(LOGIN_SPEC, raw);
+}
+
+export const PROFILE_FIELDS = ["name", "email"] as const;
+export type ProfileKey = (typeof PROFILE_FIELDS)[number];
+
+// The E02 name and email rules, for a partial update (E31). Flask stays authoritative.
+const PROFILE_SPEC: Record<ProfileKey, FieldSpec> = { name: REGISTER_SPEC.name, email: REGISTER_SPEC.email };
+
+/** The fields whose normalized value differs from the saved one: the only ones the form sends (P7). */
+export function profileChanges(
+  values: Record<ProfileKey, string>,
+  saved: Record<ProfileKey, string>,
+): Partial<Record<ProfileKey, string>> {
+  const changes: Partial<Record<ProfileKey, string>> = {};
+  for (const key of PROFILE_FIELDS) {
+    const next = PROFILE_SPEC[key].normalize(values[key]);
+    if (next !== PROFILE_SPEC[key].normalize(saved[key])) changes[key] = values[key];
+  }
+  return changes;
+}
+
+/** Validate and normalize the keys present in `raw`. An unknown key is "Unknown field.", an absent key is fine. */
+export function validateProfile(raw: Record<string, unknown>) {
+  return validate(PROFILE_SPEC, raw, true);
 }

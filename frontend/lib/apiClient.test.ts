@@ -119,6 +119,7 @@ const MEMBER_ID = "1a2b3c4d-5e6f-4a7b-8c9d-0e1f2a3b4c5d";
 
 describe("apiRequest allowlist", () => {
   it.each([
+    ["PATCH", "/api/users/me"],
     ["POST", "/api/boards"],
     ["PATCH", `/api/boards/${BOARD_ID}`],
     ["DELETE", `/api/boards/${BOARD_ID}`],
@@ -142,6 +143,14 @@ describe("apiRequest allowlist", () => {
     ["DELETE", `/api/boards/${BOARD_ID}?x=1`],
     ["PATCH", `https://evil.example/api/boards/${BOARD_ID}`],
     ["POST", `/api/boards/${BOARD_ID}/members/`],
+    ["GET", "/api/users/me"],
+    ["POST", "/api/users/me"],
+    ["DELETE", "/api/users/me"],
+    ["PATCH", "/api/users"],
+    ["PATCH", "/api/users/me/"],
+    ["PATCH", "/api/users/me/password"],
+    ["PATCH", `/api/users/${MEMBER_ID}`],
+    ["PATCH", "/api/users/me?x=1"],
   ] as const)("refuses the undeclared pair %s %s", (method, path) => {
     expect(isDeclaredApiRequest(method as never, path)).toBe(false);
   });

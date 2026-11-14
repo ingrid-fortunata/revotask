@@ -1,4 +1,4 @@
-import { render, renderHook, screen } from "@testing-library/react";
+import { act, render, renderHook, screen } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { describe, expect, it, vi } from "vitest";
 import { useAuth } from "@/hooks/useAuth";
@@ -50,5 +50,71 @@ describe("AuthProvider and useAuth", () => {
     expect(window.localStorage.length).toBe(0);
     expect(window.sessionStorage.length).toBe(0);
     expect(document.cookie).toBe("");
+  });
+
+  describe("setUser (profile save, P6)", () => {
+    const ada: PublicUser = { id: "1", name: "Ada", email: "ada@example.com" };
+    const wrapperFor = (user: PublicUser) =>
+      function Wrapper({ children }: { children: ReactNode }) {
+        return <AuthProvider user={user}>{children}</AuthProvider>;
+      };
+
+    it("replaces the user at once and keeps only the three allowed fields", () => {
+      const { result } = renderHook(() => useAuth(), { wrapper: wrapperFor(ada) });
+      const leaky = {
+        id: "1",
+        name: "Grace",
+        email: "grace@example.com",
+        access_token: "secret-sentinel",
+        password_hash: "x",
+      } as PublicUser;
+      act(() => result.current.setUser(leaky));
+      expect(result.current.user).toEqual({ id: "1", name: "Grace", email: "grace@example.com" });
+      expect(JSON.stringify(result.current.user)).not.toMatch(/secret-sentinel|password|token/);
+    });
+
+    it("gives setUser a stable identity", () => {
+      const { result, rerender } = renderHook(() => useAuth(), { wrapper: wrapperFor(ada) });
+      const first = result.current.setUser;
+      rerender();
+      expect(result.current.setUser).toBe(first);
+    });
+
+    it("follows a changed user prop from the server", () => {
+      function Harness({ user }: { user: PublicUser }) {
+        return (
+          <AuthProvider user={user}>
+            <Show />
+          </AuthProvider>
+        );
+      }
+      const { rerender } = render(<Harness user={ada} />);
+      rerender(<Harness user={{ ...ada, name: "Ada Lovelace" }} />);
+      expect(JSON.parse(screen.getByTestId("user").textContent ?? "").name).toBe("Ada Lovelace");
+    });
+
+    it("keeps a setUser value while the server prop is unchanged", () => {
+      function Harness({ user }: { user: PublicUser }) {
+        const { setUser } = useAuth();
+        return (
+          <>
+            <button onClick={() => setUser({ ...user, name: "Saved Name" })}>save</button>
+            <Show />
+          </>
+        );
+      }
+      const { rerender } = render(
+        <AuthProvider user={ada}>
+          <Harness user={ada} />
+        </AuthProvider>,
+      );
+      act(() => screen.getByRole("button", { name: "save" }).click());
+      rerender(
+        <AuthProvider user={{ ...ada }}>
+          <Harness user={ada} />
+        </AuthProvider>,
+      );
+      expect(JSON.parse(screen.getByTestId("user").textContent ?? "").name).toBe("Saved Name");
+    });
   });
 });

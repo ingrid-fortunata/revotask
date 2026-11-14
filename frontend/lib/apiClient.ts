@@ -23,6 +23,8 @@ const DECLARED_BOARD_REQUESTS: ReadonlyArray<{
   method: ApiMethod;
   pattern: RegExp;
 }> = [
+  // The profile update (E31). No other /api/users path is declared: the page reads E30 on the server.
+  { method: "PATCH", pattern: /^\/api\/users\/me$/ },
   { method: "POST", pattern: /^\/api\/boards$/ },
   { method: "PATCH", pattern: new RegExp(`^/api/boards/${UUID}$`) },
   { method: "DELETE", pattern: new RegExp(`^/api/boards/${UUID}$`) },
