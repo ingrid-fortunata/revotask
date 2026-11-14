@@ -66,6 +66,8 @@ def test_registered_routes_match_the_implemented_slices():
         "cards.update_card_view",
         "cards.delete_card_view",
         "cards.move_card_view",
+        "cards.list_my_tasks_view",
+        "cards.search_cards_view",
         "comments.list_comments_view",
         "comments.create_comment_view",
         "comments.update_comment_view",

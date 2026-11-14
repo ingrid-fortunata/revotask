@@ -13,7 +13,7 @@ from marshmallow import RAISE, Schema, ValidationError, fields, validate, valida
 
 from app.blueprints.columns.schema import ID_MESSAGE, VERSION_MESSAGE
 from app.positions import MAX_POSITION_VERSION
-from app.validation import NOT_TEXT, REQUIRED, BoundedInt, TrimmedString
+from app.validation import NOT_TEXT, REQUIRED, BoundedInt, TrimmedString, not_blank
 
 CARD_TITLE_MAX = 160
 CARD_TITLE_LENGTH = f"Must be 1 to {CARD_TITLE_MAX} characters."
@@ -101,3 +101,74 @@ class CardPositionSchema(Schema):
         required=True,
         error_messages={"required": REQUIRED, "null": REQUIRED, "invalid": VERSION_MESSAGE},
     )
+
+
+ME_MESSAGE = "Must be me."
+SEARCH_MAX = 100
+SEARCH_LENGTH = f"Must be at most {SEARCH_MAX} characters."
+SEARCH_TEXT = "Enter valid text."
+
+
+def _search_text(value: str) -> None:
+    if len(value) > SEARCH_MAX:
+        raise ValidationError(SEARCH_LENGTH)
+    if "\x00" in value:  # PostgreSQL cannot compare a NUL character (Q4)
+        raise ValidationError(SEARCH_TEXT)
+
+
+class MyTasksQuerySchema(Schema):
+    """E21 query: `assignee=me` only."""
+
+    assignee = fields.String(
+        required=True,
+        validate=validate.Equal("me", error=ME_MESSAGE),
+        error_messages={"required": REQUIRED, "null": REQUIRED, "invalid": ME_MESSAGE},
+    )
+
+
+class CardSearchQuerySchema(Schema):
+    """E22 query: `q`, trimmed, 1 to 100 characters, no NUL."""
+
+    q = TrimmedString(
+        required=True,
+        validate=[not_blank, _search_text],
+        error_messages={"required": REQUIRED, "null": REQUIRED, "invalid": NOT_TEXT},
+    )
+
+
+class TaskItemSchema(Schema):
+    """E21 item: the Card fields plus the board's ID and name. Allowlist, dump only."""
+
+    id = fields.UUID()
+    column_id = fields.UUID()
+    title = fields.String()
+    description = fields.String(allow_none=True)
+    assignee_id = fields.UUID(allow_none=True)
+    assignee_name = fields.String(allow_none=True)
+    order = fields.Float()
+    board_id = fields.UUID()
+    board_name = fields.String()
+
+    class Meta:
+        fields = (
+            "id",
+            "column_id",
+            "title",
+            "description",
+            "assignee_id",
+            "assignee_name",
+            "order",
+            "board_id",
+            "board_name",
+        )
+
+
+class SearchResultSchema(Schema):
+    """E22 item: the card ID, title and column. No description, assignee or comment."""
+
+    id = fields.UUID()
+    title = fields.String()
+    column_id = fields.UUID()
+
+    class Meta:
+        fields = ("id", "title", "column_id")

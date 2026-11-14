@@ -1,4 +1,4 @@
-"""Card routes E17–E20. Thin routes: authenticate, validate, call the service, serialize (BE02).
+"""Card routes E17–E22. Thin routes: authenticate, validate, call the service, serialize (BE02).
 
 Order per request: `token_required`, then path IDs and the body shape without a database lookup,
 then the service checks access, takes the board lock and rechecks before any write.
@@ -13,9 +13,17 @@ from flask import g, jsonify
 from app.auth_guard import parse_uuid, token_required
 from app.blueprints.boards.schema import CardSchema, ColumnSchema
 from app.blueprints.cards import cards_bp, service
-from app.blueprints.cards.schema import CardCreateSchema, CardPositionSchema, CardUpdateSchema
+from app.blueprints.cards.schema import (
+    CardCreateSchema,
+    CardPositionSchema,
+    CardSearchQuerySchema,
+    CardUpdateSchema,
+    MyTasksQuerySchema,
+    SearchResultSchema,
+    TaskItemSchema,
+)
 from app.exceptions import RequestValidationError
-from app.validation import load_json_body
+from app.validation import load_json_body, load_query_args
 
 
 def _path_id(value: str) -> uuid.UUID:
@@ -78,3 +86,21 @@ def move_card_view(card_id: str):
             "position_version": result["position_version"],
         }
     )
+
+
+@cards_bp.get("/api/cards")
+@token_required
+def list_my_tasks_view():
+    """E21. The only accepted query is `assignee=me` (S3). Read-only."""
+    load_query_args(MyTasksQuerySchema())
+    return jsonify(data=TaskItemSchema(many=True).dump(service.my_tasks(g.current_user.id)))
+
+
+@cards_bp.get("/api/boards/<board_id>/cards/search")
+@token_required
+def search_cards_view(board_id: str):
+    """E22. Order: path ID (400), query (400), then board access (404). Read-only."""
+    board_uuid = _path_id(board_id)
+    query = load_query_args(CardSearchQuerySchema())
+    cards = service.search_cards(board_uuid, g.current_user.id, query["q"])
+    return jsonify(data=SearchResultSchema(many=True).dump(cards))

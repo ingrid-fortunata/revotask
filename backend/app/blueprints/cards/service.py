@@ -11,7 +11,7 @@ from __future__ import annotations
 import uuid
 from typing import Any
 
-from sqlalchemy import select, update
+from sqlalchemy import and_, func, select, update
 
 from app.blueprints.boards.service import authorize_board, commit_or_rollback, read_columns
 from app.blueprints.columns.service import board_of_column, load_column
@@ -23,6 +23,7 @@ from app.exceptions import (
 )
 from app.extensions import db
 from app.models.base import utcnow
+from app.models.board import Board
 from app.models.board_column import BoardColumn
 from app.models.board_member import BoardMember
 from app.models.card import Card
@@ -36,6 +37,7 @@ from app.positions import (
 )
 
 ASSIGNEE_MESSAGE = "Choose a participant of this board."
+SEARCH_LIMIT = 20
 
 
 def board_of_card(card_id: uuid.UUID) -> uuid.UUID:
@@ -256,3 +258,66 @@ def move_card(
     }
     commit_or_rollback()
     return result
+
+
+def my_tasks(user_id: uuid.UUID) -> list[dict[str, Any]]:
+    """E21: every active card assigned to the caller on an active board they belong to.
+
+    Read-only: no lock, event or write. The membership join checks access in the same snapshot, so
+    a removal hides the board's cards at once. Sorted by lower-case board name, board ID, column
+    order, card order, then card ID (S1, Q5). Done cards are included (S2).
+    """
+    rows = db.session.execute(
+        select(
+            Card.id,
+            Card.column_id,
+            Card.title,
+            Card.description,
+            Card.assignee_id,
+            User.name.label("assignee_name"),
+            Card.order,
+            Board.id.label("board_id"),
+            Board.name.label("board_name"),
+        )
+        .join(BoardColumn, BoardColumn.id == Card.column_id)
+        .join(Board, Board.id == BoardColumn.board_id)
+        .join(
+            BoardMember,
+            and_(
+                BoardMember.board_id == Board.id,
+                BoardMember.user_id == user_id,
+                BoardMember.deleted_at.is_(None),
+            ),
+        )
+        .join(User, User.id == Card.assignee_id)
+        .where(
+            Card.assignee_id == user_id,
+            Card.deleted_at.is_(None),
+            BoardColumn.deleted_at.is_(None),
+            Board.deleted_at.is_(None),
+        )
+        .order_by(func.lower(Board.name), Board.id, BoardColumn.order, Card.order, Card.id)
+    ).all()
+    return [row._asdict() for row in rows]
+
+
+def search_cards(board_id: uuid.UUID, user_id: uuid.UUID, q: str) -> list[dict[str, Any]]:
+    """E22: up to 20 active cards of the board whose title contains `q`, in board order.
+
+    Read-only: no lock, event or write. `autoescape` makes `%`, `_` and the escape character
+    literal. Case-insensitive, title only. A nonmember gets the generic 404 (C1).
+    """
+    authorize_board(board_id, user_id)
+    rows = db.session.execute(
+        select(Card.id, Card.title, Card.column_id)
+        .join(BoardColumn, BoardColumn.id == Card.column_id)
+        .where(
+            BoardColumn.board_id == board_id,
+            BoardColumn.deleted_at.is_(None),
+            Card.deleted_at.is_(None),
+            Card.title.icontains(q, autoescape=True),
+        )
+        .order_by(BoardColumn.order, Card.order, Card.id)
+        .limit(SEARCH_LIMIT)
+    ).all()
+    return [row._asdict() for row in rows]

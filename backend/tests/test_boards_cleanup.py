@@ -208,3 +208,44 @@ def test_record_helpers_read_ids_from_the_201_bodies(app, schema_at_head):
     assert tracker.card_ids == [card_id]
     with pytest.raises(AssertionError):
         tracker.record_card_from_response(_FakeResponse(400, {}))
+
+
+def test_teardown_after_my_tasks_and_search_requests_keeps_the_sentinel(app, schema_at_head):
+    """T11 task 2.5: rows behind E21 and E22 requests are tracked and removed after a failure.
+
+    The untracked sentinel board, its card (assigned to the untracked sentinel user) and its
+    membership survive, and E21 for a tracked user never returns the sentinel's card.
+    """
+    from tests.kanban_helpers import make_kanban
+    from tests.search_helpers import my_tasks_get, search_get
+
+    sentinel = seed_untracked_sentinel(app)
+    try:
+        teardown = tracked_boards(app)
+        tracker = next(teardown)
+        state: dict = {}
+        try:
+            with pytest.raises(AssertionError, match="deliberate failure"):
+                kanban = make_kanban(tracker, app)
+                column_id = tracker.make_column(kanban.board_id)
+                card_id = tracker.make_card(column_id, "Search me", assignee_id=kanban.admin.id)
+                client = app.test_client()
+                tasks = my_tasks_get(client, kanban.headers()).get_json()["data"]
+                found = search_get(client, kanban.headers(), kanban.board_id, "search").get_json()
+                assert [item["id"] for item in tasks] == [str(card_id)]
+                assert [item["id"] for item in found["data"]] == [str(card_id)]
+                state["card_id"] = card_id
+                state["board_id"] = kanban.board_id
+                raise AssertionError("harness: deliberate failure after the reads")
+        finally:
+            assert next(teardown, None) is None
+
+        assert count_rows(app, Card, [state["card_id"]]) == 0
+        assert count_rows(app, Board, [state["board_id"]]) == 0
+        assert count_rows(app, Board, [sentinel["board"]]) == 1
+        assert count_rows(app, BoardMember, [sentinel["membership"]]) == 1
+        assert count_rows(app, BoardColumn, [sentinel["column"]]) == 1
+        assert count_rows(app, Card, [sentinel["card"]]) == 1
+        assert count_rows(app, User, [sentinel["user"]]) == 1
+    finally:
+        remove_untracked_sentinel(app, sentinel)

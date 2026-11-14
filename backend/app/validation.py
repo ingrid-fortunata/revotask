@@ -90,6 +90,27 @@ def load_json_body(schema: Schema) -> dict[str, Any]:
         raise RequestValidationError(fields=field_messages) from None
 
 
+def load_query_args(schema: Schema) -> dict[str, Any]:
+    """Validate the URL query string with `schema` (S3).
+
+    Each known parameter must be sent once. A repeated known key gets "Send one value." on its
+    field. An unknown key is an error with the standard message and no field entry for it. The
+    messages never echo input. No database access happens here.
+    """
+    raw = request.args.to_dict(flat=False)
+    known = {key: values for key, values in raw.items() if key in schema.fields}
+    errors = {key: REPEATED for key, values in known.items() if len(values) > 1}
+    try:
+        loaded = schema.load({key: values[0] for key, values in known.items() if len(values) == 1})
+    except MarshmallowValidationError as exc:
+        loaded = {}
+        for key, message in first_messages(exc.messages).items():
+            errors.setdefault(key, message)
+    if errors or len(known) != len(raw):
+        raise RequestValidationError(fields=errors or None)
+    return loaded
+
+
 class StrictBool(fields.Field):
     """A JSON boolean only. `1`, `"true"` and `null` are rejected."""
 
