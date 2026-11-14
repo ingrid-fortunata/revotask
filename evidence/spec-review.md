@@ -344,8 +344,9 @@ Review of `.kiro/specs/notifications/`. Requirements were drafted by Claude Code
 | --- | --- | --- |
 | Requirements | Approved 2026-11-14 with clarifications (user, in chat) | 10 requirements. Decisions B1–B10 approved. `requirements.md` updated: the unassigned → A → B → A example, the 64-bit offset, the `id` tie-break, counts on an empty page, the E28 item and scoped conditional update, rejoin with the original read status, the exact count in the accessible name, link-follow and Mark as read failure behavior, the stale-response rule and the header controls checked at 320 and 375 px. |
 | Design | Approved 2026-11-14 (user, in chat) | `design.md`: DD1–DD15, 15 properties, contract clarifications C28–C33, review items R1–R8. Approved without changes. |
-| Tasks | Drafted 2026-11-14, awaiting approval | `tasks.md`: groups 0 to 8, 34 sub-tasks, each with an acceptance check. Gates: backend checks before the frontend calls E27 and E28 (B), full verification before the mobile record is final (C), root T13 last (D). |
-| Finalize | Not started | Root `specs/tasks.md` T13 link, traceability and the layer specs follow the task approval. |
+| Tasks | Approved 2026-11-14 (user, by invoking `implement notification T13` for all tasks) | `tasks.md`: groups 0 to 8, 34 sub-tasks, each with an acceptance check. Gates: backend checks before the frontend calls E27 and E28 (B), full verification before the mobile record is final (C), root T13 last (D). |
+| Finalize | Done 2026-11-14 | `specs/tasks.md` T13 links `.kiro/specs/notifications/tasks.md`. `specs/traceability.md`, `guidelines/frontend.md` FE-D2, `frontend/specs/`, `backend/specs/data-model.md` and `specs/CHANGELOG.md` were synchronized. |
+| Implementation | Done 2026-11-14, local checks | See "Notifications implementation record" below and `evidence/notifications-T13.md`. |
 
 ### Decisions B1–B10 (approved 2026-11-14)
 
@@ -378,3 +379,7 @@ Applied at the user's request while the design is under review: `docs/API.md` (E
 | R6 | Model relationships | None. Keep plain foreign keys and explicit joins. |
 | R7 | Poll timer | One timer, restarted by every E27 request. |
 | R8 | Invalid-ID message | "The board ID is not valid." becomes "The ID is not valid." in `privateRoute.ts`. |
+
+### Notifications finalize and implementation record (2026-11-14)
+
+The user's invocation `/revotask-feature implement notification T13` (all tasks) was the plan approval, as for T10 to T12. Claude Code completed task 0.2 (the root T13 link, traceability, FE-D2 and the layer specs) and then every native group of `.kiro/specs/notifications/tasks.md`. The decisions B1–B10 and the design held without change to behavior or contract. Deviations that touched the spec (no behavior or contract change) are in `specs/CHANGELOG.md`: `UtcDateTime` moved to `app/validation.py` (an import cycle), and the header layout (a `flex-auto` brand block, a shorter account name and a wordmark hidden below 400 px), the panel text color and the long-title wrapping, all three found by the browser check. Checks: backend 1986 passed and 1 skipped with ruff clean, frontend 1958 passed in 93 files with lint and typecheck clean and `next build` succeeding, a 205-check Chrome run (device emulation) with 0 failed after three real defects were fixed, and two mutation checks that made the matching tests fail. Root T13 is checked in `specs/tasks.md`. Open: Playwright (V10), real-device checks (T15), deployment (T16) and a limit on notification volume per user (T16). Evidence: `evidence/notifications-T13.md`.

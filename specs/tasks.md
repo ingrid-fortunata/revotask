@@ -16,10 +16,10 @@ Mark complete only after code review and verification. Every task that adds UI a
 | T10 | T08, T09 | Implement comments routes and modal, tests for auth and ownership, and React tests for display components. Native spec: [comments](../.kiro/specs/comments/tasks.md). |
 | T11 | T08, T09 | Implement My Tasks and board search, including 300 ms debounce and stale-response guard. Native spec: [my-tasks-search](../.kiro/specs/my-tasks-search/tasks.md). |
 | T12 | T04 | Implement the profile update API (E31; the E30 read exists from T03) and the profile UI with conflict and forbidden-field tests. Native spec: [profile](../.kiro/specs/profile/tasks.md). |
-| T13 | T10 | Add transactional notifications for assignment/comment, recipient read APIs and 30-second bell polling. |
+| T13 | T10 | Add transactional notifications for assignment/comment, recipient read APIs and 30-second bell polling. Native spec: [notifications](../.kiro/specs/notifications/tasks.md). |
 | T14 | T08, T10 | Implement analytics SQLAlchemy aggregates and UI. Validate zero columns, UTC week boundaries and distinct completions. |
 | T15 | T04, T09, T10, T11, T12, T13, T14 | Complete the local integration and Playwright suites, including the automated boards-membership journey (create board, open, add member, remove member, delete board) carried from T05–T06 and the automated Kanban journey (add column, add card, edit and assign, desktop `dragTo()` and the Move button, reload, a forced 409, delete) carried from T07–T09, using the test IDs `card-<id>`, `dropzone-<columnId>-before-<cardId>` and `dropzone-<columnId>-end`, and the comments journey carried from T10 (open a card, add, edit and delete a comment, reload, a second user who cannot edit it, using the names "Open <title>" and "Card details"). Run local acceptance, capture warm timing, a 375 px check of every route and the core flow, error and rollback evidence, and record readiness for publishing. |
-| T16 | T15 | When ready to publish, connect GitHub and configure CI with isolated PostgreSQL. Migrate Supabase once, deploy Render as a Docker Web Service from backend/Dockerfile and Vercel, verify the live API, record warm deployed timing, run live Playwright, save the sanitized full report and record tested revisions. Before production traffic, choose shared rate-limit storage and trusted client address handling for the login and register limits. Keep `GUNICORN_WORKERS=1` on Render (and locally, as Compose sets it) until the limiter uses shared storage, and do not run more workers before then. Local limiter checks prove local behavior only. Also add a per-admin rate limit on E11 using the shared storage, and note that E11 `USER_NOT_FOUND` lets a board admin test whether an email is registered (account enumeration, accepted for v1). |
+| T16 | T15 | When ready to publish, connect GitHub and configure CI with isolated PostgreSQL. Migrate Supabase once, deploy Render as a Docker Web Service from backend/Dockerfile and Vercel, verify the live API, record warm deployed timing, run live Playwright, save the sanitized full report and record tested revisions. Before production traffic, choose shared rate-limit storage and trusted client address handling for the login and register limits. Keep `GUNICORN_WORKERS=1` on Render (and locally, as Compose sets it) until the limiter uses shared storage, and do not run more workers before then. Local limiter checks prove local behavior only. Also add a per-admin rate limit on E11 using the shared storage, and note that E11 `USER_NOT_FOUND` lets a board admin test whether an email is registered (account enumeration, accepted for v1). Also decide a limit on the notifications one user can cause (T13 leaves comments and assignments unlimited). |
 | T17 | T16 | Verify the four documentation files, real review corrections and submission evidence. Update changelogs and tag the verified deployed application revision. Record the evidence revision. |
 
 ## Completion tracker
@@ -36,7 +36,7 @@ Mark complete only after code review and verification. Every task that adds UI a
 - [x] T10
 - [x] T11
 - [x] T12
-- [ ] T13
+- [x] T13
 - [ ] T14
 - [ ] T15
 - [ ] T16

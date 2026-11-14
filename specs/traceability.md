@@ -14,7 +14,7 @@ Every row is planned. E codes refer to the [API](../docs/API.md), T codes to [ta
 | AC07.1, AC07.2         | D4–D5 · E20 · Kanban move                                                                                                                                                                                       | T08, T09                                  | V04, V05, V10, V11 |
 | AC08.1, AC08.2         | D2, D5 · E23–E26 · Card detail modal                                                                                                                                                                            | T10                                       | V06, V10           |
 | AC09.1                 | D5–D6 · E22 · Board search (`.kiro/specs/my-tasks-search`)                                                                                                                                                                                      | T11                                       | V07, V11           |
-| AC10.1, AC10.2         | D3, D6 · E17–E18, E24, E27–E28 · Notification bell                                                                                                                                                              | T13                                       | V08, V11           |
+| AC10.1, AC10.2         | D3, D6 · E17–E18, E24, E27–E28 · Notification bell (`.kiro/specs/notifications`)                                                                                                                                                              | T13                                       | V08, V11           |
 | AC11.1                 | D3, D6 · E29 · Analytics panel                                                                                                                                                                                  | T14                                       | V08                |
 | AC12.1                 | D2, D5 · E30–E31 · `/profile`                                                                                                                                                                                   | T03 (E30 read), T04 (shell consumer), T12 | V07                |
 | AC13.1                 | D5 · every page, dialog and control, and the Move control                                                                                                                                                       | T04, T06, T09–T14 (each UI task), T15     | V11                |
@@ -43,7 +43,7 @@ Use this map to verify that every route and page has a task. The acceptance matr
 | E30 GET current user                     | T03                 |
 | E30 consumption by the protected shell   | T04                 |
 | E31 profile update and profile UI        | T12 (done locally)  |
-| E27–E28 notifications                    | T13                 |
+| E27–E28 notifications and the bell       | T13 (done locally)  |
 | E29 analytics                            | T14                 |
 | /register and /login                     | T04                 |
 | / and /boards/[id]                       | T06, T09            |
