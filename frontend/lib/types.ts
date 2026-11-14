@@ -58,6 +58,17 @@ export type HeldSearch = { query: string; items: SearchResult[] };
 /** A result as shown: the card's current title and its current column name. */
 export type VisibleResult = { cardId: string; title: string; columnName: string };
 
+// Board analytics shape from docs/API.md (E29). `week_end` is exclusive. Counts are whole numbers.
+export type ColumnCount = { column_id: string; name: string; count: number };
+export type ActivityCount = { user_id: string; name: string; count: number };
+export type BoardAnalytics = {
+  week_start: string;
+  week_end: string;
+  cards_per_column: ColumnCount[];
+  completed_cards: number;
+  member_activity: ActivityCount[];
+};
+
 export type Membership = {
   user_id: string;
   name: string;

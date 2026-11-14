@@ -314,6 +314,31 @@ describe("apiRequest requests", () => {
   });
 });
 
+// The analytics read (T14; Requirement 8.1): one GET with no query string.
+describe("analytics allowlist", () => {
+  it("declares the E29 GET and refuses a query string, other paths and other hosts", () => {
+    expect(isDeclaredApiGet(`/api/boards/${BOARD_ID}/analytics`)).toBe(true);
+    for (const path of [
+      `/api/boards/${BOARD_ID}/analytics?week=1`,
+      `/api/boards/${BOARD_ID}/analytics/`,
+      `/api/boards/${BOARD_ID}/analytic`,
+      "/api/boards/not-a-uuid/analytics",
+      "/api/boards//analytics",
+      `https://evil.example/api/boards/${BOARD_ID}/analytics`,
+    ]) {
+      expect(isDeclaredApiGet(path)).toBe(false);
+    }
+  });
+
+  it("declares no write for analytics and throws before fetch for an undeclared read", async () => {
+    expect(isDeclaredApiRequest("POST", `/api/boards/${BOARD_ID}/analytics`)).toBe(false);
+    expect(isDeclaredApiRequest("DELETE", `/api/boards/${BOARD_ID}/analytics`)).toBe(false);
+    await expect(apiGet("/api/boards/not-a-uuid/analytics")).rejects.toThrow(/not declared/);
+    await expect(apiGet(`/api/boards/${BOARD_ID}/analytics?x=1`)).rejects.toThrow(/not declared/);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+});
+
 // The notification pairs (T13; Requirement 10.3): one GET for the page and one PATCH to mark read.
 describe("notification allowlist", () => {
   const NOTE_ID = "33333333-3333-4333-8333-333333333333";

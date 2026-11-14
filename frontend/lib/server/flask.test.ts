@@ -310,6 +310,34 @@ describe("flaskRequest UUID-only path substitution", () => {
   });
 });
 
+describe("flaskRequest boardAnalytics route (T14)", () => {
+  const BOARD_ID = "0f9c4f2e-1a2b-4c3d-8e4f-5a6b7c8d9e0f";
+
+  it("fills :boardId with a UUID only and calls the E29 path", async () => {
+    fetchMock.mockResolvedValue(reply(200, '{"data":{}}'));
+    await flaskRequest({
+      route: "boardAnalytics",
+      method: "GET",
+      params: { boardId: BOARD_ID },
+      token: "tok",
+      requestId: "a-1",
+    });
+    expect(String(fetchMock.mock.calls[0][0])).toBe(
+      `http://127.0.0.1:5001/api/boards/${BOARD_ID}/analytics`,
+    );
+    await expect(
+      flaskRequest({
+        route: "boardAnalytics",
+        method: "GET",
+        params: { boardId: "../x" },
+        token: "tok",
+        requestId: "a-2",
+      }),
+    ).rejects.toThrow(/boardId must be a UUID/);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+});
+
 describe("flaskRequest search option (S3)", () => {
   const call = (search: string | undefined) =>
     flaskRequest({ route: "myTasks", method: "GET", token: "tok", requestId: "r-1", search });

@@ -25,6 +25,7 @@ export const FLASK_PATHS = {
   comment: "/api/comments/:commentId",
   myTasks: "/api/cards",
   boardCardSearch: "/api/boards/:boardId/cards/search",
+  boardAnalytics: "/api/boards/:boardId/analytics",
   notifications: "/api/notifications",
   notificationRead: "/api/notifications/:notificationId/read",
 } as const;
