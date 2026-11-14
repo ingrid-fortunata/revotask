@@ -15,6 +15,7 @@ from sqlalchemy import and_, func, select, update
 
 from app.blueprints.boards.service import authorize_board, commit_or_rollback, read_columns
 from app.blueprints.columns.service import board_of_column, load_column
+from app.blueprints.notifications.service import add_notification
 from app.exceptions import (
     InvalidDestinationError,
     NotFoundError,
@@ -150,6 +151,9 @@ def create_card(column_id: uuid.UUID, user_id: uuid.UUID, data: dict[str, Any]) 
     record_event(board_id, user_id, "card_created", card_id)
     if column.is_done:
         record_event(board_id, user_id, "entered_done", card_id)
+    # A new assignee other than the caller is told in this transaction (B2, C28).
+    if assignee_id is not None and assignee_id != user_id:
+        add_notification(assignee_id, user_id, board_id, card_id, "assigned")
     created = _card_dict(card_id)
     commit_or_rollback()
     return {"card": created, "position_version": version}
@@ -163,12 +167,17 @@ def update_card(card_id: uuid.UUID, user_id: uuid.UUID, changes: dict[str, Any])
     board_id = board_of_card(card_id)
     authorize_board(board_id, user_id, lock=True)
     card = load_card(card_id, board_id)
+    # Read under the lock, before the change, so "unchanged" is an exact test (C28).
+    previous_assignee = card.assignee_id
     if changes.get("assignee_id") is not None:
         _require_participant(board_id, changes["assignee_id"])
     for field in ("title", "description", "assignee_id"):
         if field in changes:
             setattr(card, field, changes[field])
     db.session.flush()
+    new_assignee = changes.get("assignee_id")
+    if new_assignee is not None and new_assignee != previous_assignee and new_assignee != user_id:
+        add_notification(new_assignee, user_id, board_id, card_id, "assigned")
     updated = _card_dict(card_id)
     commit_or_rollback()
     return updated

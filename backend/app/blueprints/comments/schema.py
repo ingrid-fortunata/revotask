@@ -8,12 +8,9 @@ The response schema lists its fields in `Meta.fields`.
 
 from __future__ import annotations
 
-from datetime import UTC, datetime
-from typing import Any
-
 from marshmallow import RAISE, Schema, fields, validate
 
-from app.validation import NOT_TEXT, REQUIRED, TrimmedString
+from app.validation import NOT_TEXT, REQUIRED, TrimmedString, UtcDateTime
 
 COMMENT_MAX = 2000
 CONTENT_LENGTH = f"Must be 1 to {COMMENT_MAX} characters."
@@ -30,15 +27,6 @@ class CommentContentSchema(Schema):
         error_messages={"required": REQUIRED, "null": REQUIRED, "invalid": NOT_TEXT},
         validate=validate.Length(min=1, max=COMMENT_MAX, error=CONTENT_LENGTH),
     )
-
-
-class UtcDateTime(fields.Field):
-    """An aware datetime as ISO 8601 UTC, whatever time zone the connection returned (DD7)."""
-
-    def _serialize(self, value: datetime | None, attr: str | None, obj: Any, **kwargs: Any):
-        if value is None:
-            return None
-        return value.astimezone(UTC).isoformat()
 
 
 class CommentSchema(Schema):

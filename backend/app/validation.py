@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import re
 from collections.abc import Mapping
+from datetime import UTC, datetime
 from typing import Any
 
 from flask import request
@@ -52,6 +53,15 @@ class NormalizedString(fields.String):
 
     def _deserialize(self, value: Any, attr: str | None, data: Any, **kwargs: Any) -> str:
         return normalize_email(super()._deserialize(value, attr, data, **kwargs))
+
+
+class UtcDateTime(fields.Field):
+    """An aware datetime as ISO 8601 UTC, whatever zone the connection returned (comments DD7)."""
+
+    def _serialize(self, value: datetime | None, attr: str | None, obj: Any, **kwargs: Any):
+        if value is None:
+            return None
+        return value.astimezone(UTC).isoformat()
 
 
 def not_blank(value: str) -> None:

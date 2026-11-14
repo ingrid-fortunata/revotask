@@ -40,7 +40,8 @@ class Notification(UUIDPrimaryKeyMixin, db.Model):
     actor_id: Mapped[uuid.UUID] = mapped_column(
         Uuid, ForeignKey("revotask.users.id", ondelete="RESTRICT"), nullable=False
     )
-    # Plain foreign keys to boards and cards. Relationships come with T13 (A10).
+    # Plain foreign keys to boards and cards. The notification queries join them explicitly, so no
+    # relationship is added (T13, R6).
     board_id: Mapped[uuid.UUID] = mapped_column(
         Uuid, ForeignKey("revotask.boards.id", ondelete="RESTRICT"), nullable=False
     )

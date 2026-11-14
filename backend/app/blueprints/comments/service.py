@@ -15,6 +15,7 @@ from sqlalchemy import select
 
 from app.blueprints.boards.service import authorize_board, commit_or_rollback
 from app.blueprints.cards.service import board_of_card, load_card
+from app.blueprints.notifications.service import add_notification
 from app.exceptions import NotFoundError, UnauthorizedBoardAccessError
 from app.extensions import db
 from app.models.base import utcnow
@@ -104,7 +105,7 @@ def create_comment(card_id: uuid.UUID, user_id: uuid.UUID, content: str) -> dict
     """Add a comment as any participant and record `comment_created` (E24)."""
     board_id = board_of_card(card_id)
     authorize_board(board_id, user_id, lock=True)
-    load_card(card_id, board_id)
+    card = load_card(card_id, board_id)
     # One clock reading, so a new comment never looks edited (N1, DD6).
     now = utcnow()
     comment = CardComment(
@@ -113,7 +114,9 @@ def create_comment(card_id: uuid.UUID, user_id: uuid.UUID, content: str) -> dict
     db.session.add(comment)
     db.session.flush()
     record_event(board_id, user_id, "comment_created", card_id)
-    # T13 adds the assignee notification here, in this transaction.
+    # The assignee read under the lock is told in this transaction (B2, C28).
+    if card.assignee_id is not None and card.assignee_id != user_id:
+        add_notification(card.assignee_id, user_id, board_id, card_id, "commented")
     created = _comment_dict(comment.id)
     commit_or_rollback()
     return created
