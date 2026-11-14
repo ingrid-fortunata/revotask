@@ -1,0 +1,2839 @@
+{
+  "slice": "profile (T12)",
+  "browser": "Chrome/157.0.8103.51",
+  "mode": "headless Chrome with device emulation (not a real phone), touch emulation below 640 px",
+  "widths": [
+    320,
+    375,
+    768,
+    1280
+  ],
+  "total": 376,
+  "failed": 0,
+  "results": [
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 320,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 320,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "3 controls"
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 320,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 320,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 320,
+      "check": "the form has Name and Email and no password field",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 320,
+      "check": "Save changes is disabled while pristine",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 320,
+      "check": "the password sentence is shown",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 320,
+      "check": "the form is seeded with the stored name and email",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 320,
+      "check": "submitting a pristine form sends no request",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 320,
+      "check": "Profile, Boards, My tasks and Sign out are all in the header",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 320,
+      "check": "all four header controls are visible, inside the viewport and reachable at their center",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 320,
+      "check": "each of the four header controls is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "profile 88.6x44; boards 142x44; tasks 142x44; signout 87.2x44"
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 320,
+      "check": "the header causes no horizontal overflow",
+      "pass": true,
+      "detail": "header 0, scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 320,
+      "check": "the sticky bar does not overlap the content (main starts at or below the bar)",
+      "pass": true,
+      "detail": "header bottom 108, main top 108"
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 320,
+      "check": "the account link has aria-current=\"page\"",
+      "pass": true,
+      "detail": "page"
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 320,
+      "check": "Tab reaches Profile, Boards, My tasks and Sign out",
+      "pass": true,
+      "detail": "RevoTask | Boards | My tasks | Profile, Check User | Sign out | profile-name | profile-email | RevoTask"
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 320,
+      "check": "each of the four header controls shows a visible focus ring (outline >= 2px) when focused by keyboard",
+      "pass": true,
+      "detail": "Boards: 2px solid; My tasks: 2px solid; Profile, Check User: 2px solid; Sign out: 2px solid"
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 320,
+      "check": "Tab reaches the Name and Email fields, each with a visible focus indicator",
+      "pass": true,
+      "detail": "profile-name: 2px solid; profile-email: 2px solid"
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 320,
+      "check": "Save changes is skipped by Tab while the form is pristine (it is disabled)",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile field error",
+      "width": 320,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "user",
+      "page": "/profile field error",
+      "width": 320,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "3 controls"
+    },
+    {
+      "role": "user",
+      "page": "/profile field error",
+      "width": 320,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile field error",
+      "width": 320,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "user",
+      "page": "/profile field error",
+      "width": 320,
+      "check": "both inline messages show and focus is on the first invalid field",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile field error",
+      "width": 320,
+      "check": "the invalid form sent no request",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile 409",
+      "width": 320,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "user",
+      "page": "/profile 409",
+      "width": 320,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "3 controls"
+    },
+    {
+      "role": "user",
+      "page": "/profile 409",
+      "width": 320,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile 409",
+      "width": 320,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "user",
+      "page": "/profile 409",
+      "width": 320,
+      "check": "the 409 shows inline under Email, keeps both typed values and the header name",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile 409",
+      "width": 320,
+      "check": "Save changes is enabled again after the 409",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile 409",
+      "width": 320,
+      "check": "nothing was stored by the 409 (the name is the original, read from Flask)",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile saved",
+      "width": 320,
+      "check": "a name-only save sends one PATCH with only the name",
+      "pass": true,
+      "detail": "name"
+    },
+    {
+      "role": "user",
+      "page": "/profile saved",
+      "width": 320,
+      "check": "the header shows the new name at once, without a reload",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile saved",
+      "width": 320,
+      "check": "the form is pristine again and the user stays on /profile",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile saved",
+      "width": 320,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "user",
+      "page": "/profile saved",
+      "width": 320,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "3 controls"
+    },
+    {
+      "role": "user",
+      "page": "/profile saved",
+      "width": 320,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile saved",
+      "width": 320,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "user",
+      "page": "/profile saved",
+      "width": 320,
+      "check": "Profile, Boards, My tasks and Sign out are all in the header",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile saved",
+      "width": 320,
+      "check": "all four header controls are visible, inside the viewport and reachable at their center",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile saved",
+      "width": 320,
+      "check": "each of the four header controls is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "profile 105.6x44; boards 142x44; tasks 142x44; signout 87.2x44"
+    },
+    {
+      "role": "user",
+      "page": "/profile saved",
+      "width": 320,
+      "check": "the header causes no horizontal overflow",
+      "pass": true,
+      "detail": "header 0, scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "user",
+      "page": "/profile saved",
+      "width": 320,
+      "check": "the sticky bar does not overlap the content (main starts at or below the bar)",
+      "pass": true,
+      "detail": "header bottom 108, main top 108"
+    },
+    {
+      "role": "user",
+      "page": "/profile saved",
+      "width": 320,
+      "check": "the account link has aria-current=\"page\"",
+      "pass": true,
+      "detail": "page"
+    },
+    {
+      "role": "user",
+      "page": "/profile saved",
+      "width": 320,
+      "check": "Flask stores the new name and keeps the email (read from Flask)",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 375,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 375,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "3 controls"
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 375,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 375,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 375,
+      "check": "the form has Name and Email and no password field",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 375,
+      "check": "Save changes is disabled while pristine",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 375,
+      "check": "the password sentence is shown",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 375,
+      "check": "the form is seeded with the stored name and email",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 375,
+      "check": "submitting a pristine form sends no request",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 375,
+      "check": "Profile, Boards, My tasks and Sign out are all in the header",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 375,
+      "check": "all four header controls are visible, inside the viewport and reachable at their center",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 375,
+      "check": "each of the four header controls is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "profile 116.6x44; boards 169.5x44; tasks 169.5x44; signout 87.2x44"
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 375,
+      "check": "the header causes no horizontal overflow",
+      "pass": true,
+      "detail": "header 0, scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 375,
+      "check": "the sticky bar does not overlap the content (main starts at or below the bar)",
+      "pass": true,
+      "detail": "header bottom 108, main top 108"
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 375,
+      "check": "the account link has aria-current=\"page\"",
+      "pass": true,
+      "detail": "page"
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 375,
+      "check": "Tab reaches Profile, Boards, My tasks and Sign out",
+      "pass": true,
+      "detail": "RevoTask | Boards | My tasks | Profile, Check User 320 | Sign out | profile-name | profile-email | RevoTask"
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 375,
+      "check": "each of the four header controls shows a visible focus ring (outline >= 2px) when focused by keyboard",
+      "pass": true,
+      "detail": "Boards: 2px solid; My tasks: 2px solid; Profile, Check User 320: 2px solid; Sign out: 2px solid"
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 375,
+      "check": "Tab reaches the Name and Email fields, each with a visible focus indicator",
+      "pass": true,
+      "detail": "profile-name: 2px solid; profile-email: 2px solid"
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 375,
+      "check": "Save changes is skipped by Tab while the form is pristine (it is disabled)",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile field error",
+      "width": 375,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "user",
+      "page": "/profile field error",
+      "width": 375,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "3 controls"
+    },
+    {
+      "role": "user",
+      "page": "/profile field error",
+      "width": 375,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile field error",
+      "width": 375,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "user",
+      "page": "/profile field error",
+      "width": 375,
+      "check": "both inline messages show and focus is on the first invalid field",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile field error",
+      "width": 375,
+      "check": "the invalid form sent no request",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile 409",
+      "width": 375,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "user",
+      "page": "/profile 409",
+      "width": 375,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "3 controls"
+    },
+    {
+      "role": "user",
+      "page": "/profile 409",
+      "width": 375,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile 409",
+      "width": 375,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "user",
+      "page": "/profile 409",
+      "width": 375,
+      "check": "the 409 shows inline under Email, keeps both typed values and the header name",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile 409",
+      "width": 375,
+      "check": "Save changes is enabled again after the 409",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile 409",
+      "width": 375,
+      "check": "nothing was stored by the 409 (the name is the original, read from Flask)",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile saved",
+      "width": 375,
+      "check": "a name-only save sends one PATCH with only the name",
+      "pass": true,
+      "detail": "name"
+    },
+    {
+      "role": "user",
+      "page": "/profile saved",
+      "width": 375,
+      "check": "the header shows the new name at once, without a reload",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile saved",
+      "width": 375,
+      "check": "the form is pristine again and the user stays on /profile",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile saved",
+      "width": 375,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "user",
+      "page": "/profile saved",
+      "width": 375,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "3 controls"
+    },
+    {
+      "role": "user",
+      "page": "/profile saved",
+      "width": 375,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile saved",
+      "width": 375,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "user",
+      "page": "/profile saved",
+      "width": 375,
+      "check": "Profile, Boards, My tasks and Sign out are all in the header",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile saved",
+      "width": 375,
+      "check": "all four header controls are visible, inside the viewport and reachable at their center",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile saved",
+      "width": 375,
+      "check": "each of the four header controls is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "profile 121x44; boards 169.5x44; tasks 169.5x44; signout 87.2x44"
+    },
+    {
+      "role": "user",
+      "page": "/profile saved",
+      "width": 375,
+      "check": "the header causes no horizontal overflow",
+      "pass": true,
+      "detail": "header 0, scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "user",
+      "page": "/profile saved",
+      "width": 375,
+      "check": "the sticky bar does not overlap the content (main starts at or below the bar)",
+      "pass": true,
+      "detail": "header bottom 108, main top 108"
+    },
+    {
+      "role": "user",
+      "page": "/profile saved",
+      "width": 375,
+      "check": "the account link has aria-current=\"page\"",
+      "pass": true,
+      "detail": "page"
+    },
+    {
+      "role": "user",
+      "page": "/profile saved",
+      "width": 375,
+      "check": "Flask stores the new name and keeps the email (read from Flask)",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 768,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 768, innerWidth 768"
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 768,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "3 controls"
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 768,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 768,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 768,
+      "check": "the form has Name and Email and no password field",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 768,
+      "check": "Save changes is disabled while pristine",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 768,
+      "check": "the password sentence is shown",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 768,
+      "check": "the form is seeded with the stored name and email",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 768,
+      "check": "submitting a pristine form sends no request",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 768,
+      "check": "Profile, Boards, My tasks and Sign out are all in the header",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 768,
+      "check": "all four header controls are visible, inside the viewport and reachable at their center",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 768,
+      "check": "each of the four header controls is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "profile 183.3x44; boards 366x44; tasks 366x44; signout 87.2x44"
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 768,
+      "check": "the header causes no horizontal overflow",
+      "pass": true,
+      "detail": "header 0, scrollWidth 768, innerWidth 768"
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 768,
+      "check": "the sticky bar does not overlap the content (main starts at or below the bar)",
+      "pass": true,
+      "detail": "header bottom 108, main top 108"
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 768,
+      "check": "the account link has aria-current=\"page\"",
+      "pass": true,
+      "detail": "page"
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 768,
+      "check": "Tab reaches Profile, Boards, My tasks and Sign out",
+      "pass": true,
+      "detail": "RevoTask | Boards | My tasks | Profile, Check User 320 375 | Sign out | profile-name | profile-email | RevoTask"
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 768,
+      "check": "each of the four header controls shows a visible focus ring (outline >= 2px) when focused by keyboard",
+      "pass": true,
+      "detail": "Boards: 2px solid; My tasks: 2px solid; Profile, Check User 320 375: 2px solid; Sign out: 2px solid"
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 768,
+      "check": "Tab reaches the Name and Email fields, each with a visible focus indicator",
+      "pass": true,
+      "detail": "profile-name: 2px solid; profile-email: 2px solid"
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 768,
+      "check": "Save changes is skipped by Tab while the form is pristine (it is disabled)",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile field error",
+      "width": 768,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 768, innerWidth 768"
+    },
+    {
+      "role": "user",
+      "page": "/profile field error",
+      "width": 768,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "3 controls"
+    },
+    {
+      "role": "user",
+      "page": "/profile field error",
+      "width": 768,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile field error",
+      "width": 768,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "user",
+      "page": "/profile field error",
+      "width": 768,
+      "check": "both inline messages show and focus is on the first invalid field",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile field error",
+      "width": 768,
+      "check": "the invalid form sent no request",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile 409",
+      "width": 768,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 768, innerWidth 768"
+    },
+    {
+      "role": "user",
+      "page": "/profile 409",
+      "width": 768,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "3 controls"
+    },
+    {
+      "role": "user",
+      "page": "/profile 409",
+      "width": 768,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile 409",
+      "width": 768,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "user",
+      "page": "/profile 409",
+      "width": 768,
+      "check": "the 409 shows inline under Email, keeps both typed values and the header name",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile 409",
+      "width": 768,
+      "check": "Save changes is enabled again after the 409",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile 409",
+      "width": 768,
+      "check": "nothing was stored by the 409 (the name is the original, read from Flask)",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile saved",
+      "width": 768,
+      "check": "a name-only save sends one PATCH with only the name",
+      "pass": true,
+      "detail": "name"
+    },
+    {
+      "role": "user",
+      "page": "/profile saved",
+      "width": 768,
+      "check": "the header shows the new name at once, without a reload",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile saved",
+      "width": 768,
+      "check": "the form is pristine again and the user stays on /profile",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile saved",
+      "width": 768,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 768, innerWidth 768"
+    },
+    {
+      "role": "user",
+      "page": "/profile saved",
+      "width": 768,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "3 controls"
+    },
+    {
+      "role": "user",
+      "page": "/profile saved",
+      "width": 768,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile saved",
+      "width": 768,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "user",
+      "page": "/profile saved",
+      "width": 768,
+      "check": "Profile, Boards, My tasks and Sign out are all in the header",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile saved",
+      "width": 768,
+      "check": "all four header controls are visible, inside the viewport and reachable at their center",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile saved",
+      "width": 768,
+      "check": "each of the four header controls is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "profile 210.9x44; boards 366x44; tasks 366x44; signout 87.2x44"
+    },
+    {
+      "role": "user",
+      "page": "/profile saved",
+      "width": 768,
+      "check": "the header causes no horizontal overflow",
+      "pass": true,
+      "detail": "header 0, scrollWidth 768, innerWidth 768"
+    },
+    {
+      "role": "user",
+      "page": "/profile saved",
+      "width": 768,
+      "check": "the sticky bar does not overlap the content (main starts at or below the bar)",
+      "pass": true,
+      "detail": "header bottom 108, main top 108"
+    },
+    {
+      "role": "user",
+      "page": "/profile saved",
+      "width": 768,
+      "check": "the account link has aria-current=\"page\"",
+      "pass": true,
+      "detail": "page"
+    },
+    {
+      "role": "user",
+      "page": "/profile saved",
+      "width": 768,
+      "check": "Flask stores the new name and keeps the email (read from Flask)",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 1280,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 1280,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "3 controls"
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 1280,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 1280,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 1280,
+      "check": "the form has Name and Email and no password field",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 1280,
+      "check": "Save changes is disabled while pristine",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 1280,
+      "check": "the password sentence is shown",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 1280,
+      "check": "the form is seeded with the stored name and email",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 1280,
+      "check": "submitting a pristine form sends no request",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 1280,
+      "check": "Profile, Boards, My tasks and Sign out are all in the header",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 1280,
+      "check": "all four header controls are visible, inside the viewport and reachable at their center",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 1280,
+      "check": "each of the four header controls is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "profile 224x44; boards 232x44; tasks 232x44; signout 224x44"
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 1280,
+      "check": "the header causes no horizontal overflow",
+      "pass": true,
+      "detail": "header 0, scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 1280,
+      "check": "the sidebar does not overlap the content (main starts right of the sidebar)",
+      "pass": true,
+      "detail": "sidebar right 256, main left 256"
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 1280,
+      "check": "the account link has aria-current=\"page\"",
+      "pass": true,
+      "detail": "page"
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 1280,
+      "check": "Tab reaches Profile, Boards, My tasks and Sign out",
+      "pass": true,
+      "detail": "RevoTask | Boards | My tasks | Profile, Check User 320 375 768 | Sign out | profile-name | profile-email | RevoTask"
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 1280,
+      "check": "each of the four header controls shows a visible focus ring (outline >= 2px) when focused by keyboard",
+      "pass": true,
+      "detail": "Boards: 2px solid; My tasks: 2px solid; Profile, Check User 320 375 768: 2px solid; Sign out: 2px solid"
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 1280,
+      "check": "Tab reaches the Name and Email fields, each with a visible focus indicator",
+      "pass": true,
+      "detail": "profile-name: 2px solid; profile-email: 2px solid"
+    },
+    {
+      "role": "user",
+      "page": "/profile pristine",
+      "width": 1280,
+      "check": "Save changes is skipped by Tab while the form is pristine (it is disabled)",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile field error",
+      "width": 1280,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "user",
+      "page": "/profile field error",
+      "width": 1280,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "3 controls"
+    },
+    {
+      "role": "user",
+      "page": "/profile field error",
+      "width": 1280,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile field error",
+      "width": 1280,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "user",
+      "page": "/profile field error",
+      "width": 1280,
+      "check": "both inline messages show and focus is on the first invalid field",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile field error",
+      "width": 1280,
+      "check": "the invalid form sent no request",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile 409",
+      "width": 1280,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "user",
+      "page": "/profile 409",
+      "width": 1280,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "3 controls"
+    },
+    {
+      "role": "user",
+      "page": "/profile 409",
+      "width": 1280,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile 409",
+      "width": 1280,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "user",
+      "page": "/profile 409",
+      "width": 1280,
+      "check": "the 409 shows inline under Email, keeps both typed values and the header name",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile 409",
+      "width": 1280,
+      "check": "Save changes is enabled again after the 409",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile 409",
+      "width": 1280,
+      "check": "nothing was stored by the 409 (the name is the original, read from Flask)",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile saved",
+      "width": 1280,
+      "check": "a name-only save sends one PATCH with only the name",
+      "pass": true,
+      "detail": "name"
+    },
+    {
+      "role": "user",
+      "page": "/profile saved",
+      "width": 1280,
+      "check": "the header shows the new name at once, without a reload",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile saved",
+      "width": 1280,
+      "check": "the form is pristine again and the user stays on /profile",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile saved",
+      "width": 1280,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "user",
+      "page": "/profile saved",
+      "width": 1280,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "3 controls"
+    },
+    {
+      "role": "user",
+      "page": "/profile saved",
+      "width": 1280,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile saved",
+      "width": 1280,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "user",
+      "page": "/profile saved",
+      "width": 1280,
+      "check": "Profile, Boards, My tasks and Sign out are all in the header",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile saved",
+      "width": 1280,
+      "check": "all four header controls are visible, inside the viewport and reachable at their center",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "/profile saved",
+      "width": 1280,
+      "check": "each of the four header controls is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "profile 224x44; boards 232x44; tasks 232x44; signout 224x44"
+    },
+    {
+      "role": "user",
+      "page": "/profile saved",
+      "width": 1280,
+      "check": "the header causes no horizontal overflow",
+      "pass": true,
+      "detail": "header 0, scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "user",
+      "page": "/profile saved",
+      "width": 1280,
+      "check": "the sidebar does not overlap the content (main starts right of the sidebar)",
+      "pass": true,
+      "detail": "sidebar right 256, main left 256"
+    },
+    {
+      "role": "user",
+      "page": "/profile saved",
+      "width": 1280,
+      "check": "the account link has aria-current=\"page\"",
+      "pass": true,
+      "detail": "page"
+    },
+    {
+      "role": "user",
+      "page": "/profile saved",
+      "width": 1280,
+      "check": "Flask stores the new name and keeps the email (read from Flask)",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 320,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 320,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "3 controls"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 320,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 320,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 320,
+      "check": "the form has Name and Email and no password field",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 320,
+      "check": "Save changes is disabled while pristine",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 320,
+      "check": "the password sentence is shown",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 320,
+      "check": "the form is seeded with the stored name and email",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 320,
+      "check": "submitting a pristine form sends no request",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 320,
+      "check": "Profile, Boards, My tasks and Sign out are all in the header",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 320,
+      "check": "all four header controls are visible, inside the viewport and reachable at their center",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 320,
+      "check": "each of the four header controls is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "profile 105.6x44; boards 142x44; tasks 142x44; signout 87.2x44"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 320,
+      "check": "the header causes no horizontal overflow",
+      "pass": true,
+      "detail": "header 0, scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 320,
+      "check": "the sticky bar does not overlap the content (main starts at or below the bar)",
+      "pass": true,
+      "detail": "header bottom 108, main top 108"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 320,
+      "check": "the account link has aria-current=\"page\"",
+      "pass": true,
+      "detail": "page"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 320,
+      "check": "Tab reaches Profile, Boards, My tasks and Sign out",
+      "pass": true,
+      "detail": "RevoTask | Boards | My tasks | Profile, NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN | Sign out | profile-name | profile-email | RevoTask"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 320,
+      "check": "each of the four header controls shows a visible focus ring (outline >= 2px) when focused by keyboard",
+      "pass": true,
+      "detail": "Boards: 2px solid; My tasks: 2px solid; Profile, NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN: 2px solid; Sign out: 2px solid"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 320,
+      "check": "Tab reaches the Name and Email fields, each with a visible focus indicator",
+      "pass": true,
+      "detail": "profile-name: 2px solid; profile-email: 2px solid"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 320,
+      "check": "Save changes is skipped by Tab while the form is pristine (it is disabled)",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile field error",
+      "width": 320,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile field error",
+      "width": 320,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "3 controls"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile field error",
+      "width": 320,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile field error",
+      "width": 320,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile field error",
+      "width": 320,
+      "check": "both inline messages show and focus is on the first invalid field",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile field error",
+      "width": 320,
+      "check": "the invalid form sent no request",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile 409",
+      "width": 320,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile 409",
+      "width": 320,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "3 controls"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile 409",
+      "width": 320,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile 409",
+      "width": 320,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile 409",
+      "width": 320,
+      "check": "the 409 shows inline under Email, keeps both typed values and the header name",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile 409",
+      "width": 320,
+      "check": "Save changes is enabled again after the 409",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile 409",
+      "width": 320,
+      "check": "nothing was stored by the 409 (the name is the original, read from Flask)",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile saved",
+      "width": 320,
+      "check": "a name-only save sends one PATCH with only the name",
+      "pass": true,
+      "detail": "name"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile saved",
+      "width": 320,
+      "check": "the header shows the new name at once, without a reload",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile saved",
+      "width": 320,
+      "check": "the form is pristine again and the user stays on /profile",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile saved",
+      "width": 320,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile saved",
+      "width": 320,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "3 controls"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile saved",
+      "width": 320,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile saved",
+      "width": 320,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile saved",
+      "width": 320,
+      "check": "Profile, Boards, My tasks and Sign out are all in the header",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile saved",
+      "width": 320,
+      "check": "all four header controls are visible, inside the viewport and reachable at their center",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile saved",
+      "width": 320,
+      "check": "each of the four header controls is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "profile 105.6x44; boards 142x44; tasks 142x44; signout 87.2x44"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile saved",
+      "width": 320,
+      "check": "the header causes no horizontal overflow",
+      "pass": true,
+      "detail": "header 0, scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile saved",
+      "width": 320,
+      "check": "the sticky bar does not overlap the content (main starts at or below the bar)",
+      "pass": true,
+      "detail": "header bottom 108, main top 108"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile saved",
+      "width": 320,
+      "check": "the account link has aria-current=\"page\"",
+      "pass": true,
+      "detail": "page"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile saved",
+      "width": 320,
+      "check": "Flask stores the new name and keeps the email (read from Flask)",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 375,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 375,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "3 controls"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 375,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 375,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 375,
+      "check": "the form has Name and Email and no password field",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 375,
+      "check": "Save changes is disabled while pristine",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 375,
+      "check": "the password sentence is shown",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 375,
+      "check": "the form is seeded with the stored name and email",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 375,
+      "check": "submitting a pristine form sends no request",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 375,
+      "check": "Profile, Boards, My tasks and Sign out are all in the header",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 375,
+      "check": "all four header controls are visible, inside the viewport and reachable at their center",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 375,
+      "check": "each of the four header controls is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "profile 121x44; boards 169.5x44; tasks 169.5x44; signout 87.2x44"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 375,
+      "check": "the header causes no horizontal overflow",
+      "pass": true,
+      "detail": "header 0, scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 375,
+      "check": "the sticky bar does not overlap the content (main starts at or below the bar)",
+      "pass": true,
+      "detail": "header bottom 108, main top 108"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 375,
+      "check": "the account link has aria-current=\"page\"",
+      "pass": true,
+      "detail": "page"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 375,
+      "check": "Tab reaches Profile, Boards, My tasks and Sign out",
+      "pass": true,
+      "detail": "RevoTask | Boards | My tasks | Profile, NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN 320 | Sign out | profile-name | profile-email | RevoTask"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 375,
+      "check": "each of the four header controls shows a visible focus ring (outline >= 2px) when focused by keyboard",
+      "pass": true,
+      "detail": "Boards: 2px solid; My tasks: 2px solid; Profile, NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN 320: 2px solid; Sign out: 2px solid"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 375,
+      "check": "Tab reaches the Name and Email fields, each with a visible focus indicator",
+      "pass": true,
+      "detail": "profile-name: 2px solid; profile-email: 2px solid"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 375,
+      "check": "Save changes is skipped by Tab while the form is pristine (it is disabled)",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile field error",
+      "width": 375,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile field error",
+      "width": 375,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "3 controls"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile field error",
+      "width": 375,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile field error",
+      "width": 375,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile field error",
+      "width": 375,
+      "check": "both inline messages show and focus is on the first invalid field",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile field error",
+      "width": 375,
+      "check": "the invalid form sent no request",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile 409",
+      "width": 375,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile 409",
+      "width": 375,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "3 controls"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile 409",
+      "width": 375,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile 409",
+      "width": 375,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile 409",
+      "width": 375,
+      "check": "the 409 shows inline under Email, keeps both typed values and the header name",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile 409",
+      "width": 375,
+      "check": "Save changes is enabled again after the 409",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile 409",
+      "width": 375,
+      "check": "nothing was stored by the 409 (the name is the original, read from Flask)",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile saved",
+      "width": 375,
+      "check": "a name-only save sends one PATCH with only the name",
+      "pass": true,
+      "detail": "name"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile saved",
+      "width": 375,
+      "check": "the header shows the new name at once, without a reload",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile saved",
+      "width": 375,
+      "check": "the form is pristine again and the user stays on /profile",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile saved",
+      "width": 375,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile saved",
+      "width": 375,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "3 controls"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile saved",
+      "width": 375,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile saved",
+      "width": 375,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile saved",
+      "width": 375,
+      "check": "Profile, Boards, My tasks and Sign out are all in the header",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile saved",
+      "width": 375,
+      "check": "all four header controls are visible, inside the viewport and reachable at their center",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile saved",
+      "width": 375,
+      "check": "each of the four header controls is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "profile 121x44; boards 169.5x44; tasks 169.5x44; signout 87.2x44"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile saved",
+      "width": 375,
+      "check": "the header causes no horizontal overflow",
+      "pass": true,
+      "detail": "header 0, scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile saved",
+      "width": 375,
+      "check": "the sticky bar does not overlap the content (main starts at or below the bar)",
+      "pass": true,
+      "detail": "header bottom 108, main top 108"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile saved",
+      "width": 375,
+      "check": "the account link has aria-current=\"page\"",
+      "pass": true,
+      "detail": "page"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile saved",
+      "width": 375,
+      "check": "Flask stores the new name and keeps the email (read from Flask)",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 768,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 768, innerWidth 768"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 768,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "3 controls"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 768,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 768,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 768,
+      "check": "the form has Name and Email and no password field",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 768,
+      "check": "Save changes is disabled while pristine",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 768,
+      "check": "the password sentence is shown",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 768,
+      "check": "the form is seeded with the stored name and email",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 768,
+      "check": "submitting a pristine form sends no request",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 768,
+      "check": "Profile, Boards, My tasks and Sign out are all in the header",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 768,
+      "check": "all four header controls are visible, inside the viewport and reachable at their center",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 768,
+      "check": "each of the four header controls is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "profile 440x44; boards 366x44; tasks 366x44; signout 87.2x44"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 768,
+      "check": "the header causes no horizontal overflow",
+      "pass": true,
+      "detail": "header 0, scrollWidth 768, innerWidth 768"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 768,
+      "check": "the sticky bar does not overlap the content (main starts at or below the bar)",
+      "pass": true,
+      "detail": "header bottom 108, main top 108"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 768,
+      "check": "the account link has aria-current=\"page\"",
+      "pass": true,
+      "detail": "page"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 768,
+      "check": "Tab reaches Profile, Boards, My tasks and Sign out",
+      "pass": true,
+      "detail": "RevoTask | Boards | My tasks | Profile, NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN 320 375 | Sign out | profile-name | profile-email | RevoTask"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 768,
+      "check": "each of the four header controls shows a visible focus ring (outline >= 2px) when focused by keyboard",
+      "pass": true,
+      "detail": "Boards: 2px solid; My tasks: 2px solid; Profile, NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN 320 375: 2px solid; Sign out: 2px solid"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 768,
+      "check": "Tab reaches the Name and Email fields, each with a visible focus indicator",
+      "pass": true,
+      "detail": "profile-name: 2px solid; profile-email: 2px solid"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 768,
+      "check": "Save changes is skipped by Tab while the form is pristine (it is disabled)",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile field error",
+      "width": 768,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 768, innerWidth 768"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile field error",
+      "width": 768,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "3 controls"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile field error",
+      "width": 768,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile field error",
+      "width": 768,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile field error",
+      "width": 768,
+      "check": "both inline messages show and focus is on the first invalid field",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile field error",
+      "width": 768,
+      "check": "the invalid form sent no request",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile 409",
+      "width": 768,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 768, innerWidth 768"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile 409",
+      "width": 768,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "3 controls"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile 409",
+      "width": 768,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile 409",
+      "width": 768,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile 409",
+      "width": 768,
+      "check": "the 409 shows inline under Email, keeps both typed values and the header name",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile 409",
+      "width": 768,
+      "check": "Save changes is enabled again after the 409",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile 409",
+      "width": 768,
+      "check": "nothing was stored by the 409 (the name is the original, read from Flask)",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile saved",
+      "width": 768,
+      "check": "a name-only save sends one PATCH with only the name",
+      "pass": true,
+      "detail": "name"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile saved",
+      "width": 768,
+      "check": "the header shows the new name at once, without a reload",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile saved",
+      "width": 768,
+      "check": "the form is pristine again and the user stays on /profile",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile saved",
+      "width": 768,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 768, innerWidth 768"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile saved",
+      "width": 768,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "3 controls"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile saved",
+      "width": 768,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile saved",
+      "width": 768,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile saved",
+      "width": 768,
+      "check": "Profile, Boards, My tasks and Sign out are all in the header",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile saved",
+      "width": 768,
+      "check": "all four header controls are visible, inside the viewport and reachable at their center",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile saved",
+      "width": 768,
+      "check": "each of the four header controls is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "profile 440x44; boards 366x44; tasks 366x44; signout 87.2x44"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile saved",
+      "width": 768,
+      "check": "the header causes no horizontal overflow",
+      "pass": true,
+      "detail": "header 0, scrollWidth 768, innerWidth 768"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile saved",
+      "width": 768,
+      "check": "the sticky bar does not overlap the content (main starts at or below the bar)",
+      "pass": true,
+      "detail": "header bottom 108, main top 108"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile saved",
+      "width": 768,
+      "check": "the account link has aria-current=\"page\"",
+      "pass": true,
+      "detail": "page"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile saved",
+      "width": 768,
+      "check": "Flask stores the new name and keeps the email (read from Flask)",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 1280,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 1280,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "3 controls"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 1280,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 1280,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 1280,
+      "check": "the form has Name and Email and no password field",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 1280,
+      "check": "Save changes is disabled while pristine",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 1280,
+      "check": "the password sentence is shown",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 1280,
+      "check": "the form is seeded with the stored name and email",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 1280,
+      "check": "submitting a pristine form sends no request",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 1280,
+      "check": "Profile, Boards, My tasks and Sign out are all in the header",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 1280,
+      "check": "all four header controls are visible, inside the viewport and reachable at their center",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 1280,
+      "check": "each of the four header controls is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "profile 224x44; boards 232x44; tasks 232x44; signout 224x44"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 1280,
+      "check": "the header causes no horizontal overflow",
+      "pass": true,
+      "detail": "header 0, scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 1280,
+      "check": "the sidebar does not overlap the content (main starts right of the sidebar)",
+      "pass": true,
+      "detail": "sidebar right 256, main left 256"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 1280,
+      "check": "the account link has aria-current=\"page\"",
+      "pass": true,
+      "detail": "page"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 1280,
+      "check": "Tab reaches Profile, Boards, My tasks and Sign out",
+      "pass": true,
+      "detail": "RevoTask | Boards | My tasks | Profile, NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN 768 | Sign out | profile-name | profile-email | RevoTask"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 1280,
+      "check": "each of the four header controls shows a visible focus ring (outline >= 2px) when focused by keyboard",
+      "pass": true,
+      "detail": "Boards: 2px solid; My tasks: 2px solid; Profile, NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN 768: 2px solid; Sign out: 2px solid"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 1280,
+      "check": "Tab reaches the Name and Email fields, each with a visible focus indicator",
+      "pass": true,
+      "detail": "profile-name: 2px solid; profile-email: 2px solid"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile pristine",
+      "width": 1280,
+      "check": "Save changes is skipped by Tab while the form is pristine (it is disabled)",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile field error",
+      "width": 1280,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile field error",
+      "width": 1280,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "3 controls"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile field error",
+      "width": 1280,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile field error",
+      "width": 1280,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile field error",
+      "width": 1280,
+      "check": "both inline messages show and focus is on the first invalid field",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile field error",
+      "width": 1280,
+      "check": "the invalid form sent no request",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile 409",
+      "width": 1280,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile 409",
+      "width": 1280,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "3 controls"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile 409",
+      "width": 1280,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile 409",
+      "width": 1280,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile 409",
+      "width": 1280,
+      "check": "the 409 shows inline under Email, keeps both typed values and the header name",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile 409",
+      "width": 1280,
+      "check": "Save changes is enabled again after the 409",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile 409",
+      "width": 1280,
+      "check": "nothing was stored by the 409 (the name is the original, read from Flask)",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile saved",
+      "width": 1280,
+      "check": "a name-only save sends one PATCH with only the name",
+      "pass": true,
+      "detail": "name"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile saved",
+      "width": 1280,
+      "check": "the header shows the new name at once, without a reload",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile saved",
+      "width": 1280,
+      "check": "the form is pristine again and the user stays on /profile",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile saved",
+      "width": 1280,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile saved",
+      "width": 1280,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "3 controls"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile saved",
+      "width": 1280,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile saved",
+      "width": 1280,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "2 controls"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile saved",
+      "width": 1280,
+      "check": "Profile, Boards, My tasks and Sign out are all in the header",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile saved",
+      "width": 1280,
+      "check": "all four header controls are visible, inside the viewport and reachable at their center",
+      "pass": true
+    },
+    {
+      "role": "long-name",
+      "page": "/profile saved",
+      "width": 1280,
+      "check": "each of the four header controls is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "profile 224x44; boards 232x44; tasks 232x44; signout 224x44"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile saved",
+      "width": 1280,
+      "check": "the header causes no horizontal overflow",
+      "pass": true,
+      "detail": "header 0, scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile saved",
+      "width": 1280,
+      "check": "the sidebar does not overlap the content (main starts right of the sidebar)",
+      "pass": true,
+      "detail": "sidebar right 256, main left 256"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile saved",
+      "width": 1280,
+      "check": "the account link has aria-current=\"page\"",
+      "pass": true,
+      "detail": "page"
+    },
+    {
+      "role": "long-name",
+      "page": "/profile saved",
+      "width": 1280,
+      "check": "Flask stores the new name and keeps the email (read from Flask)",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "journey",
+      "width": 375,
+      "check": "the account link opens /profile (touch emulation, no hover)",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "journey",
+      "width": 375,
+      "check": "change the name, save, see the toast and the header update",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "journey",
+      "width": 375,
+      "check": "after a reload the stored name shows in the form and the header",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "journey",
+      "width": 375,
+      "check": "an email that belongs to another user (in capitals) shows the inline error",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "journey",
+      "width": 375,
+      "check": "a free email (padded, in capitals) saves, and the form shows it trimmed and lowercased",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "journey",
+      "width": 375,
+      "check": "the session stayed valid after the email change (the page still renders signed in)",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "journey",
+      "width": 375,
+      "check": "signing in with the old email fails",
+      "pass": true
+    },
+    {
+      "role": "user",
+      "page": "journey",
+      "width": 375,
+      "check": "signing in with the new email works",
+      "pass": true
+    }
+  ]
+}
