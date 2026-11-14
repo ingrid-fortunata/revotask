@@ -283,3 +283,35 @@ describe("flaskRequest UUID-only path substitution", () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 });
+
+describe("flaskRequest search option (S3)", () => {
+  const call = (search: string | undefined) =>
+    flaskRequest({ route: "myTasks", method: "GET", token: "tok", requestId: "r-1", search });
+
+  it("sets the raw query string on the final URL, keeping repeats and unknown keys in order", async () => {
+    fetchMock.mockResolvedValue(reply(200, '{"data":[]}'));
+    await call("?q=a&q=b&foo=%00&assignee=me");
+    expect(String(fetchMock.mock.calls[0][0])).toBe("http://127.0.0.1:5001/api/cards?q=a&q=b&foo=%00&assignee=me");
+  });
+
+  it("adds nothing for no search or an empty search", async () => {
+    fetchMock.mockResolvedValue(reply(200, '{"data":[]}'));
+    await call(undefined);
+    await call("");
+    expect(String(fetchMock.mock.calls[0][0])).toBe("http://127.0.0.1:5001/api/cards");
+    expect(String(fetchMock.mock.calls[1][0])).toBe("http://127.0.0.1:5001/api/cards");
+  });
+
+  it.each(["assignee=me", "/x?y=1", "//evil.example/?x", "@evil.example"])("throws for %j without calling fetch", async (search) => {
+    await expect(call(search)).rejects.toThrow(/search must be empty or start with/);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("cannot move the request to another path or host", async () => {
+    fetchMock.mockResolvedValue(reply(200, '{"data":[]}'));
+    await call("?next=/api/users/me#/evil");
+    const url = new URL(String(fetchMock.mock.calls[0][0]));
+    expect(url.origin).toBe("http://127.0.0.1:5001");
+    expect(url.pathname).toBe("/api/cards");
+  });
+});

@@ -35,7 +35,7 @@ export async function getSessionToken(): Promise<string | undefined> {
  */
 export async function fetchPrivate(
   route: FlaskRoute,
-  options: { method: "GET" | "POST"; body?: unknown; params?: FlaskParams },
+  options: { method: "GET" | "POST"; body?: unknown; params?: FlaskParams; search?: string },
 ): Promise<FlaskResult> {
   const token = await getSessionToken();
   if (!token) redirect("/login");

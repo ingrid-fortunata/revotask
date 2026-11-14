@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { BaseBadge } from "@/components/shared/BaseBadge";
+import { chipClass } from "@/lib/boardChip";
 import type { BoardRole, BoardSummary } from "@/lib/types";
 
 export interface BoardListProps {
@@ -7,23 +8,6 @@ export interface BoardListProps {
 }
 
 const ROLE_LABEL: Record<BoardRole, string> = { admin: "Admin", member: "Member" };
-
-// Six chip colors, all 4.5:1 or better against white text. The same board always gets the same
-// color, so a user finds it by color as well as by name.
-const CHIP_CLASS = [
-  "bg-teal-700",
-  "bg-sky-700",
-  "bg-indigo-700",
-  "bg-rose-700",
-  "bg-amber-700",
-  "bg-emerald-700",
-] as const;
-
-function chipClass(id: string): string {
-  let sum = 0;
-  for (const char of id) sum += char.charCodeAt(0);
-  return CHIP_CLASS[sum % CHIP_CLASS.length];
-}
 
 // Each board is one link and one tile: a row on a phone, a stacked tile from 640 px (FE-S4, FE-D3).
 // The name stays the first span in the link, and it wraps instead of pushing the role badge off

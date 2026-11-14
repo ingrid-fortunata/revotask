@@ -23,6 +23,8 @@ export const FLASK_PATHS = {
   cardPosition: "/api/cards/:cardId/position",
   cardComments: "/api/cards/:cardId/comments",
   comment: "/api/comments/:commentId",
+  myTasks: "/api/cards",
+  boardCardSearch: "/api/boards/:boardId/cards/search",
 } as const;
 
 export type FlaskRoute = keyof typeof FLASK_PATHS;
@@ -57,6 +59,12 @@ export type FlaskRequest = {
   /** Each value must be a UUID. Required for every `:name` token in the route template. */
   params?: FlaskParams;
   body?: unknown;
+  /**
+   * A raw query string for a read: empty or starting with `?`. It is set on the final URL as sent,
+   * so a repeated or unknown key reaches Flask, which validates it (S3). It cannot change the path
+   * or the host, and the origin check below still runs on the final URL.
+   */
+  search?: string;
   token?: string;
   requestId: string;
 };
@@ -96,6 +104,12 @@ export async function flaskRequest(
   const { apiBaseUrl } = getServerEnv();
   // The origin check runs on the final URL, after parameter substitution (DD13).
   const url = new URL(fillFlaskPath(request.route, request.params), apiBaseUrl);
+  if (request.search !== undefined) {
+    if (request.search !== "" && !request.search.startsWith("?")) {
+      throw new Error("flaskRequest: search must be empty or start with '?'.");
+    }
+    url.search = request.search;
+  }
   if (url.origin !== apiBaseUrl.origin)
     throw new Error("flaskRequest: origin mismatch.");
 

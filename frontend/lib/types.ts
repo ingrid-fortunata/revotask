@@ -49,6 +49,15 @@ export type Comment = {
   updated_at: string;
 };
 
+// My Tasks and card search shapes from docs/API.md (E21 item, E22 item).
+export type TaskItem = Card & { board_id: string; board_name: string };
+export type TaskGroup = { boardId: string; boardName: string; tasks: TaskItem[] };
+export type SearchResult = { id: string; title: string; column_id: string };
+/** The held E22 response: the trimmed query it answered and the items exactly as returned. */
+export type HeldSearch = { query: string; items: SearchResult[] };
+/** A result as shown: the card's current title and its current column name. */
+export type VisibleResult = { cardId: string; title: string; columnName: string };
+
 export type Membership = {
   user_id: string;
   name: string;
