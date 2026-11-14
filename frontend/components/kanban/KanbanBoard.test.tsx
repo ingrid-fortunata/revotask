@@ -22,7 +22,7 @@ function Harness({ role = "admin", columns = board() }: { role?: BoardRole; colu
   const kanban = useKanbanBoard({ boardId: BOARD_ID, initial: { columns, version: 3 } });
   return (
     <AuthProvider user={{ id: "u-ada", name: "Ada", email: "ada@example.test" }}>
-      <KanbanBoard role={role} members={MEMBERS} kanban={kanban} />
+      <KanbanBoard boardId={BOARD_ID} role={role} members={MEMBERS} kanban={kanban} />
     </AuthProvider>
   );
 }
@@ -396,5 +396,92 @@ describe("mobile classes", () => {
     expect(lane("Col todo").className).toMatch(/min-w-72/);
     expect(lane("Col todo").className).toMatch(/flex-1/);
     expect(screen.getByRole("region", { name: "Kanban columns" }).className).toMatch(/overflow-x-auto/);
+  });
+});
+
+describe("my-tasks-search: the board search (Requirements 5.1, 5.7, 5.8)", () => {
+  const hit = (id: string, title: string, columnId = "todo") => ({ id, title, column_id: columnId });
+  const searchField = () => screen.getByLabelText("Search cards");
+
+  // userEvent with fake timers would wait on its own delay, so a short real wait covers the 300 ms debounce.
+  async function search(text: string) {
+    await userEvent.type(searchField(), text);
+    return waitFor(() => expect(apiGet).toHaveBeenCalledWith(expect.stringContaining("/cards/search?q="), expect.anything()), {
+      timeout: 2000,
+    });
+  }
+
+  it("shows the search above the Kanban region for a Member too", () => {
+    render(<Harness role="member" />);
+    const field = searchField();
+    const region = screen.getByRole("region", { name: "Kanban columns" });
+    expect(field.compareDocumentPosition(region) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
+  it("opens Card details for the current card from a result and returns focus to the result", async () => {
+    vi.mocked(apiGet).mockImplementation(async (path: string) => (path.includes("/cards/search") ? [hit("d", "Card d", "doing")] : []));
+    render(<Harness />);
+    await search("card");
+    const result = await screen.findByRole("button", { name: "Card d, in Col doing" });
+    await userEvent.click(result);
+    const dialog = await screen.findByRole("dialog", { name: "Card details" });
+    expect(within(dialog).getByLabelText("Title")).toHaveValue("Card d");
+    // jsdom has no Escape-to-cancel, so dispatch the cancel event that Escape triggers.
+    fireEvent(dialog, new Event("cancel", { cancelable: true }));
+    await waitFor(() => expect(screen.queryByRole("dialog", { name: "Card details" })).not.toBeInTheDocument());
+    expect(result).toHaveFocus();
+  });
+
+  it("a pending search does not disable a move or an edit control, and a pending move does not disable the search", async () => {
+    let finishSearch!: (value: unknown) => void;
+    vi.mocked(apiGet).mockImplementation((path: string) =>
+      path.includes("/cards/search") ? new Promise((r) => (finishSearch = r)) : Promise.resolve([]),
+    );
+    let finishMove!: (value: unknown) => void;
+    vi.mocked(apiRequest).mockReturnValue(new Promise((r) => (finishMove = r)));
+    render(<Harness />);
+    await search("card");
+    expect(screen.getByRole("button", { name: "Move Card a" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "Edit column Col todo" })).toBeEnabled();
+
+    await userEvent.click(screen.getByRole("button", { name: "Move Card a" }));
+    const dialog = screen.getByRole("dialog", { name: "Move card" });
+    await userEvent.selectOptions(within(dialog).getByLabelText("Column"), "Col doing");
+    await userEvent.click(within(dialog).getByRole("button", { name: "Move card" }));
+    const region = screen.getByRole("region", { name: "Kanban columns" });
+    await waitFor(() => expect(region).toHaveAttribute("aria-busy", "true"));
+    expect(searchField()).toBeEnabled();
+    await act(async () => finishSearch([hit("b", "Card b")]));
+    const result = await screen.findByRole("button", { name: "Card b, in Col todo" });
+    expect(result).toBeEnabled();
+    await act(async () => {
+      finishMove(moveReply([column("todo", 1024, [card("b", "todo", 1024)]), column("doing", 2048, [card("d", "doing", 1024), card("a", "doing", 2048)]), column("done", 3072, [], { is_done: true })], "a"));
+    });
+  });
+
+  it("results stay selectable while the board is busy", async () => {
+    vi.mocked(apiGet).mockImplementation(async (path: string) => (path.includes("/cards/search") ? [hit("b", "Card b")] : []));
+    vi.mocked(apiRequest).mockReturnValue(new Promise(() => {}));
+    render(<Harness />);
+    await search("card");
+    const result = await screen.findByRole("button", { name: "Card b, in Col todo" });
+    await userEvent.click(screen.getByRole("button", { name: "Move Card a" }));
+    const dialog = screen.getByRole("dialog", { name: "Move card" });
+    await userEvent.selectOptions(within(dialog).getByLabelText("Column"), "Col doing");
+    await userEvent.click(within(dialog).getByRole("button", { name: "Move card" }));
+    await waitFor(() => expect(screen.getByRole("region", { name: "Kanban columns" })).toHaveAttribute("aria-busy", "true"));
+    expect(result).toBeEnabled();
+    await userEvent.click(result);
+    expect(await screen.findByRole("dialog", { name: "Card details" })).toBeInTheDocument();
+  });
+
+  it("shows the access message when the search returns the generic 404", async () => {
+    vi.mocked(apiGet).mockImplementation(async (path: string) => {
+      if (path.includes("/cards/search")) throw apiError(404, "NOT_FOUND");
+      return [];
+    });
+    render(<Harness />);
+    await search("card");
+    await waitFor(() => expect(notifyError).toHaveBeenCalledWith("You no longer have access to this board."));
   });
 });

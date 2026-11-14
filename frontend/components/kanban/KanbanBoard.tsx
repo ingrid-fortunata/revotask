@@ -1,8 +1,10 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { AddColumnForm } from "@/components/kanban/AddColumnForm";
 import { CardDetailModal } from "@/components/kanban/CardDetailModal";
+import { CardSearch } from "@/components/kanban/CardSearch";
 import { ColumnEditDialog } from "@/components/kanban/ColumnEditDialog";
 import { KanbanColumn } from "@/components/kanban/KanbanColumn";
 import { MoveCardDialog } from "@/components/kanban/MoveCardDialog";
@@ -11,9 +13,12 @@ import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { useDragAndDrop } from "@/hooks/useDragAndDrop";
 import type { NotFoundResolution } from "@/hooks/useCardComments";
 import type { useKanbanBoard } from "@/hooks/useKanbanBoard";
+import { BOARD_ACCESS_MESSAGE } from "@/lib/boardErrors";
+import { notifyError } from "@/lib/toast";
 import type { BoardRole, Card, ColumnWithCards, Membership } from "@/lib/types";
 
 export interface KanbanBoardProps {
+  boardId: string;
   role: BoardRole;
   /** Active participants, for the assignee list. */
   members: readonly Membership[];
@@ -28,7 +33,8 @@ const DONE_NONEMPTY = "Move or delete the cards in this column to change its Don
 // scrollable region, runs the dialogs, and sends every action through the board hook, whose gate
 // allows one request at a time. Only this region scrolls sideways (FE-S2, FE-S4). Admin controls
 // show for an Admin only. Every viewer gets the card controls and the Move button.
-export function KanbanBoard({ role, members, kanban }: KanbanBoardProps) {
+export function KanbanBoard({ boardId, role, members, kanban }: KanbanBoardProps) {
+  const router = useRouter();
   const { columns, busy, status, announcement } = kanban;
   const isAdmin = role === "admin";
   const [editColumnId, setEditColumnId] = useState<string | null>(null);
@@ -105,6 +111,17 @@ export function KanbanBoard({ role, members, kanban }: KanbanBoardProps) {
       <p role="status" aria-live="polite" className="sr-only">
         {announcement}
       </p>
+
+      {/* The search is outside the Kanban gate: it never disables a move and a move never disables it (S8). */}
+      <CardSearch
+        boardId={boardId}
+        columns={columns}
+        onOpenCard={(cardId) => setOpenCardId(cardId)}
+        onAccessLost={() => {
+          notifyError(BOARD_ACCESS_MESSAGE);
+          router.push("/");
+        }}
+      />
 
       {status === "stale" ? (
         <div role="alert" className="surface flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">

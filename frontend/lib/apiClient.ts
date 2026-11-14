@@ -48,12 +48,14 @@ const DECLARED_BOARD_REQUESTS: ReadonlyArray<{
   { method: "DELETE", pattern: new RegExp(`^/api/comments/${UUID}$`) },
 ];
 
-// The only browser reads: the board (E07) and its members (E10) for refetches (DD11), and a
-// card's comments (E23) when the detail modal opens.
+// The only browser reads: the board (E07) and its members (E10) for refetches (DD11), a
+// card's comments (E23) when the detail modal opens, and the board search (E22).
 const DECLARED_GETS: readonly RegExp[] = [
   new RegExp(`^/api/boards/${UUID}$`),
   new RegExp(`^/api/boards/${UUID}/members$`),
   new RegExp(`^/api/cards/${UUID}/comments$`),
+  // The board search (E22): exactly one `q`, already percent-encoded by `cardSearchPath`.
+  new RegExp(`^/api/boards/${UUID}/cards/search\\?q=[^&#]*$`),
 ];
 
 /** True only for a declared GET path. */

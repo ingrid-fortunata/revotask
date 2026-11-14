@@ -4,12 +4,14 @@ export interface FormFieldProps {
   id: string;
   name: string;
   label: string;
-  type?: "text" | "email" | "password";
+  type?: "text" | "email" | "password" | "search";
   value: string;
   error?: string;
   /** Visible help text, linked to the input with aria-describedby. */
   hint?: string;
   autoComplete?: string;
+  /** UTF-16 unit limit on a single-line input. Only the search field sets it (a limit below the API rule). */
+  maxLength?: number;
   inputRef?: Ref<HTMLInputElement>;
   /** Render a textarea instead of an input (the card description). Same label, hint and error. */
   multiline?: boolean;
@@ -20,8 +22,8 @@ export interface FormFieldProps {
   onChange: (value: string) => void;
 }
 
-// No minLength or maxLength: those attributes count UTF-16 units and would reject input that
-// the API accepts. Length rules live in lib/authRules.ts (C5). text-base keeps the text at 16 px
+// No minLength, and maxLength only where a caller asks for it (the search field): the attribute counts
+// UTF-16 units and would reject input that the API accepts. Length rules live in lib/authRules.ts (C5). text-base keeps the text at 16 px
 // so iOS Safari does not zoom, and min-h-11 min-w-11 gives a 44 px tappable area (FE-S5).
 export function FormField({
   id,
@@ -32,6 +34,7 @@ export function FormField({
   error,
   hint,
   autoComplete,
+  maxLength,
   inputRef,
   multiline = false,
   rows = 4,
@@ -66,6 +69,7 @@ export function FormField({
           type={type}
           value={value}
           autoComplete={autoComplete}
+          maxLength={maxLength}
           onChange={(event) => onChange(event.target.value)}
           aria-invalid={error ? true : undefined}
           aria-describedby={describedBy}

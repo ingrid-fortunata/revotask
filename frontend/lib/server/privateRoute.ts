@@ -119,6 +119,11 @@ export async function handlePrivateWrite(
 export type PrivateReadSpec = {
   route: FlaskRoute;
   params?: FlaskParams;
+  /**
+   * Forward the request's query string exactly as received, repeats and unknown keys included.
+   * The handler never reads or rebuilds it, so Flask does the validation (S3).
+   */
+  forwardQuery?: boolean;
 };
 
 /**
@@ -148,7 +153,13 @@ export async function handlePrivateRead(
   }
 
   const upstream = await callFlask(
-    { route: spec.route, method: "GET", params, token },
+    {
+      route: spec.route,
+      method: "GET",
+      params,
+      token,
+      search: spec.forwardQuery ? request.nextUrl.search : undefined,
+    },
     requestId,
   );
   if (!upstream.ok) return upstream.response;

@@ -104,3 +104,17 @@ describe("FormField multiline", () => {
     expect(screen.getByLabelText("Email").tagName).toBe("INPUT");
   });
 });
+
+describe("FormField search type and maxLength", () => {
+  it("renders a search input with the given maxLength", () => {
+    render(<FormField id="s" name="s" label="Search" type="search" maxLength={100} value="" onChange={() => {}} />);
+    const input = screen.getByLabelText("Search");
+    expect(input).toHaveAttribute("type", "search");
+    expect(input).toHaveAttribute("maxlength", "100");
+  });
+
+  it("sets no maxLength by default", () => {
+    render(<FormField id="s" name="s" label="Search" value="" onChange={() => {}} />);
+    expect(screen.getByLabelText("Search")).not.toHaveAttribute("maxlength");
+  });
+});

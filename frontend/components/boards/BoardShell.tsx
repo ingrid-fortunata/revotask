@@ -107,7 +107,7 @@ export function BoardShell({ board, columns, members }: BoardShellProps) {
           />
         </div>
       ) : null}
-      <KanbanBoard role={board.role} members={members} kanban={kanban} />
+      <KanbanBoard boardId={board.id} role={board.role} members={members} kanban={kanban} />
       {controls.canDelete ? (
         <ConfirmDialog
           open={deleteOpen}
