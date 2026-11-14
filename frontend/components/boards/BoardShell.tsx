@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
+import { AnalyticsPanel } from "@/components/analytics/AnalyticsPanel";
 import { BoardHeader } from "@/components/boards/BoardHeader";
 import { MembersPanel } from "@/components/boards/MembersPanel";
 import { RenameBoardForm } from "@/components/boards/RenameBoardForm";
@@ -54,6 +55,12 @@ export function BoardShell({ board, columns, members }: BoardShellProps) {
     closeRename();
   }
 
+  // E29 answered 404: the board is gone or access was lost. Same outcome as the card search.
+  function handleAccessLost() {
+    notifyError(BOARD_ACCESS_MESSAGE);
+    router.push("/");
+  }
+
   async function handleConfirmDelete() {
     if (deletePendingRef.current) return;
     deletePendingRef.current = true;
@@ -89,6 +96,9 @@ export function BoardShell({ board, columns, members }: BoardShellProps) {
         renameButtonRef={renameButtonRef}
         onToggleRename={() => setRenameOpen((open) => !open)}
         onRequestDelete={() => setDeleteOpen(true)}
+        titleActions={
+          <AnalyticsPanel boardId={board.id} version={kanban.version} onAccessLost={handleAccessLost} />
+        }
       >
         <MembersPanel
           boardId={board.id}

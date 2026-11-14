@@ -14,6 +14,8 @@ export interface BoardHeaderProps {
   onRequestDelete: () => void;
   /** Rendered under the title, for the member avatars. */
   children?: ReactNode;
+  /** Rendered at the right end of the header, before Rename and Delete (the analytics button). */
+  titleActions?: ReactNode;
 }
 
 const ROLE_LABEL: Record<BoardRole, string> = { admin: "Admin", member: "Member" };
@@ -28,6 +30,7 @@ export function BoardHeader({
   onToggleRename,
   onRequestDelete,
   children,
+  titleActions,
 }: BoardHeaderProps) {
   const controls = boardControls(role);
   return (
@@ -48,8 +51,9 @@ export function BoardHeader({
         </div>
         {children}
       </div>
-      {controls.canRename || controls.canDelete ? (
-        <div className="flex flex-wrap gap-2">
+      {controls.canRename || controls.canDelete || titleActions ? (
+        <div className="flex flex-wrap gap-2 sm:justify-end">
+          {titleActions}
           {controls.canRename ? (
             <BaseButton
               ref={renameButtonRef}

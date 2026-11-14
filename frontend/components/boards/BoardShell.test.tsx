@@ -33,11 +33,30 @@ const MEMBERS: Membership[] = [
   { user_id: BEN_ID, name: "Ben", role: "member" },
 ];
 
+// The analytics panel reads E29 through apiGet too. These helpers keep the board and search
+// reads separate from it, so the older tests still count only their own requests.
+const ANALYTICS = {
+  week_start: "2026-11-09T00:00:00Z",
+  week_end: "2026-11-16T00:00:00Z",
+  cards_per_column: [],
+  completed_cards: 0,
+  member_activity: [],
+};
+const isAnalytics = (path: unknown) => String(path).endsWith("/analytics");
+function mockGets(others: (path: string) => unknown, analytics: () => unknown = () => ANALYTICS) {
+  vi.mocked(apiGet).mockImplementation(async (path: string) =>
+    isAnalytics(path) ? analytics() : others(path),
+  );
+}
+const otherGets = () => vi.mocked(apiGet).mock.calls.filter(([path]) => !isAnalytics(path));
+const analyticsGets = () => vi.mocked(apiGet).mock.calls.filter(([path]) => isAnalytics(path));
+
 beforeEach(() => {
   push.mockReset();
   refresh.mockReset();
   vi.mocked(apiRequest).mockReset();
   vi.mocked(apiGet).mockReset();
+  mockGets(() => undefined);
   vi.mocked(notifyError).mockReset();
 });
 
@@ -320,12 +339,12 @@ describe("BoardShell member removal refreshes the board (Requirement 6.8, K12, P
 
   it("refetches the board after a successful removal, so cleared assignments show Unassigned", async () => {
     vi.mocked(apiRequest).mockResolvedValue(null);
-    vi.mocked(apiGet).mockResolvedValue(refetched(cleared(), 5));
+    mockGets(() => refetched(cleared(), 5));
     renderShell(ADMIN_BOARD, assigned);
     const todo = within(screen.getByRole("region", { name: "To do" }));
     expect(todo.getByText("Ben")).toBeInTheDocument();
     await removeBen();
-    await waitFor(() => expect(apiGet).toHaveBeenCalledExactlyOnceWith(`/api/boards/${BOARD_ID}`));
+    await waitFor(() => expect(otherGets()).toEqual([[`/api/boards/${BOARD_ID}`]]));
     await waitFor(() => expect(todo.getAllByText("Unassigned")).toHaveLength(2));
     expect(refresh).toHaveBeenCalled(); // the members list still refreshes through the server
   });
@@ -335,7 +354,7 @@ describe("BoardShell member removal refreshes the board (Requirement 6.8, K12, P
     renderShell(ADMIN_BOARD, assigned);
     await removeBen();
     await waitFor(() => expect(apiRequest).toHaveBeenCalled());
-    expect(apiGet).not.toHaveBeenCalled();
+    expect(otherGets()).toHaveLength(0);
   });
 
   it("waits for a pending move, then refetches, and the older move answer does not win", async () => {
@@ -344,7 +363,7 @@ describe("BoardShell member removal refreshes the board (Requirement 6.8, K12, P
       if (path.includes("/position")) return new Promise((resolve) => (finishMove = resolve));
       return Promise.resolve(null); // DELETE member
     });
-    vi.mocked(apiGet).mockResolvedValue(refetched(cleared(), 9));
+    mockGets(() => refetched(cleared(), 9));
     renderShell(ADMIN_BOARD, assigned);
     const user = userEvent.setup();
 
@@ -357,7 +376,7 @@ describe("BoardShell member removal refreshes the board (Requirement 6.8, K12, P
 
     await removeBen();
     await waitFor(() => expect(vi.mocked(apiRequest).mock.calls.some(([m]) => m === "DELETE")).toBe(true));
-    expect(apiGet).not.toHaveBeenCalled(); // the refetch waits for the move
+    expect(otherGets()).toHaveLength(0); // the refetch waits for the move
 
     const movedColumns = [
       { ...assigned[0], cards: [assigned[0].cards[0]] },
@@ -366,10 +385,126 @@ describe("BoardShell member removal refreshes the board (Requirement 6.8, K12, P
     await act(async () => {
       finishMove({ card: movedColumns[1].cards[0], columns: movedColumns, position_version: 6 });
     });
-    await waitFor(() => expect(apiGet).toHaveBeenCalledTimes(1));
+    await waitFor(() => expect(otherGets()).toHaveLength(1));
     // The refreshed board is the final state: Ben's card is unassigned and Review is where the
     // server put it. The move answer, which still showed Ben, did not overwrite it.
     await waitFor(() => expect(within(screen.getByRole("region", { name: "To do" })).queryByText("Ben")).not.toBeInTheDocument());
     expect(screen.getByRole("region", { name: "Kanban columns" })).toHaveAttribute("aria-busy", "false");
+  });
+});
+
+// Analytics panel wiring (T14; Requirements 6.1, 6.4, 6.5, 6.8, 8.5; Properties 11 and 12).
+describe("BoardShell analytics panel", () => {
+  const columns: ColumnWithCards[] = [
+    {
+      id: "c1",
+      board_id: BOARD_ID,
+      name: "To do",
+      is_done: false,
+      order: 1024,
+      cards: [
+        { id: "k2", column_id: "c1", title: "Review", description: null, assignee_id: null, assignee_name: null, order: 1024 },
+      ],
+    },
+    { id: "c2", board_id: BOARD_ID, name: "Doing", is_done: false, order: 2048, cards: [] },
+  ];
+  const moved = (version: number) => {
+    const after = [
+      { ...columns[0], cards: [] },
+      { ...columns[1], cards: [{ ...columns[0].cards[0], column_id: "c2", order: 1024 }] },
+    ];
+    return { card: after[1].cards[0], columns: after, position_version: version };
+  };
+  const analyticsPath = `/api/boards/${BOARD_ID}/analytics`;
+
+  // The panel is closed by default. Open it so its read runs.
+  const openAnalytics = async () => {
+    await userEvent.setup().click(screen.getByRole("button", { name: "Analytics" }));
+  };
+
+  async function moveReview() {
+    const user = userEvent.setup();
+    await user.click(screen.getByRole("button", { name: "Move Review" }));
+    const dialog = screen.getByRole("dialog", { name: "Move card" });
+    await user.selectOptions(within(dialog).getByLabelText("Column"), "Doing");
+    await user.click(within(dialog).getByRole("button", { name: "Move card" }));
+  }
+
+  it.each([
+    ["an admin", ADMIN_BOARD],
+    ["a member", MEMBER_BOARD],
+  ])("shows the panel to %s and reads E29 once for this board", async (_who, board) => {
+    renderShell(board, columns);
+    expect(screen.getByRole("button", { name: "Analytics" })).toBeInTheDocument();
+    expect(analyticsGets()).toHaveLength(0); // closed: no read yet
+    await openAnalytics();
+    await waitFor(() => expect(analyticsGets()).toEqual([[analyticsPath, expect.any(AbortSignal)]]));
+  });
+
+  it("puts the Analytics button in the header, on the right, not in the title row", () => {
+    renderShell(ADMIN_BOARD, columns);
+    const name = screen.getByRole("heading", { level: 1, name: "Alpha" });
+    const button = screen.getByRole("button", { name: "Analytics" });
+    expect(name.closest("header")).toContainElement(button);
+    expect(name.parentElement).not.toContainElement(button);
+    expect(button.parentElement).toContainElement(screen.getByRole("button", { name: "Rename board" }));
+  });
+
+  it("reads E29 again after a successful move raises the version, and not after a failed move", async () => {
+    // A failed move rolls back and the board refetches. The refetch returns the same version.
+    mockGets(() => ({ ...ADMIN_BOARD, position_version: 0, columns }));
+    vi.mocked(apiRequest).mockRejectedValueOnce(new ApiError({ statusCode: 500, code: "INTERNAL_ERROR", message: "x" }));
+    renderShell(ADMIN_BOARD, columns);
+    await openAnalytics();
+    await waitFor(() => expect(analyticsGets()).toHaveLength(1));
+    await moveReview(); // fails and rolls back, so the version does not rise
+    await waitFor(() => expect(apiRequest).toHaveBeenCalledTimes(1));
+    expect(analyticsGets()).toHaveLength(1);
+
+    vi.mocked(apiRequest).mockResolvedValueOnce(moved(1));
+    await moveReview();
+    await waitFor(() => expect(analyticsGets()).toHaveLength(2));
+  });
+
+  it("stays usable when E29 fails at mount and on a later read: a card moves, the search works", async () => {
+    mockGets(
+      (path) => (path.includes("/cards/search") ? [{ id: "k2", title: "Review", column_id: "c1" }] : undefined),
+      () => {
+        throw new ApiError({ statusCode: 503, code: "SERVICE_UNAVAILABLE", message: "down" });
+      },
+    );
+    vi.mocked(apiRequest).mockResolvedValueOnce(moved(1));
+    renderShell(ADMIN_BOARD, columns);
+    await openAnalytics();
+    const columnsRegion = screen.getByRole("region", { name: "Kanban columns" });
+
+    // The panel shows its own error and Retry. The board shows none and its gate is idle.
+    expect(await screen.findByRole("alert")).toHaveTextContent("Analytics could not be loaded.");
+    expect(within(columnsRegion).queryByRole("alert")).not.toBeInTheDocument();
+    expect(columnsRegion).toHaveAttribute("aria-busy", "false");
+
+    // A card still moves, and the version rise starts a second read that also fails.
+    await moveReview();
+    await waitFor(() => expect(analyticsGets()).toHaveLength(2));
+    await waitFor(() => expect(within(screen.getByRole("region", { name: "Doing" })).getByText("Review")).toBeInTheDocument());
+    expect(columnsRegion).toHaveAttribute("aria-busy", "false");
+    expect(screen.getByRole("alert")).toHaveTextContent("Analytics could not be loaded.");
+
+    // The search still sends its request and the board is not replaced by an error state.
+    await userEvent.setup().type(screen.getByLabelText("Search cards"), "rev");
+    await waitFor(() => expect(otherGets().some(([path]) => String(path).includes("/cards/search?q=rev"))).toBe(true));
+    expect(screen.getByRole("heading", { level: 1, name: "Alpha" })).toBeInTheDocument();
+    expect(notifyError).not.toHaveBeenCalled();
+    expect(push).not.toHaveBeenCalled();
+  });
+
+  it("a 404 from E29 shows the access toast and goes to the dashboard", async () => {
+    mockGets(() => undefined, () => {
+      throw new ApiError({ statusCode: 404, code: "NOT_FOUND", message: "gone" });
+    });
+    renderShell(ADMIN_BOARD, columns);
+    await openAnalytics();
+    await waitFor(() => expect(notifyError).toHaveBeenCalledWith(BOARD_ACCESS_MESSAGE));
+    expect(push).toHaveBeenCalledWith("/");
   });
 });
