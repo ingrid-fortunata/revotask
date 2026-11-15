@@ -10,9 +10,10 @@ __pycache__/
 node_modules/
 .next/
 .vercel/
-playwright/.auth/
-playwright-report/
+**/playwright/.auth/
+**/playwright-report/
 test-results/
+**/playwright/.run/
 .DS_Store
 /PROMPTS.md
 /EXTRA-PROMPTS.md
