@@ -13,9 +13,11 @@ export async function signInUi(page: Page, email: string, password: string): Pro
 
 export async function createBoardUi(page: Page, name: string): Promise<void> {
   await page.goto("/");
-  await page.getByLabel("Board name").fill(name);
   await page.getByRole("button", { name: "Create board" }).click();
-  await page.getByRole("link", { name }).click();
+  const dialog = page.getByRole("dialog", { name: "Create a board" });
+  await dialog.getByLabel("Board name").fill(name);
+  await dialog.getByRole("button", { name: "Create board" }).click();
+  await expect(page).toHaveURL(/\/boards\/[0-9a-f-]{36}$/);
   await expect(page.getByRole("heading", { name })).toBeVisible();
 }
 

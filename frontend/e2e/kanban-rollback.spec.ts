@@ -37,11 +37,15 @@ test("stale version shows 409 and refetches (interception: none)", async ({ page
   const memberContext = await browser.newContext({ storageState: storageFor("member") });
   const memberPage = await memberContext.newPage();
   await memberPage.goto(`/boards/${s.boardId}`);
+  const isMove = (r: { url(): string; request(): { method(): string } }) => /\/api\/cards\/[^/]+\/position/.test(r.url()) && r.request().method() === "PATCH";
+  const memberMove = memberPage.waitForResponse(isMove);
   await moveToDestination(memberPage, s.cardTitle);            // second session moves first
-  await expect(memberPage.getByRole("button", { name: `Open ${s.cardTitle}` })).toBeVisible();
+  expect((await memberMove).status()).toBe(200);               // committed before the owner acts
   await memberContext.close();
 
+  const ownerMove = page.waitForResponse(isMove);
   await moveToDestination(page, s.cardTitle);                  // stale version from the owner's page
+  expect((await ownerMove).status()).toBe(409);                // a real 409 from the server
   await expect(page.getByText(/changed|refresh|conflict/i).first()).toBeVisible();
   expect(cardColumn(await getBoard(ownerToken(), s.boardId), s.cardTitle)).toBe("Destination");
 });
@@ -64,13 +68,19 @@ test("forced 500 restores prior order (interception: fulfill 500) @desktop", asy
 test("uncertain outcome refetches the canonical board (interception: forward then abort) @desktop", async ({ page }) => {
   const s = await seed();
   const before = (await getBoard(ownerToken(), s.boardId)) as unknown as { position_version: number };
+  let aborted!: () => void;
+  const abortedSeen = new Promise<void>((resolve) => (aborted = resolve));
   await page.route("**/api/cards/*/position", async (route) => {
     await route.fetch();                                      // the server commits the move
     await route.abort("timedout");                            // the browser never sees the response
+    aborted();
   });
   await page.goto(`/boards/${s.boardId}`);
   await moveToDestination(page, s.cardTitle);
-  await expect(page.getByRole("button", { name: `Open ${s.cardTitle}` })).toBeVisible();
+  await abortedSeen;
+  // The refetch shows the committed order: the card is now inside the Destination column.
+  const destination = page.getByRole("region").filter({ has: page.getByRole("heading", { name: "Destination" }) });
+  await expect(destination.getByRole("button", { name: `Open ${s.cardTitle}` })).toBeVisible();
   const after = (await getBoard(ownerToken(), s.boardId)) as unknown as { position_version: number };
   expect(cardColumn(after as never, s.cardTitle)).toBe("Destination");
   expect(after.position_version - before.position_version).toBe(1);
