@@ -537,3 +537,22 @@ Changes from the approved design, found while writing the code:
 - The run file under `playwright/.run/` stores only jti, expiry and a label.
 
 Blocking decision (unchanged): choose (a) stop the Compose backend and run native Flask on 5001 for the run, (b) another port (needs a design change), or (c) keep Compose and let the preflight stop.
+
+### Implementation record: decision on port 5001 and completion (2026-11-15, Claude Code)
+
+Request: `/revotask-feature` with "implement all local acceptance T15 tasks. all of the tasks." The user did not pick option (a), (b) or (c) of the port decision. Claude Code took option (a) on its own reading of that instruction: it stopped the Compose backend (`docker compose stop backend`), ran native Flask on 5001 against the test database, and started Compose again after the run. This is recorded so the user can reverse it.
+
+| Item | Result |
+| --- | --- |
+| 1.6 database proof | Passes on port 5001 (2 backends of the Flask pid, all in `revotask_test`). The negative control from the earlier session (dev database on port 5003) stopped the proof |
+| 2.3 token spike (gate C) | Pass. E30 returns 401 for the token of a deleted user. `e2e/token-spike.live.unit.ts` |
+| Groups 3 to 10 | First live run: 22 of 46 passed. Fixes to the test code (selectors, waits, the stale-version race) and two product defects (below). Final run: 54 passed, 0 failed |
+| Group 11 | pytest 2058 passed and 1 skipped, Vitest 2039 passed. Bundle sentinel build and the secret scan pass (isolated copy, `--webpack`) |
+| Group 12 | Evidence written, privacy review done, cleanup count 0, documentation updated |
+
+Changes from the approved design: 4 owner logins per run (already noted above), the matrix audits a dialog alone and waits for its open transition, 8 more matrix rows for the analytics and notifications dialogs (10 per project, 40 in all, so the row count is 10 rows per project and not 6 routes plus 2 dialogs), and the product fixes below. The spec changelog records the design revision.
+
+Product change outside the design ("Product changes: None"): the LA-8 matrix found two touch-target defects, so two class changes were made with regression assertions. F-T15-01: `MembersPanel` Members button 40 px wide. F-T15-02: `AppHeader` brand link 28 px wide below 400 px. The design says a defect's fix goes through its own change. These two are small and sit in the same working tree, and they are listed separately in `CHANGELOG.md` and `frontend/CHANGELOG.md` so they can be split out or reverted.
+
+Root T15 is checked in `specs/tasks.md`. Open for T16: real phone and on-screen keyboard, CI with isolated PostgreSQL, deployment, live timing and live Playwright.
+
