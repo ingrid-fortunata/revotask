@@ -196,6 +196,8 @@ describe("AppHeader notification bell (T13, DD14)", () => {
     const brand = within(header).getByRole("link", { name: /RevoTask/ });
     expect(brand.parentElement).toBe(bell.parentElement); // the brand block holds both
     expect(bell).toHaveClass("min-h-11", "min-w-11");
+    // Finding F-T15-02 (LA-8): below 400 px only the glyph shows, so the link was 28 px wide.
+    expect(brand).toHaveClass("min-h-11", "min-w-11");
   });
 
   it("keeps all five controls in one header, each reachable", () => {

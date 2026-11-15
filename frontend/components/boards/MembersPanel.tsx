@@ -96,7 +96,7 @@ export function MembersPanel({ boardId, viewerRole, members, onMemberRemoved }: 
       <button
         type="button"
         aria-label={`Members (${rows.length})`}
-        className="flex min-h-11 items-center rounded-field px-1 hover:bg-base-200"
+        className="flex min-h-11 min-w-11 items-center justify-center rounded-field px-1 hover:bg-base-200"
         onClick={() => setOpen(true)}
       >
         <span className="flex -space-x-2">
