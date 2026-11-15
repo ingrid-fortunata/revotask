@@ -432,3 +432,108 @@ Applied at the user's request while the design is under review: `docs/API.md` (t
 
 The user's invocation `/revotask-feature implement analytics T14` (all tasks) was the plan approval, as for T10 to T13. Claude Code completed task 0.2 (the root T14 link, traceability, the layer specs and the guideline component table) and then every native group of `.kiro/specs/analytics/tasks.md`. The decisions A1–A10 and the design held without change to behavior or contract. Deviations that touched the spec (no behavior or contract change) are in `specs/CHANGELOG.md`: Refresh and Retry use the `ghost` button variant, a failed first read shows the error and not the loading text, and one lint suppression guards the in-flight flag. Evidence: `evidence/analytics-T14.md`. Backend 2050 passed and 1 skipped (64 new tests, four mutation checks each made a test fail), frontend 2031 passed with lint, typecheck and `next build` clean, a 128-check Chrome run (emulation) at 320, 375, 768 and 1280 px with 0 failed, and an E29 timing of p95 6.2 ms on 100 cards (a measurement). One mutation check first passed all tests, which exposed a missing case (a column holding only deleted cards), and the test was added. Open: Playwright (V10), real-device checks (T15), deployed timing and deployment (T16). Tool attribution: requirements, design, tasks, code, tests, measurement scripts and documentation by Claude Code. No Kiro generation is recorded for this slice.
 
+
+## Local acceptance review record (T15)
+
+Review of `.kiro/specs/local-acceptance/` (requirements.md, design.md). Requirements were drafted by Claude Code (`/revotask-feature spec local-acceptance T15`, 2026-11-15). Design was drafted by Claude Code in the same session after the user's approval. Spec review only: no source code, test, dependency, README or changelog was changed and no test was run. Root T15 stays unchecked. Prerequisite check: T04 and T09–T14 are checked in `specs/tasks.md`, and their evidence files exist.
+
+| Phase | Status | Note |
+| --- | --- | --- |
+| Requirements | Approved 2026-11-15 (user, in chat) | 11 criteria LA-1 to LA-11. The user approved all six defaults: decisions 1 to 6. |
+| Design | Drafted 2026-11-15, pending review | `design.md`: 13 sections. Named tests map V09, V10, the boards-membership journey and the comments journey (section 5). Implementation order in section 11. |
+| Tasks | Not started | Next step after design approval. |
+| Implementation | Not started | No dependency installed, no test written. |
+
+### Decisions 1–6 (approved 2026-11-15)
+
+| ID | Decision | Resolution | Where applied |
+| --- | --- | --- | --- |
+| 1 | Playwright | Exact-pinned `@playwright/test` devDependency, lockfile committed, `frontend/playwright.config.ts`, specs in `frontend/e2e/`. | `requirements.md` decisions; `design.md` sections 2, 11, 13 |
+| 2 | Browsers | Chromium only. Browser and viewport recorded for each mobile check. | `design.md` section 5 |
+| 3 | Servers | Flask on 5001 and Next.js started manually. Playwright starts nothing. Preflight checks both services and proves Flask writes to `TEST_DATABASE_URL` with a marker board before any data is written. | `design.md` sections 1, 3 |
+| 4 | Timing fixture | One 100-card board in the test database, unique per-run tag, cleanup of all run records including browser-created ones, cleanup failure reported. | `design.md` sections 4, 7 |
+| 5 | Mobile coverage | Desktop and mobile emulation recorded separately. Real device and on-screen keyboard stay open for T16. | `design.md` sections 5, 8 |
+| 6 | Route interception | Only LA-6b (forced 500) and LA-6c (uncertain outcome). LA-6a (409) uses a real stale version, no interception. Interception recorded per case. | `design.md` section 5 |
+
+### Design choices the user did not specify (for review)
+
+| Item | Choice | Alternative and consequence |
+| --- | --- | --- |
+| Forced 409 | Real stale version through a second session, not interception. | Interception would also pass, but would not exercise the server conflict. |
+| Login budget | Three owner logins per run, one member login, two registrations, so the default limits (5 per minute per email, 5 per minute register) hold. A 429 waits once. | Disabling limits would simplify runs but would break the "real stack" rule. |
+| `psql` for the marker and cleanup | Uses `/opt/homebrew/bin/psql` against `TEST_DATABASE_URL`. | A Node driver would add a runtime-free dev dependency. `psql` is local and needs no package. |
+| Product change | Two test hooks only: `data-testid="card-<id>"` on `BoardCard.tsx` and the `Open <title>` name if missing. | No behavior change. |
+| Revoked tokens | Not cleaned, because the rows carry no user ID. | Leaves rows in the disposable test database. |
+
+### Open items for implementation
+
+- Confirm `psql` reaches `TEST_DATABASE_URL` from the run shell.
+- Confirm the accessible name of the card open control in `BoardCard.tsx`.
+- Confirm the browser-visible move path (`/api/cards/<id>/position`) used by the rollback interception.
+- Install `@playwright/test` at a version at least two weeks old, pinned exactly.
+
+### Design revision 2 (2026-11-15, user review in chat)
+
+Applied to `.kiro/specs/local-acceptance/design.md` (revision 2) and `tasks.md` (drafted). Spec review only: no source code, test, dependency or changelog was changed and no test was run. Tool: Claude Code.
+
+| ID | User change | Resolution in design and tasks | Verification planned |
+| --- | --- | --- | --- |
+| 1 | Verify the database before any write | Marker-board write removed. Read-only proof (design 3.6): the Flask PID's established connections, matched in `pg_stat_activity`, must all be to `TEST_DATABASE_URL`'s database. Stops before any mutating request. Negative control with a non-test `DATABASE_URL`. Credentials never logged. | Task 1.6, gate B |
+| 2 | Portable `psql` | `PSQL` override, else `PATH`. Connectivity checked in preflight with `select 1`. Credentials via child-process environment, not argv. | Tasks 1.3, 1.4 |
+| 3 | Token revocations in cleanup | Exact `jti` values tracked per run (decoded, not verified; only `jti` and `expires_at` stored). Deleted after users. Verified by blocking spike: a removed user's token must return 401. If not, an isolated disposable database replaces it. | Tasks 2.2, 2.3 (gate C), 2.4, 12.3 |
+| 4 | Rate-limit budget | Approved: 2 registrations, owner 3 logins, member 1 login. One bounded retry on unexpected 429 in setup, using `Retry-After` (cap 70 s, default 60 s). No LA check asserts 429. | Task 1.7 |
+| 5 | Selectors and move route | Card open name `Open <title>` already exists (`BoardCard.tsx`). No `card-<id>` hook added. Move route confirmed: `PATCH /api/cards/<id>/position` (`apiClient.ts:44`, `useKanbanBoard.ts:266`) to Next `app/api/cards/[id]/position/route.ts`. Interception pattern confirmed by spike. Real 409 from a second session. | Task 7.2 spike; tasks 6.1, 7.1 |
+| 6 | Viewport labels | Each project records viewport, browser and input mode. Desktop drag recorded separately from touch emulation (320, 375, 768). Real device and on-screen keyboard open for T16. | Tasks 10.1 to 10.3 |
+
+### Items needing the user's decision
+
+- Root `specs/tasks.md` T15 names `card-<id>` test IDs. The design does not add them, because the accessible name and existing drop-zone IDs are enough. Confirm the wording change; if it is kept as written, a one-line test-only hook goes in `BoardCard.tsx`. Task 12.4 records the choice.
+- Task 1.6 depends on `lsof` and `pg_stat_activity` visibility for the run role. If either is unavailable, the run stops and no data is written.
+- Docker Compose runs are not covered by the database proof. Use the native Flask process.
+
+### Tasks approval and T15 wording change (2026-11-15, user, in chat)
+
+Applied by Claude Code. Spec review only, plus the Group 1 implementation record below.
+
+| Item | Record |
+| --- | --- |
+| Tasks | Approved 2026-11-15 (user, in chat). `.kiro/specs/local-acceptance/tasks.md`: groups 0 to 12. Implementation started at Group 1. |
+| Root T15 wording | Changed in `specs/tasks.md`, row T15. Before: test IDs `card-<id>`, `dropzone-<columnId>-before-<cardId>` and `dropzone-<columnId>-end`. After: "stable selectors for the V10 card interactions: the card's accessible name for the open control, and the drag source scoped to the fixture card in its source column (drop zones `dropzone-<columnId>-before-<cardId>` and `dropzone-<columnId>-end`)". Reason: the user's decision. The accessible name already exists (`BoardCard.tsx`, `Open ${card.title}`), so the `card-<id>` hook is not needed. |
+| Product code | `BoardCard.tsx` unchanged, as instructed. No product file changed. |
+| Design | `.kiro/specs/local-acceptance/design.md` section 6 updated to the resolved wording. |
+
+### Group 1 implementation record (2026-11-15, Claude Code)
+
+| Task | Result | Evidence |
+| --- | --- | --- |
+| 1.1 pinned dependency | `@playwright/test` 1.64.1 (released 2026-10-14, at least two weeks old on 2026-11-15; 1.65.0 released 2026-11-05 was too new). Lockfile diff: 46 added lines, no removed lines. `npm ci` completed with install-script warnings only. The lockfile change is not committed. | `frontend/package.json`, `frontend/package-lock.json` |
+| 1.2 Chromium | `npx playwright install chromium` installed Chrome Headless Shell 156.0.8078.4. | Command output |
+| 1.3 `psql` helper | `e2e/support/psql.ts`. Unit tests: 9 passed (`npm run e2e:unit`). Covers the `_test` rule, the app-name rule, no URL or password in argv or errors, PATH and PSQL resolution, and redaction of a failing `psql`. | `frontend/e2e/support/psql.unit.ts` |
+| 1.4 connectivity | `select 1` returned 1 against `revotask_test` on 127.0.0.1:5432. | `LA_LIVE=1 npm run e2e:unit`-style run of `preflight-steps.live.unit.ts` |
+| 1.5 services and listener | Flask health 200; Next `/login` 200 at localhost:3000; exactly one listener on 5001 (pid 2092). | Same live run |
+| 1.6 database proof | **Open.** Positive: native Flask on the test database (port 5002) gave `1 backend(s) of pid 34198 in revotask_test`, PASS. Negative control: native Flask on the dev database (port 5003) gave FAIL, `app connected to a database other than revotask_test`. Port 5001 is held by Docker container `revotask-backend-1`, not native Flask (pid 2092 is `com.docker.backend`). Its connections go to the dev database, so step 6 stops the run. Gate B stays closed. Both control processes were stopped. | `frontend/e2e/support/proof.live.unit.ts`, `preflight-steps.ts` |
+| 1.7 retry helper | `e2e/support/retry.ts`. Unit tests: 4 passed. One retry honoring `Retry-After` (cap 70 s, default 60 s), stop on a second 429, no wait when the first response is not 429. | `frontend/e2e/support/retry.unit.ts` |
+
+Other changes in this group, outside the task list: `.gitignore` rules for run artifacts were anchored to the repo root, so `frontend/playwright/.auth/`, `frontend/playwright/.run/` and `frontend/playwright-report/` were not ignored. Changed to `**/playwright/.auth/`, `**/playwright/.run/` and `**/playwright-report/`, and verified with `git check-ignore`. `npm run typecheck` and `npm run lint` pass. The root `.gitignore` holds the ignore rules (design section 2 said `frontend/.gitignore`).
+
+### Decision needed before groups 2 onward
+
+Port 5001 is held by the Docker Compose backend (`revotask-backend-1`). The approved run needs native Flask on 5001 connected to `TEST_DATABASE_URL`. Options: (a) stop the Compose backend and start native Flask on 5001 with the test database for the run, then restart Compose after; (b) change the run to another port, which needs a design change; (c) keep Compose and let the preflight stop. Task 1.6 stays open until one of these is chosen and the proof passes on the run's port.
+
+### Implementation pass (2026-11-15, Claude Code)
+
+Request: "implement tasks T15. All of it." Group 1 committed separately on branch `t15-local-acceptance`, commit `5d27b81`.
+
+| Group | State | Note |
+| --- | --- | --- |
+| 1 | Done except 1.6 | 1.6 open: port 5001 held by Docker container `revotask-backend-1` |
+| 2 to 11 | Code written, not run | Typecheck and lint pass. `--list` shows 46 tests. Cleanup SQL verified on `revotask_test` with a no-match run id. |
+| 12 | Not done | Needs a completed run |
+
+Changes from the approved design, found while writing the code:
+- Owner logins are four per run, not three: setup, LA-2a, LA-2b and LA-2d (a fresh sign-in, so LA-2d does not revoke the session other suites use). Still within the limit of 5 per minute per email.
+- LA-2d replays the revoked token against E30 and expects 401. Design 4 also requires the spike in task 2.3 (a removed user's token returns 401) before cleanup relies on it. Task 2.3 has not run.
+- Passwords are set in process.env in global setup, in memory, for the worker processes. They are never written to a file.
+- The run file under `playwright/.run/` stores only jti, expiry and a label.
+
+Blocking decision (unchanged): choose (a) stop the Compose backend and run native Flask on 5001 for the run, (b) another port (needs a design change), or (c) keep Compose and let the preflight stop.
