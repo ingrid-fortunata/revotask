@@ -262,7 +262,7 @@ A failed or blocked check keeps its task and the gate open, with the actual reas
     - Add a kanban evidence status table to `specs/traceability.md` (AC05.1, AC05.2, AC06.1, AC07.1, AC07.2, AC13.1, V04, V05) with observed results only, and the open items: Playwright V10 and real-device checks (T15), and the open T06 gate if still open. Record the same in `evidence/kanban-T07-T09.md` and add a row to the verification index in `evidence/README.md`.
     - _Requirements: 11.9_
   - [x] 13.2 Update the changelogs
-    - Add concise `[Unreleased]` entries to `CHANGELOG.md`, `backend/CHANGELOG.md` and `frontend/CHANGELOG.md` from verified results, grouping related items and avoiding duplicates. Mark verification still pending where it is.
+    - Add concise entries under the `## YYYY-MM-DD` heading for the commit date, with a `### <short-sha> <subject>` entry to `CHANGELOG.md`, `backend/CHANGELOG.md` and `frontend/CHANGELOG.md` from verified results, grouping related items and avoiding duplicates. Mark verification still pending where it is.
     - _Requirements: 11.9_
   - [x] 13.3 Update README status
     - Update the status and feature sections using verified facts only, and link the changelog and evidence.

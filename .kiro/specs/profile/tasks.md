@@ -172,7 +172,7 @@ This plan implements the profile update (E31), the `/profile` page, the safe use
     - Write `evidence/profile-T12.md`: commands run and counts, the measured mobile result and screenshots (emulator or real device), the manual journey, the handler checks, defects found and fixed, and what stayed open (Playwright V10, real-device checks, T16 items: reauthentication, new-address confirmation, old-address notice and the E31 rate limit).
     - _Requirements: 7.6, 8.9; Root: T12_
   - [x] 10.2 Changelogs
-    - Add concise entries under `[Unreleased]` in `CHANGELOG.md`, `backend/CHANGELOG.md` and `frontend/CHANGELOG.md`. Record any deviation from the approved design in `specs/CHANGELOG.md` with before, after, reason and verification.
+    - Add concise entries under the `## YYYY-MM-DD` heading for the commit date, with a `### <short-sha> <subject>` entry in `CHANGELOG.md`, `backend/CHANGELOG.md` and `frontend/CHANGELOG.md`. Record any deviation from the approved design in `specs/CHANGELOG.md` with before, after, reason and verification.
     - _Root: T12_
   - [x] 10.3 README and layer docs
     - Update the `README.md` status and feature facts and `docs/USER_GUIDE.md` (the account link and the Profile page) with verified results only. Check `backend/specs/` and `frontend/specs/` still match the code. Update `specs/traceability.md` rows for AC12.1, E31 and `/profile`, and V07 and V11 in `docs/TEST-PLAN.md` if the results differ from the plan.

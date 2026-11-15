@@ -197,7 +197,7 @@ A failed or blocked check keeps its task open with the actual reason. Do not mar
     - Add a comments evidence status table to `specs/traceability.md` (AC08.1, AC08.2, AC13.1, V05, V06, V11) with observed results only, and the open items: Playwright V10 and real-device checks (T15). Record the same in `evidence/comments-T10.md` and add a row to the verification index in `evidence/README.md`.
     - _Requirements: 9.8_
   - [x] 11.2 Update the changelogs
-    - Add concise `[Unreleased]` entries to `CHANGELOG.md`, `backend/CHANGELOG.md` and `frontend/CHANGELOG.md` from verified results, grouping related items and avoiding duplicates. Mark verification still pending where it is.
+    - Add concise entries under the `## YYYY-MM-DD` heading for the commit date, with a `### <short-sha> <subject>` entry to `CHANGELOG.md`, `backend/CHANGELOG.md` and `frontend/CHANGELOG.md` from verified results, grouping related items and avoiding duplicates. Mark verification still pending where it is.
     - _Requirements: 9.8_
   - [x] 11.3 Update README status
     - Update the status and feature sections using verified facts only, and link the changelog and evidence.

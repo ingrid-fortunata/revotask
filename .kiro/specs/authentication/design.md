@@ -576,7 +576,7 @@ Existing tests that change:
 
 ## 10. Contract and document impact
 
-**Applied in this spec round** (task 0.1 is done; the changelog entries are in `specs/CHANGELOG.md` under `[Unreleased]`, with verification marked pending):
+**Applied in this spec round** (task 0.1 is done; the changelog entries are in `specs/CHANGELOG.md` under the `## YYYY-MM-DD` heading for the commit date, with a `### <short-sha> <subject>` entry, with verification marked pending):
 
 | Item | Document | Before | After |
 |---|---|---|---|
@@ -594,7 +594,7 @@ Existing tests that change:
 Documents updated at handoff under the documentation checkpoint (task 3.1), using only verified facts:
 
 - `README.md` status, `docs/DEVELOPMENT.md` (new dependencies, `RATE_LIMIT_ENABLED`, local smoke steps).
-- `CHANGELOG.md`, `backend/CHANGELOG.md`, `frontend/CHANGELOG.md` under `[Unreleased]`.
+- `CHANGELOG.md`, `backend/CHANGELOG.md`, `frontend/CHANGELOG.md` under the `## YYYY-MM-DD` heading for the commit date, with a `### <short-sha> <subject>` entry.
 - `specs/tasks.md` (T03, T04 checkboxes), `specs/traceability.md` (authentication evidence status), `specs/CHANGELOG.md` (fill the Verification lines).
 - `evidence/authentication-T03-T04.md` and the Verification index in `evidence/README.md`.
 - `evidence/spec-review.md` receives only the findings confirmed in the phase reviews.

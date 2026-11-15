@@ -177,7 +177,7 @@ Note: `npm run build` replaced `frontend/.next`. A running `next start` server o
 
 ## Group 13: documentation and handoff
 
-Updated: `specs/traceability.md` (Kanban evidence status), `README.md` (status, features, counts, evidence link), `CHANGELOG.md`, `backend/CHANGELOG.md` and `frontend/CHANGELOG.md` (`[Unreleased]`), `guidelines/frontend.md` (shared parts), `frontend/specs/pages-and-components.md`, `evidence/README.md`, `specs/CHANGELOG.md` and `evidence/spec-review.md` (implementation deviations), and the `specs/tasks.md` T15 row and tracker.
+Updated: `specs/traceability.md` (Kanban evidence status), `README.md` (status, features, counts, evidence link), `CHANGELOG.md`, `backend/CHANGELOG.md` and `frontend/CHANGELOG.md` (the `## YYYY-MM-DD` heading for the commit date, with a `### <short-sha> <subject>` entry), `guidelines/frontend.md` (shared parts), `frontend/specs/pages-and-components.md`, `evidence/README.md`, `specs/CHANGELOG.md` and `evidence/spec-review.md` (implementation deviations), and the `specs/tasks.md` T15 row and tracker.
 
 ### T15 handoff: the Kanban Playwright journey
 
