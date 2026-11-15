@@ -79,7 +79,7 @@ Local status only. The planned verification rows above stay the reference. Evide
 | AC01.1, AC01.2 | E02 and `/register`: exact fields, shared field rules, 400 field errors, 409 including an 8-way simultaneous registration, redirect to `/login` signed out | Passed locally (V01 local part) |
 | AC02.1 | E03 and `/login`: JWT, HttpOnly cookie, login opens the protected shell at `/` | Passed locally. Dashboard content arrives with T06 |
 | AC02.2 | Identical 401 for a wrong password and an unknown email. Absent, expired, revoked and tampered sessions return 401 and redirect to `/login` | Passed locally (V02 local part) |
-| AC02.3 | E04: revocation, token replay rejected, cookie cleared, idempotent browser logout, retry when Flask is down, Back after sign out | Passed locally in Chrome device emulation. The Playwright run (V09) is T15. The back-forward cache `pageshow` path has unit tests only |
+| AC02.3 | E04: revocation, token replay rejected, cookie cleared, idempotent browser logout, retry when Flask is down, Back after sign out | Passed locally in Chrome device emulation. The Playwright run (V09) passed locally in T15 (LA-2a to LA-2d). The back-forward cache `pageshow` path has unit tests only |
 | AC12.1 | E30 read and E31 (`PATCH /api/users/me`: partial update, no-op keeps `updated_at`, 409 rolls back the whole update, per-field last write wins, no password field, session stays valid after an email change, C23–C27), `/profile`, the AppHeader account link, the safe user context refresh | Passed locally (V07, V11): `evidence/profile-T12.md`. Playwright (V10) and real-device checks are T15. Reauthentication, new-address confirmation, an old-address notice and the E31 rate limit are tracked for public release in T16 |
 | AC13.1 | AUTH-R13 for `/login`, `/register`, the shell and the error state at 320, 375, 768 and 1280 px | Passed locally in emulation. No real phone, no on-screen keyboard. The same check repeats in every later UI slice, in T15 and in T16 |
 | AC13.3 | `no-store` on private responses, exact `Origin` check on the three auth handlers, secrets absent from the browser bundle | Partial. The same checks on later handlers, the full V13 run (T15) and the live cookie flags (T16) remain |
@@ -98,13 +98,13 @@ Local status only. The planned verification rows above stay the reference. Evide
 | AC05.2 | E16 and the Move left and Move right buttons | Passed locally: order after reload, 409 on a stale version, anchor errors, rebalance. Browser run passed |
 | AC06.1 | E17–E19 and the card dialogs. Assignees limited to active participants | Passed locally: backend and UI tests. The scripted journey added, edited, assigned and deleted a card |
 | AC06.2 | E21 and `/my-tasks` | Passed locally (T11): see "My Tasks and search evidence status (T11)" |
-| AC07.1 | E20, desktop drag and the Move dialog share one function | Passed locally: unit and UI tests show identical requests. Real pointer drag pending (Playwright, T15) |
+| AC07.1 | E20, desktop drag and the Move dialog share one function | Passed locally: unit and UI tests show identical requests. A real pointer `dragTo()` passed in Playwright (T15, LA-4) |
 | AC07.2 | Optimistic move, rollback, 409 refetch, unchanged place, cross-board destination refused | Passed locally: backend tests and hook tests. A forced 409 in Chrome showed the message and the refetched board |
-| AC13.1 | Every new control and dialog at 375 px and wider | Passed locally in emulation at 320, 375, 768 and 1280 px: 418 checks, 0 failed. Real phone and on-screen keyboard open (T15, T16) |
+| AC13.1 | Every new control and dialog at 375 px and wider | Passed locally in emulation at 320, 375, 768 and 1280 px: 418 checks, 0 failed. The T15 Playwright matrix repeated the check in emulation. Real phone and on-screen keyboard open (T16) |
 | AC04.2 | E12 assignment clearing, narrowed to active cards in active columns (L7) | Passed locally: regression test and the E07 refresh test |
 | V04 | Column and card pytest | Passed locally: 1570 backend tests passed, 1 skipped |
-| V05 | Optimistic move, rollback, refetch, gate | Passed locally with Vitest. Playwright part pending (T15) |
-| V10 | Playwright Kanban journey | Pending (T15). The test IDs for it are in `evidence/kanban-T07-T09.md` |
+| V05 | Optimistic move, rollback, refetch, gate | Passed locally with Vitest. The Playwright part passed locally in T15 (LA-6: a real 409, a forced 500, an uncertain outcome) |
+| V10 | Playwright Kanban journey | Passed locally (T15, LA-4): the eight-step journey with a real `dragTo()` and reload, and the Move button at 375 px. The test IDs are in `evidence/kanban-T07-T09.md` |
 
 ## Comments evidence status (T10)
 
@@ -114,15 +114,15 @@ Local status only. The planned verification rows above stay the reference. Evide
 |---|---|---|
 | AC08.1 | E24 and the add form: valid content creates a comment (201), missing or blank content is 400, a nonmember is 404, no authentication is 401 | Passed locally: backend and UI tests, and the browser journey |
 | AC08.2 | E25 and E26: only the author with current access may edit or delete (403 for a non-author including an admin, 404 for a removed author). A changed edit moves `updated_at`, the same text leaves it | Passed locally: backend tests (author matrix, unchanged timestamp), UI tests and the browser run |
-| AC13.1 | The Card details dialog, the comment editor and the delete confirmation at 375 px and wider | Passed locally in emulation at 320, 375, 768 and 1280 px: 480 checks, 0 failed, including the wide dialog fitting 375 px. Real phone and on-screen keyboard open (T15, T16) |
-| V05 | Card details modal states, uncertain add, 404 resolution | Passed locally with Vitest. Playwright part pending (T15) |
+| AC13.1 | The Card details dialog, the comment editor and the delete confirmation at 375 px and wider | Passed locally in emulation at 320, 375, 768 and 1280 px: 480 checks, 0 failed, including the wide dialog fitting 375 px. The T15 Playwright matrix repeated the check in emulation. Real phone and on-screen keyboard open (T16) |
+| V05 | Card details modal states, uncertain add, 404 resolution | Passed locally with Vitest. The Playwright part passed locally in T15 (LA-6: a real 409, a forced 500, an uncertain outcome) |
 | V06 | E24 with 201, 400, 401, 404 and E25 and E26 with 403 for a non-author (admin included), `updated_at` rules, omission after delete, no `position_version` change, one `comment_created` event | Passed locally: 1706 backend tests passed, 1 skipped. The create-path status difference from the handbook (404 instead of 403 for a nonmember) is recorded in `docs/RUBRIC.md` |
 | V11 | Mobile and accessibility of the new dialogs | Passed locally in emulation (see AC13.1) |
-| V10 | Playwright comments steps | Pending (T15). The steps are in `evidence/comments-T10.md` |
+| V10 | Playwright comments steps | Passed locally (T15, LA-5). The steps are in `evidence/comments-T10.md` |
 
 ## My Tasks and search evidence status (T11)
 
-Local status only. The planned verification rows above stay the reference. Evidence: `evidence/my-tasks-search-T11.md`. Local checks prove local behavior: no real phone, no on-screen keyboard, and the Playwright journey is pending (T15).
+Local status only. The planned verification rows above stay the reference. Evidence: `evidence/my-tasks-search-T11.md`. Local checks prove local behavior: no real phone, no on-screen keyboard, and the Playwright journey passed locally in T15 (emulation).
 
 | AC | T11 contribution | Status |
 |---|---|---|
@@ -130,31 +130,46 @@ Local status only. The planned verification rows above stay the reference. Evide
 | AC09.1 | E22 and the Search cards field: title match, 300 ms debounce, 20-result cap, literal wildcards, blank clears at once, late responses ignored, results follow rename, move and delete, query validation (repeated, unknown, blank, over-long, NUL) in Flask and through the Next handler | Passed locally: backend tests, hook and component tests, handler tests, the journey and four handler checks in Chrome |
 | AC13.1 | `/my-tasks`, the search states and the Boards and My tasks header links at 375 px and wider | Passed locally in emulation at 320, 375, 768 and 1280 px (44 px targets, no horizontal scroll, no sticky-bar overlap). No real phone |
 | V07 | E21 and E22 pytest and the UI tests; E31 pytest (99 tests) and the profile UI tests | Passed locally (T11, T12) |
-| V11 | Mobile and accessibility of the new screens, search debounce | Passed locally in emulation. Playwright part pending (T15) |
+| V11 | Mobile and accessibility of the new screens, search debounce | Passed locally in emulation. The Playwright matrix passed in T15 (LA-8) |
 | NFR 1 (reference) | E22 and E21 on 100 cards | Recorded locally: E22 p95 4.8 ms, E21 p95 5.8 ms (direct to Flask). Not a T11 gate. Deployed timing is T16 |
 
 ## Analytics evidence status (T14)
 
-Local status only. The planned verification rows above stay the reference. Evidence: `evidence/analytics-T14.md`. Local checks prove local behavior: no real phone, and the Playwright journey is pending (T15).
+Local status only. The planned verification rows above stay the reference. Evidence: `evidence/analytics-T14.md`. Local checks prove local behavior: no real phone, and the Playwright journey passed locally in T15 (emulation).
 
 | AC | Analytics contribution | Status |
 | --- | --- | --- |
 | AC11.1 | E29 and the Analytics panel: active cards per active column (left join, 0 for an empty column), distinct `entered_done` cards in the UTC week, activity by actor over the four counted kinds (former members kept, current name), week boundaries, query rule, read-only, panel states and failure isolation | Passed locally: backend tests (64, four mutation checks), hook, panel and `BoardShell` tests, and a 128-check Chrome run |
 | AC13.1 | The Analytics button in the board header and its dialog at 320, 375, 768 and 1280 px (44 px controls, no horizontal scroll, long names wrap). The shared header brand link is 28 px wide below 400 px | Partial locally in emulation: the brand link fails FE-S5 at 320 and 375 px (open). No real phone |
 | V08 | E29 pytest (UTC week, distinct completions, removed member, join inflation, access) and the frontend tests | Passed locally (T14) |
-| V11 | The panel's mobile and keyboard checks, the version-rise re-read and Refresh | Passed locally in emulation. Playwright part pending (T15) |
+| V11 | The panel's mobile and keyboard checks, the version-rise re-read and Refresh | Passed locally in emulation. The Playwright matrix passed in T15 (LA-8) |
 | NFR 1 (reference) | E29 on 100 cards with a week of events | Recorded locally: p95 6.2 ms, max 7.4 ms (direct to Flask). Not a T14 gate. Deployed timing is T16 |
+
+## Local acceptance evidence status (T15)
+
+Local, Chromium-emulation status only. Evidence: `evidence/local-acceptance-T15.md`, `evidence/local-acceptance-T15-timing.json`, `evidence/local-acceptance-T15-mobile.json`. No real phone, no on-screen keyboard and no deployed service.
+
+| AC or V | T15 contribution | Status |
+|---|---|---|
+| V09 · AC02.1–AC02.3 | Four auth scenarios (LA-2a to LA-2d), including the revoked token refused after logout | Passed locally |
+| AC03.1, AC03.3, AC04.1, AC04.2 | Boards and membership journey and `USER_NOT_FOUND` (LA-3) | Passed locally |
+| V10 · AC05.1, AC05.2, AC06.1, AC07.1 | Eight-step Kanban journey with a real `dragTo()` and reload, and the Move button at 375 px (LA-4) | Passed locally |
+| AC08.1, AC08.2 | Comments journey and the 403 for a non-author (LA-5) | Passed locally |
+| V05 · AC07.2 | A real 409 from a stale version, a forced 500, an uncertain outcome (LA-6) | Passed locally |
+| V12 · AC13.2 | 30 warm E07 requests, 100 cards, p95 7.1 ms against 800 ms (LA-7) | Passed locally. Local, warm, Flask direct. The deployed sample is T16 |
+| V11 · AC13.1 | 40 route and dialog rows at 320, 375, 768 and 1280 px (LA-8) | Passed in emulation. Real phone and on-screen keyboard open (T16) |
+| V13 · AC13.3 | Origin and `no-store` through the unit suites, a bundle sentinel build and a repository and bundle secret scan (LA-9) | Passed locally. Live cookie flags are T16 |
 
 ## Boards-membership evidence status (T05–T06)
 
-Local status only. The planned verification rows above stay the reference. Evidence: `evidence/boards-membership-T05-T06.md`. The browser and mobile checks have not run.
+Local status only. The planned verification rows above stay the reference. Evidence: `evidence/boards-membership-T05-T06.md`. The browser and mobile checks ran in T15 (Playwright, emulation): see "Local acceptance evidence status (T15)".
 
 | AC                     | Boards and membership contribution                                                                                    | Status                                                                                                                                                                                              |
 | ---------------------- | --------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| AC03.1, AC03.2, AC03.3 | E05–E09, the dashboard and the board page. Role gate, 404 and 403 rules, validation before authorization              | Partial. Backend and frontend tests pass locally. Browser and mobile check at 320, 375, 768 and 1280 px pending (task 7.2)                                                                          |
-| AC04.1                 | E10–E12 and the members panel. Add, reactivation and list order                                                       | Partial. Backend and frontend tests pass locally. Browser check and manual journey pending (task 7.2)                                                                                               |
+| AC03.1, AC03.2, AC03.3 | E05–E09, the dashboard and the board page. Role gate, 404 and 403 rules, validation before authorization              | Passed locally. Backend and frontend tests pass, the T15 Playwright journey passed (LA-3), and the 320, 375, 768 and 1280 px matrix passed in emulation (LA-8)                                                                          |
+| AC04.1                 | E10–E12 and the members panel. Add, reactivation and list order                                                       | Passed locally. Backend and frontend tests pass, and the T15 Playwright journey passed: create, open, add, remove, delete and `USER_NOT_FOUND` (LA-3)                                                                                               |
 | AC04.2                 | Removal clears the removed user's assignments on active cards in active columns of that board only, in one transaction under the board lock. Soft-deleted cards and cards in soft-deleted columns are preserved (kanban review L7) | Verified by tests only: `backend/tests/test_board_members_assignments.py` (including rollback) and `backend/tests/test_boards_properties_scoping.py` Property 15. The narrowed scope (L7) is covered by `test_e12_keeps_assignments_in_soft_deleted_columns_and_clears_active_columns` (4 tests in the file, 1147 passed in the full suite). Not checked in a browser |
-| AC13.1                 | Mobile classes on the new pages, dialogs and controls                                                                 | Partial. Classes applied. Measured check at 320, 375, 768 and 1280 px not run (task 7.2)                                                                                                            |
+| AC13.1                 | Mobile classes on the new pages, dialogs and controls                                                                 | Passed locally in emulation. Measured in the T15 matrix at 320, 375, 768 and 1280 px (LA-8). It found the 40 px Members button (F-T15-01), which was fixed                                                                                                            |
 
 ### Open risks and questions
 

@@ -86,7 +86,26 @@ npm test                          # Vitest: jsdom for components, node for Route
 npm run build
 ```
 
-Playwright browser tests arrive with the local acceptance task (T15).
+### Playwright local acceptance (T15)
+
+The suite in `frontend/e2e/` runs against the real local stack and starts no server. It needs native Flask on port 5001 connected to the test database, the Next.js dev server on `http://localhost:3000`, and `psql` (on `PATH`, or set `PSQL` to its absolute path).
+
+```bash
+docker compose stop backend       # port 5001 must be free; start it again after the run
+cd backend && source .venv/bin/activate
+export DATABASE_URL="<the TEST_DATABASE_URL value from backend/.env>"   # this shell only
+flask --app app:create_app run --port 5001   # the test database, rate limits on
+cd ../frontend
+npm run dev                       # http://localhost:3000, in another terminal
+npx playwright install chromium   # once
+npm run e2e                       # about 1 minute; HTML report in frontend/playwright-report/
+npm run e2e:unit                  # helper unit tests, no servers or database
+```
+
+- The preflight stops the run unless it can prove the running Flask is connected to the `_test` database, so nothing is written to `revotask_dev`. Each run creates its own tagged accounts, records only the `jti` of its tokens, and its teardown deletes every row of the run and verifies 0 left. A run that is killed leaves rows: remove them with `LA_CLEANUP_RUN=<runId> npm run e2e:cleanup` (the run ID is in the account emails `la-<runId>-…@acceptance.example.test`).
+- Login and register limits stay on. A run uses 2 registrations and 4 owner logins, within 5 per minute per email, so runs started less than a minute apart can wait for a limit once.
+- `playwright/.auth/`, `playwright/.run/`, `playwright-report/` and `test-results/` are git-ignored. Review a report for credentials before sharing it.
+- Projects: `desktop` (1280 px, mouse), and `viewport-320`, `mobile-375`, `viewport-768` (Chromium touch emulation). Results are emulation, not a real device.
 
 ### Sign in locally and run the smoke checks
 
@@ -113,7 +132,7 @@ npm run start                     # http://localhost:3000, or `npx next start -p
 | Docker Compose (root `.env`) | `DOCKER_DATABASE_URL` | `postgresql+psycopg://revotask:<password>@host.docker.internal:5432/revotask_dev` |
 | Container runtime | `PORT`, `GUNICORN_WORKERS` (optional) | `5001` locally. Render sets its own `PORT`. |
 | Next.js server | `APP_ORIGIN`, `API_BASE_URL`                             | `http://localhost:3000`, `http://127.0.0.1:5001`. Read on the first request, so `next build` needs neither |
-| Playwright     | `E2E_BASE_URL`                                           | `http://localhost:3000` or verified Vercel URL. Added with T15.      |
+| Playwright     | `E2E_BASE_URL`                                           | `http://localhost:3000` (the default) or a verified Vercel URL. Read by `playwright.config.ts` and the suite. |
 
 Both `.env.example` files are committed with placeholders. Real `.env*` files stay ignored, and so do `.venv/`, `__pycache__/`, `.next/`, `node_modules/`, `*.tsbuildinfo` and `playwright/.auth/`. The Route Handlers and Server Components read the two Next.js variables on the server only. They never reach the browser bundle (checked with a sentinel build in `evidence/authentication-T03-T04.md`).
 

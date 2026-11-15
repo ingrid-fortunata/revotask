@@ -77,7 +77,7 @@ Negative control (task 1.6): run Flask with `DATABASE_URL` pointing at a differe
 **Rate-limit budget (approved).** The limits are on. Per run:
 
 - Registrations: 2 (owner and member), within the register limit of 5 per minute.
-- Owner logins: 3. Setup login through the Next login route (its cookie is saved to storage state), the LA-2a UI login, and the LA-2b wrong-password attempt. The limit is 5 per minute per email.
+- Owner logins: 4. Setup login through the Next login route (its cookie is saved to storage state), the LA-2a UI login, the LA-2b wrong-password attempt, and a fresh sign-in for LA-2d so the logout does not revoke the session other specs use. The limit is 5 per minute per email. (Revision 3, 2026-11-15, found while implementing.)
 - Member logins: 1, in setup.
 - Logins from the spike in task 2.3 are counted in the same window. Spike accounts use a separate run tag and are deleted with the run.
 
@@ -242,7 +242,7 @@ The implementation runs in this order, so each step can be checked before the ne
 | Servers | Started manually. Playwright starts none. |
 | Database proof | Read-only: the running Flask process's established connections, matched in `pg_stat_activity`, must all be to the test database. No marker write. |
 | `psql` | Resolved from `PSQL` or `PATH`. Connectivity checked in preflight. Credentials passed by environment, never in argv. |
-| Rate limits | Left on. 2 registrations and 4 logins per run (owner 3, member 1). One bounded retry on unexpected 429 in setup only. |
+| Rate limits | Left on. 2 registrations and 5 logins per run (owner 4, member 1). One bounded retry on unexpected 429 in setup only. |
 | Token cleanup | Exact `jti` values tracked by the run and removed after users. Verified by a blocking spike (2.3). Isolated database is the fallback. |
 | Interception | LA-6b and LA-6c only. LA-6a uses a real stale version from a second session. |
 | Cleanup | Hard delete by run tag and tracked `jti` in one transaction, with post-counts of 0. |
