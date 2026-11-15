@@ -8,6 +8,11 @@ Spec versioning tracks review rounds independently of application releases. Reco
 
 ### Changed
 
+- **local-acceptance (T15) · login budget, token spike and matrix audit rules (native design and tasks only, for the record):**
+  - **Before:** `.kiro/specs/local-acceptance/design.md` section 4 budgeted 3 owner logins and 1 member login per run, task 3.1 expected 3 `jti` values in the run file, and the matrix audited the whole page with a dialog open.
+  - **After:** The owner logs in 4 times (setup, LA-2a, LA-2b, LA-2d, a fresh sign-in so other suites keep their session), the run file holds 4 `jti` values, and a dialog row audits the dialog alone after its open transition finishes. The shared root specs are unchanged. Root T15 is checked.
+  - **Reason:** LA-2d must not revoke the session the other specs use, and a box read during the modal's scale transition measured 43 px instead of 44.
+  - **Verification:** `npx playwright test` 54 passed on 2026-11-15 and the cleanup count was 0. Evidence: `evidence/local-acceptance-T15.md`.
 - **analytics (T14) · analytics shown in a modal from the board header (presentation and read timing change, for review):**
   - **Before:** `design.md` DD10 placed the panel below the Kanban region, and A8 read E29 on mount, after a successful local card or column change that advances `position_version`, and on Refresh.
   - **After:** An Analytics button sits at the right end of the board header and opens a `BaseModal` with the figures, Refresh and Close. The hook mounts only while the dialog is open, so a closed dialog sends no read. A card or column change made while the dialog is closed triggers no read; the next open reads fresh figures. Close and Escape abort the read in flight.

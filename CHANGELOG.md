@@ -4,6 +4,8 @@ Track notable user-facing changes using [Keep a Changelog](https://keepachangelo
 
 ## [Unreleased]
 
+- Local acceptance (T15, local only): a Playwright suite in `frontend/e2e/` runs 54 tests in Chromium against the real local stack. It covers the four auth scenarios, the boards and membership journey, the eight-step Kanban journey with a real `dragTo()` and the Move button at 375 px, the comments journey, a real 409, a forced 500 and an uncertain-outcome move, 30 warm E07 requests (p95 7.1 ms), and a 40-row route and dialog matrix at 320, 375, 768 and 1280 px. A preflight refuses to write unless Flask is proven connected to the `_test` database, and each run deletes its own rows and verifies zero are left. The matrix found two touch-target defects, fixed: the 40 px Members button and the 28 px brand link below 400 px. Evidence: `evidence/local-acceptance-T15.md`. Real-device checks and everything deployed stay with T16.
+- Added QA tests for the five reorder scenarios, the BoardCard and CommentList rendered values and the repository and bundle secret checks, with a scored review in `evidence/implementation-review.md`.
 - Added handbook review and submission evidence for Kiro, Claude Code, Postman and Playwright.
 
 ### Added
