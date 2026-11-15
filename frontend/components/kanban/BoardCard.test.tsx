@@ -19,6 +19,25 @@ describe("BoardCard", () => {
     expect(screen.getByText("Grace")).toBeInTheDocument();
   });
 
+  // V06/V05 RTL: the whole card text is exactly title, assignee and Move, and a second card
+  // keeps its own values. Nothing is shared between two cards in one render.
+  it("renders exactly the title, the assignee name and Move for two cards, with their own labels", () => {
+    const noop = vi.fn();
+    render(
+      <>
+        <BoardCard card={card("k1", "c1", 1024, { title: "Fix login", assignee_name: "Grace" })} disabled={false} onOpen={noop} onMove={noop} />
+        <BoardCard card={card("k2", "c1", 2048, { title: "Write docs" })} disabled={false} onOpen={noop} onMove={noop} />
+      </>,
+    );
+    const first = screen.getByRole("button", { name: "Open Fix login" }).parentElement as HTMLElement;
+    const second = screen.getByRole("button", { name: "Open Write docs" }).parentElement as HTMLElement;
+    expect(first).toHaveTextContent(/^Fix loginGraceMove$/);
+    expect(second).toHaveTextContent(/^Write docsUnassignedMove$/);
+    expect(screen.getByRole("button", { name: "Move Write docs" })).toHaveTextContent("Move");
+    expect(screen.queryByText("Grace", { selector: "p" })).toBeInTheDocument();
+    expect(screen.getAllByText("Unassigned")).toHaveLength(1);
+  });
+
   it("shows Unassigned when there is no assignee", () => {
     setup();
     expect(screen.getByText("Unassigned")).toBeInTheDocument();
