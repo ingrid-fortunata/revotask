@@ -44,7 +44,7 @@ export function AppHeader() {
   return (
     <header className="sticky top-0 z-20 flex flex-wrap items-center gap-x-3 gap-y-1 bg-neutral px-4 py-2 text-neutral-content lg:fixed lg:inset-y-0 lg:left-0 lg:w-64 lg:flex-col lg:flex-nowrap lg:items-stretch lg:gap-6 lg:px-3 lg:py-5">
       <div className="flex min-w-0 flex-auto items-center justify-between gap-2 lg:flex-none lg:px-3">
-        <Link href="/" className="inline-flex min-h-11 items-center text-white">
+        <Link href="/" className="inline-flex min-h-11 min-w-11 items-center text-white">
           <BrandMark className="max-[400px]:[&>span:last-child]:sr-only" />
         </Link>
         <NotificationBell />

@@ -218,6 +218,12 @@ describe("MembersPanel mobile controls", () => {
     expect(screen.getByRole("button", { name: "Remove Ben" })).toHaveClass("min-h-11", "min-w-11");
     expect(screen.getByLabelText("Member email")).toHaveClass("text-base", "min-h-11", "min-w-11");
   });
+
+  // Finding F-T15-01 (LA-8): the avatar stack alone made the button 40 px wide.
+  it("gives the Members button a 44 by 44 px tappable area", () => {
+    renderPanel("admin");
+    expect(screen.getByRole("button", { name: /^Members \(/ })).toHaveClass("min-h-11", "min-w-11");
+  });
 });
 
 
