@@ -30,8 +30,8 @@ test("add, edit, delete a comment, then reload (owner) @desktop", async ({ page 
 
   await dialog.getByRole("button", { name: /^Edit your comment from/ }).click();
   const edited = `${text} edited`;
-  await dialog.getByLabel("Edit your comment").fill(edited);
-  await dialog.getByRole("button", { name: "Save" }).click();
+  await dialog.getByRole("textbox", { name: "Edit your comment" }).fill(edited);
+  await dialog.getByRole("button", { name: "Save comment" }).click();
   await expect(dialog.getByText(edited)).toBeVisible();
 
   await dialog.getByRole("button", { name: /^Delete your comment from/ }).click();

@@ -5,7 +5,7 @@ import path from "node:path";
 import os from "node:os";
 import { API_ORIGIN, runFromEnv, storageFor, titleFor } from "./support/run";
 import { tokenFromStorage } from "./support/api";
-import { addCard, addColumn, createBoard } from "./support/seed";
+import { addCard, addColumn, createBoard, getBoard } from "./support/seed";
 
 // LA-7 (V12): 30 sequential E07 requests after warm-up, nearest-rank p95 (the 29th sorted value).
 // Local, warm, Flask direct. Not a deployment claim. Writes the raw timings to evidence.
@@ -22,6 +22,9 @@ test("30 sequential E07 requests, warm (LA-7) @timing", async () => {
   const boardId = await createBoard(token, titleFor(run.runId, "board", "timing"));
   const columns = [await addColumn(token, boardId, "Todo"), await addColumn(token, boardId, "Doing"), await addColumn(token, boardId, "Done")];
   for (let i = 0; i < 100; i += 1) await addCard(token, columns[i % 3], titleFor(run.runId, "card", i));
+  const fixture = await getBoard(token, boardId); // task 9.1: E07 returns 100 cards in 3 columns
+  expect(fixture.columns).toHaveLength(3);
+  expect(fixture.columns.reduce((n, c) => n + c.cards.length, 0)).toBe(100);
 
   const get = async () => {
     const started = performance.now();

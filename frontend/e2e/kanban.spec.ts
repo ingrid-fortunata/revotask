@@ -18,12 +18,14 @@ test("eight-step journey with dragTo and reload @desktop", async ({ page }) => {
   await addColumnUi(page, "Destination");
   const token = ownerToken();
   await addMember(token, await boardIdByName(token, board), emailFor(run.runId, "member"));
+  await page.reload(); // the member list is read when the page loads
   await addCardUi(page, "Source", card);                        // 3. card in source
 
   const dialog = await openCardUi(page, card);                  // 4. open details
   await dialog.getByLabel("Assignee").selectOption({ label: titleFor(run.runId, "member") });
-  await dialog.getByRole("button", { name: "Save" }).click();   // edit and assign
-  await page.getByRole("button", { name: "Close card details" }).click();
+  await dialog.getByRole("button", { name: "Save card" }).click();   // edit and assign
+  await expect(dialog).toBeHidden(); // Save closes the dialog
+  await expect(page.getByText(titleFor(run.runId, "member"), { exact: true }).last()).toBeVisible(); // assignee on the card
 
   const boardId = await boardIdByName(token, board);
   const before = await getBoard(token, boardId);
