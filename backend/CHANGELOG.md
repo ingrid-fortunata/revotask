@@ -1,66 +1,121 @@
 # Component Changelog
 
-Record actual changes for this component. Reference the matching app release in [the root changelog](../CHANGELOG.md).
+Record actual changes for this component. Newest date first. Each `## YYYY-MM-DD` heading groups the commits made that day, and each commit has a `### <short-sha> <subject>` entry. Reference the matching root entry for the same commit in [the root changelog](../CHANGELOG.md).
 
-## [Unreleased]
+## 2026-11-15
+
+### 8033a55 docs: close T15 in specs, changelogs and setup guide
 
 - QA (T15, tests only): `tests/test_reorder_scenarios.py` names the five reorder scenarios (same column, different column, missing card, unauthorized board, FLOAT order) with exact stored order values, and `tests/test_secret_exposure.py` checks that the local JWT key and database passwords appear in no tracked file and no file of `frontend/.next/static`. No application code changed. Verification: `pytest` 2058 passed and 1 skipped (the same E05 skip), `ruff check .` clean. Not covered: line coverage (no tool installed) and a prior-schema migration (one revision exists). See [the review record](../evidence/implementation-review.md#test-review-v01v08-and-v13).
+
+## 2026-11-14
+
+### fc6e18f docs: update changelogs, readme and user guide for analytics
+
 - Board analytics (T14) implemented locally in the new `app/blueprints/analytics/` (`routes.py`, `schema.py`, `service.py`): `GET /api/boards/{id}/analytics` (E29). Check order: token (401), board ID (400), any query parameter (400, `AnalyticsQuerySchema` has no fields), then `authorize_board` without a lock (404). Three separate statements: active cards per active column by a left join with the active-card test in the join condition, `count(DISTINCT card_id)` of `entered_done` events in the UTC week, and the counts of `COUNTED_KINDS` (`card_created`, `card_moved`, `column_reordered`, `comment_created`) per actor joined to the current user name, ordered by count, lower-cased name and user ID. `week_bounds(utcnow())` gives Monday 00:00 UTC to the next Monday (exclusive) and the two timestamps end in `Z` (`UtcDateTime` is not used, it writes `+00:00`). Read-only, no migration, no new index. Registered in `create_app`.
+
 - Verification: `pytest` 2050 passed and 1 skipped, `ruff check .` and `ruff format --check .` clean. 64 new tests in 8 files (plus `analytics_helpers.py`) cover access and check order, columns, distinct completions, activity and the removed member, the UTC week boundaries with a fixed clock, join inflation and a real writer flow, read-only behavior and the lock, a sanitized 500, and cleanup with an untracked sentinel. Four mutation checks (`entered_done` counted, the active filter moved to `WHERE`, a plain event count, an inclusive week end) each made a test fail. Database-writing tests ran only on `TEST_DATABASE_URL`.
+
+### 3403d4b docs: update specs, guides and changelogs for notifications
+
 - Notifications (T13) implemented locally in the new `app/blueprints/notifications/` (`routes.py`, `schema.py`, `service.py`): `GET /api/notifications` (E27) lists the caller's visible notifications newest first (`created_at` then `id` descending) with `total` and `unread_count` that ignore the page and stay on an empty page, and `PATCH /api/notifications/{id}/read` (E28) runs one conditional update scoped to a visible notification of the caller, returns the item, keeps the original `read_at` on a repeat, answers one generic 404 for a missing, foreign or hidden ID, reads no body and takes no board lock. `page` (1 to 2,147,483,647, default 1) and `per_page` (1 to 50, default 20) are strict ASCII digits through `QueryInt`; a repeated, unknown or invalid parameter is 400 before any read, and the offset is a Python integer, so the largest page is an empty 200. One `_visible` filter (active board, column and card, and the recipient's active membership) serves items, both counts and E28. `add_notification` stages a row without a commit and is called by `create_card` and `update_card` (a new assignee other than the caller and the previous assignee, read under the board lock) and by `create_comment` (the card's assignee when it is not the author), so a notification commits or rolls back with its change. `UtcDateTime` moved from `comments/schema.py` to `app/validation.py` (no behavior change) to avoid an import cycle. Migration: none (the table existed).
+
 - Verification: `pytest` 1986 passed and 1 skipped, `ruff check .` and `ruff format --check .` clean. 79 new tests in 8 files cover the trigger rules (including unassigned → A → B → A), rollback in both directions for E17, E18 and E24, concurrent assignments, a comment racing with a reassignment, concurrent marks, the E27 query cases and the largest page, idempotent E28, removal and rejoin, soft-deleted board, column and card, 401 variants, `Cache-Control`, recipient isolation, logging and a cleanup check with an untracked sentinel row. Two mutation checks (dropping `read_at IS NULL` from the E28 update, dropping the membership join from the filter) each made the matching tests fail. Evidence: `evidence/notifications-T13.md`.
+
+### a067359 docs: update specs, api docs and changelogs for profile, my tasks and search
+
 - Profile update (T12) implemented locally in `app/blueprints/users/`: `PATCH /api/users/me` (E31) takes `name`, `email` or both with the E02 rules (`ProfileUpdateSchema`), rejects `{}`, a non-object and any other key (`password` included) with 400, locks and re-reads the caller's row in `update_profile`, writes only changed columns in one commit (no `UPDATE` and an unchanged `updated_at` for an unchanged value), maps a `uq_users_email` violation to 409 with a full rollback, and revokes no token. `FIELD_MESSAGES` moved to `app/validation.py`.
+
 - Verification: `pytest` 1907 passed and 1 skipped, `ruff check .` and `ruff format --check .` clean. 99 new tests cover the shared `profile` fixture, 400/401/409/415/413, the duplicate email beside a name change, concurrent updates (including a lock test that fails without the row lock), sessions after an email change, later reads showing the new name, logging and teardown isolation on `TEST_DATABASE_URL`. `test_factory.py` and `test_users_me.py` were updated for the new route.
+
 - My Tasks and card search (T11) implemented locally in `app/blueprints/cards/`: `GET /api/cards?assignee=me` (E21, every active card assigned to the caller on boards where they are an active member, Done cards included, sorted by lower-case board name, board ID, column order, card order, card ID) and `GET /api/boards/<id>/cards/search?q=` (E22, title only, case-insensitive, `%`, `_` and `\` literal through `icontains(autoescape=True)`, at most 20 in board order). Both are read-only: no lock, event or `position_version` change. A new `load_query_args` in `app/validation.py` validates a query string: each known parameter once, a repeated one gets "Send one value.", an unknown one gets the standard 400 message with no field entry, and `q` is trimmed, 1 to 100 characters, with a NUL character rejected.
+
 - Verification: `pytest` 1808 passed and 1 skipped, `ruff check .` and `ruff format --check .` clean. 102 new or extended tests: query cases in `specs/fixtures/search-query-cases.json`, the E21 exclusion and sort tables, the E22 wildcard, cap and 404 cases, read-only checks, and a cleanup test that leaves an untracked sentinel board alone. E22 p95 4.8 ms and E21 p95 5.8 ms on 100 cards locally.
+
+## 2026-11-13
+
+### f2db11d docs: update readme, changelogs and layer docs for comments
+
 - Comments API (T10) implemented locally in `app/blueprints/comments/`: list (E23, unpaginated, creation order then ID, the author's current name), add (E24), edit (E25) and delete (E26, returns the comment as it was). Same check order as the card routes: shape (400), board access (404), board lock, recheck, reload under the lock (404), then author (403). Only the author with current access may edit or delete, an admin included. `created_at` and `updated_at` come from one clock reading on create, an edit with the same trimmed text writes nothing and keeps `updated_at`, and no comment write changes `position_version`. E24 records one `comment_created` event in the same transaction (T13 adds the notification there). Timestamps serialize as UTC ISO 8601 whatever the connection time zone. No schema change and no migration.
+
 - Verification: `pytest` 1706 passed and 1 skipped, `ruff check .` and `ruff format --check .` clean. 135 new tests cover the schema against `specs/fixtures/comment-field-cases.json`, list order, create, edit and delete, the author matrix, the access matrix and identical 404 envelopes, the request order, races with a member removal and a card delete, a failed commit, and that two identical posts create two comments. The cleanup test now also covers a comment on an untracked sentinel board. Evidence: `evidence/comments-T10.md`.
+
+### a77ffbc docs: update specs, api docs and changelogs for kanban
+
 - Kanban API (T07–T08) implemented locally: columns E13–E16 in `app/blueprints/columns/` and cards E17–E20 in `app/blueprints/cards/`. Order and version rules live in `app/positions.py`: midpoint and rebalanced float order, an unchanged-position check, a guarded `position_version` bump (409 `STATE_CONFLICT` at 2147483647) and audit events. Every write follows one order: access (404 or 403), board lock, recheck of the addressed resource, version (409 `POSITION_CONFLICT`), then destination and anchor (400 "Choose a valid destination."). A move that does not change the position writes nothing. `card_created`, `card_moved`, `column_reordered` and `entered_done` are written in the same transaction and only for a real change. `StrictBool` and `BoundedInt` in `app/validation.py`, `commit_or_rollback` public in `boards/service.py`, and `read_columns` shared by E07 and E20. No migration.
+
 - Verification: `pytest` 1570 passed and 1 skipped (the same deliberate E05 skip), `ruff check .` and `ruff format --check .` clean. New tests cover the schemas against `specs/fixtures/kanban-field-cases.json`, CRUD, moves in both directions, rebalance, the check order, the 404 and 403 matrices, events, rollback on an injected commit failure, the version ceiling and concurrent writes on the test database (`evidence/kanban-T07-T09.md`).
-- Boards and membership (T05) implemented locally: E05–E09 for boards and E10–E12 for members, in `app/blueprints/boards/`. Errors use `NOT_FOUND` (404), `USER_NOT_FOUND` (404, no `fields`), `FORBIDDEN` (403) and `STATE_CONFLICT` (409). Non-members and removed members get the same 404 as a missing board. Members get 403 on Admin-only actions. Bodies are validated before authorization. Duplicate board names are allowed.
+
 - Member removal (E12) soft-deletes the membership and clears that member's assignments on active cards in active columns of the board, in one transaction under the board lock (AC04.2). Cards in soft-deleted columns, soft-deleted cards and other boards keep their assignments (kanban review L7). Verified by `tests/test_board_members_assignments.py` (4 tests, including the soft-deleted column case and rollback) and Property 15 in `tests/test_boards_properties_scoping.py`.
-- Generic validators moved from the auth schema to `app/validation.py`. The auth regression is unchanged (202 auth tests pass).
+
 - Verification: `ruff check .` is clean. `pytest` gives 1147 passed and 1 skipped (after the E12 scope fix). The skip is deliberate: E05 has no error response for an authenticated caller (`tests/test_boards_properties_writes.py`). The backend Docker image was rebuilt with `docker compose up -d --build backend`, and the boards route returns 401 without a token.
+
 - Known limits: `USER_NOT_FOUND` reveals whether an email belongs to a registered user, visible only to board Admins (accepted for v1). The per-admin E11 rate limit with shared storage is T16. E12 no longer clears cards in soft-deleted columns (decided, L7).
+
+### 3b46afc docs: record boards status in changelogs, README and evidence
+
+- Boards and membership (T05) implemented locally: E05–E09 for boards and E10–E12 for members, in `app/blueprints/boards/`. Errors use `NOT_FOUND` (404), `USER_NOT_FOUND` (404, no `fields`), `FORBIDDEN` (403) and `STATE_CONFLICT` (409). Non-members and removed members get the same 404 as a missing board. Members get 403 on Admin-only actions. Bodies are validated before authorization. Duplicate board names are allowed.
+
+- Generic validators moved from the auth schema to `app/validation.py`. The auth regression is unchanged (202 auth tests pass).
+
+### 012b0b3 docs: record the password rule and one-worker rate limit in specs and API docs
+
 - Register password rule (revision 3): 8 to 128 characters with at least one ASCII uppercase letter, lowercase letter and special character (`PASSWORD_MIN = 8`, `_password_composition` in `schema.py`). Login is unchanged. Migration and schema: none.
-- Authentication (T03) implemented locally: `POST /api/auth/register`, `/login`, `/logout` and `GET /api/users/me` (E02–E04, E30 read). Argon2id hashing (`argon2-cffi` defaults), Marshmallow schemas that accept exactly the declared fields, a `@token_required` guard that returns 401 `AUTH_REQUIRED` for every bad credential (the library default is 422), a `revoked_tokens` blocklist written with `ON CONFLICT DO NOTHING`, and `actor_id` in the request log.
-- Added 413 `CONTENT_TOO_LARGE` (body over 64 KiB), 415 `UNSUPPORTED_MEDIA_TYPE` and 400 for malformed JSON in the shared envelope. Every response under `/api/` except `GET /api/health` carries `Cache-Control: private, no-store`.
-- Added Flask-Limiter with in-memory storage: register 5 per minute per address, login 20 per minute per address and 5 per minute per normalized email, 429 `RATE_LIMITED` with `Retry-After`. Optional `RATE_LIMIT_ENABLED` (default true, refused in production). **Local behavior only.** Shared storage and trusted client address handling are open for T16.
-- New pins: `argon2-cffi==25.1.0`, `marshmallow==4.4.0`, `Flask-Limiter==4.1.1`. No schema change and no migration.
-- Tests: `schema_at_head` now checks the Alembic version for each test, because the foundation migration tests rebuild the schema. Two foundation tests were updated for behavior this slice changes (`test_factory.py`, `test_errors.py`).
+
 - Verification: `pytest` 428 passed (foundation 186), Ruff lint and format pass, the 8-way simultaneous-registration test passed in every run, the Docker image rebuilds and serves. Revision 3 HTTP smoke 73 of 73. Evidence: `evidence/authentication-T03-T04.md`.
+
 - Revision 4: Compose runs one Gunicorn worker, so the login and register limits are exact locally (evidence F-AUTH-11). `Retry-After` is sent only with 429 (F-AUTH-13). Tests reset the limiter per app, and a negative control shows the normalized-email sequence fails on a raw key. Pytest 431 passed.
+
 - Known limitations: other framework 4xx responses (406, 414) keep Flask's default HTML. There is no job that deletes expired `revoked_tokens` rows. Limiter counters are per Gunicorn worker, so production needs shared storage (T16) before more than one worker runs.
-- Added per-Blueprint live smoke checks and review guidance for models, auth and position changes.
-- Revision 2: `backend/Dockerfile` (`python:3.14.5-slim`, non-root user, Gunicorn on `0.0.0.0:$PORT`), `backend/.dockerignore` and root `compose.yaml` for the `backend` service on `127.0.0.1:5001`. Gunicorn 27.0.1 is pinned in `requirements.txt`. The container reads `DOCKER_DATABASE_URL` from the root `.env`, reaches the host PostgreSQL through `host.docker.internal`, and runs Alembic only as one-off commands.
-- Revision 2 verification: `docker compose build backend`; `docker compose config --quiet`; `GET /api/health` 200 on `127.0.0.1:5001` from the container; `db current` at head; `docker compose down` leaves the host database unchanged.
-- Foundation (T01–T02) implemented locally: app factory with validated settings, JSON error envelope, request IDs, `GET /api/health` (E01), nine models, initial migration `a265fb5e7047` and `bootstrap-schema`.
-- Added `405 METHOD_NOT_ALLOWED` with `Allow` to the shared error envelope.
-- Migration environment pins `search_path=public` for its own engine. See `specs/CHANGELOG.md`.
-- Fixed: migrations keep `revotask.*` loggers enabled when Alembic loads its logging config.
-- Fixed: the schema check runs on its own connection. Before this, `db upgrade` could exit 0 without applying DDL.
-- Verification: `pytest -v` 186 passed on Python 3.14.5 with PostgreSQL 16.14. Ruff lint and format pass. Live `flask run` on port 5001 returned `GET /api/health` 200 and `POST` 405. The local API runs on port 5001 because macOS AirPlay Receiver keeps port 5000.
+
+### 2b24ad2 docs: add authentication feature spec and record T03-T04 status
+
+- Authentication (T03) implemented locally: `POST /api/auth/register`, `/login`, `/logout` and `GET /api/users/me` (E02–E04, E30 read). Argon2id hashing (`argon2-cffi` defaults), Marshmallow schemas that accept exactly the declared fields, a `@token_required` guard that returns 401 `AUTH_REQUIRED` for every bad credential (the library default is 422), a `revoked_tokens` blocklist written with `ON CONFLICT DO NOTHING`, and `actor_id` in the request log.
+
+- Added 413 `CONTENT_TOO_LARGE` (body over 64 KiB), 415 `UNSUPPORTED_MEDIA_TYPE` and 400 for malformed JSON in the shared envelope. Every response under `/api/` except `GET /api/health` carries `Cache-Control: private, no-store`.
+
+- Added Flask-Limiter with in-memory storage: register 5 per minute per address, login 20 per minute per address and 5 per minute per normalized email, 429 `RATE_LIMITED` with `Retry-After`. Optional `RATE_LIMIT_ENABLED` (default true, refused in production). **Local behavior only.** Shared storage and trusted client address handling are open for T16.
+
+- New pins: `argon2-cffi==25.1.0`, `marshmallow==4.4.0`, `Flask-Limiter==4.1.1`. No schema change and no migration.
+
+- Tests: `schema_at_head` now checks the Alembic version for each test, because the foundation migration tests rebuild the schema. Two foundation tests were updated for behavior this slice changes (`test_factory.py`, `test_errors.py`).
+
 - Known limitations: a 405 log line reports `route=<unmatched>`. Other framework 4xx responses (406, 414) keep Flask's default HTML. The 400, 413 and 415 cases moved to the JSON envelope in T03.
-- Documented the data model, Blueprint architecture and API contract.
+
+### bc8aa16 root: scaffolding foundation backend and frontend
+
+- Revision 2: `backend/Dockerfile` (`python:3.14.5-slim`, non-root user, Gunicorn on `0.0.0.0:$PORT`), `backend/.dockerignore` and root `compose.yaml` for the `backend` service on `127.0.0.1:5001`. Gunicorn 27.0.1 is pinned in `requirements.txt`. The container reads `DOCKER_DATABASE_URL` from the root `.env`, reaches the host PostgreSQL through `host.docker.internal`, and runs Alembic only as one-off commands.
+
+- Revision 2 verification: `docker compose build backend`; `docker compose config --quiet`; `GET /api/health` 200 on `127.0.0.1:5001` from the container; `db current` at head; `docker compose down` leaves the host database unchanged.
+
+- Foundation (T01–T02) implemented locally: app factory with validated settings, JSON error envelope, request IDs, `GET /api/health` (E01), nine models, initial migration `a265fb5e7047` and `bootstrap-schema`.
+
+- Added `405 METHOD_NOT_ALLOWED` with `Allow` to the shared error envelope.
+
+- Migration environment pins `search_path=public` for its own engine. See `specs/CHANGELOG.md`.
+
+- Fixed: migrations keep `revotask.*` loggers enabled when Alembic loads its logging config.
+
+- Fixed: the schema check runs on its own connection. Before this, `db upgrade` could exit 0 without applying DDL.
+
+- Verification: `pytest -v` 186 passed on Python 3.14.5 with PostgreSQL 16.14. Ruff lint and format pass. Live `flask run` on port 5001 returned `GET /api/health` 200 and `POST` 405. The local API runs on port 5001 because macOS AirPlay Receiver keeps port 5000.
+
 - Added a local environment example and implementation entry point in the project prompt pack.
+
+### 9a8f6d6 docs: initial references
+
+- Added per-Blueprint live smoke checks and review guidance for models, auth and position changes.
+
+- Documented the data model, Blueprint architecture and API contract.
 
 ## Entry template
 
 ```markdown
-## [X.Y.Z] - YYYY-MM-DD
+## YYYY-MM-DD
 
-### Added
+### <short-sha> <commit subject>
 
-- …
-
-### Changed
-
-- …
-
-### Fixed
-
-- …
-- App release and commit: …
+- Changed behavior, endpoint or schema, with the AC.
 - API, migration or environment impact: …
 - Verification and evidence: …
 ```
