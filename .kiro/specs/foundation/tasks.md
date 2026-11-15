@@ -202,7 +202,7 @@ Frontend tasks 1.4–1.6 are independent of the backend and can run in either or
   - `docs/DEVELOPMENT.md`: local install `pip install -r requirements-dev.txt`, the `bootstrap-schema` step before `db upgrade`, test and lint commands corrected to what ran, Python 3.14.5 and Node pins.
   - `docs/DEPLOYMENT.md`: add schema provisioning under the migration role to the release steps; keep `pip install -r requirements.txt` as the production install; leave runtime selection and Gunicorn for T16.
   - `README.md`: update **Status** and setup facts that were verified. Do not claim live URLs, deployment or later features.
-  - `CHANGELOG.md` and `backend/CHANGELOG.md`: add the foundation entry and the `METHOD_NOT_ALLOWED` 405 entry under `[Unreleased]`. `frontend/CHANGELOG.md`: add the scaffold entry.
+  - `CHANGELOG.md` and `backend/CHANGELOG.md`: add the foundation entry and the `METHOD_NOT_ALLOWED` 405 entry under the `## YYYY-MM-DD` heading for the commit date, with a `### <short-sha> <subject>` entry. `frontend/CHANGELOG.md`: add the scaffold entry.
   - `specs/CHANGELOG.md`: update the 405 entry's **Verification** line with the real test result.
   - Done when: each statement in these files matches a command output in the evidence file, and entries for unverified work say "pending".
   - _Requirements: FND-AC8.3. Verification: FND-V9._

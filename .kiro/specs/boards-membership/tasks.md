@@ -231,7 +231,7 @@ R1–R14 and C1–C5 are approved as written in `design.md` ("Review Items and D
     - Confirm the T15 and T16 rows of `specs/tasks.md` carry the automated boards-membership Playwright journey and the per-admin E11 rate limit with the enumeration note. Write the journey steps (create board, open, add member, remove member, delete board, at 375 px and wider) into `evidence/boards-membership-T05-T06.md` as the T15 input.
     - _Requirements: 7.6, 7.7; Root: T05, T06_
   - [x] 9.3 Update the changelogs
-    - Add concise `[Unreleased]` entries to `CHANGELOG.md`, `backend/CHANGELOG.md` and `frontend/CHANGELOG.md` from verified results, grouping related items and avoiding duplicates. Mark verification still pending where it is.
+    - Add concise entries under the `## YYYY-MM-DD` heading for the commit date, with a `### <short-sha> <subject>` entry to `CHANGELOG.md`, `backend/CHANGELOG.md` and `frontend/CHANGELOG.md` from verified results, grouping related items and avoiding duplicates. Mark verification still pending where it is.
     - _Requirements: 7.7_
   - [x] 9.4 Update README status
     - Update the status and feature sections of `README.md` using verified facts only, and link the changelog and evidence.

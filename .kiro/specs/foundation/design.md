@@ -367,13 +367,13 @@ Frontend tests are `app/page.test.tsx` (FND-AC2.3). Build and CSS checks are com
 |---|---|---|
 | `docs/API.md` | 405 added to status conventions. E01 unchanged. | Done during spec phase |
 | `backend/specs/api-contract.md` | 405 row added to the error table. Health text unchanged. | Done during spec phase |
-| `specs/CHANGELOG.md` | Entry for 405 under `[Unreleased]`. | Done during spec phase. Verification text updated when tests pass. |
+| `specs/CHANGELOG.md` | Entry for 405 under the `## YYYY-MM-DD` heading for the commit date, with a `### <short-sha> <subject>` entry. | Done during spec phase. Verification text updated when tests pass. |
 | `docs/DEVELOPMENT.md` | `pip install -r requirements-dev.txt`, `bootstrap-schema` before `db upgrade`, verified commands, Python and Node pins. | Task 3.1 |
 | `docs/DEPLOYMENT.md` | Schema provisioning under the migration role as a release step. Production install command stays `pip install -r requirements.txt`. | Task 3.1 |
 | `docs/DEVELOPMENT.md` (revision 2) | Docker section, `PORT=5001` commands, `DOCKER_DATABASE_URL` and container variables in the environment contract. | Task 3.1 |
 | `docs/DEPLOYMENT.md` (revision 2) | Section 3 rewritten for a Render Docker Web Service from `backend/Dockerfile`. Migrations run separately under the migration role. | Task 3.1 |
 | `compose.yaml`, root `.env.example`, `backend/Dockerfile`, `backend/.dockerignore` (revision 2) | New local container files. No endpoint or payload change. | Tasks 1.8, 1.9 |
-| `README.md`, `CHANGELOG.md`, `backend/CHANGELOG.md`, `frontend/CHANGELOG.md` | Status and `[Unreleased]` notes, including the 405 entry in the root and backend changelogs. Only verified facts. | Task 3.1 |
+| `README.md`, `CHANGELOG.md`, `backend/CHANGELOG.md`, `frontend/CHANGELOG.md` | Status and the `## YYYY-MM-DD` heading for the commit date, with a `### <short-sha> <subject>` entry notes, including the 405 entry in the root and backend changelogs. Only verified facts. | Task 3.1 |
 | `specs/tasks.md` | T01 and T02 rows link to this spec (done during spec phase). Check boxes only when all acceptance checks pass. | Link done. Checkboxes in task 3.2 |
 | `specs/traceability.md` | Test status for rows touched by foundation, after verification. | Task 3.2 |
 | `evidence/spec-review.md` | Record only the findings and refinements confirmed in review. | Task 3.2 |

@@ -177,7 +177,7 @@ This plan implements the My Tasks read (E21), the board card search (E22), the `
     - Write `evidence/my-tasks-search-T11.md`: commands run and counts, the measured mobile result and screenshots (emulator or real device), the manual journey, the handler checks, the timing, defects found and fixed, and what stayed open (Playwright V10, real-device checks, deployment). Attribute each step to the tool that ran it. Update `evidence/spec-review.md` with the implementation record.
     - _Requirements: 7.6, 8.9, 8.10; Root: T11_
   - [x] 10.2 Changelogs
-    - Add concise entries under `[Unreleased]` in `CHANGELOG.md`, `backend/CHANGELOG.md` and `frontend/CHANGELOG.md`. Record any deviation from the approved design in `specs/CHANGELOG.md` with before, after, reason and verification.
+    - Add concise entries under the `## YYYY-MM-DD` heading for the commit date, with a `### <short-sha> <subject>` entry in `CHANGELOG.md`, `backend/CHANGELOG.md` and `frontend/CHANGELOG.md`. Record any deviation from the approved design in `specs/CHANGELOG.md` with before, after, reason and verification.
     - _Root: T11_
   - [x] 10.3 README and layer docs
     - Update the `README.md` status, feature and setup facts that changed, with verified results only. Check `backend/specs/` and `frontend/specs/` still match the code. Update the `specs/traceability.md` status rows for AC06.2 and AC09.1 (line "Not part of this slice (T11)") with the observed results, and mention `my-tasks-search-T11.md`.

@@ -161,7 +161,7 @@ This plan implements the board analytics read (E29), the analytics panel on the 
     - Acceptance: the documents match the implementation, and each deviation has an entry.
     - _Requirements: 5.6, 8.9; Root: T14_
   - [x] 7.3 README, USER_GUIDE and changelogs
-    - Update `README.md` (status, the analytics feature, verified facts), `docs/USER_GUIDE.md` (the analytics step, with the week in UTC and the Refresh button), and `[Unreleased]` in `CHANGELOG.md`, `backend/CHANGELOG.md` and `frontend/CHANGELOG.md`. Keep entries concise and without duplicates.
+    - Update `README.md` (status, the analytics feature, verified facts), `docs/USER_GUIDE.md` (the analytics step, with the week in UTC and the Refresh button), and the `## YYYY-MM-DD` heading for the commit date, with a `### <short-sha> <subject>` entry in `CHANGELOG.md`, `backend/CHANGELOG.md` and `frontend/CHANGELOG.md`. Keep entries concise and without duplicates.
     - Acceptance: each file names only verified behavior, with Playwright, real-device checks and deployment left open.
     - _Requirements: 8.9; Root: T14_
   - [x] 7.4 Evidence record

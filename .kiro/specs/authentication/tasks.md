@@ -282,7 +282,7 @@ After 1.1, tasks 1.2 to 1.5 can be done in any order that respects the arrows. T
   - The contract and ownership documents were changed in task 0.1. Here, re-read each changed statement in `docs/API.md`, `backend/specs/api-contract.md`, the frontend layer specs, `docs/TEST-PLAN.md`, `docs/DEPLOYMENT.md` and `specs/design.md` against a test or smoke result, and correct any that the implementation contradicts. Fill in each authentication entry's **Verification** line in `specs/CHANGELOG.md` with the real results.
   - `docs/DEVELOPMENT.md`: new backend dependencies, `RATE_LIMIT_ENABLED`, the local smoke steps, and the rule that `Origin` must match `APP_ORIGIN` (use `localhost`, not `127.0.0.1`, in the browser).
   - `README.md`: update **Status** with verified facts only. Do not claim live URLs, Playwright runs, production rate limiting or later features.
-  - `CHANGELOG.md`, `backend/CHANGELOG.md`, `frontend/CHANGELOG.md`: add the authentication entries under `[Unreleased]`. Refine the existing foundation lines that say auth is pending, and remove "no API client, Route Handlers or auth UI yet (T04)" from the frontend known limitations.
+  - `CHANGELOG.md`, `backend/CHANGELOG.md`, `frontend/CHANGELOG.md`: add the authentication entries under the `## YYYY-MM-DD` heading for the commit date, with a `### <short-sha> <subject>` entry. Refine the existing foundation lines that say auth is pending, and remove "no API client, Route Handlers or auth UI yet (T04)" from the frontend known limitations.
   - Done when: each statement matches a command output in the evidence file, and entries for unverified work say "pending".
   - _Requirements: AUTH-AC12.4. Verification: AUTH-V9._
 - [x] **3.2 Record evidence and synchronize task status**

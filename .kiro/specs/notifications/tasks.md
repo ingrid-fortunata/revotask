@@ -174,7 +174,7 @@ This plan implements persisted assignment and comment notifications, the recipie
     - Acceptance: the documents match the implementation, and each deviation has an entry.
     - _Requirements: 5.8, 6.5, 10.8; Root: T13_
   - [x] 8.3 README, USER_GUIDE and changelogs
-    - Update `README.md` (status, the notification feature, verified facts), `docs/USER_GUIDE.md`, and `[Unreleased]` in `CHANGELOG.md`, `backend/CHANGELOG.md` and `frontend/CHANGELOG.md`. Keep entries concise and without duplicates.
+    - Update `README.md` (status, the notification feature, verified facts), `docs/USER_GUIDE.md`, and the `## YYYY-MM-DD` heading for the commit date, with a `### <short-sha> <subject>` entry in `CHANGELOG.md`, `backend/CHANGELOG.md` and `frontend/CHANGELOG.md`. Keep entries concise and without duplicates.
     - Acceptance: each file names only verified behavior, with Playwright, real-device checks and deployment left open.
     - _Requirements: 10.8; Root: T13_
   - [x] 8.4 Evidence record
