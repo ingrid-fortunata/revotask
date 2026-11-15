@@ -58,4 +58,32 @@ describe("CommentList", () => {
     expect(text.className).toMatch(/whitespace-pre-wrap/);
     expect(text.className).toMatch(/break-words/);
   });
+
+  // V06 RTL: specific rendered values for a mixed list. Mia's comment is unedited, Omar's is edited,
+  // and the second line break survives. The ISO value is asserted, not the locale-formatted time.
+  it("renders each comment's author, exact content, datetime value and Edited marker", () => {
+    const edited = { author_id: "u-omar", author_name: "Omar", content: "Ship it\nafter review", updated_at: "2026-11-13T10:30:00+00:00" };
+    render(
+      <CommentList
+        comments={[comment("c1", { content: "Looks good" }), comment("c2", { ...edited, created_at: "2026-11-13T10:00:00+00:00" })]}
+        {...props}
+      />,
+    );
+    const [first, second] = within(screen.getByRole("list")).getAllByRole("listitem");
+    expect(within(first).getByText("Mia")).toBeInTheDocument();
+    expect(within(first).getByText("Looks good")).toBeInTheDocument();
+    expect(first.querySelector("time")).toHaveAttribute("datetime", "2026-11-13T09:00:00+00:00");
+    expect(within(first).queryByText("Edited")).not.toBeInTheDocument();
+    expect(within(second).getByText("Omar")).toBeInTheDocument();
+    expect(second.querySelector("time")).toHaveAttribute("datetime", "2026-11-13T10:00:00+00:00");
+    expect(within(second).getByText("Edited")).toBeInTheDocument();
+    expect(screen.getByText((_, el) => el?.tagName === "P" && el.textContent === "Ship it\nafter review")).toBeInTheDocument();
+    expect(screen.getAllByText("Edited")).toHaveLength(1);
+  });
+
+  it("disables the author's Edit and Delete while a comment request runs", () => {
+    render(<CommentList comments={[comment("c1")]} {...props} disabled />);
+    expect(screen.getByRole("button", { name: /^Edit your comment/ })).toBeDisabled();
+    expect(screen.getByRole("button", { name: /^Delete your comment/ })).toBeDisabled();
+  });
 });
