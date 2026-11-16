@@ -34,4 +34,11 @@ Never add `Co-Authored-By`, `Generated with Claude Code`, or any mention of Clau
    - If either suite fails, stop. Do not commit. Report the failing tests and fix them, or ask the user, before committing anything. Never skip, disable, or edit a test just to make it pass.
 4. Group the rest by intent, in dependency order: code first, then tests that belong to it, then docs, then repository-level files. Keep a test with the code it covers. Keep one layer or feature per commit. Use `$ARGUMENTS` as a hint for grouping.
 5. For each group: stage only its files by explicit path (`git add -- <paths>`, never `git add -A` or `git add .`), check `git diff --cached --stat`, then run `git commit -m "<type>: <description>"`. If a hook fails, fix the cause and make a new commit. Do not use `--no-verify` or `--amend`.
-6. Finish with `git log --oneline -n <count>` and `git status --short`. Report the commits made and any file left uncommitted, with the reason.
+6. Update the changelogs after the commits exist, because each entry needs the real short sha.
+   - Only for `feat`, `fix`, `refactor`, `style` and `test` commits. Skip `docs`, `chore` and `root`.
+   - Do not touch `specs/CHANGELOG.md`, `README.md`, `specs/` or `evidence/`. The `revotask-feature` skill owns those.
+   - If any `CHANGELOG.md` already had uncommitted changes in step 1, `revotask-feature` wrote its entries. Commit those changelog files as a `docs` commit in step 5, then skip the rest of this step.
+   - Otherwise, for each qualifying commit, add `### <short-sha> <subject>` with one or two concise bullets under the `## YYYY-MM-DD` heading for the commit date (`git log -1 --format=%cs <sha>`), newest first. Create the heading if missing. Skip a commit whose `<short-sha>` or subject is already in that changelog.
+   - Write the entry in root `CHANGELOG.md`. Also write it in `backend/CHANGELOG.md` and/or `frontend/CHANGELOG.md` when the commit touched that folder, and reference the root entry there. Follow the format at the top of each file.
+   - Commit all changelog edits together: `docs: update changelogs for <short summary>`. This commit gets no entry of its own.
+7. Finish with `git log --oneline -n <count>` and `git status --short`. Report the commits made and any file left uncommitted, with the reason.
