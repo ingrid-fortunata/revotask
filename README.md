@@ -10,6 +10,11 @@ RevoTask is a collaborative Kanban app for small teams. Members organize cards i
 | API     | Flask, SQLAlchemy, Marshmallow, Flask-Migrate, Gunicorn | https://revotask.onrender.com |
 | Data    | PostgreSQL                                              | Supabase in production        |
 
+## Project READMEs
+
+- [Backend README](backend/README.md): Flask API setup, environment variables, routes, tests and deployment.
+- [Frontend README](frontend/README.md): Next.js app setup, environment variables, scripts, Playwright tests and deployment.
+
 ## Deployment
 
 - **Web (Vercel):** Root Directory `frontend`. Every push to `main` deploys automatically.
