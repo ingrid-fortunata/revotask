@@ -4,6 +4,14 @@ Record actual changes for this component. Newest date first. Each `## YYYY-MM-DD
 
 ## 2026-11-17
 
+### 84a7238 style: make profile panel full width
+
+- Removed `max-w-xl` from the panel in `app/(protected)/profile/page.tsx`. See the root entry for 84a7238 in [the root changelog](../CHANGELOG.md).
+
+### 29c7c3b style: add pointer cursor to notification bell
+
+- Added `cursor-pointer` to the `NotificationBell` button. See the root entry for 29c7c3b in [the root changelog](../CHANGELOG.md).
+
 ### 38281f1 feat: show analytics week range in local time
 
 - `formatWeekRange` formats both bounds with local date fields and a fixed month list. Vitest fixes `TZ` to `Asia/Jakarta`. See the root entry for 38281f1 in [the root changelog](../CHANGELOG.md).

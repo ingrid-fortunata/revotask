@@ -4,6 +4,14 @@ Newest date first. Each `## YYYY-MM-DD` heading groups the commits made that day
 
 ## 2026-11-17
 
+### 84a7238 style: make profile panel full width
+
+- The Profile panel fills the width of the page content instead of stopping at `max-w-xl`.
+
+### 29c7c3b style: add pointer cursor to notification bell
+
+- The notification bell button shows a pointer cursor on hover.
+
 ### 38281f1 feat: show analytics week range in local time
 
 - The Analytics dialog shows the week start and end in the viewer's time zone, for example `Week of 9 Nov, 07:00 to 16 Nov, 07:00 (local time)`. The counted week is still the UTC week.
