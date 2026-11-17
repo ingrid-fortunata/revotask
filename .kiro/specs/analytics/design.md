@@ -160,7 +160,7 @@ frontend/app/api/boards/[id]/analytics/route.ts GET handler
 
 - `analyticsPath(boardId)` returns `/api/boards/${boardId}/analytics`.
 - `parseAnalytics(value)` copies only the five documented keys and throws `malformedApiError()` for any other shape: a non-object, a missing key, `week_start` or `week_end` that is not a string ending in `Z`, a list item without the exact fields, or a count that is not a non-negative safe integer. Extra keys are ignored, not copied.
-- `formatWeekRange(weekStart, weekEnd)` returns text such as `Week of 9 Nov to 15 Nov, UTC`. It parses both timestamps, uses the UTC fields and a fixed month list (no locale, no local time zone), and shows the last day as `week_end` minus one day, because the end is exclusive.
+- `formatWeekRange(weekStart, weekEnd)` returns text such as `Week of 9 Nov, 07:00 to 16 Nov, 07:00 (local time)`. It parses both timestamps, uses the local fields of the viewer's time zone and a fixed month list (no locale), and shows `week_end` as is, because the end is exclusive and the time is part of the text. The server Week stays the UTC week (A2). Tests fix the zone with `TZ=Asia/Jakarta` in `vitest.config.mts`.
 - `barPercent(count, max)` returns a whole percent from 0 to 100 (0 when `max` is 0). It is used only for a decorative bar.
 
 ### `useBoardAnalytics`
@@ -182,7 +182,7 @@ useBoardAnalytics({ boardId, version, onAccessLost }) → { data, status, busy, 
 
 ```text
 Analytics                                              [Refresh]
-Week of 9 Nov to 15 Nov, UTC
+Week of 9 Nov, 07:00 to 16 Nov, 07:00 (local time)
 Cards completed this week      4
 
 Cards per column                    Activity this week

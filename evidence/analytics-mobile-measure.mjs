@@ -451,7 +451,7 @@ async function panelChecks(page, width, shotDir) {
   // 2. Figures.
   record("admin", "dialog figures", width, "the figures appear after the read", await figuresShown(page));
   const text = await page.eval(panelText);
-  record("admin", "dialog figures", width, "week range, completed figure, column list and activity list are text", /Week of \d+ \w+ to \d+ \w+, UTC/.test(text) && text.includes("Cards completed this week") && text.includes("Cards per column") && text.includes("Activity this week"), text.split("\n").slice(0, 3).join(" | "));
+  record("admin", "dialog figures", width, "week range, completed figure, column list and activity list are text", /Week of \d+ \w+, \d\d:\d\d to \d+ \w+, \d\d:\d\d \(local time\)/.test(text) && text.includes("Cards completed this week") && text.includes("Cards per column") && text.includes("Activity this week"), text.split("\n").slice(0, 3).join(" | "));
   record("admin", "dialog figures", width, "no horizontal page scroll with the dialog open", await page.eval(`document.documentElement.scrollWidth <= window.innerWidth`));
   reportPage("admin", "dialog figures", width, await page.eval(measureExpr(DIALOG)));
   record("admin", "dialog figures", width, "Refresh shows a visible focus ring for keyboard focus", await focusRing(page, REFRESH_BTN));
