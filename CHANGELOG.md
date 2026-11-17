@@ -2,6 +2,16 @@
 
 Newest date first. Each `## YYYY-MM-DD` heading groups the commits made that day. Each commit has a `### <short-sha> <subject>` entry with its notes. Follows the [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) style.
 
+## 2026-11-17
+
+### 38281f1 feat: show analytics week range in local time
+
+- The Analytics dialog shows the week start and end in the viewer's time zone, for example `Week of 9 Nov, 07:00 to 16 Nov, 07:00 (local time)`. The counted week is still the UTC week.
+
+### 4cb298f fix: disable move card confirm when nothing would change
+
+- The Move card dialog disables Confirm, with a hint, while the choice is the card's present place or a Kanban request is pending. Before, Confirm closed the dialog with no request.
+
 ## 2026-11-15
 
 ### 8033a55 docs: close T15 in specs, changelogs and setup guide

@@ -2,6 +2,16 @@
 
 Record actual changes for this component. Newest date first. Each `## YYYY-MM-DD` heading groups the commits made that day, and each commit has a `### <short-sha> <subject>` entry. Reference the matching root entry for the same commit in [the root changelog](../CHANGELOG.md).
 
+## 2026-11-17
+
+### 38281f1 feat: show analytics week range in local time
+
+- `formatWeekRange` formats both bounds with local date fields and a fixed month list. Vitest fixes `TZ` to `Asia/Jakarta`. See the root entry for 38281f1 in [the root changelog](../CHANGELOG.md).
+
+### 4cb298f fix: disable move card confirm when nothing would change
+
+- `MoveCardDialog` takes a `busy` prop and disables Confirm through `isCardUnchanged`. `KanbanBoard` passes `kanban.busy`. See the root entry for 4cb298f in [the root changelog](../CHANGELOG.md).
+
 ## 2026-11-15
 
 ### 8033a55 docs: close T15 in specs, changelogs and setup guide
