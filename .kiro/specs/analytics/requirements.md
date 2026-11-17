@@ -47,9 +47,9 @@ Decisions A1–A10 were approved on 2026-11-14 with the clarifications recorded 
 
 #### Acceptance Criteria
 
-1. THE Analytics_API SHALL return `completed_cards` as an integer: the number of distinct card IDs that have an `entered_done` Board_Event in the Week for the requested board (AC11.1, D6).
+1. THE Analytics_API SHALL return `completed_cards` as an integer: the number of distinct card IDs that have an `entered_done` Board_Event in the Week for the requested board and that are still active cards in an active Done column now (AC11.1, D6, A3).
 2. WHEN one card has several `entered_done` events in the Week, for example after it left Done and entered it again, THE Analytics_API SHALL count that card once (A3).
-3. THE Analytics_API SHALL include a card that has an `entered_done` event in the Week even when the card was soft-deleted later, was moved out of Done later, or sits in a column that was soft-deleted later, because the count comes from the event history (D6, A3).
+3. THE Analytics_API SHALL NOT count a card that has an `entered_done` event in the Week but was soft-deleted later, was moved out of Done later, or sits in a column that was soft-deleted later or is no longer the Done column. The event history says the card completed in the Week, and the card's current place says it is still done (A3, revised 2026-11-17).
 4. THE Analytics_API SHALL count a card created directly in the Done column, and a card moved into the Done column from a column that is not Done. A card moved from the Done column to the same Done column, or edited, assigned, commented on or deleted, SHALL NOT add a count (E17, E20).
 5. THE Analytics_API SHALL NOT count an `entered_done` event that lies before the start or at or after the end of the Week, or that belongs to another board.
 6. WHILE no card entered Done in the Week, THE Analytics_API SHALL return `completed_cards` 0.
@@ -146,7 +146,7 @@ The user approved A1–A10 on 2026-11-14. The table records the outcome and the 
 |---|---|---|---|
 | A1 | What `member_activity` counts | Approved. Count `card_created`, `card_moved`, `column_reordered` and `comment_created`. Use `entered_done` only for `completed_cards`. Creating a card in Done or moving a card into Done adds one activity event. D6 and `docs/API.md` list the four counted kinds explicitly. | 3.1, 3.2, 5.6 |
 | A2 | Week window and format | Approved. Server clock, current UTC week, Monday 00:00 inclusive to the next Monday 00:00 exclusive. `week_start` and `week_end` are ISO 8601 timestamps ending in `Z`. | 4.1–4.4 |
-| A3 | Distinct completions | Approved. A card ID counts once if it has an `entered_done` event in the week. The week's count is kept if the card leaves Done or is deleted later. | 2.1–2.3 |
+| A3 | Distinct completions | Approved, revised 2026-11-17. A card ID counts once if it has an `entered_done` event in the week and is still an active card in an active Done column. The count drops if the card leaves Done, is deleted, or its column stops being Done. Original A3 kept such a card counted, which left a card dragged back to a not-done column in the figure. | 2.1–2.3 |
 | A4 | Who appears in `member_activity` | Approved. Every actor with a counted event in the week, former board members included, under the current name. Sorted by count descending, lower-cased name, then user ID. Actors with zero counted events are omitted. | 3.1, 3.3–3.5 |
 | A5 | Query and check order | Approved. Authenticate, then validate the board ID and reject any query parameter, then check board access. 401 for missing or invalid authentication, 400 for invalid input, the generic 404 for a missing or inaccessible board (C1). | 5.1–5.3 |
 | A6 | Read-only | Approved. No board write lock, event, notification or version change. `Cache-Control: private, no-store` is kept through the same-origin handler. | 5.4, 5.5, 8.1 |

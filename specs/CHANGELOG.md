@@ -4,6 +4,14 @@ Spec versioning tracks review rounds independently of application releases. Reco
 
 ## 2026-11-17
 
+### 23ac801 fix: drop analytics completed count when a card leaves done
+
+- **analytics (T14) · A3 distinct completions, C35 (reversal of an approved decision, requested by the user):**
+  - **Before:** `completed_cards` counted distinct cards with an `entered_done` event in the Week and kept a card that later left Done or was deleted (A3, C35).
+  - **After:** It counts distinct cards with an `entered_done` event in the Week that are still active cards in an active Done column. A card moved out of Done, deleted, or in a column that stops being Done is no longer counted. Updated in `.kiro/specs/analytics/requirements.md` (2.1, 2.3, A3), `design.md` (DD5), `docs/API.md` (E29, C35), `specs/design.md` and AC11.1 in `specs/requirements.md`.
+  - **Reason:** A card dragged from Done back to a not-done column still raised the "completed" figure, so the panel disagreed with the board.
+  - **Verification:** `pytest` 2059 passed and 1 skipped, `ruff` clean. The frontend already re-reads E29 when `position_version` rises, so no frontend change.
+
 ### 29144c6 docs: kanban end drop strip is card-sized while dragging
 
 - **kanban (T07–T09) · end drop strip height (native design only):**

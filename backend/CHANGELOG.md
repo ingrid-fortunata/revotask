@@ -2,6 +2,12 @@
 
 Record actual changes for this component. Newest date first. Each `## YYYY-MM-DD` heading groups the commits made that day, and each commit has a `### <short-sha> <subject>` entry. Reference the matching root entry for the same commit in [the root changelog](../CHANGELOG.md).
 
+## 2026-11-17
+
+### 23ac801 fix: drop analytics completed count when a card leaves done
+
+- `analytics/service.py`: the `completed_cards` statement now joins `cards` and `board_columns` and requires `Card.deleted_at IS NULL`, `BoardColumn.is_done` and `BoardColumn.deleted_at IS NULL` besides the `entered_done` event in the UTC week. A card moved out of Done, deleted, or in a column that is no longer Done stops counting. Tests: `test_analytics_completed.py` now expects 0 after delete, move out, column delete and column un-Done, and 0 after a real drag back out of Done. Seeded `entered_done` cards in `test_analytics_aggregation.py`, `_week.py` and `_activity.py` now sit in a Done column. Verification: `pytest` 2059 passed and 1 skipped, `ruff check` and `ruff format --check` clean.
+
 ## 2026-11-15
 
 ### 8033a55 docs: close T15 in specs, changelogs and setup guide

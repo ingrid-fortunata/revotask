@@ -4,6 +4,10 @@ Newest date first. Each `## YYYY-MM-DD` heading groups the commits made that day
 
 ## 2026-11-17
 
+### 23ac801 fix: drop analytics completed count when a card leaves done
+
+- Analytics "Cards completed this week" no longer keeps a card that was dragged back out of Done (or deleted). It counts only cards that entered Done this week and are still in the Done column.
+
 ### 29144c6 style: make kanban end drop zone card-sized while dragging
 
 - The "Drop here to move to the end" strip grows from 44 px to about one card high (`min-h-32`) while a card is dragged.
