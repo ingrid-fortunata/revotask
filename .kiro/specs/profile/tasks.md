@@ -123,7 +123,7 @@ This plan implements the profile update (E31), the `/profile` page, the safe use
     - Acceptance: each state asserts text, roles and the request sent.
     - _Requirements: 4.2, 4.5–4.7, 5.1–5.8, 8.6; Root: T12_
   - [x] 5.3 Profile page
-    - Create `app/(protected)/profile/page.tsx` as in `design.md` ("Page"): `getCurrentUser()` from `@/lib/server/session`, the `main` wrapper of FE-D2, the title, one `.surface` panel with `max-w-xl`, the unavailable-password sentence and the form. Create `page.test.tsx`: the helper is called, the form shows the stored values, a missing session redirects, a read failure reaches the error boundary. `pages.guard.test.ts` must cover the new page without an edit.
+    - Create `app/(protected)/profile/page.tsx` as in `design.md` ("Page"): `getCurrentUser()` from `@/lib/server/session`, the `main` wrapper of FE-D2, the title, one full-width `.surface` panel, the unavailable-password sentence and the form. Create `page.test.tsx`: the helper is called, the form shows the stored values, a missing session redirects, a read failure reaches the error boundary. `pages.guard.test.ts` must cover the new page without an edit.
     - Acceptance: the page makes no client request and sends no token. The mobile-guard test passes.
     - _Requirements: 4.1, 4.3, 4.8, 4.9, 7.3; Root: T12; Decisions: P4_
 
