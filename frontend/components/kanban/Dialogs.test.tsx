@@ -112,6 +112,24 @@ describe("MoveCardDialog (Property 14: one Move_Function)", () => {
     expect(positions()).toEqual(["At the end of the column", "Before Card a"]);
   });
 
+  it("disables Confirm while the selection is the card's present place", async () => {
+    const { onMove, onClose } = setup("a");
+    const confirm = screen.getByRole("button", { name: "Move card" });
+    expect(confirm).toBeDisabled();
+    expect(screen.getByText("Choose a different column or position.")).toBeInTheDocument();
+    await userEvent.click(confirm);
+    expect(onMove).not.toHaveBeenCalled();
+    expect(onClose).not.toHaveBeenCalled();
+    await userEvent.selectOptions(screen.getByLabelText("Position"), "At the end of the column");
+    expect(confirm).toBeEnabled();
+  });
+
+  it("disables Confirm while a Kanban request is pending", () => {
+    const columns = board();
+    render(<MoveCardDialog card={columns[0].cards[0]} columns={columns} busy onMove={vi.fn()} onClose={vi.fn()} />);
+    expect(screen.getByRole("button", { name: "Move card" })).toBeDisabled();
+  });
+
   it("moves across columns to the end and sends a null anchor", async () => {
     const { onMove, onClose } = setup("a");
     await userEvent.selectOptions(screen.getByLabelText("Column"), "Col doing");
@@ -149,12 +167,13 @@ describe("MoveCardDialog (Property 14: one Move_Function)", () => {
     const { onMove } = setup("a");
     await userEvent.tab();
     expect(screen.getByLabelText("Column")).toHaveFocus();
-    await userEvent.keyboard("{ArrowDown}");
+    await userEvent.selectOptions(screen.getByLabelText("Column"), "Col doing");
     await userEvent.tab();
     await userEvent.tab();
     await userEvent.tab();
+    expect(screen.getByRole("button", { name: "Move card" })).toHaveFocus();
     await userEvent.keyboard("{Enter}");
-    expect(onMove).toHaveBeenCalledTimes(1);
+    expect(onMove).toHaveBeenCalledExactlyOnceWith("a", "doing", null);
   });
 
   it("closes on Escape without a request", () => {

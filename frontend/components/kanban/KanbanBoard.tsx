@@ -193,7 +193,7 @@ export function KanbanBoard({ boardId, role, members, kanban }: KanbanBoardProps
         onClose={() => setOpenCardId(null)}
         resolveNotFound={resolveCommentNotFound}
       />
-      <MoveCardDialog card={moveCard} columns={columns} onMove={kanban.moveCard} onClose={() => setMoveCardId(null)} />
+      <MoveCardDialog card={moveCard} columns={columns} busy={kanban.busy} onMove={kanban.moveCard} onClose={() => setMoveCardId(null)} />
     </section>
   );
 }
