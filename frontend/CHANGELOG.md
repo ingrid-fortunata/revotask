@@ -4,6 +4,10 @@ Record actual changes for this component. Newest date first. Each `## YYYY-MM-DD
 
 ## 2026-11-17
 
+### 29144c6 style: make kanban end drop zone card-sized while dragging
+
+- `KanbanColumn` end strip uses `min-h-32` while `dnd.draggedId` is set, `min-h-11` otherwise. Test added in `KanbanBoard.test.tsx`. See the root entry in [the root changelog](../CHANGELOG.md).
+
 ### 84a7238 style: make profile panel full width
 
 - Removed `max-w-xl` from the panel in `app/(protected)/profile/page.tsx`. See the root entry for 84a7238 in [the root changelog](../CHANGELOG.md).

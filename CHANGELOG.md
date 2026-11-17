@@ -4,6 +4,10 @@ Newest date first. Each `## YYYY-MM-DD` heading groups the commits made that day
 
 ## 2026-11-17
 
+### 29144c6 style: make kanban end drop zone card-sized while dragging
+
+- The "Drop here to move to the end" strip grows from 44 px to about one card high (`min-h-32`) while a card is dragged.
+
 ### 84a7238 style: make profile panel full width
 
 - The Profile panel fills the width of the page content instead of stopping at `max-w-xl`.

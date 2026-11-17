@@ -2,6 +2,16 @@
 
 Spec versioning tracks review rounds independently of application releases. Record the old behavior, the agreed change, why it changed, the refinement prompt, and what was checked. Record the commit and link evidence when available. Newest date first. Each `## YYYY-MM-DD` heading groups the commits made that day, and each commit has a `### <short-sha> <subject>` entry. Release labels from 2026-11-13 stay under that date.
 
+## 2026-11-17
+
+### 29144c6 docs: kanban end drop strip is card-sized while dragging
+
+- **kanban (T07–T09) · end drop strip height (native design only):**
+  - **Before:** `.kiro/specs/kanban/design.md` set the end drop strip to at least 44 px high.
+  - **After:** At least 44 px at rest, `min-h-32` (about one card) while a card is dragged. Root specs unchanged.
+  - **Reason:** 44 px was too narrow to hit when dropping at the end of a lane.
+  - **Verification:** `npx vitest run components/kanban hooks/useDragAndDrop` passed.
+
 ## 2026-11-15
 
 ### 8033a55 docs: close T15 in specs, changelogs and setup guide
