@@ -98,9 +98,9 @@ export function KanbanColumn({
       </ul>
       <div
         {...dnd.dropProps(column.id, null)}
-        className={`flex min-h-11 items-center justify-center rounded-field border border-dashed text-sm text-base-content/70 ${
-          dnd.isTarget(column.id, null) ? "border-primary" : dragging ? "border-base-300" : "border-transparent"
-        }`}
+        className={`flex items-center justify-center rounded-field border border-dashed text-sm text-base-content/70 ${
+          dragging ? "min-h-32" : "min-h-11"
+        } ${dnd.isTarget(column.id, null) ? "border-primary" : dragging ? "border-base-300" : "border-transparent"}`}
       >
         {dragging ? "Drop here to move to the end" : null}
       </div>

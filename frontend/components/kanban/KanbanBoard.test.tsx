@@ -153,6 +153,14 @@ describe("Property 14: one Move_Function behind drag and the Move dialog", () =>
     expect(apiRequest).toHaveBeenCalledExactlyOnceWith("PATCH", "/api/cards/a/position", body);
   });
 
+  it("the end strip grows to card height while a card is dragged", () => {
+    render(<Harness />);
+    const strip = screen.getByTestId("dropzone-doing-end");
+    expect(strip).toHaveClass("min-h-11");
+    fireEvent.dragStart(screen.getByTestId("card-a"), { dataTransfer: { setData: vi.fn(), effectAllowed: "" } });
+    expect(strip).toHaveClass("min-h-32");
+  });
+
   it("a drop on the end strip sends a null anchor", async () => {
     vi.mocked(apiRequest).mockResolvedValue(moveReply(authoritative(), "a"));
     render(<Harness />);
