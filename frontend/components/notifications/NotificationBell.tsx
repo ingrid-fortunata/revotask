@@ -41,7 +41,7 @@ export function NotificationBell() {
         aria-haspopup="dialog"
         aria-label={bellLabel(unread ?? 0)}
         onClick={openPanel}
-        className="relative inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-field text-neutral-content hover:bg-white/10 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+        className="relative inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center cursor-pointer rounded-field text-neutral-content hover:bg-white/10 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
       >
         <svg viewBox="0 0 24 24" className="size-6" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true">
           <path d="M6 9a6 6 0 1 1 12 0c0 5 2 6.5 2 6.5H4S6 14 6 9Z" strokeLinejoin="round" />
