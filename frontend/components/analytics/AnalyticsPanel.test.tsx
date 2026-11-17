@@ -120,7 +120,7 @@ describe("states", () => {
 
   it("shows the figures once loaded", async () => {
     await renderOpen();
-    expect(within(dialog()).getByText("Week of 9 Nov to 15 Nov, UTC")).toBeInTheDocument();
+    expect(within(dialog()).getByText("Week of 9 Nov, 07:00 to 16 Nov, 07:00 (local time)")).toBeInTheDocument();
     expect(within(dialog()).getByText("3")).toBeInTheDocument();
     expect(within(dialog()).getByText("Ana")).toBeInTheDocument();
     expect(visible("Loading analytics…")).toHaveLength(0);

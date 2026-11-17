@@ -66,20 +66,18 @@ export function parseAnalytics(value: unknown): BoardAnalytics {
 }
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-const DAY_MS = 24 * 60 * 60 * 1000;
-
-function utcDay(date: Date): string {
-  return `${date.getUTCDate()} ${MONTHS[date.getUTCMonth()]}`;
+function localStamp(date: Date): string {
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${date.getDate()} ${MONTHS[date.getMonth()]}, ${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
 
 /**
- * "Week of 9 Nov to 15 Nov, UTC". The end is exclusive, so the last day shown is the day before
- * `weekEnd`. UTC fields and a fixed month list keep the text the same in every time zone and locale.
+ * "Week of 9 Nov, 07:00 to 16 Nov, 07:00 (local time)". The server's Week stays the UTC week (A2);
+ * only its two bounds are shown in the viewer's time zone. The end is exclusive, so it is shown as
+ * is. A fixed month list keeps the text the same in every locale.
  */
 export function formatWeekRange(weekStart: string, weekEnd: string): string {
-  const first = new Date(weekStart);
-  const last = new Date(Date.parse(weekEnd) - DAY_MS);
-  return `Week of ${utcDay(first)} to ${utcDay(last)}, UTC`;
+  return `Week of ${localStamp(new Date(weekStart))} to ${localStamp(new Date(weekEnd))} (local time)`;
 }
 
 /** A whole percent from 0 to 100 for a decorative bar. 0 when there is nothing to compare. */

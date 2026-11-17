@@ -65,21 +65,22 @@ describe("parseAnalytics", () => {
 });
 
 describe("formatWeekRange", () => {
-  it("shows the last day, not the exclusive end, inside a month", () => {
+  // The test zone is Asia/Jakarta, UTC+07:00 (vitest.config.mts).
+  it("shows both bounds in local time", () => {
     expect(formatWeekRange("2026-11-09T00:00:00Z", "2026-11-16T00:00:00Z")).toBe(
-      "Week of 9 Nov to 15 Nov, UTC",
+      "Week of 9 Nov, 07:00 to 16 Nov, 07:00 (local time)",
     );
   });
 
-  it("crosses a month", () => {
-    expect(formatWeekRange("2026-11-30T00:00:00Z", "2026-12-07T00:00:00Z")).toBe(
-      "Week of 30 Nov to 6 Dec, UTC",
+  it("moves the date when the offset crosses midnight", () => {
+    expect(formatWeekRange("2026-11-30T20:00:00Z", "2026-12-07T20:00:00Z")).toBe(
+      "Week of 1 Dec, 03:00 to 8 Dec, 03:00 (local time)",
     );
   });
 
   it("crosses a year", () => {
     expect(formatWeekRange("2026-12-28T00:00:00Z", "2027-01-04T00:00:00Z")).toBe(
-      "Week of 28 Dec to 3 Jan, UTC",
+      "Week of 28 Dec, 07:00 to 4 Jan, 07:00 (local time)",
     );
   });
 });

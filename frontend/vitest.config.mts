@@ -2,6 +2,9 @@ import { fileURLToPath } from "node:url";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vitest/config";
 
+// A fixed non-UTC zone (+07:00, no DST) so local-time output is the same on every machine.
+process.env.TZ = "Asia/Jakarta";
+
 // Component tests run in jsdom. Route Handler and server module tests opt in to the node
 // environment with a `// @vitest-environment node` comment. Async Server Components and
 // browser flows are covered by the HTTP smoke here and by Playwright in T15 (assumption A5).

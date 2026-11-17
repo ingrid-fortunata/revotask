@@ -28,7 +28,7 @@ const rowsOf = (heading: string) =>
 describe("AnalyticsFigures", () => {
   it("shows the week, the completed figure, the columns in order and the activity in order", () => {
     render(<AnalyticsFigures data={DATA} />);
-    expect(screen.getByText("Week of 9 Nov to 15 Nov, UTC")).toBeInTheDocument();
+    expect(screen.getByText("Week of 9 Nov, 07:00 to 16 Nov, 07:00 (local time)")).toBeInTheDocument();
     expect(screen.getByText("Cards completed this week")).toBeInTheDocument();
     expect(screen.getByText("4")).toBeInTheDocument();
     expect(rowsOf("Cards per column").map((row) => row.textContent)).toEqual([
