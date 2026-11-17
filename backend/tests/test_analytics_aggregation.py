@@ -8,7 +8,7 @@ from datetime import timedelta
 import pytest
 
 from tests.analytics_helpers import WEEK_START, analytics_data, freeze, seed_events
-from tests.kanban_helpers import board_version, events, make_kanban
+from tests.kanban_helpers import board_version, events, make_kanban, set_done
 
 INSIDE = WEEK_START + timedelta(days=3)
 
@@ -31,6 +31,7 @@ def test_many_columns_cards_and_events_give_exact_figures(
     columns = [
         board_tracker.make_column(kanban.board_id, f"Col{i}", order=float(i + 1)) for i in range(5)
     ]
+    set_done(app, columns[0])  # completions only count while the card is in Done
     cards = [
         board_tracker.make_card(column, f"card{index}", order=float(index + 1))
         for column in columns
@@ -41,14 +42,14 @@ def test_many_columns_cards_and_events_give_exact_figures(
         card = cards[round_ % len(cards)]
         rows.append(("card_moved", kanban.admin.id, card, INSIDE))
         rows.append(("card_moved", ben.id, card, INSIDE))
-    for card in cards[:7]:  # seven cards complete, each recorded three times
+    for card in cards[:6]:  # the six cards of Done complete, each recorded three times
         rows.extend(("entered_done", kanban.admin.id, card, INSIDE) for _ in range(3))
     rows.extend(("comment_created", kanban.admin.id, cards[0], INSIDE) for _ in range(10))
     seed_events(app, kanban.board_id, rows)
 
     data = analytics_data(client, kanban)
     assert [item["count"] for item in data["cards_per_column"]] == [6] * 5  # not 6 x events
-    assert data["completed_cards"] == 7  # not 21
+    assert data["completed_cards"] == 6  # not 18
     assert [(i["name"], i["count"]) for i in data["member_activity"]] == [
         ("Admin", 50),
         ("Ben", 40),

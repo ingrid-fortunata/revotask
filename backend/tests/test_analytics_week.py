@@ -9,7 +9,7 @@ import pytest
 
 from app.blueprints.analytics.service import week_bounds
 from tests.analytics_helpers import WEEK_END, WEEK_START, analytics_data, freeze, seed_events
-from tests.kanban_helpers import make_kanban
+from tests.kanban_helpers import make_kanban, set_done
 
 ZULU = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$")
 
@@ -32,6 +32,7 @@ def _window(client, kanban) -> tuple[str, str]:
 def test_an_instant_belongs_to_exactly_one_week(client, kanban, app, board_tracker, monkeypatch):
     freeze(monkeypatch)
     column = board_tracker.make_column(kanban.board_id, "Done", order=1.0)
+    set_done(app, column)
     cards = [board_tracker.make_card(column, f"c{i}", order=float(i + 1)) for i in range(4)]
     moments = [
         WEEK_START - timedelta(microseconds=1),  # earlier week
@@ -53,6 +54,7 @@ def test_sunday_night_and_monday_midnight_are_different_weeks(
     client, kanban, app, board_tracker, monkeypatch
 ):
     column = board_tracker.make_column(kanban.board_id, "Done", order=1.0)
+    set_done(app, column)
     old, new = (board_tracker.make_card(column, n, order=float(i + 1)) for i, n in enumerate("ab"))
     last_second = datetime(2026, 11, 15, 23, 59, 59, tzinfo=UTC)
     first_second = datetime(2026, 11, 16, 0, 0, 0, tzinfo=UTC)

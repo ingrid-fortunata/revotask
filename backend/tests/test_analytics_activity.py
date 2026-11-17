@@ -48,6 +48,7 @@ def test_each_counted_kind_counts_once(client, kanban, app, board_tracker, monke
 def test_entered_done_is_not_activity(client, kanban, app, board_tracker, monkeypatch):
     freeze(monkeypatch)
     column = board_tracker.make_column(kanban.board_id, "Done", order=1.0)
+    set_done(app, column)
     card = board_tracker.make_card(column, "c", order=1.0)
     seed_events(app, kanban.board_id, [("entered_done", kanban.admin.id, card, INSIDE)])
     data = analytics_data(client, kanban)

@@ -57,9 +57,18 @@ def board_analytics(board_id: uuid.UUID, user_id: uuid.UUID) -> dict[str, Any]:
         .group_by(BoardColumn.id, BoardColumn.name, BoardColumn.order)
         .order_by(BoardColumn.order, BoardColumn.id)
     ).all()
+    # A card counts only while it still sits in an active Done column (A3 revised): the event says
+    # it entered Done this week, the join says it is still there. Moving it out lowers the count.
     completed = db.session.execute(
-        select(func.count(func.distinct(BoardEvent.card_id))).where(
-            in_week, BoardEvent.kind == "entered_done"
+        select(func.count(func.distinct(BoardEvent.card_id)))
+        .join(Card, Card.id == BoardEvent.card_id)
+        .join(BoardColumn, BoardColumn.id == Card.column_id)
+        .where(
+            in_week,
+            BoardEvent.kind == "entered_done",
+            Card.deleted_at.is_(None),
+            BoardColumn.is_done.is_(True),
+            BoardColumn.deleted_at.is_(None),
         )
     ).scalar_one()
     # ponytail: kind is filtered after the (board_id, occurred_at) range scan. Add kind to the

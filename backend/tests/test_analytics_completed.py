@@ -97,6 +97,9 @@ def test_the_same_card_entering_done_twice_counts_once(client, kanban, lanes, bo
     move(done)
     # Two entered_done rows exist for one card, and the card counts once (A3).
     assert _completed(client, kanban) == 1
+    move(todo)
+    # Dragged back out of Done: the figure drops (A3 revised).
+    assert _completed(client, kanban) == 0
 
 
 def test_repeated_events_for_one_card_count_once_and_distinct_cards_add_up(
@@ -118,8 +121,8 @@ def test_repeated_events_for_one_card_count_once_and_distinct_cards_add_up(
     assert _completed(client, kanban) == 3
 
 
-@pytest.mark.parametrize("later", ["deleted", "moved_out", "column_deleted"])
-def test_a_card_stays_counted_after_what_happens_to_it_later(
+@pytest.mark.parametrize("later", ["deleted", "moved_out", "column_deleted", "column_not_done"])
+def test_a_card_stops_counting_once_it_is_no_longer_in_an_active_done_column(
     client, kanban, lanes, board_tracker, app, monkeypatch, later
 ):
     freeze(monkeypatch)
@@ -133,9 +136,17 @@ def test_a_card_stays_counted_after_what_happens_to_it_later(
             app,
             lambda: db.session.execute(update(Card).where(Card.id == card).values(column_id=todo)),
         )
-    else:
+    elif later == "column_deleted":
         soft_delete(app, BoardColumn, done)
-    assert _completed(client, kanban) == 1
+    else:
+        _write(
+            app,
+            lambda: db.session.execute(
+                update(BoardColumn).where(BoardColumn.id == done).values(is_done=False)
+            ),
+        )
+    # A3 revised: the count follows where the card is now, not only the entered_done history.
+    assert _completed(client, kanban) == 0
 
 
 def test_other_actions_on_a_card_add_nothing(
@@ -172,6 +183,7 @@ def test_events_of_other_boards_and_other_weeks_do_not_count(
     mine = board_tracker.make_card(done, "mine", order=1.0)
     other = make_kanban(board_tracker, app, name="Other")
     other_column = board_tracker.make_column(other.board_id, "Done", order=1.0)
+    set_done(app, other_column)
     elsewhere = board_tracker.make_card(other_column, "theirs", order=1.0)
     seed_events(app, other.board_id, [_entered(other, elsewhere)])
     seed_events(
