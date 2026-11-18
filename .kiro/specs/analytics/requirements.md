@@ -10,6 +10,8 @@ Out of scope: a history of earlier weeks, a date range or week picker, a chart l
 
 Decisions A1–A10 were approved on 2026-11-14 with the clarifications recorded in "Approved decisions" at the end. Each is stated as a requirement below.
 
+> **Revision 2 (2026-11-18, sprint date range).** A board can have a sprint (`sprint_start`, `sprint_end`). When it does, the Week below is replaced by the Sprint_Window for Requirements 2, 3, 4 and 6.2 and A2, and E29 adds the key `window` (`"sprint"` or `"week"`). A board without a sprint keeps every criterion in this file unchanged. The rules are Requirements 8 and 9 of [boards-membership](../boards-membership/requirements.md) (C39–C41). The text below is kept as approved on 2026-11-14. "Out of scope: a date range" refers to a range chosen in the panel and stays out of scope. The range is now set on the board.
+
 ## Glossary
 
 - **Analytics_API**: The Flask handler for E29 (`GET /api/boards/{id}/analytics`), in a new `analytics` blueprint.
@@ -70,6 +72,8 @@ Decisions A1–A10 were approved on 2026-11-14 with the clarifications recorded 
 
 ### Requirement 4: Week window
 
+> Revision 2: applies to a board without a sprint. With a sprint, the window is the Sprint_Window (boards-membership Requirement 9.1–9.3). `week_start` and `week_end` keep their names and format.
+
 **User Story:** As a participant, I want "this week" to mean the same thing for everyone, so that the numbers do not depend on a time zone.
 
 #### Acceptance Criteria
@@ -95,6 +99,8 @@ Decisions A1–A10 were approved on 2026-11-14 with the clarifications recorded 
 7. THE Analytics_API SHALL return only the documented keys, `week_start`, `week_end`, `cards_per_column`, `completed_cards` and `member_activity`, and no event ID, card ID or comment text.
 
 ### Requirement 6: Analytics panel
+
+> Revision 2: criterion 2 and the labels "this week" apply when `window` is `"week"`. When it is `"sprint"` the panel shows "Sprint 16 Nov to 22 Nov" (dates only, no local time) and "this sprint" labels (boards-membership Requirement 9.6–9.8).
 
 **User Story:** As a participant, I want an analytics panel on the board, so that I can read the three figures without leaving the board.
 

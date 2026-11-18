@@ -2,6 +2,16 @@
 
 Record actual changes for this component. Newest date first. Each `## YYYY-MM-DD` heading groups the commits made that day, and each commit has a `### <short-sha> <subject>` entry. Reference the matching root entry for the same commit in [the root changelog](../CHANGELOG.md).
 
+## 2026-11-18
+
+### 0f58d2c feat: add board sprint range and sprint-based analytics window
+
+- `models/board.py` and migration `b7c1d4e9a203`: nullable `sprint_start` and `sprint_end` dates and `ck_boards_sprint_range_valid` (both or neither, end on or after start, at most 90 days inclusive).
+- `boards/schema.py`: `SprintDate` (ASCII `YYYY-MM-DD` only, a real date) and the shared pair rule for E06 and E08, with four fixed messages. `BoardUpdateSchema` fields are optional and an empty body keeps `fields.name = "Required."`. `BoardSummarySchema` adds the two keys.
+- `boards/service.py`: `BoardAccess` and `_summary` carry the sprint, `create_board` takes it, `rename_board` became `update_board` (only submitted keys are written, both nulls clear the sprint), and the route view is `update_board_view`.
+- `analytics/service.py`: `board_window(access, now)` returns the sprint window (end exclusive, the day after the sprint end) or the UTC week, and E29 adds `window` (`"sprint"` or `"week"`).
+- Tests: `test_boards_sprint.py`, `test_analytics_sprint.py`, `test_boards_migration_sprint.py`, sprint rows in `specs/fixtures/board-field-cases.json`, and key-set updates in the board and analytics tests. See the root entry for the verified counts (reference: [root changelog](../CHANGELOG.md)).
+
 ## 2026-11-17
 
 ### 23ac801 fix: drop analytics completed count when a card leaves done

@@ -4,6 +4,16 @@ Newest date first. Each `## YYYY-MM-DD` heading groups the commits made that day
 
 ## 2026-11-18
 
+### 9f49570 feat: add sprint dates to board forms, header and analytics
+
+- A board can have a sprint. The create-board dialog has optional "Sprint start" and "Sprint end" date fields, an Admin changes or clears them from "Edit board" (formerly "Rename board", now also the dates and a "Clear dates" button), and the board header shows "Sprint 16 Nov to 22 Nov". A sprint is both dates or neither, ends on or after its start and is at most 90 days. Invalid or partial ranges show a field error.
+- Verified locally: `pytest` 2173 passed and 1 skipped, `ruff` clean, `vitest` 2170 passed, `lint`, `typecheck` and `build` clean, and a Chromium check at 320, 375, 768 and 1280 px with 140 checks and 0 failed (emulator). E29 on a 90-day sprint with 5000 extra events: p95 12.4 ms locally. Not done: a real-device check and the Playwright date steps (T15).
+
+### 0f58d2c feat: add board sprint range and sprint-based analytics window
+
+- Analytics counts inside the board's sprint (start day 00:00 UTC to the end day's 24:00 UTC) and shows "Sprint 16 Nov to 22 Nov" with "this sprint" labels. A board without a sprint keeps the UTC week and the "Week of … (local time)" line. Editing or clearing the sprint changes only the next read and rewrites no event.
+- Run `flask db upgrade` once: the migration adds `boards.sprint_start` and `boards.sprint_end`.
+
 ### 4240cf0 feat: add global error boundary and app-wide not found page
 
 - A crash in the root layout now shows a "Something went wrong" screen with Try again (`global-error.tsx`), and an unknown URL shows a "Page not found" screen with a link back to the app (`not-found.tsx`), instead of the default Next.js pages.

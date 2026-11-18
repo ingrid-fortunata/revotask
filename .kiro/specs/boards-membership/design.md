@@ -4,7 +4,7 @@
 
 This slice adds the Flask boards and membership API (E05–E12, root task T05) and the Next.js dashboard, board shell and membership controls (root task T06). It implements R03 (AC03.1–AC03.3), R04 (AC04.1–AC04.2) and AC13.1 for every new page and dialog. It refines root `specs/design.md` D2, D3 and D5 and the layer references in `backend/specs/` and `frontend/specs/`.
 
-The slice adds no table, column or migration. It adds four typed exceptions, one blueprint (`boards_bp`), a small move of generic validators into the existing `backend/app/validation.py`, one Next.js server helper set, four Route Handlers, two shared components, a Confirm_Dialog and the dashboard and board pages.
+The original slice added no table, column or migration (Revision 2 adds one, see the end of this document). It adds four typed exceptions, one blueprint (`boards_bp`), a small move of generic validators into the existing `backend/app/validation.py`, one Next.js server helper set, four Route Handlers, two shared components, a Confirm_Dialog and the dashboard and board pages.
 
 This document uses the requirement numbering of `requirements.md` ("Requirements 2.4" means Requirement 2, criterion 4). Work packages (WP-…) are the units that `tasks.md` splits into checkbox tasks linked to T05 and T06. Review items R1–R14 are all resolved (see "Review Items and Decisions").
 
@@ -345,7 +345,7 @@ export function canRemoveMember(
 
 ## Data Models
 
-No schema change. The slice uses these existing tables only.
+No schema change in the original slice. Revision 2 adds `boards.sprint_start` and `boards.sprint_end` (see "Revision 2: Sprint date range"). The slice uses these existing tables only.
 
 | Table           | Use in this slice                                                                                                                                |
 | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -693,7 +693,7 @@ PW1 is the Playwright journey delivered in T15. BM1 is the measured mobile scrip
 
 ## Contract and Document Impact
 
-No endpoint path, method, request field or response shape changes. The only added contract item is the error code `USER_NOT_FOUND` for E11. The items below clarify behavior that `docs/API.md`, `specs/design.md` or `backend/specs/api-contract.md` leaves open or states differently. Each needs a `specs/CHANGELOG.md` entry with before, after, reason and verification.
+In the original slice no endpoint path, method, request field or response shape changes. The only added contract item is the error code `USER_NOT_FOUND` for E11. Revision 2 changes shapes (C39–C41, below). The items below clarify behavior that `docs/API.md`, `specs/design.md` or `backend/specs/api-contract.md` leaves open or states differently. Each needs a `specs/CHANGELOG.md` entry with before, after, reason and verification.
 
 | ID  | Document                                                                                                 | Before                                                           | After                                                                                                                                                                                                                                                         | Status and conflict                                                                                                                                                              |
 | --- | -------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -737,3 +737,210 @@ All items are resolved. Decisions R1–R14 were approved with the wording below.
 | Moving validators changes auth behavior.                                    | Names are re-imported unchanged in `auth/schema.py`. The auth regression tests and `auth-field-cases.json` run before and after the move (WP-B0).      |
 | A DB test leaves rows behind or touches real data.                          | `db_guard` on `TEST_DATABASE_URL`, `BoardTracker` finalizer cleanup by tracked IDs, and `test_boards_cleanup.py`.                                      |
 | `USER_NOT_FOUND` allows email enumeration by board Admins.                  | Accepted for v1. Only Admins of the target board reach it (P16). Per-admin E11 rate limit with shared storage is tracked in T16 before public release. |
+
+
+## Revision 2: Sprint date range (2026-11-18, design approved 2026-11-18)
+
+Implements Requirements 8 and 9 and decisions SP1–SP8 (approved 2026-11-18). It adds one optional date range to a board, lets the Admin edit it through E08, and makes E29 count inside it. Root tasks stay T05, T06 and T14. The T14 analytics spec is changed only where Requirement 9 says so, and its text is aligned in Finalize.
+
+### Verified facts about the existing code (Revision 2)
+
+| Question | Finding | Evidence |
+| --- | --- | --- |
+| Where does E29 get the window? | `week_bounds(utcnow())` in `analytics/service.py`. `board_analytics` already calls `authorize_board`, so the board row is read once per request. | `backend/app/blueprints/analytics/service.py` |
+| What does `authorize_board` read? | One statement: role, `Board.name`, `Board.position_version`. It returns a frozen `BoardAccess`. Adding two columns costs no query. | `boards/service.py` `_active_access` |
+| How does E08 validate? | `BoardUpdateSchema` has one required field, `name`. An empty body gives `fields.name = "Required."`. | `boards/schema.py`, `board-field-cases.json` (`name-missing`) |
+| What do the Route Handlers allow? | Each lists `allowedKeys`. E06 and E08 allow only `name`. | `frontend/app/api/boards/route.ts`, `[id]/route.ts` |
+| How does the analytics read refresh? | `useBoardAnalytics` re-reads when the Kanban `version` rises or on `refresh`. It has no sprint input. | `frontend/hooks/useBoardAnalytics.ts` |
+| Does a constraint name get a prefix? | Yes. `NAMING_CONVENTION` gives `ck_<table>_<name>`. | `backend/app/extensions.py` |
+
+### Design decisions (Revision 2)
+
+| ID | Decision | Why |
+| --- | --- | --- |
+| DS1 | Two nullable `Date` columns, `sprint_start` and `sprint_end`, on `boards`. A check constraint `sprint_range_valid` allows both null, or both set with `sprint_end >= sprint_start` and `sprint_end - sprint_start <= 89` (90 days inclusive). The API checks the same rules first, so the database is a backstop and a violation never reaches the user as a 500 in normal use. | SP1, SP4, SP7. A pair constraint prevents a half-set range from any future writer. |
+| DS2 | The window is derived at read time. `sprint_window(start, end)` returns `[start 00:00:00Z, end + 1 day 00:00:00Z)`. No event is rewritten, so editing the Sprint is a single `UPDATE boards`. | SP5, Requirement 9.5. |
+| DS3 | `BoardAccess` gains `sprint_start` and `sprint_end`. `_active_access` selects them. `_summary` takes them. E05, E06, E07 and E08 return them through `BoardSummarySchema`, whose `Meta.fields` gains the two keys. | One read path for every caller (DD1). No new query. |
+| DS4 | `rename_board` becomes `update_board(board_id, user_id, changes)`. It takes the board lock, applies only the submitted keys with one `UPDATE`, and builds the returned summary from the locked read plus `changes`. The route function is renamed to match. | PATCH changes only submitted fields (API conventions). |
+| DS5 | `BoardUpdateSchema` makes every field optional and adds one `validates_schema` check that at least one key is present. An empty body keeps `fields.name = "Required."`, so the existing fixture rows `name-missing` and `extra-key-and-bad-name` still hold. | Requirement 8.7, "as before". |
+| DS6 | One shared `SprintDate` field and one pair rule serve both schemas. A value must match `^\d{4}-\d{2}-\d{2}$` and parse with `date.fromisoformat`, which also rejects `2026-02-30`. Python 3.11 `fromisoformat` accepts `20261116` and week dates, so the regular expression runs first. Messages: `Enter a valid date.` (bad value or non-string), `Enter both sprint dates.` (the missing or null partner), `Must be on or after the start date.`, `Must be at most 90 days long.` The first two go on the named field. The last two go on `sprint_end`. | Requirement 8.3–8.5, no echo of input. |
+| DS7 | E29 gets `window` (`"sprint"` or `"week"`) from `board_window(access, now)`. With no Sprint it returns `week_bounds(now)` and `"week"`, so the no-sprint path is byte-for-byte the current behavior plus one key. `week_bounds` stays. `_iso_z` formats both bounds. | Requirement 9.1–9.3. |
+| DS8 | The frontend shares one rule module. `validateSprint(startRaw, endRaw)` in `lib/boardRules.ts` mirrors the Flask rules and reads the same fixture file, extended with sprint rows. Date arithmetic uses `Date.UTC`, never local time, so a daylight saving change cannot move a day. | Client and server must agree (FE-A1, existing pattern). |
+| DS9 | Display helpers live in a new `lib/sprint.ts`: `formatSprintRange(start, end)` ("Sprint 16 Nov to 22 Nov", years added when either date is not in the current UTC year), and `sprintFromWindow(weekStart, weekEnd)` that returns the two dates for the analytics line (the end is the day before `week_end`). A fixed month list is used, as in `formatWeekRange`. The current year is read with `getUTCFullYear()`. | Requirements 8.12, 9.6. A server render and a client render agree except in the first hours of a new year (accepted, see Risks). |
+| DS10 | `RenameBoardForm` is extended, not replaced: it keeps its file and tests, takes `currentSprint`, and calls `onSaved({name, sprint_start, sprint_end})` in place of `onRenamed(name)`. Its visible labels change to "Edit board" (toggle) and "Save changes" (submit). A "Clear dates" button empties both date fields. It sends `name` always, the pair when both are filled, both `null` when both are empty and the board had a Sprint, and no sprint key otherwise. | Requirement 8.13. The label must not say "Rename" when it edits dates. The measure scripts in `evidence/` record earlier runs and are not edited. |
+| DS11 | `CreateBoardForm` stacks name, a two-column date grid (one column below 640 px) and the submit button at every width. It sends the pair only when both are filled. `FormField` gains `type="date"`. | Requirement 8.10, 8.14. The old row layout cannot hold three fields at 375 px. |
+| DS12 | `BoardShell` holds `sprint` state beside `name`, passes `formatSprintRange(...)` to `BoardHeader` as an optional `sprintLabel`, and passes a `sprintKey` string (`"start|end"` or `""`) to `AnalyticsPanel` and `useBoardAnalytics`. The hook reads again when `sprintKey` changes after mount, and ignores it on mount. | Requirement 9.8. A new input beside `version`, same stale-response guards (FE-A2). |
+| DS13 | Route Handlers for E06 and E08 add `sprint_start` and `sprint_end` to `allowedKeys`. Nothing else in `handlePrivateWrite` changes. | Requirement 8.15. |
+| DS14 | `parseBoardSummary` accepts the two keys: each is `null` or a `YYYY-MM-DD` string, and both are null or both are strings. `parseBoardDetail` inherits it. `parseAnalytics` requires `window` to be `"sprint"` or `"week"`. `BoardAnalytics` and `BoardSummary` types gain the new keys. | Requirement 8.15, FE-A1. |
+| DS15 | `AnalyticsFigures` picks its line and its three labels from `data.window`. `formatWeekRange` is unchanged and used only for `"week"`. | Requirements 9.6, 9.7. |
+
+### Data model change
+
+`backend/app/models/board.py`:
+
+```python
+sprint_start: Mapped[date | None] = mapped_column(Date, nullable=True)
+sprint_end: Mapped[date | None] = mapped_column(Date, nullable=True)
+# in __table_args__:
+CheckConstraint(
+    "(sprint_start IS NULL AND sprint_end IS NULL) OR "
+    "(sprint_start IS NOT NULL AND sprint_end IS NOT NULL "
+    "AND sprint_end >= sprint_start AND sprint_end - sprint_start <= 89)",
+    name="sprint_range_valid",
+)
+```
+
+One new Alembic revision after `a265fb5e7047` adds both columns and `ck_boards_sprint_range_valid` in `upgrade()` and drops them in `downgrade()`. Existing rows keep both columns null, so the constraint holds without a backfill. The migration is tested up and down on an empty database and on a database that already holds boards.
+
+### Backend design
+
+```python
+# boards/schema.py (sketch)
+SPRINT_MAX_DAYS = 90
+
+class SprintDate(fields.Field):                       # DS6
+    def _deserialize(self, value, attr, data, **kw):
+        if not isinstance(value, str) or not DATE_RE.fullmatch(value):
+            raise self.make_error("invalid")
+        try: return date.fromisoformat(value)
+        except ValueError: raise self.make_error("invalid") from None
+
+def _check_sprint(data: dict) -> None:                # shared by both schemas
+    has_start, has_end = "sprint_start" in data, "sprint_end" in data
+    start, end = data.get("sprint_start"), data.get("sprint_end")
+    if not (has_start or has_end): return
+    if (start is None) != (end is None):
+        raise ValidationError({"sprint_end" if end is None else "sprint_start": BOTH_DATES})
+    if start is None: return                          # both null: clear (E08) or no sprint (E06)
+    if end < start: raise ValidationError({"sprint_end": END_BEFORE_START})
+    if (end - start).days >= SPRINT_MAX_DAYS: raise ValidationError({"sprint_end": TOO_LONG})
+```
+
+`SprintDate(allow_none=True, load_default=missing)` keeps "key absent" apart from "key is null". On E06 the pair rule above applies unchanged, so an absent pair and a null pair both mean no Sprint. `_check_sprint` runs in `@validates_schema(skip_on_field_errors=True)`.
+
+```python
+# analytics/service.py (sketch)
+def board_window(access, now):                        # DS7
+    if access.sprint_start is None:
+        start, end = week_bounds(now); return start, end, "week"
+    start = datetime.combine(access.sprint_start, time.min, tzinfo=UTC)
+    end = datetime.combine(access.sprint_end + timedelta(days=1), time.min, tzinfo=UTC)
+    return start, end, "sprint"
+```
+
+`board_analytics` keeps `access = authorize_board(...)`, calls `board_window(access, utcnow())`, uses `start` and `end` in `in_week` (renamed `in_window`), and adds `"window": kind`. `AnalyticsSchema` gains `window = fields.String(dump_only=True)` as its last key, and the response allowlist test lists six keys. The `ponytail:` note about the `kind` index stays: a 90-day window holds more events than a week, so the timing record (T14 A10) is measured again with a 90-day Sprint (task in `tasks.md`).
+
+### Frontend design
+
+| File | Change |
+| --- | --- |
+| `lib/types.ts` | `BoardSummary` gains `sprint_start` and `sprint_end` (`string | null`). `BoardAnalytics` gains `window: "sprint" | "week"`. |
+| `lib/boardRules.ts` | `SPRINT_MAX_DAYS`, sprint messages, `validateSprint`. Result: `{ok: true, sprint: {sprint_start, sprint_end} | null}` or `{ok: false, errors: {sprint_start?, sprint_end?}}`. |
+| `lib/sprint.ts` (new) | `formatSprintRange`, `sprintFromWindow`. |
+| `lib/boards.ts`, `lib/analytics.ts` | Parsers (DS14). |
+| `components/shared/FormField.tsx` | `type` accepts `"date"`. |
+| `components/boards/CreateBoardForm.tsx` | Two date fields, client check, send pair only when set, map `sprint_start` and `sprint_end` field errors (DS11). |
+| `components/boards/RenameBoardForm.tsx` | DS10. |
+| `components/boards/BoardHeader.tsx` | Optional `sprintLabel` under the title, button text "Edit board". |
+| `components/boards/BoardShell.tsx` | `sprint` state, `sprintKey` (DS12). |
+| `hooks/useBoardAnalytics.ts`, `components/analytics/AnalyticsPanel.tsx`, `AnalyticsFigures.tsx` | `sprintKey` input, labels from `window` (DS12, DS15). |
+| `app/api/boards/route.ts`, `app/api/boards/[id]/route.ts` | `allowedKeys` (DS13). |
+
+Screens:
+
+```text
+Create board (every width)          Board header
+Board name                          All boards
+[______________________]            Board name  [Admin]
+Sprint start     Sprint end         Sprint 16 Nov to 22 Nov
+[dd/mm/yyyy]     [dd/mm/yyyy]       [avatars]        [Analytics] [Edit board] [Delete board]
+Optional. Set both or neither.
+[ Create board ]                    Analytics dialog
+                                    Sprint 16 Nov to 22 Nov
+                                    4  Cards completed this sprint
+```
+
+Mobile rules (Requirement 8.14): the date grid is one column below 640 px and two from `sm`. Each date input has `min-h-11`, `text-base` (16 px) and a visible label. `Clear dates` is a `BaseButton` of at least 44 px. The sprint text wraps (`min-w-0 break-words`). No new color, font or dependency (FE-D1). The native date control is used on every device, so there is no custom calendar to make accessible (FE-S3).
+
+### Error handling (Revision 2)
+
+| Case | Result |
+| --- | --- |
+| E06 or E08 with one date, a bad date, end before start or a range over 90 days | 400 `VALIDATION_ERROR` with the field entry of DS6. Nothing is written. |
+| E08 body with only unknown keys | 400, `Unknown field.`, as before. |
+| E08 by a Member with a valid sprint | 403, nothing changes (the role check runs after body validation, Requirement 7.9). |
+| The database check fires (a bug in the API rule) | `IntegrityError` rolls back through `commit_or_rollback` and returns the sanitized 500. A test asserts that no API input reaches it. |
+| E29 on a board whose Sprint lies in the future | 200 with zero counts and `window: "sprint"`. |
+| UI client check fails | Field error under the field, no request, name and dates kept. |
+
+### Correctness properties (Revision 2)
+
+| ID | Property | Requirements | Checked by |
+| --- | --- | --- | --- |
+| P18 | A Sprint is accepted exactly when both dates are real calendar dates, `end >= start` and the length is at most 90 days. Every other pair is a 400 that writes nothing. The Flask schema and `validateSprint` agree on every row of `board-field-cases.json`. | 8.3–8.5 | `test_boards_sprint.py`, `boardRules.test.ts` |
+| P19 | A board has both dates or neither, through every write path, including a direct insert (database constraint). | 8.1–8.3, 8.16 | `test_boards_sprint.py`, `test_boards_migration_sprint.py` |
+| P20 | E08 changes only submitted fields. A name-only request leaves the Sprint, a Sprint-only request leaves the name, and `{sprint_start: null, sprint_end: null}` clears the Sprint. | 8.7 | `test_boards_sprint.py` |
+| P21 | `sprint_start` and `sprint_end` appear in E05, E06, E07 and E08 for every role, and in no other response. | 8.9 | `test_boards_sprint.py`, existing allowlist tests |
+| P22 | With a Sprint, an event is counted exactly when `start 00:00Z <= occurred_at < (end + 1 day) 00:00Z`. Without one, the window is the current UTC week. `window` says which. | 9.1–9.3 | `test_analytics_sprint.py` |
+| P23 | Editing or clearing the Sprint changes only the next E29 window. Events and `cards_per_column` are unchanged. | 9.5 | `test_analytics_sprint.py` |
+
+### Testing (Revision 2)
+
+Backend: `test_boards_sprint.py` (create with and without dates, each invalid case from the fixture, E08 name-only, sprint-only, both, clear, Member 403, body-before-authorization order, list and detail carry the keys, a 90-day boundary and a 91-day failure, a one-day Sprint, past and future), `test_boards_migration_sprint.py` (up, down, existing boards stay null, direct insert of half a range fails on the constraint), `test_analytics_sprint.py` (the four boundary instants with a fixed clock, a one-day Sprint, a future Sprint gives 0, a past Sprint, no Sprint keeps the week, a Sprint edited and cleared after events, six response keys, cleanup of rows). Existing analytics tests that compare the response keys are updated for `window`. `board-field-cases.json` gains `board_create` and `board_update` sprint rows, read by Flask and Vitest.
+
+Frontend (Vitest and React Testing Library): `boardRules.test.ts` (fixture rows), `sprint.test.ts` (format in the same year, across years, a one-day range, the day-before rule for the window end, a month and a year boundary), `boards.test.ts` and `analytics.test.ts` (parsers accept and reject), `CreateBoardForm.test.tsx` (dates optional, one date, end before start, server field error keeps values, body keys), `RenameBoardForm.test.tsx` (prefill, send rules, Clear dates, 403 and 404 paths unchanged), `BoardHeader.test.tsx` and `BoardShell.test.tsx` (sprint line, no line without a Sprint, Member hides controls, analytics read again after a save), `useBoardAnalytics.test.tsx` (`sprintKey` change reads again, mount does not read twice, a late response is ignored), `AnalyticsFigures.test.tsx` and `AnalyticsPanel.test.tsx` (sprint and week labels), route tests for both handlers.
+
+Browser: `evidence/boards-membership-mobile-measure.mjs` and `evidence/analytics-mobile-measure.mjs` are extended with the create form and the edit form with dates, and the analytics dialog with a Sprint, at 320, 375, 768 and 1280 px (emulator or real device recorded). The manual journey adds: create a board with dates, see the header line, add a card to Done, open analytics, edit the dates, see the window and counts change, clear the dates and see the week line. The Playwright journey stays in T15; adding the date fields to it is a follow-up task there, recorded and not done in this revision.
+
+### Acceptance Criteria Map (Revision 2)
+
+| Requirement | Design | Verification |
+| --- | --- | --- |
+| 8.1, 8.2 | DS1, DS3, DS4, `create_board` | P18, P19, P21 |
+| 8.3–8.6 | DS6, DS1 | P18 |
+| 8.7, 8.8 | DS4, DS5 | P20 |
+| 8.9 | DS3, DS14 | P21 |
+| 8.10, 8.11 | DS8, DS11 | `CreateBoardForm.test.tsx`, `boardRules.test.ts` |
+| 8.12 | DS9, DS12 | `sprint.test.ts`, `BoardHeader.test.tsx` |
+| 8.13 | DS10, DS12 | `RenameBoardForm.test.tsx`, `BoardShell.test.tsx` |
+| 8.14 | DS11, Mobile rules | mobile measure scripts, manual journey |
+| 8.15 | DS13, DS14 | route and parser tests |
+| 8.16 | DS1, migration | P19, `test_boards_migration_sprint.py` |
+| 9.1–9.4 | DS7 | P22 |
+| 9.5 | DS2 | P23 |
+| 9.6, 9.7 | DS9, DS15 | `AnalyticsFigures.test.tsx` |
+| 9.8 | DS12 | `useBoardAnalytics.test.tsx` |
+| 9.9 | Testing (Revision 2) | `test_analytics_sprint.py` |
+
+### Contract changes (Revision 2)
+
+| ID | Document | Before | After | Status |
+| --- | --- | --- | --- | --- |
+| C39 | `docs/API.md` E06, E08, BoardSummary and BoardDetail shapes; `backend/specs/api-contract.md`; `specs/design.md` D2 where it lists shapes | E06 `name` only. E08 `name` required. BoardSummary `{id, name, role, position_version}`. | E06 and E08 accept optional `sprint_start` and `sprint_end` (`YYYY-MM-DD` or `null`, both or neither, end on or after start, at most 90 days). E08 needs at least one of `name`, the pair. BoardSummary and BoardDetail add the two keys, `null` when unset. | Approved as SP8. Changes a shared contract. |
+| C40 | `docs/API.md` E29 row and shape; analytics C34 | `week_start` and `week_end` are the current UTC Monday-to-Monday week. | They are the Sprint_Window when the board has a Sprint, else the current UTC week. E29 adds `window`: `"sprint"` or `"week"`. Bounds stay ISO 8601 UTC ending in `Z`, `week_end` exclusive. | Approved as SP6, SP8. Supersedes C34 for boards with a Sprint. |
+| C41 | `docs/API.md` conventions, `backend/specs/data-model.md` | `boards` has `name`, `creator_id`, `position_version`. | `boards` adds nullable `sprint_start` and `sprint_end` with `ck_boards_sprint_range_valid`. | Approved as SP7. |
+
+Documents to align in Finalize: `specs/requirements.md` (AC03.1–AC03.3, AC11.1 wording), `specs/design.md`, `specs/traceability.md` (AC11.1, AC03.x rows), `docs/API.md`, `docs/USER_GUIDE.md` (create-board step and the analytics step), `docs/TEST-PLAN.md`, `backend/specs/api-contract.md`, `backend/specs/data-model.md`, `.kiro/specs/analytics/requirements.md` (Requirements 2, 3, 4, 6.2, 6.3, the out-of-scope note, A2), `.kiro/specs/analytics/design.md` (DD2, C34, the panel and labels), `specs/CHANGELOG.md`. Implementation adds `CHANGELOG.md`, `backend/CHANGELOG.md`, `frontend/CHANGELOG.md` entries and the `README.md` status, not in this spec phase.
+
+### Risks (Revision 2)
+
+| Risk | Mitigation |
+| --- | --- |
+| A 90-day window holds many more events than a week, so E29 may slow down. | The `(board_id, occurred_at)` index bounds the scan. The T14 timing script runs again with a 90-day Sprint and the result is recorded. The `ponytail:` note about adding `kind` to the index stays open until then. |
+| The existing T14 tests assume the response has five keys. | They are updated in the same task as the schema change, and `window` is the only new key. |
+| `fromisoformat` accepts forms that are not `YYYY-MM-DD`. | The regular expression runs first (DS6), with a test row for `20261116` and `2026-W47-1`. |
+| The year shown in the sprint text depends on the viewer's clock. | UTC year, and the text is the same on server and client except in the first hours of a new year. Accepted. The text is not used for logic. |
+| Renaming the toggle button breaks tests or scripts that look for "Rename board". | The frontend tests are updated in the same task. The earlier evidence scripts are records of past runs and are left as they are. |
+| Native date inputs look different per browser. | Accepted for v1 (no date library, FE-D1). The label, hint and 16 px size make them usable, and the format hint is the browser's own. |
+| A Sprint of the wrong dates silently empties analytics. | The Sprint line is shown in the board header and in the dialog, and an Admin can edit or clear it. |
+| The Playwright journey (T15) does not cover the date fields. | Recorded as a follow-up in `tasks.md`. This revision does not change T15 results. |
+
+### Review items for approval
+
+| ID | Item | Proposed answer |
+| --- | --- | --- |
+| DR1 | The toggle button text changes from "Rename board" to "Edit board" and the submit from "Save name" to "Save changes" (DS10). | Yes. The control now edits dates too. |
+| DR2 | `RenameBoardForm` keeps its file name although it now edits dates. | Keep the name. Renaming a file only for tidiness touches imports and tests with no behavior gain. |
+| DR3 | The create form becomes a stacked layout at all widths (DS11). | Yes. The old row layout does not fit three fields at 375 px. |
+| DR4 | Re-measure E29 on a 90-day Sprint (risk row 1). | Yes, in `tasks.md`. |
+| DR5 | The Playwright date-field step is not added in this revision. | Yes, left for T15 as a recorded follow-up. |

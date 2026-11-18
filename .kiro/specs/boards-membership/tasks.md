@@ -4,6 +4,8 @@
 
 This plan implements the Flask boards and membership API (E05–E12, root T05) and the Next.js dashboard, board shell and membership controls (root T06) described in `design.md`. The validator move (WP-B0, group 1) comes first, then the backend (group 2), the frontend foundations and UI (groups 4 and 5), tests, the measured mobile check and the manual journey, and documentation. Implementation languages are the ones already in the repository: Python (Flask, SQLAlchemy, pytest) and TypeScript (Next.js App Router, Tailwind, daisyUI, Vitest).
 
+**Revision 2 (2026-11-18):** the sprint date range adds groups 10 to 16 at the end of this file. Groups 0 to 9 are unchanged and stay as verified. Revision 2 status: requirements, design and tasks approved 2026-11-18, Finalize (group 10) done, implementation (groups 11 to 16) done and verified locally on 2026-11-18. Open: the Playwright date steps (T15) and a real-device check.
+
 **Status:** Not started. Spec phase output, updated to the approved decisions R1–R14 and DD1–DD16. Task 0.2 (contract and root spec sync) is done. No source code was changed.
 
 **Root tasks:** T05 (native groups 0.2, 1 and 2) and T06 (native groups 4 to 7). Groups 0 and 9 cover both. Existing root IDs are preserved and no new root IDs are proposed. Root T05 and T06 stay unchecked in `specs/tasks.md` until every acceptance check passes, including AC04.2 assignment clearing (verified in this slice by tasks 2.10 and 2.18).
@@ -291,3 +293,163 @@ R1–R14 and C1–C5 are approved as written in `design.md` ("Review Items and D
   ]
 }
 ```
+
+
+## Revision 2: Sprint date range (2026-11-18, tasks approved)
+
+Implements Requirements 8 and 9 and design DS1–DS15, P18–P23, C39–C41, with decisions SP1–SP8 and DR1–DR5 approved on 2026-11-18. Root tasks: T05 (backend groups 11 and 12), T06 (frontend groups 13 and 14) and T14 (E29, group 12). Existing root IDs are kept and no new root IDs are proposed. Checks run on `TEST_DATABASE_URL` only. The user runs long-running commands (stack start, full suites) as in groups 7 and 8.
+
+Order: spec sync (10), backend (11, 12), frontend (13, 14), browser and timing (15), handoff (16). Each task names the test files it adds or updates. Tests that assert the old BoardSummary keys or the five E29 keys are updated in the same task as the change that breaks them, so the suite is green after every task.
+
+- [x] 10. Finalize spec sync (spec mode, runs once after this plan is approved; no code)
+  - [x] 10.1 Link, synchronize and record the approved Revision 2
+    - Link this native spec from the T05, T06 and T14 rows of `specs/tasks.md` (they already link it) and add the Revision 2 note to those rows (see review item TR1). Align `specs/requirements.md` (AC03.1–AC03.3, AC11.1), `specs/design.md` (D2 shapes), `specs/traceability.md` (AC03.x, AC11.1, V03, V08 rows marked "Revision 2 pending verification"), `docs/API.md` (E06, E08, E29, shapes, C39–C41), `backend/specs/api-contract.md`, `backend/specs/data-model.md`, `.kiro/specs/analytics/requirements.md` (Requirements 2, 3, 4, 6.2, 6.3, the out-of-scope note, A2) and `.kiro/specs/analytics/design.md` (DD2, C34, panel and labels), each with a short "Revision 2 (sprint)" note and no rewrite of approved history.
+    - Add one `specs/CHANGELOG.md` entry under the `## YYYY-MM-DD` heading with before, after, reason and verification (spec review only, no test run). Record the phase approvals in `evidence/spec-review.md`.
+    - _Requirements: 8.9, 8.16, 9.1, 9.3; Root: T05, T06, T14_
+
+- [x] 11. Backend: storage, validation and board API (root T05)
+  - [x] 11.1 Add the columns, the constraint and the migration (DS1)
+    - In `backend/app/models/board.py` add `sprint_start` and `sprint_end` (`Date`, nullable) and the `sprint_range_valid` check (design "Data model change"). Create one Alembic revision after `a265fb5e7047` that adds both columns and `ck_boards_sprint_range_valid`, with a `downgrade()` that drops them. Run `flask db upgrade` on the test database to confirm it applies to a database that already holds boards.
+    - Update `backend/tests/test_schema_inspection.py` (two columns, type `date`, nullable `YES`, the new constraint text), `test_models_metadata.py` and `test_migration.py` (single head, upgrade and downgrade) for the new column set and head.
+    - Create `backend/tests/test_boards_migration_sprint.py`: upgrade then downgrade on an empty schema, boards that exist before the upgrade keep both columns null, a direct insert of half a range, an end before the start and a 91-day range each fail on the constraint, a one-day and a 90-day range pass.
+    - Done when: the three updated files and the new file pass and `flask db heads` shows one head.
+    - _Requirements: 8.16; Root: T05; P19_
+  - [x] 11.2 Extend the shared field fixture (DS6)
+    - In `specs/fixtures/board-field-cases.json` add `board_create` and `board_update` rows for the Sprint: both dates, none, both `null`, one date only (each side), one `null` with one date, end before start, a one-day range, exactly 90 days (accepted), 91 days (rejected), `2026-02-30`, `20261116`, `2026-W47-1`, `16/11/2026`, a timestamp, a number, a leap day `2028-02-29`, a past and a future range, an unknown key beside valid dates, and an empty `board_update` body (keeps `fields.name = "Required."`). Update the `_note` of the file for the new rows.
+    - Done when: the file loads in `test_boards_schema.py` and `boardRules.test.ts` (task 13.1) and both read the same rows.
+    - _Requirements: 8.3, 8.4, 8.5, 8.7; Root: T05; P18_
+  - [x] 11.3 Schemas and the shared sprint rule (DS5, DS6)
+    - In `boards/schema.py` add `SPRINT_MAX_DAYS`, the `SprintDate` field, `_check_sprint` and its four fixed messages, add the optional pair to `BoardCreateSchema`, make `BoardUpdateSchema` fields optional with the "at least one key" rule that keeps `fields.name = "Required."` for an empty body, and add `sprint_start` and `sprint_end` (`fields.Date`, `allow_none`) to `BoardSummarySchema` and its `Meta.fields`.
+    - Update `backend/tests/test_boards_schema.py` to run the new fixture rows through both schemas and to assert the summary allowlist.
+    - Done when: every fixture row passes through both schemas with the exact `fields` map or the accepted output.
+    - _Requirements: 8.1–8.5, 8.7, 8.9; Root: T05; P18, P21_
+  - [x] 11.4 Services and routes for E05–E08 (DS3, DS4)
+    - In `boards/service.py` add the two fields to `BoardAccess`, `_active_access` and `_summary`, pass the Sprint through `create_board`, select it in `list_boards`, return it from `get_board_detail`, and replace `rename_board` with `update_board(board_id, user_id, changes)` (board lock, role `admin`, one `UPDATE` of the submitted keys only, summary built from the locked read plus `changes`). In `routes.py` pass the validated payload to the service and rename the E08 view. Search the repository for other `BoardAccess(` and `rename_board` callers and update them.
+    - Update the tests that assert the old summary keys: `test_boards_create_list.py`, `test_boards_detail.py`, `test_boards_update_delete.py`, `test_boards_properties_writes.py`, `test_boards_properties_rules.py` and any other hit of `rg "BOARD_SUMMARY_KEYS|\"position_version\"\}" backend/tests`.
+    - Create `backend/tests/test_boards_sprint.py`: create with and without dates and with `null` dates, each invalid case returns 400 with the field of DS6 and creates no board, E08 name-only keeps the Sprint, E08 Sprint-only keeps the name, E08 both, E08 clears with two nulls, E08 with no key is 400, a Member gets 403 with a valid Sprint and nothing changes, a Nonmember gets the 404, a bad body is 400 before the 403 and the 404 (check order), E05 and E07 carry the keys, `rename`-style requests that sent only `name` still work, the response keys equal the allowlist for every role, a failed E08 leaves name and Sprint unchanged, and a request that the API accepts never raises the database constraint.
+    - Done when: the new file and the updated files pass and `ruff` is clean.
+    - _Requirements: 8.1–8.9; Root: T05; P18, P19, P20, P21_
+  - [x] 11.5 Checkpoint - boards API with Sprint
+    - Run `ruff check` and `pytest` for `backend/tests/test_boards_*.py`, `test_board_members*.py`, `test_schema_inspection.py`, `test_migration.py` and the auth regression files. Record the real output. Ask the user if questions arise.
+
+- [x] 12. Backend: analytics window follows the Sprint (root T14)
+  - [x] 12.1 `board_window`, the `window` key and the schema (DS7)
+    - In `analytics/service.py` add `board_window(access, now)`, use its bounds in the three statements (rename `in_week` to `in_window`), add `"window"` to the result and keep `week_bounds` unchanged. Add `window` as the last field of `AnalyticsSchema`. Keep the `ponytail:` note and extend it with the 90-day note of the design risk.
+    - Update `backend/tests/analytics_helpers.py` (`DATA_KEYS` gains `window`) and the tests that compare the key set (`test_analytics_access.py` and any other hit of `DATA_KEYS`). Add `sprint_board(...)` to the helpers: it sets a Sprint on a tracked board by id.
+    - Done when: the existing analytics suite passes unchanged except for the key set, with the no-Sprint path still returning the UTC week and `window: "week"`.
+    - _Requirements: 9.1–9.4; Root: T14; P22_
+  - [x] 12.2 Sprint window tests
+    - Create `backend/tests/test_analytics_sprint.py` with the clock fixed by `freeze`: events at the start instant, one microsecond before it, one microsecond before the end instant and at the end instant (exclusive); a one-day Sprint; a Sprint in the past and one in the future (counts 0, `window: "sprint"`); a Sprint of exactly 90 days; no Sprint keeps the current week and `window: "week"`; a year and a leap-day boundary; the Sprint edited through E08 after events exist (next read uses the new window, `board_events` rows unchanged, `cards_per_column` unchanged); the Sprint cleared back to the week; `completed_cards` and `member_activity` use the same window; E29 still rejects any query parameter; six response keys, `week_end` exclusive and ending in `Z`; tracked cleanup leaves no rows.
+    - Done when: the file passes and no test depends on the real date.
+    - _Requirements: 9.1–9.5, 9.9; Root: T14; P22, P23_
+  - [x] 12.3 Checkpoint - backend complete
+    - Run the full backend suite and `ruff`. Record the counts and compare them with the last recorded pass (2059 passed, 1 skipped on 2026-11-17). Ask the user if questions arise.
+
+- [x] 13. Frontend foundations (root T06)
+  - [x] 13.1 Rules and display helpers (DS8, DS9)
+    - In `frontend/lib/types.ts` add `sprint_start` and `sprint_end` to `BoardSummary` and `window` to `BoardAnalytics`. In `lib/boardRules.ts` add `SPRINT_MAX_DAYS`, the messages and `validateSprint`, using `Date.UTC` for every day count. Create `lib/sprint.ts` with `formatSprintRange` and `sprintFromWindow`.
+    - Tests: extend `lib/boardRules.test.ts` to run the new fixture rows (task 11.2) through `validateSprint`. Create `lib/sprint.test.ts`: same year, across years, a one-day range, the current UTC year with a fixed clock, the day-before rule for the window end, a month end, a year end and a leap day.
+    - Fix the existing test fixtures that build a `BoardSummary` or `BoardAnalytics` so `tsc` passes.
+    - Done when: `npx tsc --noEmit` and the two test files pass.
+    - _Requirements: 8.3–8.6, 8.11, 8.12, 9.6; Root: T06; P18_
+  - [x] 13.2 Parsers (DS14)
+    - In `lib/boards.ts` make `parseBoardSummary` copy the two keys (each `null` or a `YYYY-MM-DD` string, both or neither) and reject any other shape. In `lib/analytics.ts` make `parseAnalytics` require `window` to be `"sprint"` or `"week"`.
+    - Tests: update `lib/boards.test.ts` and `lib/analytics.test.ts` (accepts null pair and date pair, rejects one date, a timestamp, a number, a missing key, and an unknown `window`; copies only the documented keys).
+    - Done when: both test files pass.
+    - _Requirements: 8.9, 8.15, 9.3; Root: T06, T14_
+  - [x] 13.3 `FormField` date type and Route Handlers (DS11, DS13)
+    - Add `"date"` to the `type` of `components/shared/FormField.tsx` and keep `min-h-11`, `text-base` and the error and hint wiring. Add `sprint_start` and `sprint_end` to `allowedKeys` in `app/api/boards/route.ts` and `app/api/boards/[id]/route.ts`.
+    - Tests: extend `FormField.test.tsx` (date type renders with its label, hint and error), and `app/api/boards/route.test.ts` and the `[id]` route test (the two keys are forwarded, an unknown key is still refused, Origin and cookie rules unchanged).
+    - Done when: the three test files pass.
+    - _Requirements: 8.10, 8.15; Root: T06_
+
+- [x] 14. Frontend UI (root T06, T14)
+  - [x] 14.1 Create-board form with dates (DS11)
+    - In `components/boards/CreateBoardForm.tsx` use the stacked layout of the design, add the two optional date fields with the hint "Optional. Set both or neither.", run `validateSprint` before the request, send the pair only when both are filled, and map `sprint_start` and `sprint_end` field errors from the server. Keep the name and dates after any error.
+    - Tests: update `CreateBoardForm.test.tsx` (no dates sends only `name`, both dates send the pair, one date shows the field error and sends nothing, end before start, over 90 days, a server 400 on `sprint_end` shows next to that field and keeps all values, the 44 px and 16 px classes).
+    - Done when: `CreateBoardForm.test.tsx` and `BoardsDashboard.test.tsx` pass.
+    - _Requirements: 8.1, 8.2, 8.10, 8.11, 8.14; Root: T06_
+  - [x] 14.2 Edit form, header line and shell state (DS10, DS12)
+    - In `RenameBoardForm.tsx` add the two date fields prefilled from `currentSprint`, the "Clear dates" button, the send rules of DS10 and `onSaved({name, sprint_start, sprint_end})`, keep the 400, 403 and 404 handling, and change the submit text to "Save changes". In `BoardHeader.tsx` add the optional `sprintLabel` line and change the toggle text to "Edit board". In `BoardShell.tsx` hold `sprint` state from `board`, update it from `onSaved`, pass `sprintLabel` and the `sprintKey` to the header and `AnalyticsPanel`.
+    - Tests: update `RenameBoardForm.test.tsx`, `BoardHeader.test.tsx` and `BoardShell.test.tsx` and the `BaseModal.test.tsx` lines that name "Rename board" (name-only save sends no sprint key, dates prefill, Clear dates then save sends two nulls, dates set sends the pair, a one-date or end-before-start error blocks the request, a Member sees no controls and no change, the Sprint line shows after a save without a reload and is absent without a Sprint, 403 and 404 paths unchanged).
+    - Done when: the four test files pass.
+    - _Requirements: 8.12, 8.13, 8.14; Root: T06_
+  - [x] 14.3 Analytics hook, panel and figures (DS12, DS15)
+    - Add the `sprintKey` option to `hooks/useBoardAnalytics.ts` (a change after mount reads again with the same abort and sequence guards, mount does not read twice), pass it through `AnalyticsPanel.tsx`, and make `AnalyticsFigures.tsx` choose the line and the three labels from `data.window` ("Sprint 16 Nov to 22 Nov", "Cards completed this sprint", "Activity this sprint", "No activity this sprint." for `"sprint"`; the existing text for `"week"`).
+    - Tests: update `useBoardAnalytics.test.tsx` (`sprintKey` change reads again, an earlier slow response is ignored, mount reads once), `AnalyticsPanel.test.tsx` and `AnalyticsFigures.test.tsx` (both windows, a one-day Sprint, a Sprint across a year, names still render as text).
+    - Done when: the three test files pass.
+    - _Requirements: 9.6, 9.7, 9.8; Root: T14_
+  - [x] 14.4 Checkpoint - frontend complete
+    - From `frontend/` run lint, `npx tsc --noEmit` and the full Vitest run. Record the real output and compare the counts with the last recorded pass (2039 on 2026-11-15). Ask the user if questions arise.
+
+- [x] 15. Browser, mobile and timing checks
+  - [x] 15.1 Extend the measure scripts
+    - Extend `evidence/boards-membership-mobile-measure.mjs` with the create form (dates visible), the edit form with dates and the Clear dates button, and the board header with the Sprint line. Extend `evidence/analytics-mobile-measure.mjs` with the dialog for a board that has a Sprint. Check at 320, 375, 768 and 1280 px that every interactive box is at least 44 by 44 with `elementFromPoint`, every input has a font size of at least 16 px and `scrollWidth <= innerWidth`. Do not edit the saved JSON of earlier runs.
+    - _Requirements: 8.14, 6.1–6.3; Root: T06, T14_
+  - [x] 15.2 Run the checks and the manual journey, and record them
+    - The user starts the stack. Run both scripts at the four widths and record whether each pass used an emulator or a real device. Walk the journey at 375 px: create a board with dates, see the header line, add a card to Done, open analytics, edit the dates, see the window and the counts change, clear the dates and see the week line. Record widths, commands, steps and outcomes in `evidence/boards-membership-T05-T06.md` (new "Revision 2" section) and `evidence/analytics-T14.md`. Leave a real-device check that was not done marked open.
+    - _Requirements: 8.14, 6.6, 6.7; Root: T06, T14_
+  - [x] 15.3 Re-measure E29 on a 90-day Sprint (DR4)
+    - Extend `evidence/analytics-timing.mjs` with a board that has a 90-day Sprint, 100 cards and events across the window, and run 30 sequential requests. Save the raw timings beside the earlier file (new file name, earlier data kept) and compare with the earlier p95 of 6.2 ms. If the scan is measurably slower, open a follow-up for the `kind` index and leave the `ponytail:` note in place. Record the conditions.
+    - _Requirements: 9.1; Root: T14_
+
+- [x] 16. Documentation sync and handoff (`documentation.md`)
+  - [x] 16.1 Evidence, traceability and the T15 follow-up
+    - Update `specs/traceability.md` rows to the verified results, record in `specs/tasks.md` (T15 row) and in `evidence/boards-membership-T05-T06.md` that the Playwright journey does not yet fill the date fields (DR5), and keep that item open for T15.
+    - _Requirements: 8.14; Root: T05, T06, T14, T15_
+  - [x] 16.2 Changelogs, README and guides
+    - Add concise entries under the `## YYYY-MM-DD` heading for the commit date, with a `### <short-sha> <subject>` entry, to `CHANGELOG.md`, `backend/CHANGELOG.md` and `frontend/CHANGELOG.md`. Update `README.md` status and the feature text, `docs/USER_GUIDE.md` (create-board step with dates, the edit step, the analytics step with the Sprint line) and `docs/TEST-PLAN.md` (V03, V08, V11 rows). Use verified facts only and mark pending verification where it is.
+    - _Requirements: 8.9, 9.6; Root: T05, T06, T14_
+  - [x] 16.3 Synchronize task status
+    - Check native tasks only when their Done checks pass. Update the Revision 2 note on the T05, T06 and T14 rows in `specs/tasks.md` (keep or restore the checks as decided in TR1). Report changed files, completed IDs, checks run, open work and documentation updates.
+    - _Requirements: 8.9, 9.1; Root: T05, T06, T14_
+
+### Revision 2 dependency graph
+
+```json
+{
+  "waves": [
+    { "id": 0, "tasks": ["10.1"] },
+    { "id": 1, "tasks": ["11.1", "11.2"] },
+    { "id": 2, "tasks": ["11.3"] },
+    { "id": 3, "tasks": ["11.4"] },
+    { "id": 4, "tasks": ["11.5", "12.1"] },
+    { "id": 5, "tasks": ["12.2", "13.1"] },
+    { "id": 6, "tasks": ["12.3", "13.2", "13.3"] },
+    { "id": 7, "tasks": ["14.1", "14.2", "14.3"] },
+    { "id": 8, "tasks": ["14.4"] },
+    { "id": 9, "tasks": ["15.1", "15.3"] },
+    { "id": 10, "tasks": ["15.2"] },
+    { "id": 11, "tasks": ["16.1", "16.2"] },
+    { "id": 12, "tasks": ["16.3"] }
+  ]
+}
+```
+
+### Revision 2 requirement coverage
+
+| Requirement | Tasks |
+| --- | --- |
+| 8.1, 8.2 | 11.3, 11.4, 14.1 |
+| 8.3–8.6 | 11.2, 11.3, 11.4, 13.1 |
+| 8.7, 8.8 | 11.3, 11.4 |
+| 8.9 | 11.3, 11.4, 13.2, 16.2 |
+| 8.10, 8.11 | 13.1, 13.3, 14.1 |
+| 8.12 | 13.1, 14.2 |
+| 8.13 | 14.2 |
+| 8.14 | 14.1, 14.2, 15.1, 15.2 |
+| 8.15 | 13.2, 13.3 |
+| 8.16 | 11.1 |
+| 9.1–9.5 | 12.1, 12.2, 15.3 |
+| 9.6, 9.7 | 13.1, 14.3 |
+| 9.8 | 14.3 |
+| 9.9 | 12.2 |
+
+### Review items for approval
+
+| ID | Item | Proposed answer |
+| --- | --- | --- |
+| TR1 | Root T05, T06 and T14 are checked in `specs/tasks.md`. Revision 2 adds scope to each. | Keep them checked, because the original scope stays verified, and add a "Revision 2 (sprint) open: native tasks 10 to 16" note to each row. Clear the note when 16.3 passes. The alternative is to uncheck all three until 16.3. |
+| TR2 | `tasks.meta.json` is Kiro's execution record. | Leave it unchanged. Claude Code records Revision 2 progress in the checkboxes above and in `evidence/spec-review.md`. |
+| TR3 | Task 10.1 changes shared docs and the analytics spec during Finalize, before any code. | Yes, as the Finalize step requires. The analytics approved history is annotated, not rewritten. |
+| TR4 | Playwright date steps stay in T15 (DR5). | Recorded in 16.1 as an open item, not done here. |

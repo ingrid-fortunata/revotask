@@ -2,6 +2,18 @@
 
 Spec versioning tracks review rounds independently of application releases. Record the old behavior, the agreed change, why it changed, the refinement prompt, and what was checked. Record the commit and link evidence when available. Newest date first. Each `## YYYY-MM-DD` heading groups the commits made that day, and each commit has a `### <short-sha> <subject>` entry. Release labels from 2026-11-13 stay under that date.
 
+## 2026-11-18
+
+### (commit pending) docs: spec sprint date range for boards and analytics
+
+- **boards-membership (T05–T06) and analytics (T14) · R03 AC03.1, R11 AC11.1, E06, E08, E29, `boards` table, C39–C41 (requested by the user: "Week of 16 Nov, 07:00 to 23 Nov, 07:00" had no matching setting when creating a board):**
+  - **Before:** A board had only a name. E06 and E08 accepted `name`. BoardSummary was `{id, name, role, position_version}`. E29 always used the current UTC calendar week (Monday to Monday), and the panel showed it as "Week of …, 07:00 to …, 07:00 (local time)". The slice added no migration.
+  - **After:** A board has an optional sprint, `sprint_start` and `sprint_end` (`YYYY-MM-DD`, both or neither, end on or after start, at most 90 days inclusive), set when the board is created and changed or cleared by its Admin through E08 (at least one of `name`, the pair; only submitted fields change). BoardSummary and BoardDetail carry the two keys. With a sprint, E29 counts inside `[sprint_start 00:00Z, day after sprint_end 00:00Z)` and adds `window` (`"sprint"` or `"week"`). Without one E29 keeps the UTC week. The UI shows "Sprint 16 Nov to 22 Nov" and "this sprint" labels for a sprint. One migration adds two nullable `date` columns and `ck_boards_sprint_range_valid`. Native decisions SP1–SP8, DS1–DS15, DR1–DR5, TR1–TR4 (kept T05, T06 and T14 checked with a Revision 2 note). Contract clarifications C39 (board shapes and E06/E08 rules), C40 (E29 window and `window` key, C34 now applies to boards without a sprint), C41 (columns and constraint).
+  - **Reason:** The analytics panel showed a week that no user could set. A sprint range makes the window a user choice and keeps the old behavior for boards that have none, so existing boards and the T14 tests keep their meaning.
+  - **Files:** `.kiro/specs/boards-membership/requirements.md` (Revision 2, Requirements 8 and 9), `design.md` (Revision 2), `tasks.md` (groups 10 to 16), `.kiro/specs/analytics/requirements.md` and `design.md` (Revision 2 notes, history kept), `specs/requirements.md` (AC03.1, AC11.1), `specs/design.md` (D3 `boards` row, analytics line), `specs/traceability.md` (AC03.x and AC11.1 rows), `specs/tasks.md` (T05, T06, T14 notes), `docs/API.md` (E06, E08, E29, shapes, C39–C41), `backend/specs/api-contract.md`, `backend/specs/data-model.md`.
+  - **Prompt/run:** `/revotask-feature spec boards-membership` with the sprint request; requirements, design and tasks each approved in chat on 2026-11-18 (Claude Code). Details in `evidence/spec-review.md`.
+  - **Verification:** The spec change itself was a review (no test). Implemented and verified the same day in native tasks 11 to 16: `pytest` 2173 passed and 1 skipped, `ruff` clean, `vitest` 2170 passed, `lint`, `typecheck` and `build` clean, a Chromium emulation run with 140 checks and 0 failed at 320, 375, 768 and 1280 px, and E29 on a 90-day sprint with p95 12.4 ms locally. Open: the Playwright date steps (T15) and a real-device check. `docs/USER_GUIDE.md` and `docs/TEST-PLAN.md` were updated with the implementation. Implementation details that the design left open are recorded in `evidence/spec-review.md`.
+
 ## 2026-11-17
 
 ### 23ac801 fix: drop analytics completed count when a card leaves done

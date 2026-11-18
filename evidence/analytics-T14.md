@@ -71,3 +71,7 @@ With the modal, the hook mounts only while the dialog is open. A card or column 
 - Deployed timing, live verification and deployment: T16.
 - Polling or live update of the figures is out of scope by decision A8. Comments and other users' changes appear on the next Refresh or the next open.
 - Approval of the read-on-open behavior described above (A8 wording).
+
+## Revision 2: sprint window (2026-11-18)
+
+E29 now counts inside the board's sprint when it has one, and keeps the UTC week otherwise. It adds the key `window`. The checks, the browser result (140 checks, 0 failed) and the 90-day timing (p95 12.4 ms) are recorded in `evidence/boards-membership-T05-T06.md`, section "Revision 2: sprint date range". Everything above this heading describes the week window and stays as recorded on its date.

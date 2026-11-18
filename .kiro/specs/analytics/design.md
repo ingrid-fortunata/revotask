@@ -24,6 +24,8 @@ E29 is one read-only request that returns three aggregates for one board: the ac
 | `useCardSearch` is the model for a hook with an `AbortController`, a sequence guard and an `onAccessLost` callback. `CardSearch` uses `aria-live="polite"` on a plain element because the board already has one `role="status"` region. `KanbanBoard` handles `onAccessLost` with `notifyError(BOARD_ACCESS_MESSAGE)` and `router.push("/")`. | `hooks/useCardSearch.ts`, `components/kanban/CardSearch.tsx`, `KanbanBoard.tsx` | The analytics hook and panel follow them. |
 | `BoardShell` renders `BoardHeader`, the rename form, `KanbanBoard` and the delete dialog in one column (`flex flex-col gap-4 sm:gap-6`). | `components/boards/BoardShell.tsx` | The panel is one more child of that column (DD10). |
 
+> **Revision 2 (2026-11-18, sprint date range).** DD2 and C34 describe the window for a board without a sprint. With a sprint, `board_window(access, now)` returns `[sprint_start 00:00:00Z, day after sprint_end 00:00:00Z)` and `"sprint"`, and E29 adds `window`. `AnalyticsFigures` and `formatWeekRange` choose the line and labels from `window`. The detail is in the Revision 2 section of [boards-membership design](../boards-membership/design.md) (DS7, DS12, DS15, C40). The text below is kept as approved.
+
 ## Architecture
 
 ```text

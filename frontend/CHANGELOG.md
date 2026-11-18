@@ -8,6 +8,13 @@ Record actual changes for this component. Newest date first. Each `## YYYY-MM-DD
 
 - Added `app/global-error.tsx` (own `<html>` and `<body>`, imports `globals.css`, `retry()`, no error text) and `app/not-found.tsx`, with tests in `app/global-error.test.tsx`. See the root entry for 4240cf0 in [the root changelog](../CHANGELOG.md).
 
+### 9f49570 feat: add sprint dates to board forms, header and analytics
+
+- New `lib/sprint.ts` (`formatSprintRange`, `sprintFromWindow`), `validateSprint` in `lib/boardRules.ts` (the Flask rules, read from the same fixture) and `components/boards/SprintFields.tsx` (two native date inputs, hint, "Clear dates").
+- `CreateBoardForm` is stacked at every width with the optional dates. `RenameBoardForm` (labels "Edit board" and "Save changes") edits the name and the dates and sends the pair, two nulls or no sprint key. `BoardHeader` shows the sprint line, `BoardShell` holds the sprint after a save and passes `sprintKey` to the analytics panel and hook, which read again when it changes.
+- `AnalyticsFigures` uses `data.window` for the line and the "sprint" or "week" labels. `parseBoardSummary` and `parseAnalytics` accept the new keys. The Route Handlers for E06 and E08 allow `sprint_start` and `sprint_end`. `FormField` accepts `type="date"`.
+- Tests updated and added in `lib/`, `components/boards/`, `components/analytics/`, `hooks/` and `app/api/boards/`. Browser evidence: `evidence/boards-membership-sprint-measure.mjs`. See the root entry in [the root changelog](../CHANGELOG.md).
+
 ## 2026-11-17
 
 ### 29144c6 style: make kanban end drop zone card-sized while dragging
