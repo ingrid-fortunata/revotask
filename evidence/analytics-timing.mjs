@@ -7,8 +7,22 @@
 // It is a recorded measurement, not a pass-or-fail gate. The board is deleted at the end.
 //
 //   API_URL=http://127.0.0.1:5002 REPORT_FILE=evidence/analytics-timing.json node evidence/analytics-timing.mjs
+//
+// Sprint mode (boards-membership Revision 2, decision DR4): set SPRINT_DAYS=90 to give the board a
+// sprint of that many days around today, so E29 reads a 90-day window. EXTRA_EVENTS=N (with PSQL_URL, a
+// connection URL of the test database that Flask uses) also inserts N `card_moved` events spread over
+// the whole sprint with `psql`, because the API can only write events stamped "now". The extra rows are
+// synthetic and are removed with the board's events at the end. Neither value is printed or recorded.
+//
+//   SPRINT_DAYS=90 EXTRA_EVENTS=5000 PSQL_URL=... API_URL=http://127.0.0.1:5002 \
+//   REPORT_FILE=evidence/analytics-timing-sprint.json node evidence/analytics-timing.mjs
+import { execFileSync } from "node:child_process";
 import { randomBytes } from "node:crypto";
 import { writeFileSync } from "node:fs";
+
+const SPRINT_DAYS = Number(process.env.SPRINT_DAYS ?? 0);
+const EXTRA_EVENTS = Number(process.env.EXTRA_EVENTS ?? 0);
+const isoDay = (offsetDays) => new Date(Date.now() + offsetDays * 86_400_000).toISOString().slice(0, 10);
 
 const API = new URL(process.env.API_URL ?? "").origin;
 const SUFFIX = randomBytes(4).toString("hex");
@@ -48,7 +62,11 @@ for (const name of ["Timing Admin", "Timing Ben", "Timing Cy"]) {
   users.push({ email, token: login.access_token });
 }
 const [admin, ben, cy] = users;
-const board = await api("POST", "/api/boards", admin.token, { name: "Analytics timing board" });
+// A sprint of SPRINT_DAYS days whose middle is today, so every event the API writes now is inside it.
+const sprint = SPRINT_DAYS
+  ? { sprint_start: isoDay(-Math.floor(SPRINT_DAYS / 2)), sprint_end: isoDay(SPRINT_DAYS - 1 - Math.floor(SPRINT_DAYS / 2)) }
+  : {};
+const board = await api("POST", "/api/boards", admin.token, { name: "Analytics timing board", ...sprint });
 try {
   for (const user of [ben, cy]) await api("POST", `/api/boards/${board.id}/members`, admin.token, { email: user.email });
   const columns = [];
@@ -84,12 +102,23 @@ try {
     });
   }
   const path = `/api/boards/${board.id}/analytics`;
+  if (EXTRA_EVENTS > 0) {
+    if (!SPRINT_DAYS || !process.env.PSQL_URL) throw new Error("EXTRA_EVENTS needs SPRINT_DAYS and PSQL_URL");
+    const actors = (await Promise.all(users.map((u) => api("GET", "/api/users/me", u.token)))).map((u) => `'${u.id}'`).join(",");
+    const sql =
+      `INSERT INTO revotask.board_events (id, board_id, actor_id, card_id, kind, occurred_at) ` +
+      `SELECT gen_random_uuid(), '${board.id}', (ARRAY[${actors}]::uuid[])[1 + (g % 3)], NULL, 'card_moved', ` +
+      `'${sprint.sprint_start}T00:00:00Z'::timestamptz + (g::float / ${EXTRA_EVENTS}) * interval '${SPRINT_DAYS} days' ` +
+      `FROM generate_series(0, ${EXTRA_EVENTS - 1}) AS g;`;
+    execFileSync("psql", [process.env.PSQL_URL, "-q", "-v", "ON_ERROR_STOP=1", "-c", sql], { stdio: ["ignore", "ignore", "inherit"] });
+  }
   await time(path, admin.token, 5);
   const raw = await time(path, admin.token, 30);
   const body = (await api("GET", path, admin.token));
   const report = {
-    slice: "analytics (T14)",
+    slice: SPRINT_DAYS ? "analytics (T14) with a boards-membership Revision 2 sprint window" : "analytics (T14)",
     conditions: "local Flask dev server (python app.run), one client, sequential requests, direct to Flask (no Next.js), test database, warm after 5 warm-up requests",
+    window: SPRINT_DAYS ? { kind: "sprint", days: SPRINT_DAYS, extraSyntheticEvents: EXTRA_EVENTS } : { kind: "week", days: 7 },
     fixture: {
       cards: 100,
       columns: 4,
@@ -98,6 +127,7 @@ try {
       movesIntoDone: 10,
       comments: 30,
       columnReorders: 3,
+      windowFromE29: body.window,
       completedCards: body.completed_cards,
       activityRows: body.member_activity.length,
     },
@@ -110,4 +140,8 @@ try {
   console.log(json);
 } finally {
   await api("DELETE", `/api/boards/${board.id}`, admin.token).catch(() => {});
+  if (EXTRA_EVENTS > 0 && process.env.PSQL_URL) {
+    // The board is soft-deleted, so its synthetic events stay unless removed here.
+    execFileSync("psql", [process.env.PSQL_URL, "-q", "-c", `DELETE FROM revotask.board_events WHERE board_id = '${board.id}' AND card_id IS NULL AND kind = 'card_moved' AND actor_id IS NOT NULL AND occurred_at < now() - interval '1 minute'`], { stdio: "ignore" });
+  }
 }

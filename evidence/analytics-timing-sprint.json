@@ -1,0 +1,59 @@
+{
+  "slice": "analytics (T14) with a boards-membership Revision 2 sprint window",
+  "conditions": "local Flask dev server (python app.run), one client, sequential requests, direct to Flask (no Next.js), test database, warm after 5 warm-up requests",
+  "window": {
+    "kind": "sprint",
+    "days": 90,
+    "extraSyntheticEvents": 5000
+  },
+  "fixture": {
+    "cards": 100,
+    "columns": 4,
+    "actors": 3,
+    "moves": 40,
+    "movesIntoDone": 10,
+    "comments": 30,
+    "columnReorders": 3,
+    "windowFromE29": "sprint",
+    "completedCards": 10,
+    "activityRows": 3
+  },
+  "referenceMs": 800,
+  "e29": {
+    "rawMs": [
+      11,
+      10.8,
+      11,
+      10.8,
+      10.7,
+      10.8,
+      10.7,
+      11.5,
+      11.2,
+      11.4,
+      11.1,
+      10.9,
+      10.7,
+      11.1,
+      11,
+      10.9,
+      10.8,
+      10.7,
+      11.8,
+      12.4,
+      11.2,
+      11,
+      10.9,
+      10.7,
+      10.9,
+      10.9,
+      10.9,
+      10.8,
+      13,
+      11.8
+    ],
+    "p95Ms": 12.4,
+    "maxMs": 13,
+    "medianMs": 10.9
+  }
+}

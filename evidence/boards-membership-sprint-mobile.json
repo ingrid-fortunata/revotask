@@ -1,0 +1,1014 @@
+{
+  "check": "boards-membership Revision 2, sprint date range (tasks 15.1, 15.2)",
+  "browser": "Chromium 156.0.8078.4 through Playwright, device emulation below 1024 px (an emulator, not a real phone)",
+  "widths": [
+    320,
+    375,
+    768,
+    1280
+  ],
+  "total": 140,
+  "failed": 0,
+  "results": [
+    {
+      "role": "admin",
+      "page": "/ create dialog",
+      "width": 320,
+      "check": "date fields are native date inputs with labels",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/ create dialog",
+      "width": 320,
+      "check": "no horizontal page scroll",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "admin",
+      "page": "/ create dialog",
+      "width": 320,
+      "check": "every control is at least 44 by 44 CSS px",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/ create dialog",
+      "width": 320,
+      "check": "elementFromPoint at each center hits the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/ create dialog",
+      "width": 320,
+      "check": "every text and date input is at least 16 px",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/ create dialog",
+      "width": 320,
+      "check": "one date only shows its error and sends no request",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/ create dialog",
+      "width": 320,
+      "check": "an end before the start shows its error and sends no request",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/ create dialog",
+      "width": 320,
+      "check": "the created board stores the entered sprint",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id",
+      "width": 320,
+      "check": "the header shows the sprint line without a time",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id",
+      "width": 320,
+      "check": "no horizontal page scroll",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id",
+      "width": 320,
+      "check": "every control is at least 44 by 44 CSS px",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id",
+      "width": 320,
+      "check": "elementFromPoint at each center hits the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id",
+      "width": 320,
+      "check": "every text and date input is at least 16 px",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id edit form",
+      "width": 320,
+      "check": "the date fields are prefilled and Clear dates is offered",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id edit form",
+      "width": 320,
+      "check": "no horizontal page scroll",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id edit form",
+      "width": 320,
+      "check": "every control is at least 44 by 44 CSS px",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id edit form",
+      "width": 320,
+      "check": "elementFromPoint at each center hits the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id edit form",
+      "width": 320,
+      "check": "every text and date input is at least 16 px",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id edit form",
+      "width": 320,
+      "check": "an end before the start shows its error and keeps the stored sprint",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id",
+      "width": 320,
+      "check": "saving new dates updates the line without a reload and stores them",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id",
+      "width": 320,
+      "check": "Clear dates then save removes the line and stores both nulls",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "analytics dialog (sprint)",
+      "width": 320,
+      "check": "E29 answers the sprint window",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "analytics dialog (sprint)",
+      "width": 320,
+      "check": "the line is 'Sprint ... to ...' with no time, and the labels say sprint",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "analytics dialog (sprint)",
+      "width": 320,
+      "check": "no horizontal page scroll",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "admin",
+      "page": "analytics dialog (sprint)",
+      "width": 320,
+      "check": "every control is at least 44 by 44 CSS px",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "analytics dialog (sprint)",
+      "width": 320,
+      "check": "elementFromPoint at each center hits the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "analytics dialog (sprint)",
+      "width": 320,
+      "check": "every text and date input is at least 16 px",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id (no sprint)",
+      "width": 320,
+      "check": "no sprint line is shown",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "analytics dialog (week)",
+      "width": 320,
+      "check": "the week line and week labels are kept",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "/boards/:id",
+      "width": 320,
+      "check": "the member sees the sprint line",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "/boards/:id",
+      "width": 320,
+      "check": "the member sees no Edit board button and no date field",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "/boards/:id",
+      "width": 320,
+      "check": "no horizontal page scroll",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "member",
+      "page": "/boards/:id",
+      "width": 320,
+      "check": "every control is at least 44 by 44 CSS px",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "/boards/:id",
+      "width": 320,
+      "check": "elementFromPoint at each center hits the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "/boards/:id",
+      "width": 320,
+      "check": "every text and date input is at least 16 px",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/ create dialog",
+      "width": 375,
+      "check": "date fields are native date inputs with labels",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/ create dialog",
+      "width": 375,
+      "check": "no horizontal page scroll",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "admin",
+      "page": "/ create dialog",
+      "width": 375,
+      "check": "every control is at least 44 by 44 CSS px",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/ create dialog",
+      "width": 375,
+      "check": "elementFromPoint at each center hits the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/ create dialog",
+      "width": 375,
+      "check": "every text and date input is at least 16 px",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/ create dialog",
+      "width": 375,
+      "check": "one date only shows its error and sends no request",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/ create dialog",
+      "width": 375,
+      "check": "an end before the start shows its error and sends no request",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/ create dialog",
+      "width": 375,
+      "check": "the created board stores the entered sprint",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id",
+      "width": 375,
+      "check": "the header shows the sprint line without a time",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id",
+      "width": 375,
+      "check": "no horizontal page scroll",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id",
+      "width": 375,
+      "check": "every control is at least 44 by 44 CSS px",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id",
+      "width": 375,
+      "check": "elementFromPoint at each center hits the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id",
+      "width": 375,
+      "check": "every text and date input is at least 16 px",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id edit form",
+      "width": 375,
+      "check": "the date fields are prefilled and Clear dates is offered",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id edit form",
+      "width": 375,
+      "check": "no horizontal page scroll",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id edit form",
+      "width": 375,
+      "check": "every control is at least 44 by 44 CSS px",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id edit form",
+      "width": 375,
+      "check": "elementFromPoint at each center hits the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id edit form",
+      "width": 375,
+      "check": "every text and date input is at least 16 px",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id edit form",
+      "width": 375,
+      "check": "an end before the start shows its error and keeps the stored sprint",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id",
+      "width": 375,
+      "check": "saving new dates updates the line without a reload and stores them",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id",
+      "width": 375,
+      "check": "Clear dates then save removes the line and stores both nulls",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "analytics dialog (sprint)",
+      "width": 375,
+      "check": "E29 answers the sprint window",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "analytics dialog (sprint)",
+      "width": 375,
+      "check": "the line is 'Sprint ... to ...' with no time, and the labels say sprint",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "analytics dialog (sprint)",
+      "width": 375,
+      "check": "no horizontal page scroll",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "admin",
+      "page": "analytics dialog (sprint)",
+      "width": 375,
+      "check": "every control is at least 44 by 44 CSS px",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "analytics dialog (sprint)",
+      "width": 375,
+      "check": "elementFromPoint at each center hits the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "analytics dialog (sprint)",
+      "width": 375,
+      "check": "every text and date input is at least 16 px",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id (no sprint)",
+      "width": 375,
+      "check": "no sprint line is shown",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "analytics dialog (week)",
+      "width": 375,
+      "check": "the week line and week labels are kept",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "/boards/:id",
+      "width": 375,
+      "check": "the member sees the sprint line",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "/boards/:id",
+      "width": 375,
+      "check": "the member sees no Edit board button and no date field",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "/boards/:id",
+      "width": 375,
+      "check": "no horizontal page scroll",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "member",
+      "page": "/boards/:id",
+      "width": 375,
+      "check": "every control is at least 44 by 44 CSS px",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "/boards/:id",
+      "width": 375,
+      "check": "elementFromPoint at each center hits the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "/boards/:id",
+      "width": 375,
+      "check": "every text and date input is at least 16 px",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/ create dialog",
+      "width": 768,
+      "check": "date fields are native date inputs with labels",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/ create dialog",
+      "width": 768,
+      "check": "no horizontal page scroll",
+      "pass": true,
+      "detail": "scrollWidth 768, innerWidth 768"
+    },
+    {
+      "role": "admin",
+      "page": "/ create dialog",
+      "width": 768,
+      "check": "every control is at least 44 by 44 CSS px",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/ create dialog",
+      "width": 768,
+      "check": "elementFromPoint at each center hits the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/ create dialog",
+      "width": 768,
+      "check": "every text and date input is at least 16 px",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/ create dialog",
+      "width": 768,
+      "check": "one date only shows its error and sends no request",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/ create dialog",
+      "width": 768,
+      "check": "an end before the start shows its error and sends no request",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/ create dialog",
+      "width": 768,
+      "check": "the created board stores the entered sprint",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id",
+      "width": 768,
+      "check": "the header shows the sprint line without a time",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id",
+      "width": 768,
+      "check": "no horizontal page scroll",
+      "pass": true,
+      "detail": "scrollWidth 768, innerWidth 768"
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id",
+      "width": 768,
+      "check": "every control is at least 44 by 44 CSS px",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id",
+      "width": 768,
+      "check": "elementFromPoint at each center hits the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id",
+      "width": 768,
+      "check": "every text and date input is at least 16 px",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id edit form",
+      "width": 768,
+      "check": "the date fields are prefilled and Clear dates is offered",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id edit form",
+      "width": 768,
+      "check": "no horizontal page scroll",
+      "pass": true,
+      "detail": "scrollWidth 768, innerWidth 768"
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id edit form",
+      "width": 768,
+      "check": "every control is at least 44 by 44 CSS px",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id edit form",
+      "width": 768,
+      "check": "elementFromPoint at each center hits the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id edit form",
+      "width": 768,
+      "check": "every text and date input is at least 16 px",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id edit form",
+      "width": 768,
+      "check": "an end before the start shows its error and keeps the stored sprint",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id",
+      "width": 768,
+      "check": "saving new dates updates the line without a reload and stores them",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id",
+      "width": 768,
+      "check": "Clear dates then save removes the line and stores both nulls",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "analytics dialog (sprint)",
+      "width": 768,
+      "check": "E29 answers the sprint window",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "analytics dialog (sprint)",
+      "width": 768,
+      "check": "the line is 'Sprint ... to ...' with no time, and the labels say sprint",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "analytics dialog (sprint)",
+      "width": 768,
+      "check": "no horizontal page scroll",
+      "pass": true,
+      "detail": "scrollWidth 768, innerWidth 768"
+    },
+    {
+      "role": "admin",
+      "page": "analytics dialog (sprint)",
+      "width": 768,
+      "check": "every control is at least 44 by 44 CSS px",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "analytics dialog (sprint)",
+      "width": 768,
+      "check": "elementFromPoint at each center hits the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "analytics dialog (sprint)",
+      "width": 768,
+      "check": "every text and date input is at least 16 px",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id (no sprint)",
+      "width": 768,
+      "check": "no sprint line is shown",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "analytics dialog (week)",
+      "width": 768,
+      "check": "the week line and week labels are kept",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "/boards/:id",
+      "width": 768,
+      "check": "the member sees the sprint line",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "/boards/:id",
+      "width": 768,
+      "check": "the member sees no Edit board button and no date field",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "/boards/:id",
+      "width": 768,
+      "check": "no horizontal page scroll",
+      "pass": true,
+      "detail": "scrollWidth 768, innerWidth 768"
+    },
+    {
+      "role": "member",
+      "page": "/boards/:id",
+      "width": 768,
+      "check": "every control is at least 44 by 44 CSS px",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "/boards/:id",
+      "width": 768,
+      "check": "elementFromPoint at each center hits the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "/boards/:id",
+      "width": 768,
+      "check": "every text and date input is at least 16 px",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/ create dialog",
+      "width": 1280,
+      "check": "date fields are native date inputs with labels",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/ create dialog",
+      "width": 1280,
+      "check": "no horizontal page scroll",
+      "pass": true,
+      "detail": "scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "admin",
+      "page": "/ create dialog",
+      "width": 1280,
+      "check": "every control is at least 44 by 44 CSS px",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/ create dialog",
+      "width": 1280,
+      "check": "elementFromPoint at each center hits the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/ create dialog",
+      "width": 1280,
+      "check": "every text and date input is at least 16 px",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/ create dialog",
+      "width": 1280,
+      "check": "one date only shows its error and sends no request",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/ create dialog",
+      "width": 1280,
+      "check": "an end before the start shows its error and sends no request",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/ create dialog",
+      "width": 1280,
+      "check": "the created board stores the entered sprint",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id",
+      "width": 1280,
+      "check": "the header shows the sprint line without a time",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id",
+      "width": 1280,
+      "check": "no horizontal page scroll",
+      "pass": true,
+      "detail": "scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id",
+      "width": 1280,
+      "check": "every control is at least 44 by 44 CSS px",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id",
+      "width": 1280,
+      "check": "elementFromPoint at each center hits the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id",
+      "width": 1280,
+      "check": "every text and date input is at least 16 px",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id edit form",
+      "width": 1280,
+      "check": "the date fields are prefilled and Clear dates is offered",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id edit form",
+      "width": 1280,
+      "check": "no horizontal page scroll",
+      "pass": true,
+      "detail": "scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id edit form",
+      "width": 1280,
+      "check": "every control is at least 44 by 44 CSS px",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id edit form",
+      "width": 1280,
+      "check": "elementFromPoint at each center hits the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id edit form",
+      "width": 1280,
+      "check": "every text and date input is at least 16 px",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id edit form",
+      "width": 1280,
+      "check": "an end before the start shows its error and keeps the stored sprint",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id",
+      "width": 1280,
+      "check": "saving new dates updates the line without a reload and stores them",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id",
+      "width": 1280,
+      "check": "Clear dates then save removes the line and stores both nulls",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "analytics dialog (sprint)",
+      "width": 1280,
+      "check": "E29 answers the sprint window",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "analytics dialog (sprint)",
+      "width": 1280,
+      "check": "the line is 'Sprint ... to ...' with no time, and the labels say sprint",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "analytics dialog (sprint)",
+      "width": 1280,
+      "check": "no horizontal page scroll",
+      "pass": true,
+      "detail": "scrollWidth 1265, innerWidth 1280"
+    },
+    {
+      "role": "admin",
+      "page": "analytics dialog (sprint)",
+      "width": 1280,
+      "check": "every control is at least 44 by 44 CSS px",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "analytics dialog (sprint)",
+      "width": 1280,
+      "check": "elementFromPoint at each center hits the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "analytics dialog (sprint)",
+      "width": 1280,
+      "check": "every text and date input is at least 16 px",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "/boards/:id (no sprint)",
+      "width": 1280,
+      "check": "no sprint line is shown",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "analytics dialog (week)",
+      "width": 1280,
+      "check": "the week line and week labels are kept",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "/boards/:id",
+      "width": 1280,
+      "check": "the member sees the sprint line",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "/boards/:id",
+      "width": 1280,
+      "check": "the member sees no Edit board button and no date field",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "/boards/:id",
+      "width": 1280,
+      "check": "no horizontal page scroll",
+      "pass": true,
+      "detail": "scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "member",
+      "page": "/boards/:id",
+      "width": 1280,
+      "check": "every control is at least 44 by 44 CSS px",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "/boards/:id",
+      "width": 1280,
+      "check": "elementFromPoint at each center hits the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "/boards/:id",
+      "width": 1280,
+      "check": "every text and date input is at least 16 px",
+      "pass": true
+    }
+  ]
+}
