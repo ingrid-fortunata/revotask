@@ -26,4 +26,4 @@ EXPOSE 5001
 
 # Render sets PORT at runtime. Compose sets PORT=5001. The shell form expands ${PORT}.
 # Access logs stay off because the app already logs one line per request.
-CMD ["sh", "-c", "exec gunicorn --bind 0.0.0.0:${PORT} --workers ${GUNICORN_WORKERS:-2} --error-logfile - 'app:create_app()'"]
+CMD ["sh", "-c", "exec gunicorn --bind 0.0.0.0:${PORT} --workers ${GUNICORN_WORKERS:-2} --threads ${GUNICORN_THREADS:-4} --error-logfile - 'app:create_app()'"]
