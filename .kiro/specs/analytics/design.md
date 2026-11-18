@@ -2,9 +2,9 @@
 
 ## Overview
 
-This design implements the board analytics read (E29), the analytics panel on the board page and their tests (root T14). It follows `requirements.md` (Requirements 1 to 8, decisions A1–A10 approved on 2026-11-14 with clarifications) and the shared design D3, D5 and D6. Backend: Flask, SQLAlchemy, Marshmallow and pytest. Frontend: Next.js App Router, React, TypeScript, Tailwind, daisyUI, Vitest and React Testing Library. No table, migration, index or dependency is added.
+This design implements the board analytics read (E29), the analytics panel on the board page and their tests (root T14). It follows `requirements.md` (Requirements 1 to 8, decisions A1–A10 approved on 2026-11-14 with clarifications, and A11, the sprint window, approved on 2026-11-18) and the shared design D3, D5 and D6. Backend: Flask, SQLAlchemy, Marshmallow and pytest. Frontend: Next.js App Router, React, TypeScript, Tailwind, daisyUI, Vitest and React Testing Library. No table, migration, index or dependency is added by this slice. Revision 2 reads two columns of `boards` that boards-membership Revision 2 adds with its own migration.
 
-E29 is one read-only request that returns three aggregates for one board: the active cards per active column, the distinct cards that entered Done in the current UTC week, and the counted board events per actor in that week. The panel reads it from the browser through a same-origin handler, independent of the Kanban state, so an analytics failure never disturbs the board.
+E29 is one read-only request that returns three aggregates for one board: the active cards per active column, the distinct cards that entered Done in the board's window, and the counted board events per actor in that window. The window is the board's sprint when it has one and the current UTC week otherwise (A11). The panel reads it from the browser through a same-origin handler, independent of the Kanban state, so an analytics failure never disturbs the board.
 
 ### Verified facts about the existing code
 
@@ -24,7 +24,7 @@ E29 is one read-only request that returns three aggregates for one board: the ac
 | `useCardSearch` is the model for a hook with an `AbortController`, a sequence guard and an `onAccessLost` callback. `CardSearch` uses `aria-live="polite"` on a plain element because the board already has one `role="status"` region. `KanbanBoard` handles `onAccessLost` with `notifyError(BOARD_ACCESS_MESSAGE)` and `router.push("/")`. | `hooks/useCardSearch.ts`, `components/kanban/CardSearch.tsx`, `KanbanBoard.tsx` | The analytics hook and panel follow them. |
 | `BoardShell` renders `BoardHeader`, the rename form, `KanbanBoard` and the delete dialog in one column (`flex flex-col gap-4 sm:gap-6`). | `components/boards/BoardShell.tsx` | The panel is one more child of that column (DD10). |
 
-> **Revision 2 (2026-11-18, sprint date range).** DD2 and C34 describe the window for a board without a sprint. With a sprint, `board_window(access, now)` returns `[sprint_start 00:00:00Z, day after sprint_end 00:00:00Z)` and `"sprint"`, and E29 adds `window`. `AnalyticsFigures` and `formatWeekRange` choose the line and labels from `window`. The detail is in the Revision 2 section of [boards-membership design](../boards-membership/design.md) (DS7, DS12, DS15, C40). The text below is kept as approved.
+Revision 2 (2026-11-18, A11) adds a sprint window: `board_window(access, now)` returns the Sprint_Window `[sprint_start 00:00:00Z, the day after sprint_end 00:00:00Z)` and `"sprint"` when the board has a sprint, and `week_bounds(now)` and `"week"` otherwise. E29 adds the key `window`. The panel chooses its range line and labels from `window` and reads again when the sprint changes. The sprint fields, their validation and the board forms are designed in the Revision 2 section of [boards-membership design](../boards-membership/design.md) (DS1–DS15, C39–C41). This file keeps the E29 and panel side.
 
 ## Architecture
 
@@ -32,7 +32,8 @@ E29 is one read-only request that returns three aggregates for one board: the ac
 Flask
   GET /api/boards/<id>/analytics  (analytics_bp)
     token_required ─ parse_uuid (400) ─ load_query_args(empty) (400) ─ authorize_board (404, no lock)
-    service.board_analytics:  week_bounds(utcnow())
+    service.board_analytics:  access = authorize_board(...)  (reads the sprint with the role)
+                              board_window(access, utcnow()) -> start, end, kind
        1. columns LEFT JOIN active cards   ─▶ cards_per_column
        2. count(DISTINCT card_id) of entered_done in [start, end)  ─▶ completed_cards
        3. counted events GROUP BY actor JOIN users ─▶ member_activity
@@ -40,7 +41,7 @@ Browser
   BoardShell ─ useKanbanBoard (version)
      └─ AnalyticsPanel (client, own state, no Kanban gate)
           useBoardAnalytics ─ apiGet /api/boards/<id>/analytics ─▶ Next GET handler ─▶ Flask E29
-          AnalyticsFigures (props only): week line, completed figure, two lists
+          AnalyticsFigures (props only): range line (sprint or week), completed figure, two lists
 ```
 
 The token stays in the HttpOnly cookie. Flask re-validates every request and stays authoritative. There is no new server page and the board page does not read E29 on the server, so E29 cannot make the page fail (A8).
@@ -50,14 +51,17 @@ The token stays in the HttpOnly cookie. Flask re-validates every request and sta
 | ID | Decision | Rationale |
 |---|---|---|
 | DD1 | A new `analytics` blueprint with `__init__.py`, `routes.py`, `schema.py` and `service.py` (BE01) and one route, `GET /api/boards/<board_id>/analytics`, view `board_analytics_view`. `create_app` registers `analytics_bp`. | BE01 lists `analytics` among the eight Blueprints. One feature, one package. |
-| DD2 | The Week comes from `week_bounds(now)`. It converts `now` to UTC, takes midnight of that date, subtracts `weekday()` days (Monday is 0) and adds 7 days for the end. The service calls `week_bounds(utcnow())`, with `utcnow` imported by name. `week_start` and `week_end` are formatted with `strftime("%Y-%m-%dT%H:%M:%SZ")`, not `UtcDateTime`. Both bounds go into the SQL as aware datetimes: `occurred_at >= start AND occurred_at < end`. | A2 and Requirements 4.1–4.5. A UTC computation in Python does not depend on the database session time zone. One clock call per request keeps the three figures on one Week. Tests replace `utcnow` with a fixed clock, with no new abstraction. `UtcDateTime` would emit `+00:00` and break the contract. |
+| DD2 | The Window comes from `board_window(access, now)` (A11, DD13). Without a sprint it is the Week from `week_bounds(now)`. `week_bounds` converts `now` to UTC, takes midnight of that date, subtracts `weekday()` days (Monday is 0) and adds 7 days for the end. The service calls `week_bounds(utcnow())`, with `utcnow` imported by name. `week_start` and `week_end` are formatted with `strftime("%Y-%m-%dT%H:%M:%SZ")`, not `UtcDateTime`. Both bounds go into the SQL as aware datetimes: `occurred_at >= start AND occurred_at < end`. | A2 and Requirements 4.1–4.5. A UTC computation in Python does not depend on the database session time zone. One clock call per request keeps the three figures on one Week. Tests replace `utcnow` with a fixed clock, with no new abstraction. `UtcDateTime` would emit `+00:00` and break the contract. |
 | DD3 | Three separate statements, run in one request on the same session: (1) the column counts, (2) the distinct completions, (3) the activity. Each filters by `board_id` itself. None joins another's table. | Requirement 3.6 and D6. Joining cards to events would multiply rows. Three small grouped queries cannot inflate each other. |
 | DD4 | Statement 1: `select(BoardColumn.id, BoardColumn.name, func.count(Card.id))` with `outerjoin(Card, and_(Card.column_id == BoardColumn.id, Card.deleted_at.is_(None)))`, filtered by `BoardColumn.board_id` and `BoardColumn.deleted_at IS NULL`, grouped by the column ID, name and order, ordered by `(BoardColumn.order, BoardColumn.id)`. The active-card test is in the join condition. | Requirement 1. A filter in the `WHERE` clause would drop an empty column and make the left join pointless. Counting `Card.id` (not `*`) gives 0 for an empty column. |
-| DD5 | Statement 2: `select(func.count(func.distinct(BoardEvent.card_id)))` where `board_id` matches, `kind == "entered_done"` and the window holds, joined to `cards` and `board_columns` with `Card.deleted_at IS NULL`, `BoardColumn.is_done` and `BoardColumn.deleted_at IS NULL`. | Requirement 2. The event says the card completed in the Week, the join says it is still done, so a card deleted or moved out later stops counting (A3 revised 2026-11-17). A card has one column, so the join cannot inflate the distinct count. `count(DISTINCT)` counts a repeated card once and ignores a null `card_id`. |
+| DD5 | Statement 2: `select(func.count(func.distinct(BoardEvent.card_id)))` where `board_id` matches, `kind == "entered_done"` and the window holds, joined to `cards` and `board_columns` with `Card.deleted_at IS NULL`, `BoardColumn.is_done` and `BoardColumn.deleted_at IS NULL`. | Requirement 2. The event says the card completed in the Window, the join says it is still done, so a card deleted or moved out later stops counting (A3 revised 2026-11-17). A card has one column, so the join cannot inflate the distinct count. The sprint changes only the window the statement reads, not the statement. `count(DISTINCT)` counts a repeated card once and ignores a null `card_id`. |
 | DD6 | Statement 3: `select(User.id, User.name, func.count(BoardEvent.id).label("n"))` joined on `User.id == BoardEvent.actor_id`, where `board_id` matches, `kind IN COUNTED_KINDS` and the window holds, grouped by `User.id` and `User.name`, ordered by `n` descending, `func.lower(User.name)`, then `User.id`. `COUNTED_KINDS = ("card_created", "card_moved", "column_reordered", "comment_created")` is one constant. The query does not join `board_members`. | Requirement 3 and A1, A4. Only users with at least one row appear, so zero-activity members are omitted. Not joining memberships keeps a removed member's work. The name is the user's current name. One constant is the single place that says `entered_done` is not activity. |
 | DD7 | E29 is read-only: `authorize_board` without `lock=True`, no `commit`, no event and no notification. The three statements are reads, and the request teardown removes the session. | A6 and Requirement 5.4. A read must not wait for a board writer. |
 | DD8 | The route order is `token_required`, then `parse_uuid` (a malformed ID raises `RequestValidationError`), then `load_query_args(AnalyticsQuerySchema())`, then the service, which calls `authorize_board` first. A query is never examined before the ID, and no database read happens before both 400 checks. | A5 and Requirement 5.1. The same order as E22, without a body. |
-| DD9 | `useBoardAnalytics({ boardId, version, onAccessLost })` runs one read at a time. It reads on mount and when `boardId` changes, when `version` is greater than `startedVersionRef` (the version current when the last read started), and on `refresh()`. Starting a read sets `startedVersionRef` to the current `version`. A new read aborts the earlier one. | A8 and Requirements 6.4–6.6. Comparing against the version of the last read means an unchanged, rolled-back or equal version never starts a read, while a rise always does, even if a read was in flight. |
+| DD9 | `useBoardAnalytics({ boardId, version, sprintKey, onAccessLost })` runs one read at a time. It reads on mount and when `boardId` changes, when `version` is greater than `startedVersionRef` (the version current when the last read started), on `refresh()`, and when `sprintKey` changes after mount (DD14). Starting a read sets `startedVersionRef` to the current `version`. A new read aborts the earlier one. | A8 and Requirements 6.4–6.6. Comparing against the version of the last read means an unchanged, rolled-back or equal version never starts a read, while a rise always does, even if a read was in flight. |
+| DD13 | `board_window(access, now) -> (start, end, kind)` returns the Sprint_Window for a board whose `access.sprint_start` is set (start at 00:00:00 UTC, end at 00:00:00 UTC of `sprint_end + 1 day`, `"sprint"`) and `week_bounds(now)` with `"week"` otherwise. `board_analytics` keeps the `BoardAccess` that `authorize_board` returns (it already reads the sprint with the role, so no query is added), calls `board_window` once with `utcnow()` and uses `start` and `end` in the two event statements (`in_window`). `AnalyticsSchema` gains `window`. | A11, Requirements 4.1–4.8. One read path and one clock call per request. The sprint comes from the board row only, never from input (4.6). |
+| DD14 | `sprintKey` is the board's sprint as `"start|end"` (`"|"` for none), passed by `BoardShell` through `AnalyticsPanel`. The hook compares it with the key the mount read used (`startedSprintRef`) and reads again, with the same abort and sequence guards, only when it differs. | Requirement 6.10. The dialog is modal and mounts its content only while open, so a change while open is rare, but the hook must never show the earlier window. |
+| DD15 | The panel text comes from `data.window`. `"sprint"`: `formatSprintRange` of `sprintFromWindow(week_start, week_end)` (the sprint dates in UTC, the end is the day before `week_end`, no time) and the labels "this sprint". `"week"`: `formatWeekRange` unchanged and the labels "this week". | A11, Requirement 6.2. `lib/sprint.ts` is shared with the board header. |
 | DD10 | `AnalyticsPanel` is rendered by `BoardShell` after `KanbanBoard`. It is a single `.surface` panel below the columns. The Kanban region keeps the board's full width and its own horizontal scroll. | The columns stay the memorable thing on the screen (FE-D8). A panel above them would push every column down by its height at every width. FE-D4 puts secondary work in a side column from 1024 px, but the board page gives the full width to the columns, so the panel stacks below them. |
 | DD11 | Errors stay in the panel. The hook never throws. A parse failure counts as a service error. A 404 calls `onAccessLost`. A 401 calls `handleError` (the login redirect). A 400, a 5xx and a transport error set `error` and keep the last figures. No toast is raised for these. | Requirement 6.8 and the user's check that an E29 failure leaves the board usable. The board's own regions never depend on E29. |
 | DD12 | `AnalyticsFigures` is a props-only, server-compatible component. `AnalyticsPanel` owns the hook, the heading, the Refresh button, the live region and the states. | FE-C2: one responsibility each, so the figures render in a test without a hook. |
@@ -110,10 +114,17 @@ def week_bounds(now: datetime) -> tuple[datetime, datetime]:
     start = datetime(now.year, now.month, now.day, tzinfo=UTC) - timedelta(days=now.weekday())
     return start, start + timedelta(days=7)
 
+def board_window(access, now) -> tuple[datetime, datetime, str]:    # A11, DD13
+    if access.sprint_start is None:
+        start, end = week_bounds(now); return start, end, "week"
+    start = datetime.combine(access.sprint_start, time.min, tzinfo=UTC)
+    end = datetime.combine(access.sprint_end + timedelta(days=1), time.min, tzinfo=UTC)
+    return start, end, "sprint"
+
 def board_analytics(board_id, user_id) -> dict:
-    authorize_board(board_id, user_id)                       # 404, no lock
-    start, end = week_bounds(utcnow())
-    in_week = and_(BoardEvent.board_id == board_id,
+    access = authorize_board(board_id, user_id)              # 404, no lock; reads the sprint
+    start, end, window = board_window(access, utcnow())
+    in_window = and_(BoardEvent.board_id == board_id,
                    BoardEvent.occurred_at >= start, BoardEvent.occurred_at < end)
     columns = db.session.execute(
         select(BoardColumn.id, BoardColumn.name, func.count(Card.id))
@@ -123,22 +134,22 @@ def board_analytics(board_id, user_id) -> dict:
         .order_by(BoardColumn.order, BoardColumn.id)).all()
     completed = db.session.execute(
         select(func.count(func.distinct(BoardEvent.card_id)))
-        .where(in_week, BoardEvent.kind == "entered_done")).scalar_one()
+        .where(in_window, BoardEvent.kind == "entered_done")).scalar_one()
     activity = db.session.execute(
         select(User.id, User.name, func.count(BoardEvent.id).label("n"))
         .join(User, User.id == BoardEvent.actor_id)
-        .where(in_week, BoardEvent.kind.in_(COUNTED_KINDS))
+        .where(in_window, BoardEvent.kind.in_(COUNTED_KINDS))
         .group_by(User.id, User.name)
         .order_by(desc("n"), func.lower(User.name), User.id)).all()
-    return {"week_start": _iso_z(start), "week_end": _iso_z(end),
+    return {"week_start": _iso_z(start), "week_end": _iso_z(end), "window": window,
             "cards_per_column": [...], "completed_cards": completed, "member_activity": [...]}
 ```
 
-The sketch is a plan, not final code. `ponytail:` the activity query filters `kind` after the `(board_id, occurred_at)` range scan. Add `kind` to the index only if a board's weekly events make the scan measurable.
+The sketch is a plan, not final code. `ponytail:` the activity query filters `kind` after the `(board_id, occurred_at)` range scan. Add `kind` to the index only if a board's events in a window (a week, or up to 90 days for a sprint) make the scan measurable. The 90-day timing record (2026-11-18, p95 12.4 ms with 5000 extra events) did not.
 
 ### Schemas
 
-`AnalyticsQuerySchema` is an empty `Schema`. The response schemas are dump-only allowlists: `ColumnCountSchema` (`column_id` UUID, `name` String, `count` Integer), `ActivityCountSchema` (`user_id` UUID, `name` String, `count` Integer) and `AnalyticsSchema` (`week_start` String, `week_end` String, `cards_per_column` nested many, `completed_cards` Integer, `member_activity` nested many). No event ID, card ID, comment text or email can appear.
+`AnalyticsQuerySchema` is an empty `Schema`. The response schemas are dump-only allowlists: `ColumnCountSchema` (`column_id` UUID, `name` String, `count` Integer), `ActivityCountSchema` (`user_id` UUID, `name` String, `count` Integer) and `AnalyticsSchema` (`week_start` String, `week_end` String, `window` String, `cards_per_column` nested many, `completed_cards` Integer, `member_activity` nested many). No event ID, card ID, comment text or email can appear.
 
 ### Next handler and client allowlist
 
@@ -150,6 +161,7 @@ The sketch is a plan, not final code. `ponytail:` the activity query filters `ki
 
 ```text
 frontend/lib/analytics.ts                       types use, analyticsPath, parseAnalytics, formatWeekRange, barPercent
+frontend/lib/sprint.ts                          formatSprintRange, sprintFromWindow (shared with the board header, Revision 2)
 frontend/lib/types.ts                           BoardAnalytics, ColumnCount, ActivityCount
 frontend/hooks/useBoardAnalytics.ts             the hook (client)
 frontend/components/analytics/AnalyticsPanel.tsx    client: hook, heading, Refresh, live region, states
@@ -161,21 +173,21 @@ frontend/app/api/boards/[id]/analytics/route.ts GET handler
 ### `lib/analytics.ts`
 
 - `analyticsPath(boardId)` returns `/api/boards/${boardId}/analytics`.
-- `parseAnalytics(value)` copies only the five documented keys and throws `malformedApiError()` for any other shape: a non-object, a missing key, `week_start` or `week_end` that is not a string ending in `Z`, a list item without the exact fields, or a count that is not a non-negative safe integer. Extra keys are ignored, not copied.
-- `formatWeekRange(weekStart, weekEnd)` returns text such as `Week of 9 Nov, 07:00 to 16 Nov, 07:00 (local time)`. It parses both timestamps, uses the local fields of the viewer's time zone and a fixed month list (no locale), and shows `week_end` as is, because the end is exclusive and the time is part of the text. The server Week stays the UTC week (A2). Tests fix the zone with `TZ=Asia/Jakarta` in `vitest.config.mts`.
+- `parseAnalytics(value)` copies only the six documented keys (`window` must be `"sprint"` or `"week"`) and throws `malformedApiError()` for any other shape: a non-object, a missing key, `week_start` or `week_end` that is not a string ending in `Z`, a list item without the exact fields, or a count that is not a non-negative safe integer. Extra keys are ignored, not copied.
+- `formatWeekRange(weekStart, weekEnd)` returns text such as `Week of 9 Nov, 07:00 to 16 Nov, 07:00 (local time)`. It parses both timestamps, uses the local fields of the viewer's time zone and a fixed month list (no locale), and shows `week_end` as is, because the end is exclusive and the time is part of the text. The server Week stays the UTC week (A2). It is used for `"week"` only (DD15). Tests fix the zone with `TZ=Asia/Jakarta` in `vitest.config.mts`.
 - `barPercent(count, max)` returns a whole percent from 0 to 100 (0 when `max` is 0). It is used only for a decorative bar.
 
 ### `useBoardAnalytics`
 
 ```ts
-useBoardAnalytics({ boardId, version, onAccessLost }) → { data, status, busy, error, refresh }
+useBoardAnalytics({ boardId, version, sprintKey, onAccessLost }) → { data, status, busy, error, refresh }
 // status: "loading" (no figures yet), "ready" (figures held). busy: a read is in flight.
 // error: a message while the last read failed, else null.
 ```
 
 - State: `data` (the parsed result or null), `busy`, `error`. `status` is `"loading"` while `data` is null and no error, so the first read shows the loading state, and a later read shows the last figures with `busy` true (Requirement 6.7).
 - One `AbortController` and one sequence number per read. A response applies only when its sequence is the latest and its signal is not aborted. A new read, a board change and unmount each abort the earlier request, so a late response never changes state (Requirement 6.6).
-- Effects: one effect keyed on `boardId` resets `data` and `error`, sets `startedVersionRef` and starts a read, with the abort on cleanup. A second effect keyed on `version` starts a read only when `version > startedVersionRef.current`.
+- Effects (Revision 2: a further effect keyed on `sprintKey` reads again when it differs from the key the mount used, DD14): one effect keyed on `boardId` resets `data` and `error`, sets `startedVersionRef` and starts a read, with the abort on cleanup. A second effect keyed on `version` starts a read only when `version > startedVersionRef.current`.
 - The read calls `apiGet(analyticsPath(boardId), signal)` and `parseAnalytics`. A 404 (`isBoardAccessError`) calls `onAccessLost`. `AUTH_REQUIRED` calls `handleError`. Anything else, an abort excepted, sets `error` to "Analytics could not be loaded." and keeps `data`.
 - The hook reads no Kanban gate and holds no Kanban state. It takes `version` as a number.
 - Callbacks (`onAccessLost`, `handleError`) are held in a ref, as `useCardSearch` does.
@@ -184,10 +196,10 @@ useBoardAnalytics({ boardId, version, onAccessLost }) → { data, status, busy, 
 
 ```text
 Analytics                                              [Refresh]
-Week of 9 Nov, 07:00 to 16 Nov, 07:00 (local time)
-Cards completed this week      4
+Sprint 16 Nov to 22 Nov              (or: Week of 9 Nov, 07:00 to 16 Nov, 07:00 (local time))
+Cards completed this sprint    4    (or: this week)
 
-Cards per column                    Activity this week
+Cards per column                    Activity this sprint
 ──────────────────                  ──────────────────
 To do               3  ▬▬▬▬▬        Ana Lee            9
 In progress         2  ▬▬▬          Ben Ortiz          5
@@ -195,12 +207,12 @@ Done                4  ▬▬▬▬▬▬       Sam Taylor         1
 ```
 
 - `AnalyticsPanel`: a `<section aria-labelledby>` with `.surface p-4 sm:p-5` and `aria-busy` while a read is in flight. Header row: the `h2` "Analytics" (`text-lg font-semibold`) and the Refresh `BaseButton` (secondary, 44 px). Under it: the loading text "Loading analytics…" while there is no figure, the error block (`role="alert"` text plus a Retry `BaseButton`) when `error` is set, and `AnalyticsFigures` when figures are held. A plain `<p aria-live="polite" aria-atomic="true" className="sr-only">` carries "Loading analytics…", "Analytics refreshed." and the error text. It does not use `role="status"` (the board has one).
-- `AnalyticsFigures`: the week line (`text-sm text-base-content/70`), the completed figure (a label and a `tabular-nums` number), and from 768 px two columns (`md:grid-cols-2`) with `h3` headings "Cards per column" and "Activity this week" (`text-base font-semibold`). Each is a `<ul className="divide-y divide-base-300">` of rows with the name (`min-w-0 break-words`) and the count (`tabular-nums`). The column rows add a decorative bar: a `bg-base-200` track and a `bg-primary` fill whose width is `barPercent(count, maxCount)`, both `aria-hidden`. Empty states: "No columns yet." and "No activity this week." The completed figure shows `0` when nothing was completed. No panel is nested in the panel: the lists are divided rows (FE-D3).
+- `AnalyticsFigures`: the range line, sprint or week (`text-sm text-base-content/70`, DD15), the completed figure (a label and a `tabular-nums` number), and from 768 px two columns (`md:grid-cols-2`) with `h3` headings "Cards per column" and "Activity this sprint" or "Activity this week" (`text-base font-semibold`). Each is a `<ul className="divide-y divide-base-300">` of rows with the name (`min-w-0 break-words`) and the count (`tabular-nums`). The column rows add a decorative bar: a `bg-base-200` track and a `bg-primary` fill whose width is `barPercent(count, maxCount)`, both `aria-hidden`. Empty states: "No columns yet." and "No activity this week." The completed figure shows `0` when nothing was completed. No panel is nested in the panel: the lists are divided rows (FE-D3).
 - Names render as text nodes only (Requirement 6.9). No color, font or dependency is added (FE-D1).
 
 ### `BoardShell`
 
-`BoardShell` renders `<AnalyticsPanel boardId={board.id} version={kanban.version} onAccessLost={handleAccessLost} />` after `KanbanBoard`. `handleAccessLost` calls `notifyError(BOARD_ACCESS_MESSAGE)` and `router.push("/")`, the same outcome as the search. The panel is shown to every participant, so it does not use `boardControls`.
+`BoardShell` renders `<AnalyticsPanel boardId={board.id} version={kanban.version} sprintKey={...} onAccessLost={handleAccessLost} />` after `KanbanBoard`. `handleAccessLost` calls `notifyError(BOARD_ACCESS_MESSAGE)` and `router.push("/")`, the same outcome as the search. The panel is shown to every participant, so it does not use `boardControls`.
 
 ### Mobile design (Requirement 7, FE-S4 to FE-S6, FE-D9)
 
@@ -214,7 +226,7 @@ Done                4  ▬▬▬▬▬▬       Sam Taylor         1
 No schema change. The wire shape:
 
 ```text
-E29 data { week_start, week_end, cards_per_column: Column_Count[], completed_cards, member_activity: Activity_Count[] }
+E29 data { week_start, week_end, window: "sprint" | "week", cards_per_column: Column_Count[], completed_cards, member_activity: Activity_Count[] }
 Column_Count   { column_id, name, count }
 Activity_Count { user_id, name, count }
 BoardAnalytics (TypeScript) mirrors it, with `completed_cards` and the counts as numbers
@@ -247,10 +259,11 @@ Database-writing tests use the `board_tracker` fixture on the app built from `TE
 | File | Covers |
 |---|---|
 | `analytics_helpers.py` | `seed_events(app, board_id, rows)` inserts `BoardEvent` rows with a chosen `occurred_at`. `freeze(monkeypatch, iso)` replaces `app.blueprints.analytics.service.utcnow`. `get_analytics` calls E29. Readers open their own app context. |
-| `test_analytics_access.py` | 200 for an admin and for a member. 401 for no, malformed, expired and revoked tokens. 404 for a nonmember, a removed member, a missing and a soft-deleted board, one identical envelope. 400 for a malformed ID. 400 for any query parameter (`?week=1`, `?x`, a repeat, `?board_id=<id>`), the standard message and no `fields`. The check order: a malformed ID beats a missing board, and a query parameter beats a 404 for a nonmember. `Cache-Control: private, no-store` on every response, success and error. Only the five documented keys and the documented item fields appear (no email, no event or card ID). |
+| `test_analytics_access.py` | 200 for an admin and for a member. 401 for no, malformed, expired and revoked tokens. 404 for a nonmember, a removed member, a missing and a soft-deleted board, one identical envelope. 400 for a malformed ID. 400 for any query parameter (`?week=1`, `?x`, a repeat, `?board_id=<id>`), the standard message and no `fields`. The check order: a malformed ID beats a missing board, and a query parameter beats a 404 for a nonmember. `Cache-Control: private, no-store` on every response, success and error. Only the six documented keys and the documented item fields appear (no email, no event or card ID). |
 | `test_analytics_columns.py` | `cards_per_column` for an empty column (count 0), several cards, the Done column listed, board order with an `id` tie-break, a soft-deleted card not counted, a soft-deleted column not listed with its cards, a card moved between columns, cards of another board not counted, and zero columns (an empty list with the other figures still returned). |
-| `test_analytics_completed.py` | `completed_cards` counts a card created in Done, a card moved into Done, and the same card entering Done twice in the week once (move out and in, through E20 and by direct events). It keeps a card that was soft-deleted, moved out of Done or in a column soft-deleted after completing. A move within Done, an edit, an assignment and a comment add nothing. Events of another board and of an earlier or later week do not count. 0 for an empty week. |
+| `test_analytics_completed.py` | `completed_cards` counts a card created in Done, a card moved into Done, and the same card entering Done twice in the week once (move out and in, through E20 and by direct events). It stops counting a card that was soft-deleted, moved out of Done or in a column soft-deleted or no longer Done after completing (A3 revised 2026-11-17). A move within Done, an edit, an assignment and a comment add nothing. Events of another board and of an earlier or later week do not count. 0 for an empty week. |
 | `test_analytics_activity.py` | Each of the four counted kinds counts once, and `entered_done` does not count. Creating a card in Done adds 1 and moving a card into Done adds 1. A removed member (E12) who acted in the week still appears, an active member with no events does not, the current name shows after a profile rename, and the order is count descending, lower-cased name, then user ID (ties built with equal counts and names that differ by case). An empty week returns an empty list. |
+| `test_analytics_sprint.py` (Revision 2) | With a fixed clock: the Sprint_Window edges (the start instant inside, one microsecond before it outside, the last microsecond inside, the end instant outside), a one-day and a 90-day sprint, a month, a year and a leap-day end, a sprint in the past and in the future counting 0, a board without a sprint keeping the UTC week with `window` `week`, six response keys, a query parameter still 400, a sprint edited through E08 and cleared after events exist (the next read follows it, `board_events` rows and `cards_per_column` unchanged), the member and the admin seeing the same window, and `board_window` as a unit. |
 | `test_analytics_week.py` | With a fixed clock: an event at `week_start` is inside, one microsecond before it is in the earlier week, one at `week_end` is outside and one a microsecond before it is inside. A request at Sunday 23:59:59 and at the next Monday 00:00:00 returns different windows and the new week starts at 0. A year boundary week and a leap day. The two timestamps end in `Z` and `week_end` is `week_start` plus seven days. A request with a non-UTC `now` still uses the UTC week. `week_bounds` is also tested alone for every weekday. |
 | `test_analytics_aggregation.py` | A board with many columns, many cards and many events: each of the three figures is exact and no figure is a product of two tables (for example 5 columns of 6 cards with 40 events each give 30 cards, the real event counts and the real completed number). A real flow through the writers: E13 and E17 (create in Done), E20 (moves), E16 (reorder) and E24 (comments) by two users, then E29 matches the rows written. |
 | `test_analytics_readonly.py` | E29 writes no row (events, notifications and other counts unchanged), records no event, changes no `position_version`, and does not wait for a board lock (a second transaction that holds the board row lock does not block it). A failing read returns the sanitized 500 with no partial result. |
@@ -261,29 +274,29 @@ Database-writing tests use the `board_tracker` fixture on the app built from `TE
 
 | File | Covers |
 |---|---|
-| `lib/analytics.test.ts` | `parseAnalytics` accepts a valid result and the empty one, copies only the documented fields and rejects a non-object, a missing key, a `week_start` without `Z`, a count that is negative, fractional, a string or beyond the safe integer range, and an item with a missing field. `formatWeekRange` for a week inside a month, across a month and across a year (using the exclusive end). `barPercent` for 0, `max` 0, the maximum and a fraction. `analyticsPath`. |
+| `lib/analytics.test.ts` | `parseAnalytics` accepts a valid result and the empty one, both `window` kinds, and rejects a missing, unknown or non-string `window`, copies only the documented fields and rejects a non-object, a missing key, a `week_start` without `Z`, a count that is negative, fractional, a string or beyond the safe integer range, and an item with a missing field. `formatWeekRange` for a week inside a month, across a month and across a year (using the exclusive end). `barPercent` for 0, `max` 0, the maximum and a fraction. `analyticsPath`. |
 | `lib/apiClient.test.ts` (extended) | `GET /api/boards/<uuid>/analytics` is declared, the same path with a query string is not, a non-UUID segment throws before `fetch`. |
 | `lib/server/flask.test.ts` (extended) | The `boardAnalytics` route key fills `:boardId` with a UUID only. |
 | `app/api/analyticsRoute.test.ts` | A valid request forwards to the E29 path with the bearer token and `private, no-store`. A query string reaches Flask unchanged and the Flask 400 is passed through. A non-UUID ID is 400 before any upstream call. 401 clears the cookie. A missing cookie is 401. No token in the response. A Flask 404 is passed through. |
-| `hooks/useBoardAnalytics.test.tsx` | With deferred requests: a read on mount. A rise in `version` starts one read, an equal or lower `version` starts none, and a rise while a read is in flight aborts it and starts one. Refresh starts a read. An earlier slow response cannot overwrite a later one. A board change aborts, drops the figures and ignores the earlier board's response. Unmount aborts and no state changes later. A 404 calls `onAccessLost`. A 401 calls `handleError`. A 5xx, a 400, a transport error and a malformed body set the error and keep the last figures. While busy the held figures stay. |
-| `components/analytics/AnalyticsFigures.test.tsx` | The week line, the completed figure (including 0), the column rows in order with their counts, the activity rows in order, "No columns yet." and "No activity this week.", an empty board with zeros, names rendered as text (markup in a name is not HTML), the wrap classes (`min-w-0`, `break-words`) and `tabular-nums`, and that a bar is `aria-hidden` while its number is text. |
-| `components/analytics/AnalyticsPanel.test.tsx` | Loading, figures, an empty board, error with Retry (a Retry press reads again), a busy refresh that keeps the figures and sets `aria-busy`, the Refresh button's name and its 44 px class, the live region text, a 404 outcome and a 401 outcome. |
+| `hooks/useBoardAnalytics.test.tsx` | With deferred requests: a read on mount. A `sprintKey` change reads once more, the key the mount used does not, an earlier slow response is ignored and the held figures stay while the new read runs. A rise in `version` starts one read, an equal or lower `version` starts none, and a rise while a read is in flight aborts it and starts one. Refresh starts a read. An earlier slow response cannot overwrite a later one. A board change aborts, drops the figures and ignores the earlier board's response. Unmount aborts and no state changes later. A 404 calls `onAccessLost`. A 401 calls `handleError`. A 5xx, a 400, a transport error and a malformed body set the error and keep the last figures. While busy the held figures stay. |
+| `components/analytics/AnalyticsFigures.test.tsx` | The week line and, for a sprint window, the "Sprint 16 Nov to 22 Nov" line (a one-day sprint, a sprint across a year, no time and no "local time") with the "this sprint" labels and "No activity this sprint.",  the completed figure (including 0), the column rows in order with their counts, the activity rows in order, "No columns yet." and "No activity this week.", an empty board with zeros, names rendered as text (markup in a name is not HTML), the wrap classes (`min-w-0`, `break-words`) and `tabular-nums`, and that a bar is `aria-hidden` while its number is text. |
+| `components/analytics/AnalyticsPanel.test.tsx` | A sprint window and a week window, a read again when `sprintKey` changes while open and none while closed, loading, figures, an empty board, error with Retry (a Retry press reads again), a busy refresh that keeps the figures and sets `aria-busy`, the Refresh button's name and its 44 px class, the live region text, a 404 outcome and a 401 outcome. |
 | `components/boards/BoardShell.test.tsx` (extended) | The panel is shown to an admin and to a member, it receives the Kanban `version`, and a card create, move and delete that raises the version triggers one more E29 read. With E29 failing at mount and on a later read, the board is usable: a card still moves and is added, the search still works, the Kanban status stays idle, and no error boundary or board-level error appears. A 404 from E29 shows the access toast and redirects. |
 
 ### Browser checks (V08, V11)
 
-`evidence/analytics-mobile-measure.mjs` (Chrome with device emulation, modeled on the T11 to T13 scripts) runs at 320, 375, 768 and 1280 px against the local app with seeded data: the board page with the panel loading, with figures, on an empty board (no columns, and columns with no activity) and with E29 failing (the error and Retry, the board still usable). It measures each control with `getBoundingClientRect` and `elementFromPoint`, tabs through the panel for a visible focus ring, and confirms no horizontal page overflow outside the Kanban region. It runs the manual journey of Requirement 7.5: open a board, see the figures, complete and move a card, see the counts change without a reload, press Refresh. `evidence/analytics-timing.mjs` records 30 sequential E29 requests on a 100-card board with a week of events, with the conditions and the raw timings (A10). Both are measurements, not new pass-or-fail gates. The browser is an emulator, not a real device, and the record says so.
+Revision 2 adds `evidence/boards-membership-sprint-measure.mjs` (Playwright, device emulation) for the analytics dialog with a sprint and without one, and `evidence/analytics-timing.mjs` with `SPRINT_DAYS=90` for the timing. `evidence/analytics-mobile-measure.mjs` (Chrome with device emulation, modeled on the T11 to T13 scripts) runs at 320, 375, 768 and 1280 px against the local app with seeded data: the board page with the panel loading, with figures, on an empty board (no columns, and columns with no activity) and with E29 failing (the error and Retry, the board still usable). It measures each control with `getBoundingClientRect` and `elementFromPoint`, tabs through the panel for a visible focus ring, and confirms no horizontal page overflow outside the Kanban region. It runs the manual journey of Requirement 7.5: open a board, see the figures, complete and move a card, see the counts change without a reload, press Refresh. `evidence/analytics-timing.mjs` records 30 sequential E29 requests on a 100-card board with a week of events, with the conditions and the raw timings (A10). Both are measurements, not new pass-or-fail gates. The browser is an emulator, not a real device, and the record says so.
 
 ## Correctness Properties
 
 | # | Property | Requirement | Checked by |
 |---|---|---|---|
 | 1 | `cards_per_column` has exactly one row per active column of the board, in `(order, id)` order, and each count equals the number of active cards in that column, 0 for an empty one. | 1.1–1.6 | `_columns`, `_aggregation` |
-| 2 | `completed_cards` equals the number of distinct `card_id` values with an `entered_done` event on the board inside the Week, whatever happened to the card later. | 2.1–2.6 | `_completed` |
-| 3 | `member_activity` has one row per actor with at least one counted event inside the Week, the count equals that actor's counted events, `entered_done` is never counted, and the order is count descending, lower-cased name, user ID. | 3.1–3.5 | `_activity` |
+| 2 | `completed_cards` equals the number of distinct `card_id` values with an `entered_done` event on the board inside the Window and that is still an active card in an active Done column now (A3 revised 2026-11-17). | 2.1–2.6 | `_completed` |
+| 3 | `member_activity` has one row per actor with at least one counted event inside the Window, the count equals that actor's counted events, `entered_done` is never counted, and the order is count descending, lower-cased name, user ID. | 3.1–3.5 | `_activity` |
 | 4 | No figure depends on another table's row count: adding cards, columns or events of other kinds never changes an unrelated figure. | 3.6, 1.5 | `_aggregation` |
-| 5 | An instant belongs to exactly one Week: `week_start` is inside, `week_end` is outside, the window is seven days and starts on a Monday at 00:00:00 UTC. | 4.1–4.4 | `_week` |
-| 6 | The Week comes only from the UTC server clock, with no caller input. | 4.3, 4.5 | `_week` |
+| 5 | An instant belongs to exactly one Window: `week_start` is inside and `week_end` is outside. A Week is seven days and starts on a Monday at 00:00:00 UTC. A Sprint_Window starts at `sprint_start` 00:00:00 UTC and ends at the day after `sprint_end` 00:00:00 UTC. | 4.1–4.3 | `_week`, `_sprint` |
+| 6 | The Week comes only from the UTC server clock, and the Sprint_Window only from the board row, with no caller input. `window` says which applies. | 4.4–4.6 | `_week`, `_sprint` |
 | 7 | Every 401, 400 and 404 case returns before any aggregate runs, in the order token, ID, query, access, and one 404 envelope covers every inaccessible case. | 5.1–5.3 | `_access` |
 | 8 | E29 writes nothing, takes no board lock and changes no `position_version` or event. | 5.4 | `_readonly` |
 | 9 | Every E29 response, success or error, is `private, no-store` and carries only the documented keys. | 5.5, 5.7 | `_access` |
@@ -292,17 +305,19 @@ Database-writing tests use the `board_tracker` fixture on the app built from `TE
 | 12 | A failed or malformed E29 never stops a card move, an add or the search, and never raises an error boundary. | 6.8, 8.5 | `BoardShell.test.tsx`, browser check |
 | 13 | Every number in the panel is present as text, and a bar is decorative. | 6.2, 7.4 | `AnalyticsFigures.test.tsx` |
 | 14 | Refresh and Retry are at least 44 by 44 CSS px and the page does not scroll horizontally from 320 px. | 7.1, 7.2 | Browser check |
+| 15 | Editing or clearing the sprint changes only the next window. No event row and no `cards_per_column` value changes. | 4.7 | `_sprint` |
+| 16 | The panel never shows an earlier window after the sprint changes, and the mount does not read twice. | 6.10 | `useBoardAnalytics.test.tsx`, `AnalyticsPanel.test.tsx` |
 
 ## Acceptance Criteria Map
 
 | Requirement | API or UI | Task area | Verification |
 |---|---|---|---|
 | 1 Cards per column | `analytics/service.py` (DD4) | Backend | `_columns`, `_aggregation`; Properties 1, 4 |
-| 2 Completed this week | `analytics/service.py` (DD5) | Backend | `_completed`; Property 2 |
+| 2 Completed in the window | `analytics/service.py` (DD5, DD13) | Backend | `_completed`; Property 2 |
 | 3 Activity by member | `analytics/service.py` (DD6) | Backend | `_activity`, `_aggregation`; Properties 3, 4 |
-| 4 Week window | `week_bounds`, `_iso_z` (DD2) | Backend | `_week`; Properties 5, 6 |
+| 4 Counting window | `board_window`, `week_bounds`, `_iso_z` (DD2, DD13) | Backend | `_week`, `_sprint`; Properties 5, 6, 15 |
 | 5 Access, read safety | `analytics/routes.py`, `schema.py` (DD7, DD8) | Backend | `_access`, `_readonly`; Properties 7–9 |
-| 6 Panel | `AnalyticsPanel`, `AnalyticsFigures`, `useBoardAnalytics` | Frontend | Panel, figures, hook and `BoardShell` tests; Properties 10–13 |
+| 6 Panel | `AnalyticsPanel`, `AnalyticsFigures`, `useBoardAnalytics` (DD14, DD15) | Frontend | Panel, figures, hook and `BoardShell` tests; Properties 10–13, 16 |
 | 7 Mobile, accessible | The panel in `BoardShell` | Frontend and browser | Browser check at 320, 375, 768, 1280; Properties 13, 14 |
 | 8 Handler, parsers, tests | `analytics` route handler, `apiClient.ts`, `lib/analytics.ts`, tests | Both | `analyticsRoute.test.ts`, `apiClient.test.ts`, `analytics.test.ts`, backend files, timing record |
 
@@ -311,7 +326,7 @@ Database-writing tests use the `board_tracker` fixture on the app built from `TE
 | Gate | Rule |
 |---|---|
 | A | Root T08 and T10 are verified. No gate blocks the start. |
-| B | The backend checks for E29 (access, aggregates, week, read-only) pass before the frontend calls E29. |
+| B | The backend checks for E29 (access, aggregates, week, sprint, read-only) pass before the frontend calls E29. |
 | C | The frontend, both full suites and `next build` pass before the mobile record is final. |
 | D | Root T14 is checked only after the backend, frontend, measured mobile check, journey and documentation pass. Unverified work stays open with the actual reason. |
 
@@ -320,12 +335,13 @@ Database-writing tests use the `board_tracker` fixture on the app built from `TE
 | Clarification | Statement | Documents |
 |---|---|---|
 | C34 | The Week is the UTC calendar week of the server clock when the request is handled: Monday 00:00:00 UTC inclusive to the next Monday 00:00:00 UTC exclusive. `week_start` and `week_end` are ISO 8601 UTC timestamps that end in `Z`. An event at `week_start` is inside and one at `week_end` is outside. | `docs/API.md` E29 and the clarification paragraph, `specs/design.md` D6 |
-| C35 | `completed_cards` is the number of distinct card IDs with an `entered_done` event on the board in the Week. A card counts once however often it entered Done, and the count survives a later delete or a move out of Done. | Same |
+| C35 | `completed_cards` is the number of distinct card IDs with an `entered_done` event on the board in the Window that are still active cards in an active Done column when the request is handled. A card counts once however often it entered Done, and it stops counting when it is deleted, moved out of Done or its column stops being Done (revised 2026-11-17). | Same |
 | C36 | `member_activity` counts four event kinds: `card_created`, `card_moved`, `column_reordered` and `comment_created`. `entered_done` is used for `completed_cards` only, so creating a card in Done or moving a card into Done adds one activity event. It lists every actor with a counted event in the Week, a former board member included, under the actor's current name, sorted by count descending, lower-cased name, then user ID. An actor with no counted event is omitted. | Same, `specs/requirements.md` AC11.1, `backend/specs/api-contract.md` |
+| C40 | (Revision 2) With a sprint, the Window is `[sprint_start 00:00:00Z, the day after sprint_end 00:00:00Z)` and E29 returns `window` `"sprint"`. Without one it is the Week of C34 and `window` is `"week"`. `week_start` and `week_end` keep their names and the `Z` format for both. `window` is the only key added. Editing or clearing the sprint rewrites no event and changes only the next read. A sprint in the past or the future counts only the events inside it. C34 applies to a board without a sprint. | `docs/API.md` E29 and the sprint paragraph, `backend/specs/api-contract.md`, `specs/CHANGELOG.md` (recorded 2026-11-18 with boards-membership C39 and C41) |
 | C37 | `cards_per_column` lists every active column in board order with its active card count, 0 for an empty column, and is empty when the board has no active column. A deleted card or column is not counted or listed. | `docs/API.md` E29 |
 | C38 | E29 accepts no query parameter and no body. Any query parameter is 400 `VALIDATION_ERROR` with the standard message and no field entry, before any read. The check order is authenticate (401), board ID (400), query (400), then board access (404, the generic envelope of C1). It is read-only: no lock, event, notification or `position_version` change. Every participant may read it. | `docs/API.md` E29, `backend/specs/api-contract.md` |
 
-Updated at design time: `docs/API.md` (E29 row, the C34–C38 paragraph and the data shapes), `specs/design.md` D6 (the four counted kinds), `specs/requirements.md` (AC11.1), `backend/specs/api-contract.md` (`analytics_bp`), `docs/TEST-PLAN.md` (V08 and V11), `evidence/spec-review.md` and `specs/CHANGELOG.md`. At implementation: `guidelines/frontend.md` (the component table for `AnalyticsPanel` and `AnalyticsFigures`), `frontend/specs/pages-and-components.md` and `api-integration.md`, `specs/traceability.md`, the README, the USER_GUIDE and the changelogs. Root `specs/tasks.md` links this spec at finalize.
+Revision 2 (2026-11-18): C40 above and, in boards-membership, C39 (the sprint fields and their rules) and C41 (the columns and the constraint). Updated at design time: `docs/API.md` (E29 row, the C34–C38 paragraph and the data shapes), `specs/design.md` D6 (the four counted kinds), `specs/requirements.md` (AC11.1), `backend/specs/api-contract.md` (`analytics_bp`), `docs/TEST-PLAN.md` (V08 and V11), `evidence/spec-review.md` and `specs/CHANGELOG.md`. At implementation: `guidelines/frontend.md` (the component table for `AnalyticsPanel` and `AnalyticsFigures`), `frontend/specs/pages-and-components.md` and `api-integration.md`, `specs/traceability.md`, the README, the USER_GUIDE and the changelogs. Root `specs/tasks.md` links this spec at finalize.
 
 ## Review Items and Decisions
 
@@ -344,8 +360,9 @@ Updated at design time: `docs/API.md` (E29 row, the C34–C38 paragraph and the 
 
 | Risk | Mitigation |
 |---|---|
-| A board with very many events in a week makes the activity scan slow. | The `(board_id, occurred_at)` index bounds the scan to the Week. The timing record (A10) shows the cost on 100 cards. `ponytail:` add `kind` to the index or a rollup only if it is measured as slow. |
-| A user acts at the Week boundary and sees a figure reset. | Intended by A2. The panel shows the Week range, so the reset is explained. |
+| A board with very many events in a week makes the activity scan slow. | The `(board_id, occurred_at)` index bounds the scan to the Window, which is up to 90 days for a sprint. The timing records (A10, and 2026-11-18 on a 90-day sprint with 5000 extra events, p95 12.4 ms) show the cost on 100 cards. `ponytail:` add `kind` to the index or a rollup only if it is measured as slow. |
+| A user acts at the Week boundary and sees a figure reset. | Intended by A2 for a board without a sprint. The panel shows the Week range, so the reset is explained. A board with a sprint has no reset until its sprint ends. |
+| A sprint of the wrong dates silently empties the figures. | The panel and the board header show the sprint dates, and an Admin can edit or clear them (A11). |
 | The panel shows figures that are minutes old after another user's change or a comment. | A8 accepts this. Refresh and the next version rise read again. |
 | A former member's name and work remain visible to current members. | A4 decided it. Events are board history. Only the current name and counts are returned, no email or content. |
 | The board page has more to load on a phone. | E29 is a small JSON read after first paint, outside the server render. The page renders without it. |

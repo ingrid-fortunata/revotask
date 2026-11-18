@@ -4,7 +4,26 @@ Spec versioning tracks review rounds independently of application releases. Reco
 
 ## 2026-11-18
 
-### (commit pending) docs: spec sprint date range for boards and analytics
+### (commit pending) test: cover board sprint dates in the Playwright suite
+
+- **local-acceptance (T15) · LA-3, task 5.3 (requested by the user: add the sprint date steps to Playwright, the open item DR5 of boards-membership Revision 2):**
+  - **Before:** LA-3 covered create, open, add member, remove member, delete board and `USER_NOT_FOUND`. The boards-membership journey did not touch the sprint dates, and the T15 row, the traceability rows and the boards-membership evidence listed the Playwright date steps as open.
+  - **After:** LA-3 also requires the sprint journey: create with dates (one date only and an end before the start refused), the header line kept after a reload, analytics with the sprint line and labels, a member's read-only view, an edit (refused and valid) and Clear dates back to the week. Native task 5.3 was added to `.kiro/specs/local-acceptance/tasks.md`, the design table row and the requirement text were extended, and the open notes in `specs/tasks.md`, `specs/traceability.md`, the boards-membership and analytics specs, the README and `evidence/boards-membership-T05-T06.md` were closed. No product behavior or contract changed.
+  - **Reason:** A recorded follow-up (DR5, TR4) so the automated journey covers the sprint, not only the unit and emulator checks.
+  - **Prompt/run:** a chat request to do the Playwright sprint steps in T15 (Claude Code, 2026-11-18). The spec text and the test were changed in one pass, so the spec review is after the fact.
+  - **Verification:** `npx playwright test e2e/boards-membership.spec.ts` passed on desktop and on viewport-320, mobile-375 and viewport-768. `npm run e2e`: 58 passed, 0 failed (54 before). Each run's cleanup count was 0. Chromium emulation, native Flask on the test database and a production Next server. `npx tsc --noEmit` and `eslint e2e` are clean. Open: a real phone and a manual walk (T16).
+
+### (commit pending) docs: align analytics spec with the sprint window
+
+- **analytics (T14) · requirements, design and tasks revised for decision A11 (requested by the user: "spec analytics T14 juga disesuaikan dengan perubahan ini"):**
+  - **Before:** `.kiro/specs/analytics/` described a UTC-week-only window and carried only a "Revision 2" note that said the text below it was kept as approved. Requirements 2, 3 and 4, the panel text of 6.2 and 6.3, the key list of 5.7, the parser of 8.2, the test lists of 8.3 to 8.5 and decision A2 all said "week". The design and tasks had no sprint decisions, tests or tasks.
+  - **After:** The spec states the window as a Window: the Sprint_Window when the board has a sprint, else the Week. Requirement 4 is now "Counting window" with the sprint criteria (4.3, 4.6, 4.7) and the week fallback (4.4, 4.5). Requirements 2, 3, 5.6, 5.7, 6.2, 6.3, 6.10 (a read again when the sprint changes), 7.5, 8.2 to 8.5 and 8.8 follow it. Decision A2 is marked revised and A11 is added. The design adds DD13 (`board_window`), DD14 (`sprintKey`), DD15 (panel text from `window`), Properties 15 and 16, C40, the `test_analytics_sprint.py` row, the new key in the schema and the wire shape, and risk rows. The tasks add group 8 (8.1 to 8.6), all checked, each pointing to the files and evidence that prove it. The earlier "kept as approved" notes are replaced by the integrated text. Approved history is kept in the decision tables.
+  - **Also corrected (stale since 2026-11-17):** design C35, Property 2 and the `test_analytics_completed.py` row still said a deleted or moved card keeps counting. They now match A3 as revised on 2026-11-17 and `docs/API.md`.
+  - **Reason:** The sprint window changed what T14 counts and shows. The analytics spec should say so itself and not only point to the boards-membership spec. The decisions are the already approved SP1–SP8 and the implementation is verified, so no new product decision was made.
+  - **Prompt/run:** `/revotask-feature spec analytics T14 juga disesuaikan dengan perubahan ini.` (Claude Code, 2026-11-18). Done in one pass over the three files, so the review below is after the fact.
+  - **Verification:** Spec review only: no code, test or application changelog changed and no test was run. The text was checked against the implemented behavior (`backend/app/blueprints/analytics/service.py`, `frontend/lib/sprint.ts`, `AnalyticsFigures.tsx`, `useBoardAnalytics.ts`) and the recorded results (backend 2173 passed and 1 skipped, frontend 2170 passed, 140 browser checks, p95 12.4 ms on a 90-day sprint).
+
+### bf181b6 docs: update specs, guides and evidence for board sprint range
 
 - **boards-membership (T05–T06) and analytics (T14) · R03 AC03.1, R11 AC11.1, E06, E08, E29, `boards` table, C39–C41 (requested by the user: "Week of 16 Nov, 07:00 to 23 Nov, 07:00" had no matching setting when creating a board):**
   - **Before:** A board had only a name. E06 and E08 accepted `name`. BoardSummary was `{id, name, role, position_version}`. E29 always used the current UTC calendar week (Monday to Monday), and the panel showed it as "Week of …, 07:00 to …, 07:00 (local time)". The slice added no migration.

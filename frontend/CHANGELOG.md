@@ -4,6 +4,10 @@ Record actual changes for this component. Newest date first. Each `## YYYY-MM-DD
 
 ## 2026-11-18
 
+### 6b504d0 test: cover board sprint dates in the Playwright suite
+
+- `e2e/boards-membership.spec.ts`: new `sprint dates: create, show, edit, clear, member read-only` test (`@boards @matrix`). `e2e/support/ui.ts`: `createBoardUi(page, name, sprint?)` fills the two date inputs. No product code changed. See the root entry in [the root changelog](../CHANGELOG.md).
+
 ### 4240cf0 feat: add global error boundary and app-wide not found page
 
 - Added `app/global-error.tsx` (own `<html>` and `<body>`, imports `globals.css`, `retry()`, no error text) and `app/not-found.tsx`, with tests in `app/global-error.test.tsx`. See the root entry for 4240cf0 in [the root changelog](../CHANGELOG.md).

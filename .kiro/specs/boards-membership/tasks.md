@@ -452,4 +452,4 @@ Order: spec sync (10), backend (11, 12), frontend (13, 14), browser and timing (
 | TR1 | Root T05, T06 and T14 are checked in `specs/tasks.md`. Revision 2 adds scope to each. | Keep them checked, because the original scope stays verified, and add a "Revision 2 (sprint) open: native tasks 10 to 16" note to each row. Clear the note when 16.3 passes. The alternative is to uncheck all three until 16.3. |
 | TR2 | `tasks.meta.json` is Kiro's execution record. | Leave it unchanged. Claude Code records Revision 2 progress in the checkboxes above and in `evidence/spec-review.md`. |
 | TR3 | Task 10.1 changes shared docs and the analytics spec during Finalize, before any code. | Yes, as the Finalize step requires. The analytics approved history is annotated, not rewritten. |
-| TR4 | Playwright date steps stay in T15 (DR5). | Recorded in 16.1 as an open item, not done here. |
+| TR4 | Playwright date steps stay in T15 (DR5). | Recorded in 16.1 as an open item, not done here. **Done 2026-11-18:** local-acceptance task 5.3. |

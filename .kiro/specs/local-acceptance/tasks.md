@@ -75,6 +75,9 @@
 - [x] 5.2 `boards-membership › unregistered email shows USER_NOT_FOUND` on the email field.
   - Check: test passes; the error appears under the email field, not as a page error.
 
+- [x] 5.3 `boards-membership › sprint dates: create, show, edit, clear, member read-only` (added 2026-11-18 for boards-membership Revision 2, DR5; `@boards @matrix`). Extend `createBoardUi` with an optional sprint. Assert the dialog refuses one date and an end before the start with no navigation; the header sprint line, also after a reload; the analytics dialog with the sprint line and "Cards completed this sprint" and no "local time"; a member sees the line and no Edit board button or date field; an edit with an end before the start is refused and focuses the end date; a valid edit shows at once and after a reload; Clear dates removes the line and analytics shows "Week of" and "this week".
+  - Check: passes on desktop, viewport-320, mobile-375 and viewport-768 (4 runs), and the cleanup count is 0. The full suite is 58 passed (54 before), 0 failed.
+
 ## Group 6 · Kanban journey (LA-4, LA-8 core flow)
 
 - [x] 6.1 `kanban › eight-step journey with dragTo and reload` (desktop project). Steps: create a board; add two columns; create a card in the source column; open it through `Open <title>`; edit and assign `member`; `dragTo()` to `dropzone-<columnId>-end`; `page.reload()`; assert the destination and absence in the source; delete the card.

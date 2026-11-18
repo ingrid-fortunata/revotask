@@ -4,11 +4,13 @@
 
 This plan implements the board analytics read (E29), the analytics panel on the board page and their tests described in `design.md` (root T14). Order of work: the schemas, service and route of the new blueprint, the backend tests and a backend checkpoint, the frontend foundation (types, parsers, the Next handler and the client allowlist), the polling-free read hook, the figures and panel components and the board wiring, the measured mobile check with the journey and timing, the full verification checkpoint, and the documentation checkpoint.
 
-**Status:** Done locally (2026-11-14). Requirements and design were approved (decisions A1–A10, design items R1–R8), and the user's `implement analytics T14` invocation for all tasks approved this plan. Every group is verified; see `evidence/analytics-T14.md`. Open outside this plan: Playwright (V10), real-device checks (T15), deployed timing and deployment (T16). Requirements and design were approved (decisions A1–A10 on 2026-11-14, design items R1–R8 with the design approval). Root T14 stays unchecked in `specs/tasks.md` until its checks pass.
+**Status:** Done locally (2026-11-14). Requirements and design were approved (decisions A1–A10, design items R1–R8), and the user's `implement analytics T14` invocation for all tasks approved this plan. Every group is verified; see `evidence/analytics-T14.md`.
+
+**Revision 2 (2026-11-18, sprint window, A11):** group 8 below records the sprint changes to T14. They were implemented and verified on 2026-11-18 together with boards-membership Revision 2 (its native tasks 11 to 16), so every task in group 8 is checked and points to the files and evidence that prove it. Groups 0 to 7 stay as verified on 2026-11-14. Open outside this plan: Playwright (V10), real-device checks (T15), deployed timing and deployment (T16). Requirements and design were approved (decisions A1–A10 on 2026-11-14, design items R1–R8 with the design approval). Root T14 stays unchecked in `specs/tasks.md` until its checks pass.
 
 **Root task:** T14. Existing root IDs are preserved and no new root ID is proposed.
 
-**Inputs:** `requirements.md` (Requirements 1 to 8, A1–A10), `design.md` (DD1–DD12, Properties 1–14, C34–C38, R1–R8).
+**Inputs:** `requirements.md` (Requirements 1 to 8, A1–A11), `design.md` (DD1–DD15, Properties 1–16, C34–C38 and C40, R1–R8).
 
 ## Dependency gates
 
@@ -173,13 +175,40 @@ This plan implements the board analytics read (E29), the analytics panel on the 
     - Acceptance: `specs/tasks.md` and the native checkboxes agree.
     - _Root: T14_
 
+- [x] 8. Revision 2: sprint window (A11, C40; implemented with boards-membership native tasks 11 to 16)
+  - [x] 8.1 Window selection and the `window` key (backend)
+    - `backend/app/blueprints/analytics/service.py`: add `board_window(access, now)` (the Sprint_Window `[sprint_start 00:00:00Z, the day after sprint_end 00:00:00Z)` with `"sprint"`, or `week_bounds(now)` with `"week"`), keep the `BoardAccess` that `authorize_board` returns, use the bounds in the two event statements (`in_window`) and return `window`. `schema.py`: `AnalyticsSchema.window`. `week_bounds` and the three statements are otherwise unchanged. `tests/analytics_helpers.py`: `DATA_KEYS` gains `window`, plus `sprint_board` and `event_count`.
+    - Acceptance: every earlier analytics test passes unchanged except for the key set, and a board without a sprint still returns the UTC week with `window` `"week"`.
+    - _Requirements: 4.1–4.6, 5.7; Root: T14; Decisions: A2, A11; Design: DD2, DD13_ (native task 12.1 of boards-membership)
+  - [x] 8.2 Sprint window tests (backend)
+    - `backend/tests/test_analytics_sprint.py` (15 tests, clock fixed with `freeze`): the four edge instants, a one-day and a 90-day sprint, a month, a year and a leap-day end, a past and a future sprint (0), no sprint keeps the week, six response keys and a query parameter still 400, a sprint edited and cleared through E08 after events exist (events and `cards_per_column` unchanged), member and admin see one window, and `board_window` as a unit. A mutation check (the end without the extra day) failed 9 of the 15.
+    - Acceptance: the file passes and the full backend suite is 2173 passed, 1 skipped.
+    - _Requirements: 4.1–4.8, 8.3, 8.4; Root: T14; Design: Properties 5, 6, 15_ (native task 12.2)
+  - [x] 8.3 Types, parser and shared date helpers (frontend)
+    - `frontend/lib/types.ts` (`BoardAnalytics.window`), `lib/analytics.ts` (`parseAnalytics` requires `window` to be `"sprint"` or `"week"`) and the new `lib/sprint.ts` (`formatSprintRange`, `sprintFromWindow`, UTC dates, no time). Tests: `lib/analytics.test.ts` (both kinds accepted, a missing, unknown or non-string `window` rejected) and `lib/sprint.test.ts`.
+    - Acceptance: `npx tsc --noEmit` and both test files pass.
+    - _Requirements: 6.2, 8.2; Root: T14; Design: DD15_ (native tasks 13.1, 13.2)
+  - [x] 8.4 Hook, panel and figures (frontend)
+    - `hooks/useBoardAnalytics.ts` takes `sprintKey` and reads again once when it differs from the key the mount used. `components/analytics/AnalyticsPanel.tsx` passes it through. `AnalyticsFigures.tsx` chooses the range line and the labels from `data.window` ("Sprint 16 Nov to 22 Nov" and "this sprint", or the week line and "this week"). `components/boards/BoardShell.tsx` passes `sprintKey` from its sprint state. Tests: `useBoardAnalytics.test.tsx`, `AnalyticsPanel.test.tsx`, `AnalyticsFigures.test.tsx` and `BoardShell.test.tsx`.
+    - Acceptance: the four test files pass, `npm run lint`, `npm run typecheck` and `npm run build` are clean, and the full frontend suite is 2170 passed.
+    - _Requirements: 6.2, 6.3, 6.10, 8.5; Root: T14; Design: DD9, DD14, DD15, Properties 15, 16_ (native tasks 14.2, 14.3)
+  - [x] 8.5 Browser check and timing for a sprint window
+    - `evidence/boards-membership-sprint-measure.mjs` (Playwright, device emulation) checks the analytics dialog for a board with a sprint and one without at 320, 375, 768 and 1280 px: 140 checks, 0 failed. `evidence/analytics-timing.mjs` with `SPRINT_DAYS=90 EXTRA_EVENTS=5000`: p95 12.4 ms (week run 6.2 ms).
+    - Acceptance: both records are in `evidence/boards-membership-T05-T06.md` ("Revision 2: sprint date range") and `evidence/analytics-timing-sprint.json`, with the emulator stated and the real-device check left open.
+    - _Requirements: 7.1–7.5, 8.8; Root: T14_ (native tasks 15.1 to 15.3)
+  - [x] 8.6 Documentation sync
+    - `docs/API.md` (E29 row and shape, C40), `backend/specs/api-contract.md`, `specs/requirements.md` (AC11.1), `specs/design.md` (D6), `specs/traceability.md`, `docs/USER_GUIDE.md`, `docs/TEST-PLAN.md`, the changelogs and `README.md`, and this spec (requirements, design, tasks) aligned on 2026-11-18, with `specs/CHANGELOG.md` and `evidence/spec-review.md`.
+    - Acceptance: the shared documents and this spec say the same about the window, the `window` key and the labels.
+    - _Requirements: 5.6, 8.9; Root: T14_
+  - Open after Revision 2: the Playwright journey of T15 covers the sprint since 2026-11-18 (task 5.3 of local-acceptance), a person's manual walk and a real-device check have not run, and deployed timing is T16.
+
 ## Notes
 
 - Test sub-tasks are not marked optional. Root completion in `specs/tasks.md` needs V08 and V11, so they are required here.
 - Each backend test file covers one concern, as listed in `design.md` ("Backend test files").
 - All database-writing tests clean up automatically through `BoardTracker` and run only on `TEST_DATABASE_URL` (tasks 2.1 to 2.9).
 - Local checks prove local behavior only. Playwright (V10), real-device checks and deployment stay open for T15 and T16.
-- Polling, history of earlier weeks, a week picker, charts, export, analytics across boards, new event kinds, backfilling events and caching are out of scope.
+- Polling, history of earlier weeks or sprints, a week or sprint picker inside the panel, charts, export, analytics across boards, new event kinds, backfilling events and caching are out of scope.
 - Attach `guidelines/backend.md`, `guidelines/database.md` or `guidelines/frontend.md` when creating a file with no matching file context.
 
 ## Task Dependency Graph
@@ -201,7 +230,11 @@ This plan implements the board analytics read (E29), the analytics panel on the 
     { "id": 11, "tasks": ["6.1", "6.2", "6.3"] },
     { "id": 12, "tasks": ["6.4", "7.1"] },
     { "id": 13, "tasks": ["7.2", "7.3", "7.4"] },
-    { "id": 14, "tasks": ["7.5"] }
+    { "id": 14, "tasks": ["7.5"] },
+    { "id": 15, "tasks": ["8.1"] },
+    { "id": 16, "tasks": ["8.2", "8.3"] },
+    { "id": 17, "tasks": ["8.4"] },
+    { "id": 18, "tasks": ["8.5", "8.6"] }
   ]
 }
 ```

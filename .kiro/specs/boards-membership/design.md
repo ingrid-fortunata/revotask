@@ -943,4 +943,4 @@ Documents to align in Finalize: `specs/requirements.md` (AC03.1–AC03.3, AC11.1
 | DR2 | `RenameBoardForm` keeps its file name although it now edits dates. | Keep the name. Renaming a file only for tidiness touches imports and tests with no behavior gain. |
 | DR3 | The create form becomes a stacked layout at all widths (DS11). | Yes. The old row layout does not fit three fields at 375 px. |
 | DR4 | Re-measure E29 on a 90-day Sprint (risk row 1). | Yes, in `tasks.md`. |
-| DR5 | The Playwright date-field step is not added in this revision. | Yes, left for T15 as a recorded follow-up. |
+| DR5 | The Playwright date-field step is not added in this revision. | Yes, left for T15 as a recorded follow-up. **Done 2026-11-18:** local-acceptance task 5.3. |

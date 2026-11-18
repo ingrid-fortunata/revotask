@@ -29,7 +29,7 @@ Playwright only runs tests. It starts nothing.
 | `frontend/e2e/support/tokens.ts` | Reads the `jti` claim from a session cookie value by decoding the payload without verifying it. Writes only `jti` and `expires_at` to the run file. Never writes or prints the token. |
 | `frontend/e2e/global-teardown.ts` | Runs cleanup (section 4) and the post-count. Fails the run if any row is left. |
 | `frontend/e2e/auth.spec.ts` | LA-2, V09. |
-| `frontend/e2e/boards-membership.spec.ts` | LA-3. |
+| `frontend/e2e/boards-membership.spec.ts` | LA-3, including the sprint dates journey (2026-11-18). |
 | `frontend/e2e/kanban.spec.ts` | LA-4. Desktop project uses `dragTo()` and the Move button. Mobile-375 project uses the Move button only. |
 | `frontend/e2e/kanban-rollback.spec.ts` | LA-6. The only file that uses `page.route`. |
 | `frontend/e2e/comments.spec.ts` | LA-5. |
@@ -143,6 +143,7 @@ Step 9 comes after step 8 on purpose. Users are removed first, so the token of a
 | LA-2c V09 private route when signed out | `auth › unauthenticated visit to a private route redirects to login` | As above |
 | LA-2d V09 private route after logout | `auth › private route after logout redirects to login, and the revoked token is refused` | As above |
 | LA-3 membership journey | `boards-membership › create, open, add member, remove member, delete board` and `… unregistered email shows USER_NOT_FOUND` | As above |
+| LA-3 sprint dates | `boards-membership › sprint dates: create, show, edit, clear, member read-only` (`@boards @matrix`, so on all four projects). Fixed calendar dates, so it does not depend on the run day. `createBoardUi(page, name, sprint?)` in `support/ui.ts` fills the two date inputs. The sprint text is matched with an optional year. The board is deleted at the end and the teardown also removes it | As above |
 | LA-4 V10 Kanban journey | `kanban › eight-step journey with dragTo and reload` (desktop) and `kanban › core flow with Move button` (mobile-375) | As above |
 | LA-4 carried steps | `kanban › edit card and assign member` and `kanban › delete card`, inside the journey | As above |
 | LA-5 comments journey | `comments › add, edit, delete, reload` and `comments › member cannot edit or delete author's comment` | As above |

@@ -123,3 +123,12 @@ Both came from the LA-8 audit and are recorded in `evidence/implementation-revie
 ## Readiness statement
 
 Local acceptance T15 passed: LA-1 to LA-11 each have a recorded result, the cleanup count is 0, and the privacy review is complete. The local app is ready for the publishing steps in T16. No deployment, live-service or real-device claim is made.
+
+## Addendum 2026-11-18: LA-3 sprint dates (boards-membership Revision 2, DR5)
+
+- Change: one new test, `boards-membership › sprint dates: create, show, edit, clear, member read-only`, in `frontend/e2e/boards-membership.spec.ts`, and an optional `sprint` argument for `createBoardUi` in `frontend/e2e/support/ui.ts`. No product code changed. Spec: `.kiro/specs/local-acceptance/tasks.md` task 5.3.
+- Environment for this run: native Flask on 127.0.0.1:5001 connected to `revotask_test` (Alembic head `b7c1d4e9a203`), rate limits on, and a **production** Next server (`next start`, localhost:3000, built from the working tree). The 2026-11-15 run above used the dev server. The preflight proved one Flask listener connected to the `_test` database. Chromium emulation, not a real device.
+- Commands and results: `npx playwright test e2e/boards-membership.spec.ts --project=desktop`: 3 passed. The same file with `--project=viewport-320 --project=mobile-375 --project=viewport-768`: 3 passed (the sprint test on each). `npm run e2e` (the full suite, 4 projects): **58 passed, 0 failed** in 1.5 minutes (54 before, plus the sprint test on 4 projects). Each run's teardown verified 0 rows left in every table.
+- Covered: one date only and an end before the start refused in the create dialog with no navigation; the header "Sprint 16 Nov to 22 Nov" with no time, kept after a reload; analytics with the sprint line, "Cards completed this sprint" and no "local time"; a member sees the sprint and has no Edit board button and no date field; an edit with an end before the start refused and the end date focused; a valid edit shown at once and after a reload; Clear dates removes the line and analytics goes back to "Week of" and "this week".
+- Side effect handled: the full run rewrites `evidence/local-acceptance-T15-timing.json` (the timing test). The new numbers were discarded so the 2026-11-15 record stays as it was.
+- Still open: a real phone and the on-screen keyboard (T16), and a person's manual walk of the sprint journey.

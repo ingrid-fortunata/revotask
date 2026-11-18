@@ -341,6 +341,6 @@ The journey of create with dates, header line, edit dates and clear dates ran at
 
 ### Open items
 
-- Playwright journey (`frontend/e2e/boards-membership.spec.ts`) does not yet fill the sprint date fields (design DR5). T15 follow-up.
+- ~~Playwright journey does not yet fill the sprint date fields (design DR5)~~ Done 2026-11-18: `boards-membership › sprint dates` passes on all four projects and the full suite is 58 passed (`evidence/local-acceptance-T15.md`, addendum 2026-11-18).
 - Real-device and on-screen-keyboard checks: T15 and T16.
 - Dev database: `flask db upgrade` was run on the development database to apply `b7c1d4e9a203`. A teammate pulling this change needs the same command (`docs/DEVELOPMENT.md`).

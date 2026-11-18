@@ -4,6 +4,10 @@ Newest date first. Each `## YYYY-MM-DD` heading groups the commits made that day
 
 ## 2026-11-18
 
+### 6b504d0 test: cover board sprint dates in the Playwright suite
+
+- The local acceptance journey `boards-membership › sprint dates` creates a board with a sprint, checks the header line and the analytics dialog, a member's read-only view, an edit (refused and valid), and Clear dates. It runs on all four projects. Full suite: 58 passed (54 before), 0 failed, cleanup count 0 (emulation, production Next server).
+
 ### 9f49570 feat: add sprint dates to board forms, header and analytics
 
 - A board can have a sprint. The create-board dialog has optional "Sprint start" and "Sprint end" date fields, an Admin changes or clears them from "Edit board" (formerly "Rename board", now also the dates and a "Clear dates" button), and the board header shows "Sprint 16 Nov to 22 Nov". A sprint is both dates or neither, ends on or after its start and is at most 90 days. Invalid or partial ranges show a field error.
