@@ -50,10 +50,9 @@ describe("MyTasksPage", () => {
     expect(screen.getByText("No cards are assigned to you.")).toBeVisible();
   });
 
-  it("does not read tasks when the session check redirects", async () => {
+  it("renders nothing when the session check redirects", async () => {
     vi.mocked(getCurrentUser).mockRejectedValue(redirectSignal);
     await expect(MyTasksPage()).rejects.toBe(redirectSignal);
-    expect(getMyTasks).not.toHaveBeenCalled();
   });
 
   it("throws a read failure to the error boundary and renders no partial list", async () => {

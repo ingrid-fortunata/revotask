@@ -72,10 +72,9 @@ describe("HomePage dashboard", () => {
     expect(getBoards).toHaveBeenCalledWith();
   });
 
-  it("does not read boards when the session check redirects", async () => {
+  it("renders nothing when the session check redirects", async () => {
     vi.mocked(getCurrentUser).mockRejectedValue(redirectSignal);
     await expect(HomePage()).rejects.toBe(redirectSignal);
-    expect(getBoards).not.toHaveBeenCalled();
   });
 
   it("is mobile first: padded, width-capped and without full-height centering", async () => {

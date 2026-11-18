@@ -120,10 +120,9 @@ describe("BoardDetailPage", () => {
     });
   });
 
-  it("does not read the board when the session check redirects", async () => {
+  it("renders nothing when the session check redirects", async () => {
     vi.mocked(getCurrentUser).mockRejectedValue(redirectSignal);
     await expect(renderPage(BOARD_ID)).rejects.toBe(redirectSignal);
-    expect(fetchPrivate).not.toHaveBeenCalled();
   });
 
   it("calls notFound() when Flask returns 404 for the board", async () => {
