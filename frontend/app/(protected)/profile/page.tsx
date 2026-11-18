@@ -3,8 +3,7 @@ import { getCurrentUser } from "@/lib/server/session";
 
 // Profile (Requirements 4.1 to 4.9). The session is verified here, not only in the layout (DD6).
 // getCurrentUser() is cached per request, so the layout and this page share one E30 read, and no
-// token reaches the browser. A read failure throws to app/error.tsx, and there is no loading.tsx,
-// because redirect() in a streaming context would not send an HTTP redirect.
+// token reaches the browser. A read failure throws to app/error.tsx.
 export default async function ProfilePage() {
   const user = await getCurrentUser();
   return (

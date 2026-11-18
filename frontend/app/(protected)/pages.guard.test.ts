@@ -28,9 +28,10 @@ describe("protected pages verify the session", () => {
     expect(source).toMatch(/\b(getCurrentUser|fetchPrivate)\(/);
   });
 
-  it("has no loading.tsx, which makes redirect() stream a meta tag instead of an HTTP redirect", () => {
-    const names = readdirSync(ROOT);
-    expect(names).not.toContain("loading.tsx");
+  it("keeps the session check in the layout, above loading.tsx, so redirect() still sends an HTTP 307", () => {
+    const layout = readFileSync(join(ROOT, "layout.tsx"), "utf8");
+    expect(layout).toMatch(/await getCurrentUser\(\)/);
+    expect(readdirSync(ROOT)).toContain("loading.tsx");
   });
 });
 
