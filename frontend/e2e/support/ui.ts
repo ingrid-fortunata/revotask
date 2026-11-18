@@ -11,11 +11,19 @@ export async function signInUi(page: Page, email: string, password: string): Pro
   await expect(page).toHaveURL(/\/$/);
 }
 
-export async function createBoardUi(page: Page, name: string): Promise<void> {
+export type SprintDates = { start: string; end: string };
+
+// A sprint is optional (boards-membership Revision 2). Dates are `YYYY-MM-DD`, filled into the two
+// native date inputs.
+export async function createBoardUi(page: Page, name: string, sprint?: SprintDates): Promise<void> {
   await page.goto("/");
   await page.getByRole("button", { name: "Create board" }).click();
   const dialog = page.getByRole("dialog", { name: "Create a board" });
   await dialog.getByLabel("Board name").fill(name);
+  if (sprint) {
+    await dialog.getByLabel("Sprint start").fill(sprint.start);
+    await dialog.getByLabel("Sprint end").fill(sprint.end);
+  }
   await dialog.getByRole("button", { name: "Create board" }).click();
   await expect(page).toHaveURL(/\/boards\/[0-9a-f-]{36}$/);
   await expect(page.getByRole("heading", { name })).toBeVisible();
