@@ -8,6 +8,8 @@ import type { BoardRole } from "@/lib/types";
 export interface BoardHeaderProps {
   name: string;
   role: BoardRole;
+  /** "Sprint 16 Nov to 22 Nov", shown under the title. Absent for a board without a sprint. */
+  sprintLabel?: string | null;
   renameOpen: boolean;
   renameButtonRef: RefObject<HTMLButtonElement | null>;
   onToggleRename: () => void;
@@ -20,11 +22,13 @@ export interface BoardHeaderProps {
 
 const ROLE_LABEL: Record<BoardRole, string> = { admin: "Admin", member: "Member" };
 
-// Name as the h1, role badge, and Rename and Delete for Admin only (Requirements 2.7, 3.10).
+// Name as the h1, role badge, the sprint line, and Edit and Delete for Admin only (Requirements 2.7,
+// 3.10, 8.12, 8.13).
 // Mobile: the name wraps (min-w-0 break-words) and the buttons wrap below it (FE-S4, FE-S5).
 export function BoardHeader({
   name,
   role,
+  sprintLabel,
   renameOpen,
   renameButtonRef,
   onToggleRename,
@@ -49,6 +53,7 @@ export function BoardHeader({
           <h1 className="min-w-0 break-words text-2xl font-semibold tracking-tight sm:text-3xl">{name}</h1>
           <BaseBadge variant={role === "admin" ? "primary" : "ghost"}>{ROLE_LABEL[role]}</BaseBadge>
         </div>
+        {sprintLabel ? <p className="min-w-0 break-words text-sm text-base-content/70">{sprintLabel}</p> : null}
         {children}
       </div>
       {controls.canRename || controls.canDelete || titleActions ? (
@@ -62,7 +67,7 @@ export function BoardHeader({
               aria-expanded={renameOpen}
               onClick={onToggleRename}
             >
-              Rename board
+              Edit board
             </BaseButton>
           ) : null}
           {controls.canDelete ? (

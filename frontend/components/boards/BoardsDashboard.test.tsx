@@ -20,20 +20,20 @@ const ALPHA: BoardSummary = {
   id: "11111111-1111-4111-8111-111111111111",
   name: "Alpha",
   role: "admin",
-  position_version: 0,
+  position_version: 0, sprint_start: null, sprint_end: null,
 };
 const DELTA: BoardSummary = {
   id: "22222222-2222-4222-8222-222222222222",
   name: "Delta",
   role: "member",
-  position_version: 0,
+  position_version: 0, sprint_start: null, sprint_end: null,
 };
 const CHARLIE_ID = "33333333-3333-4333-8333-333333333333";
 const CHARLIE: BoardSummary = {
   id: CHARLIE_ID,
   name: "Charlie",
   role: "admin",
-  position_version: 0,
+  position_version: 0, sprint_start: null, sprint_end: null,
 };
 
 beforeEach(() => {

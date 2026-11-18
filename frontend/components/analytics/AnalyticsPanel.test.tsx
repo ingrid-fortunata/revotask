@@ -18,6 +18,7 @@ const onAccessLost = vi.fn();
 const FIGURES = {
   week_start: "2026-11-09T00:00:00Z",
   week_end: "2026-11-16T00:00:00Z",
+  window: "week",
   cards_per_column: [{ column_id: "c1", name: "To do", count: 2 }],
   completed_cards: 3,
   member_activity: [{ user_id: "u1", name: "Ana", count: 4 }],
@@ -43,7 +44,7 @@ function deferred<T>() {
 
 // Renders the closed panel, then opens it and waits for the first read.
 async function renderOpen(version = 0) {
-  const view = render(<AnalyticsPanel boardId={BOARD} version={version} onAccessLost={onAccessLost} />);
+  const view = render(<AnalyticsPanel boardId={BOARD} version={version} sprintKey="|" onAccessLost={onAccessLost} />);
   fireEvent.click(showButton());
   await flush();
   return view;
@@ -58,7 +59,7 @@ beforeEach(() => {
 
 describe("closed by default", () => {
   it("shows only the Analytics button and sends no read", () => {
-    render(<AnalyticsPanel boardId={BOARD} version={0} onAccessLost={onAccessLost} />);
+    render(<AnalyticsPanel boardId={BOARD} version={0} sprintKey="|" onAccessLost={onAccessLost} />);
     expect(showButton()).toHaveAttribute("aria-haspopup", "dialog");
     expect(showButton()).toHaveAttribute("aria-expanded", "false");
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
@@ -66,7 +67,7 @@ describe("closed by default", () => {
   });
 
   it("the button is a 44 px control and opens the dialog, which reads once", async () => {
-    render(<AnalyticsPanel boardId={BOARD} version={0} onAccessLost={onAccessLost} />);
+    render(<AnalyticsPanel boardId={BOARD} version={0} sprintKey="|" onAccessLost={onAccessLost} />);
     expect(showButton().className).toMatch(/min-h-11/);
     fireEvent.click(showButton());
     await flush();
@@ -79,7 +80,7 @@ describe("closed by default", () => {
   it("Close and Escape close the dialog and abort the read in flight", async () => {
     const pending = deferred<unknown>();
     vi.mocked(apiGet).mockReturnValueOnce(pending.promise as never);
-    render(<AnalyticsPanel boardId={BOARD} version={0} onAccessLost={onAccessLost} />);
+    render(<AnalyticsPanel boardId={BOARD} version={0} sprintKey="|" onAccessLost={onAccessLost} />);
     fireEvent.click(showButton());
     const signal = vi.mocked(apiGet).mock.calls[0][1] as AbortSignal;
     fireEvent.click(within(dialog()).getByRole("button", { name: "Close" }));
@@ -96,11 +97,11 @@ describe("closed by default", () => {
   });
 
   it("reads fresh figures when reopened after a version change", async () => {
-    const view = render(<AnalyticsPanel boardId={BOARD} version={0} onAccessLost={onAccessLost} />);
+    const view = render(<AnalyticsPanel boardId={BOARD} version={0} sprintKey="|" onAccessLost={onAccessLost} />);
     fireEvent.click(showButton());
     await flush();
     fireEvent.click(within(dialog()).getByRole("button", { name: "Close" }));
-    view.rerender(<AnalyticsPanel boardId={BOARD} version={5} onAccessLost={onAccessLost} />);
+    view.rerender(<AnalyticsPanel boardId={BOARD} version={5} sprintKey="|" onAccessLost={onAccessLost} />);
     await flush();
     expect(apiGet).toHaveBeenCalledTimes(1); // closed, so no read on the version rise
     fireEvent.click(showButton());
@@ -112,7 +113,7 @@ describe("closed by default", () => {
 describe("states", () => {
   it("shows a loading state before the first response", () => {
     vi.mocked(apiGet).mockReturnValue(new Promise(() => {}));
-    render(<AnalyticsPanel boardId={BOARD} version={0} onAccessLost={onAccessLost} />);
+    render(<AnalyticsPanel boardId={BOARD} version={0} sprintKey="|" onAccessLost={onAccessLost} />);
     fireEvent.click(showButton());
     expect(visible("Loading analytics…")).toHaveLength(1);
     expect(live()).toHaveTextContent("Loading analytics…");
@@ -199,7 +200,7 @@ describe("Refresh", () => {
 
   it("reads again when the version prop rises while open", async () => {
     const view = await renderOpen(0);
-    view.rerender(<AnalyticsPanel boardId={BOARD} version={1} onAccessLost={onAccessLost} />);
+    view.rerender(<AnalyticsPanel boardId={BOARD} version={1} sprintKey="|" onAccessLost={onAccessLost} />);
     await flush();
     expect(vi.mocked(apiGet)).toHaveBeenCalledTimes(2);
   });
@@ -209,3 +210,42 @@ describe("Refresh", () => {
     expect(within(dialog()).queryByRole("status")).not.toBeInTheDocument();
   });
 });
+
+// Revision 2 (Requirement 9.8): the panel passes the sprint key to the hook.
+describe("AnalyticsPanel sprint (Revision 2)", () => {
+  const SPRINT_FIGURES = {
+    ...FIGURES,
+    window: "sprint",
+    week_start: "2026-11-16T00:00:00Z",
+    week_end: "2026-11-23T00:00:00Z",
+  };
+
+  it("shows the sprint line and labels when E29 answers a sprint window", async () => {
+    vi.mocked(apiGet).mockResolvedValue(SPRINT_FIGURES);
+    await renderOpen();
+    expect(within(dialog()).getByText(/^Sprint 16 Nov( 2026)? to 22 Nov( 2026)?$/)).toBeInTheDocument();
+    expect(within(dialog()).getByText("Cards completed this sprint")).toBeInTheDocument();
+  });
+
+  it("reads again when the sprint key changes while open and shows the new window", async () => {
+    vi.mocked(apiGet).mockResolvedValueOnce(FIGURES).mockResolvedValueOnce(SPRINT_FIGURES);
+    const view = await renderOpen(0);
+    expect(within(dialog()).getByText("Cards completed this week")).toBeInTheDocument();
+    view.rerender(
+      <AnalyticsPanel boardId={BOARD} version={0} sprintKey="2026-11-16|2026-11-22" onAccessLost={onAccessLost} />,
+    );
+    await flush();
+    expect(vi.mocked(apiGet)).toHaveBeenCalledTimes(2);
+    expect(within(dialog()).getByText("Cards completed this sprint")).toBeInTheDocument();
+  });
+
+  it("does not read when the sprint key changes while closed", async () => {
+    const view = render(<AnalyticsPanel boardId={BOARD} version={0} sprintKey="|" onAccessLost={onAccessLost} />);
+    view.rerender(
+      <AnalyticsPanel boardId={BOARD} version={0} sprintKey="2026-11-16|2026-11-22" onAccessLost={onAccessLost} />,
+    );
+    await flush();
+    expect(vi.mocked(apiGet)).not.toHaveBeenCalled();
+  });
+});
+

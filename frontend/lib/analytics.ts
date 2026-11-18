@@ -44,12 +44,13 @@ function parseActivityCount(item: unknown): ActivityCount {
   return { user_id: item.user_id, name: item.name, count: item.count };
 }
 
-/** E29 allowlist: copies the five documented keys and throws ApiError on any other shape. */
+/** E29 allowlist: copies the six documented keys and throws ApiError on any other shape. */
 export function parseAnalytics(value: unknown): BoardAnalytics {
   if (
     !isRecord(value) ||
     !isUtcTimestamp(value.week_start) ||
     !isUtcTimestamp(value.week_end) ||
+    (value.window !== "sprint" && value.window !== "week") ||
     !isCount(value.completed_cards) ||
     !Array.isArray(value.cards_per_column) ||
     !Array.isArray(value.member_activity)
@@ -59,6 +60,7 @@ export function parseAnalytics(value: unknown): BoardAnalytics {
   return {
     week_start: value.week_start,
     week_end: value.week_end,
+    window: value.window,
     cards_per_column: value.cards_per_column.map(parseColumnCount),
     completed_cards: value.completed_cards,
     member_activity: value.member_activity.map(parseActivityCount),

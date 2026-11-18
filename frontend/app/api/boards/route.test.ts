@@ -117,6 +117,38 @@ describe("POST /api/boards", () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
+  it("forwards the optional sprint pair with the name and nothing else (Requirement 8.15)", async () => {
+    fetchMock.mockResolvedValue(jsonReply(201, { data: BOARD }));
+    const body = { name: "Roadmap", sprint_start: "2026-11-16", sprint_end: "2026-11-22" };
+    const response = await call({ cookie: COOKIE, body });
+    expect(response.status).toBe(201);
+    expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toEqual(body);
+  });
+
+  it("forwards both sprint keys as null and still refuses a sprint key without a name", async () => {
+    fetchMock.mockResolvedValue(jsonReply(201, { data: BOARD }));
+    const nulls = { name: "Roadmap", sprint_start: null, sprint_end: null };
+    await call({ cookie: COOKIE, body: nulls });
+    expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toEqual(nulls);
+
+    fetchMock.mockClear();
+    const response = await call({ cookie: COOKIE, body: { sprint_start: "2026-11-16", sprint_end: "2026-11-22" } });
+    expect(response.status).toBe(400);
+    expect((await response.json()).error.fields).toEqual({ name: "Required." });
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("passes a Flask sprint field error through", async () => {
+    fetchMock.mockResolvedValue(
+      jsonReply(400, {
+        error: { code: "VALIDATION_ERROR", message: "Check the submitted fields.", fields: { sprint_end: "Must be on or after the start date." } },
+      }),
+    );
+    const response = await call({ cookie: COOKIE, body: { name: "R", sprint_start: "2026-11-22", sprint_end: "2026-11-16" } });
+    expect(response.status).toBe(400);
+    expect((await response.json()).error.fields).toEqual({ sprint_end: "Must be on or after the start date." });
+  });
+
   it("forwards the name as POST to the boards path with the cookie bearer and returns the created board", async () => {
     fetchMock.mockResolvedValue(jsonReply(201, { data: BOARD }));
     const response = await call({ cookie: COOKIE, body: { name: "Roadmap" } });

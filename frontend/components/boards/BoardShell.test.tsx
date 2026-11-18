@@ -1,6 +1,6 @@
-import { act, render, screen, waitFor, within } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { apiGet, apiRequest } from "@/lib/apiClient";
 import { BOARD_ACCESS_MESSAGE } from "@/lib/boardErrors";
 import { ApiError } from "@/lib/errors";
@@ -26,6 +26,8 @@ const ADMIN_BOARD: BoardSummary = {
   name: "Alpha",
   role: "admin",
   position_version: 0,
+  sprint_start: null,
+  sprint_end: null,
 };
 const MEMBER_BOARD: BoardSummary = { ...ADMIN_BOARD, role: "member" };
 const MEMBERS: Membership[] = [
@@ -38,6 +40,7 @@ const MEMBERS: Membership[] = [
 const ANALYTICS = {
   week_start: "2026-11-09T00:00:00Z",
   week_end: "2026-11-16T00:00:00Z",
+  window: "week",
   cards_per_column: [],
   completed_cards: 0,
   member_activity: [],
@@ -109,7 +112,7 @@ describe("BoardShell member view (Requirement 3.10)", () => {
     renderShell(MEMBER_BOARD);
     expect(within(headerOf()).getByText("Member")).toBeInTheDocument();
     expect(
-      screen.queryByRole("button", { name: "Rename board" }),
+      screen.queryByRole("button", { name: "Edit board" }),
     ).not.toBeInTheDocument();
     expect(
       screen.queryByRole("button", { name: "Delete board" }),
@@ -125,12 +128,12 @@ describe("BoardShell rename (Requirements 3.7, 2.10)", () => {
     vi.mocked(apiRequest).mockResolvedValue({ ...ADMIN_BOARD, name: "Bravo" });
     renderShell(ADMIN_BOARD);
     const user = userEvent.setup();
-    await user.click(screen.getByRole("button", { name: "Rename board" }));
-    const form = screen.getByRole("form", { name: "Rename board" });
+    await user.click(screen.getByRole("button", { name: "Edit board" }));
+    const form = screen.getByRole("form", { name: "Edit board" });
     const input = within(form).getByLabelText("Board name");
     await user.clear(input);
     await user.type(input, "Bravo");
-    await user.click(within(form).getByRole("button", { name: "Save name" }));
+    await user.click(within(form).getByRole("button", { name: "Save changes" }));
     await waitFor(() =>
       expect(
         screen.getByRole("heading", { level: 1, name: "Bravo" }),
@@ -142,24 +145,24 @@ describe("BoardShell rename (Requirements 3.7, 2.10)", () => {
       { name: "Bravo" },
     );
     expect(
-      screen.queryByRole("form", { name: "Rename board" }),
+      screen.queryByRole("form", { name: "Edit board" }),
     ).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Rename board" })).toHaveFocus();
+    expect(screen.getByRole("button", { name: "Edit board" })).toHaveFocus();
     expect(push).not.toHaveBeenCalled();
   });
 
   it("closes the rename form on Cancel, keeps the name and returns focus to Rename", async () => {
     renderShell(ADMIN_BOARD);
     const user = userEvent.setup();
-    await user.click(screen.getByRole("button", { name: "Rename board" }));
+    await user.click(screen.getByRole("button", { name: "Edit board" }));
     await user.click(screen.getByRole("button", { name: "Cancel" }));
     expect(
-      screen.queryByRole("form", { name: "Rename board" }),
+      screen.queryByRole("form", { name: "Edit board" }),
     ).not.toBeInTheDocument();
     expect(
       screen.getByRole("heading", { level: 1, name: "Alpha" }),
     ).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Rename board" })).toHaveFocus();
+    expect(screen.getByRole("button", { name: "Edit board" })).toHaveFocus();
     expect(apiRequest).not.toHaveBeenCalled();
   });
 
@@ -173,8 +176,8 @@ describe("BoardShell rename (Requirements 3.7, 2.10)", () => {
     );
     renderShell(ADMIN_BOARD);
     const user = userEvent.setup();
-    await user.click(screen.getByRole("button", { name: "Rename board" }));
-    await user.click(screen.getByRole("button", { name: "Save name" }));
+    await user.click(screen.getByRole("button", { name: "Edit board" }));
+    await user.click(screen.getByRole("button", { name: "Save changes" }));
     await waitFor(() => expect(push).toHaveBeenCalledExactlyOnceWith("/"));
     expect(notifyError).toHaveBeenCalledWith(BOARD_ACCESS_MESSAGE);
   });
@@ -298,7 +301,7 @@ describe("BoardShell delete (Requirements 3.8, 3.9, 2.10)", () => {
 describe("BoardShell mobile controls", () => {
   it("gives the header controls a 44 px tappable area", () => {
     renderShell(ADMIN_BOARD);
-    expect(screen.getByRole("button", { name: "Rename board" })).toHaveClass(
+    expect(screen.getByRole("button", { name: "Edit board" })).toHaveClass(
       "min-h-11",
       "min-w-11",
     );
@@ -447,7 +450,7 @@ describe("BoardShell analytics panel", () => {
     const button = screen.getByRole("button", { name: "Analytics" });
     expect(name.closest("header")).toContainElement(button);
     expect(name.parentElement).not.toContainElement(button);
-    expect(button.parentElement).toContainElement(screen.getByRole("button", { name: "Rename board" }));
+    expect(button.parentElement).toContainElement(screen.getByRole("button", { name: "Edit board" }));
   });
 
   it("reads E29 again after a successful move raises the version, and not after a failed move", async () => {
@@ -508,3 +511,95 @@ describe("BoardShell analytics panel", () => {
     expect(push).toHaveBeenCalledWith("/");
   });
 });
+
+// Revision 2 (Requirements 8.12, 8.13, 9.8): the sprint in the shell.
+describe("BoardShell sprint", () => {
+  const SPRINT_BOARD: BoardSummary = { ...ADMIN_BOARD, sprint_start: "2026-11-16", sprint_end: "2026-11-22" };
+  // A fixed date in 2026 keeps "Sprint 16 Nov to 22 Nov" free of the year.
+  beforeEach(() => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date("2026-11-18T10:00:00Z"));
+  });
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("shows the sprint line for a board with a sprint and none without one", () => {
+    renderShell(SPRINT_BOARD);
+    expect(screen.getByText("Sprint 16 Nov to 22 Nov")).toBeInTheDocument();
+    cleanup();
+    renderShell(ADMIN_BOARD);
+    expect(screen.queryByText(/^Sprint /)).not.toBeInTheDocument();
+  });
+
+  it("shows the sprint line to a member and hides the edit controls", () => {
+    renderShell({ ...SPRINT_BOARD, role: "member" });
+    expect(screen.getByText("Sprint 16 Nov to 22 Nov")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Edit board" })).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Sprint start")).not.toBeInTheDocument();
+  });
+
+  it("saves new dates, shows the updated line without a reload and keeps the name", async () => {
+    vi.mocked(apiRequest).mockResolvedValue({ ...SPRINT_BOARD, sprint_start: "2026-12-01", sprint_end: "2026-12-07" });
+    renderShell(SPRINT_BOARD);
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    await user.click(screen.getByRole("button", { name: "Edit board" }));
+    const form = screen.getByRole("form", { name: "Edit board" });
+    expect(within(form).getByLabelText("Sprint start")).toHaveValue("2026-11-16");
+    fireEvent.change(within(form).getByLabelText("Sprint start"), { target: { value: "2026-12-01" } });
+    fireEvent.change(within(form).getByLabelText("Sprint end"), { target: { value: "2026-12-07" } });
+    await user.click(within(form).getByRole("button", { name: "Save changes" }));
+    await waitFor(() => expect(screen.getByText("Sprint 1 Dec to 7 Dec")).toBeInTheDocument());
+    expect(screen.queryByText("Sprint 16 Nov to 22 Nov")).not.toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 1, name: "Alpha" })).toBeInTheDocument();
+    expect(screen.queryByRole("form", { name: "Edit board" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Edit board" })).toHaveFocus();
+  });
+
+  it("clears the sprint and removes the line", async () => {
+    vi.mocked(apiRequest).mockResolvedValue({ ...SPRINT_BOARD, sprint_start: null, sprint_end: null });
+    renderShell(SPRINT_BOARD);
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    await user.click(screen.getByRole("button", { name: "Edit board" }));
+    await user.click(screen.getByRole("button", { name: "Clear dates" }));
+    await user.click(screen.getByRole("button", { name: "Save changes" }));
+    await waitFor(() => expect(screen.queryByText(/^Sprint /)).not.toBeInTheDocument());
+    expect(apiRequest).toHaveBeenCalledWith("PATCH", `/api/boards/${BOARD_ID}`, {
+      name: "Alpha",
+      sprint_start: null,
+      sprint_end: null,
+    });
+  });
+
+  it("shows the new dates in the form the next time it opens", async () => {
+    vi.mocked(apiRequest).mockResolvedValue({ ...SPRINT_BOARD, sprint_start: "2026-12-01", sprint_end: "2026-12-07" });
+    renderShell(SPRINT_BOARD);
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    await user.click(screen.getByRole("button", { name: "Edit board" }));
+    fireEvent.change(screen.getByLabelText("Sprint start"), { target: { value: "2026-12-01" } });
+    fireEvent.change(screen.getByLabelText("Sprint end"), { target: { value: "2026-12-07" } });
+    await user.click(screen.getByRole("button", { name: "Save changes" }));
+    await waitFor(() => expect(screen.queryByRole("form", { name: "Edit board" })).not.toBeInTheDocument());
+    await user.click(screen.getByRole("button", { name: "Edit board" }));
+    expect(screen.getByLabelText("Sprint start")).toHaveValue("2026-12-01");
+  });
+
+  it("opens analytics in a sprint window with sprint labels", async () => {
+    mockGets(
+      () => undefined,
+      () => ({
+        ...ANALYTICS,
+        week_start: "2026-11-16T00:00:00Z",
+        week_end: "2026-11-23T00:00:00Z",
+        window: "sprint",
+      }),
+    );
+    renderShell(SPRINT_BOARD);
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    await user.click(screen.getByRole("button", { name: "Analytics" }));
+    const dialog = await screen.findByRole("dialog", { name: "Analytics" });
+    expect(await within(dialog).findByText("Sprint 16 Nov to 22 Nov")).toBeInTheDocument();
+    expect(within(dialog).getByText("Cards completed this sprint")).toBeInTheDocument();
+  });
+});
+

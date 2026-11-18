@@ -4,7 +4,7 @@ export interface FormFieldProps {
   id: string;
   name: string;
   label: string;
-  type?: "text" | "email" | "password" | "search";
+  type?: "text" | "email" | "password" | "search" | "date";
   value: string;
   error?: string;
   /** Visible help text, linked to the input with aria-describedby. */

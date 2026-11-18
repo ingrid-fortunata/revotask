@@ -13,6 +13,9 @@ export type BoardSummary = {
   name: string;
   role: BoardRole;
   position_version: number;
+  /** The optional sprint, `YYYY-MM-DD`. Both dates or neither (docs/API.md C39). */
+  sprint_start: string | null;
+  sprint_end: string | null;
 };
 
 // Kanban shapes from docs/API.md (Card, Column, ColumnWithCards, BoardDetail).
@@ -58,12 +61,14 @@ export type HeldSearch = { query: string; items: SearchResult[] };
 /** A result as shown: the card's current title and its current column name. */
 export type VisibleResult = { cardId: string; title: string; columnName: string };
 
-// Board analytics shape from docs/API.md (E29). `week_end` is exclusive. Counts are whole numbers.
+// Board analytics shape from docs/API.md (E29). `week_end` is exclusive, and the window is the board's sprint or the UTC week. Counts are whole numbers.
 export type ColumnCount = { column_id: string; name: string; count: number };
 export type ActivityCount = { user_id: string; name: string; count: number };
 export type BoardAnalytics = {
   week_start: string;
   week_end: string;
+  /** `"sprint"` when the window is the board's sprint, `"week"` for the UTC week (C40). */
+  window: "sprint" | "week";
   cards_per_column: ColumnCount[];
   completed_cards: number;
   member_activity: ActivityCount[];

@@ -13,6 +13,7 @@ import { useKanbanBoard } from "@/hooks/useKanbanBoard";
 import { apiRequest } from "@/lib/apiClient";
 import { BOARD_ACCESS_MESSAGE, isBoardAccessError, isForbiddenError } from "@/lib/boardErrors";
 import { boardControls } from "@/lib/boardPermissions";
+import { formatSprintRange } from "@/lib/sprint";
 import { notifyError } from "@/lib/toast";
 import type { BoardSummary, ColumnWithCards, Membership } from "@/lib/types";
 
@@ -25,8 +26,8 @@ export interface BoardShellProps {
   members: Membership[];
 }
 
-// Client island for the board page (FE-C1, FE-C2). It owns the header name after a rename, the
-// rename form, the delete confirmation (Requirements 2.7, 3.7–3.9) and the Kanban state. The
+// Client island for the board page (FE-C1, FE-C2). It owns the header name and the sprint after an
+// edit (E08, Requirements 8.12, 8.13), the edit form, the delete confirmation (Requirements 2.7, 3.7–3.9) and the Kanban state. The
 // Kanban hook lives here, so a member removal in the Members_Panel can ask it to refetch the
 // board (Requirement 6.8, K12). The members avatars sit in the header under the title, and the
 // columns take the full page width below it.
@@ -34,6 +35,7 @@ export function BoardShell({ board, columns, members }: BoardShellProps) {
   const router = useRouter();
   const { handleError } = useErrorHandler();
   const [name, setName] = useState(board.name);
+  const [sprint, setSprint] = useState({ sprint_start: board.sprint_start, sprint_end: board.sprint_end });
   const [renameOpen, setRenameOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deletePending, setDeletePending] = useState(false);
@@ -50,8 +52,9 @@ export function BoardShell({ board, columns, members }: BoardShellProps) {
     renameButtonRef.current?.focus();
   }
 
-  function handleRenamed(updatedName: string) {
-    setName(updatedName);
+  function handleSaved(saved: { name: string; sprint_start: string | null; sprint_end: string | null }) {
+    setName(saved.name);
+    setSprint({ sprint_start: saved.sprint_start, sprint_end: saved.sprint_end });
     closeRename();
   }
 
@@ -92,12 +95,20 @@ export function BoardShell({ board, columns, members }: BoardShellProps) {
       <BoardHeader
         name={name}
         role={board.role}
+        sprintLabel={
+          sprint.sprint_start && sprint.sprint_end ? formatSprintRange(sprint.sprint_start, sprint.sprint_end) : null
+        }
         renameOpen={renameOpen}
         renameButtonRef={renameButtonRef}
         onToggleRename={() => setRenameOpen((open) => !open)}
         onRequestDelete={() => setDeleteOpen(true)}
         titleActions={
-          <AnalyticsPanel boardId={board.id} version={kanban.version} onAccessLost={handleAccessLost} />
+          <AnalyticsPanel
+            boardId={board.id}
+            version={kanban.version}
+            sprintKey={`${sprint.sprint_start ?? ""}|${sprint.sprint_end ?? ""}`}
+            onAccessLost={handleAccessLost}
+          />
         }
       >
         <MembersPanel
@@ -112,7 +123,8 @@ export function BoardShell({ board, columns, members }: BoardShellProps) {
           <RenameBoardForm
             boardId={board.id}
             currentName={name}
-            onRenamed={handleRenamed}
+            currentSprint={sprint}
+            onSaved={handleSaved}
             onClose={closeRename}
           />
         </div>

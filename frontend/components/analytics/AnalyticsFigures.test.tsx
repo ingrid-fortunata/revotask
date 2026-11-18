@@ -8,6 +8,7 @@ import { AnalyticsFigures } from "./AnalyticsFigures";
 const DATA: BoardAnalytics = {
   week_start: "2026-11-09T00:00:00Z",
   week_end: "2026-11-16T00:00:00Z",
+  window: "week",
   cards_per_column: [
     { column_id: "c1", name: "To do", count: 3 },
     { column_id: "c2", name: "In progress", count: 0 },
@@ -91,3 +92,56 @@ describe("AnalyticsFigures", () => {
     expect(rowsOf("Cards per column").map((row) => row.textContent)).toEqual(["To do3", "In progress0", "Done6"]);
   });
 });
+
+// Revision 2 (Requirements 9.6, 9.7): a sprint window reads as a sprint.
+describe("AnalyticsFigures with a sprint window", () => {
+  const SPRINT: BoardAnalytics = {
+    ...DATA,
+    window: "sprint",
+    week_start: "2026-11-16T00:00:00Z",
+    week_end: "2026-11-23T00:00:00Z",
+  };
+
+  it("shows the sprint dates with no time and sprint labels", () => {
+    render(<AnalyticsFigures data={SPRINT} />);
+    expect(screen.getByText(/^Sprint 16 Nov to 22 Nov$|^Sprint 16 Nov 2026 to 22 Nov 2026$/)).toBeInTheDocument();
+    expect(screen.queryByText(/local time/)).not.toBeInTheDocument();
+    expect(screen.getByText("Cards completed this sprint")).toBeInTheDocument();
+    expect(rowsOf("Activity this sprint").map((row) => row.textContent)).toEqual(["Ana Lee9", "Ben Ortiz5"]);
+    expect(screen.queryByText(/this week/)).not.toBeInTheDocument();
+  });
+
+  it("shows a one-day sprint as one date twice", () => {
+    render(
+      <AnalyticsFigures
+        data={{ ...SPRINT, week_start: "2026-11-18T00:00:00Z", week_end: "2026-11-19T00:00:00Z" }}
+      />,
+    );
+    expect(screen.getByText(/^Sprint 18 Nov( 2026)? to 18 Nov( 2026)?$/)).toBeInTheDocument();
+  });
+
+  it("shows both years for a sprint across a year", () => {
+    render(
+      <AnalyticsFigures
+        data={{ ...SPRINT, week_start: "2026-12-28T00:00:00Z", week_end: "2027-01-04T00:00:00Z" }}
+      />,
+    );
+    expect(screen.getByText("Sprint 28 Dec 2026 to 3 Jan 2027")).toBeInTheDocument();
+  });
+
+  it("shows the sprint empty state and zeros for an empty sprint", () => {
+    render(<AnalyticsFigures data={{ ...SPRINT, cards_per_column: [], completed_cards: 0, member_activity: [] }} />);
+    expect(screen.getByText("No activity this sprint.")).toBeInTheDocument();
+    expect(screen.getByText("0")).toBeInTheDocument();
+  });
+
+  it("renders a hostile name as text in a sprint too", () => {
+    const hostile = "<img src=x onerror=alert(1)>";
+    const { container } = render(
+      <AnalyticsFigures data={{ ...SPRINT, member_activity: [{ user_id: "u", name: hostile, count: 1 }] }} />,
+    );
+    expect(container.querySelector("img")).toBeNull();
+    expect(screen.getByText(hostile)).toBeInTheDocument();
+  });
+});
+

@@ -1,4 +1,5 @@
 import { barPercent, formatWeekRange } from "@/lib/analytics";
+import { formatSprintRange, sprintFromWindow } from "@/lib/sprint";
 import type { BoardAnalytics } from "@/lib/types";
 
 export interface AnalyticsFiguresProps {
@@ -9,14 +10,21 @@ export interface AnalyticsFiguresProps {
 // present as text and a bar is decorative (aria-hidden). Rows are divided lists inside the one
 // panel that the parent draws, so no panel is nested. Names render as text nodes only.
 export function AnalyticsFigures({ data }: AnalyticsFiguresProps) {
+  // With a sprint the line shows its two dates as they are and the labels say "sprint". Without
+  // one the line keeps the UTC week in local time and the labels say "week" (Requirements 9.6, 9.7).
+  const isSprint = data.window === "sprint";
+  const period = isSprint ? "sprint" : "week";
+  const rangeText = isSprint
+    ? (({ start, end }) => formatSprintRange(start, end))(sprintFromWindow(data.week_start, data.week_end))
+    : formatWeekRange(data.week_start, data.week_end);
   const maxCount = Math.max(0, ...data.cards_per_column.map((column) => column.count));
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-1">
-        <p className="text-sm text-base-content/70">{formatWeekRange(data.week_start, data.week_end)}</p>
+        <p className="text-sm text-base-content/70">{rangeText}</p>
         <p className="flex items-baseline gap-2">
           <span className="text-2xl font-semibold tabular-nums sm:text-3xl">{data.completed_cards}</span>
-          <span className="min-w-0 break-words text-base">Cards completed this week</span>
+          <span className="min-w-0 break-words text-base">Cards completed this {period}</span>
         </p>
       </div>
       <div className="grid gap-6 md:grid-cols-2">
@@ -47,10 +55,10 @@ export function AnalyticsFigures({ data }: AnalyticsFiguresProps) {
         </section>
         <section aria-labelledby="analytics-activity-heading" className="min-w-0">
           <h3 id="analytics-activity-heading" className="text-base font-semibold">
-            Activity this week
+            Activity this {period}
           </h3>
           {data.member_activity.length === 0 ? (
-            <p className="mt-2 text-sm text-base-content/70">No activity this week.</p>
+            <p className="mt-2 text-sm text-base-content/70">No activity this {period}.</p>
           ) : (
             <ul className="mt-2 divide-y divide-base-300">
               {data.member_activity.map((member) => (

@@ -1,3 +1,4 @@
+import { sprintDayNumber } from "./boardRules";
 import { malformedApiError } from "./errors";
 import { parseColumnWithCardsList } from "./kanban";
 import type { BoardDetail, BoardRole, BoardSummary, Membership } from "./types";
@@ -24,13 +25,21 @@ export function parseBoardRole(value: unknown): BoardRole {
   return value;
 }
 
+// A sprint date is `null` or a real `YYYY-MM-DD` date, and the two dates are both null or both set.
+function isSprintDate(value: unknown): value is string | null {
+  return value === null || sprintDayNumber(value) !== null;
+}
+
 export function parseBoardSummary(value: unknown): BoardSummary {
   if (
     !isRecord(value) ||
     typeof value.id !== "string" ||
     typeof value.name !== "string" ||
     !isRole(value.role) ||
-    !isVersion(value.position_version)
+    !isVersion(value.position_version) ||
+    !isSprintDate(value.sprint_start) ||
+    !isSprintDate(value.sprint_end) ||
+    (value.sprint_start === null) !== (value.sprint_end === null)
   ) {
     throw malformedApiError();
   }
@@ -39,6 +48,8 @@ export function parseBoardSummary(value: unknown): BoardSummary {
     name: value.name,
     role: value.role,
     position_version: value.position_version,
+    sprint_start: value.sprint_start,
+    sprint_end: value.sprint_end,
   };
 }
 

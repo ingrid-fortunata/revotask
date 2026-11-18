@@ -14,7 +14,7 @@ describe("chipClass", () => {
 
   it("is the class BoardList puts on a board's chip", () => {
     const id = "b0000000-0000-4000-8000-000000000001";
-    const { container } = render(<BoardList boards={[{ id, name: "Alpha", role: "admin", position_version: 0 }]} />);
+    const { container } = render(<BoardList boards={[{ id, name: "Alpha", role: "admin", position_version: 0, sprint_start: null, sprint_end: null }]} />);
     expect(container.querySelector(`.${chipClass(id)}`)).not.toBeNull();
   });
 });

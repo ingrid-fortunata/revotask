@@ -14,6 +14,8 @@ export interface UseBoardAnalyticsOptions {
   boardId: string;
   /** The Kanban `position_version`. A rise above the version of the last read starts a new read. */
   version: number;
+  /** The board's sprint as `start|end`. A change after mount starts a new read (Requirement 9.8). */
+  sprintKey: string;
   /** Called on a 404: the board is gone or the caller lost access. The board shows the toast and leaves. */
   onAccessLost: () => void;
 }
@@ -27,7 +29,7 @@ function isAbort(error: unknown): boolean {
 // on `refresh`. Every read takes a sequence number and an AbortController, so an earlier, aborted
 // or earlier-board response never reaches the state. Errors stay here: the hook never throws and
 // keeps the last figures, so the board is never disturbed. It reads no Kanban gate and does not poll.
-export function useBoardAnalytics({ boardId, version, onAccessLost }: UseBoardAnalyticsOptions) {
+export function useBoardAnalytics({ boardId, version, sprintKey, onAccessLost }: UseBoardAnalyticsOptions) {
   const { handleError } = useErrorHandler();
   // The figures are stored with the board they belong to, so a board change shows none of them.
   const [held, setHeld] = useState<{ boardId: string; data: BoardAnalytics } | null>(null);
@@ -89,6 +91,16 @@ export function useBoardAnalytics({ boardId, version, onAccessLost }: UseBoardAn
   useEffect(() => {
     if (version > startedVersionRef.current) void read();
   }, [version, read]);
+
+  // The sprint changed while the dialog is open: the figures describe an earlier window. The first
+  // value is the one the mount read already used, so only a later change starts a read.
+  const startedSprintRef = useRef(sprintKey);
+  useEffect(() => {
+    if (sprintKey !== startedSprintRef.current) {
+      startedSprintRef.current = sprintKey;
+      void read();
+    }
+  }, [sprintKey, read]);
 
   const data = held && held.boardId === boardId ? held.data : null;
   const error = failedBoard === boardId ? ANALYTICS_ERROR_MESSAGE : null;

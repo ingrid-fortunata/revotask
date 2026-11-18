@@ -9,7 +9,14 @@ import {
   parseMembershipList,
 } from "./boards";
 
-const summary = { id: "b1", name: "Roadmap", role: "admin", position_version: 3 };
+const summary = {
+  id: "b1",
+  name: "Roadmap",
+  role: "admin",
+  position_version: 3,
+  sprint_start: null,
+  sprint_end: null,
+};
 const member = { user_id: "u1", name: "Ada", role: "member" };
 
 describe("board error codes", () => {
@@ -50,6 +57,36 @@ describe("parseBoardRole", () => {
 
   it.each(["owner", "Admin", "", null, 1])("rejects %j", (value) => {
     expect(() => parseBoardRole(value)).toThrow(ApiError);
+  });
+});
+
+describe("parseBoardSummary sprint keys (Revision 2)", () => {
+  const withSprint = { ...summary, sprint_start: "2026-11-16", sprint_end: "2026-11-22" };
+
+  it("accepts a null pair and a date pair and copies both keys", () => {
+    expect(parseBoardSummary(summary)).toMatchObject({ sprint_start: null, sprint_end: null });
+    expect(parseBoardSummary(withSprint)).toMatchObject({
+      sprint_start: "2026-11-16",
+      sprint_end: "2026-11-22",
+    });
+  });
+
+  it.each([
+    ["a missing start", { ...withSprint, sprint_start: undefined }],
+    ["a missing end", { ...withSprint, sprint_end: undefined }],
+    ["one date and one null", { ...withSprint, sprint_end: null }],
+    ["a timestamp", { ...withSprint, sprint_start: "2026-11-16T00:00:00Z" }],
+    ["a day-first date", { ...withSprint, sprint_end: "22/11/2026" }],
+    ["an impossible date", { ...withSprint, sprint_start: "2026-02-30" }],
+    ["a number", { ...withSprint, sprint_start: 20261116 }],
+  ])("rejects %s", (_name, value) => {
+    expect(() => parseBoardSummary(value)).toThrow(ApiError);
+  });
+
+  it("is applied to the board detail and the list", () => {
+    expect(parseBoardDetail({ ...withSprint, columns: [] })).toMatchObject({ sprint_end: "2026-11-22" });
+    expect(parseBoardSummaryList([withSprint, summary])).toHaveLength(2);
+    expect(() => parseBoardSummaryList([{ ...withSprint, sprint_end: null }])).toThrow(ApiError);
   });
 });
 

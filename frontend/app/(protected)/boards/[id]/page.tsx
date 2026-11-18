@@ -27,6 +27,8 @@ export default async function BoardDetailPage({
           name: board.name,
           role: board.role,
           position_version: board.position_version,
+          sprint_start: board.sprint_start,
+          sprint_end: board.sprint_end,
         }}
         columns={board.columns}
         members={members}

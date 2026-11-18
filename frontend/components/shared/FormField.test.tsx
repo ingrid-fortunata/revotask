@@ -117,4 +117,27 @@ describe("FormField search type and maxLength", () => {
     render(<FormField id="s" name="s" label="Search" value="" onChange={() => {}} />);
     expect(screen.getByLabelText("Search")).not.toHaveAttribute("maxlength");
   });
+
+  it("renders a date field with its label, hint and error and the same 44 px and 16 px classes", () => {
+    render(
+      <FormField
+        id="sprint-start"
+        name="sprint_start"
+        label="Sprint start"
+        type="date"
+        value="2026-11-16"
+        hint="Optional. Set both or neither."
+        error="Enter both sprint dates."
+        onChange={() => {}}
+      />,
+    );
+    const input = screen.getByLabelText("Sprint start");
+    expect(input).toHaveAttribute("type", "date");
+    expect(input).toHaveValue("2026-11-16");
+    expect(input).toHaveClass("min-h-11", "text-base", "w-full");
+    expect(input).toHaveAttribute("aria-invalid", "true");
+    const describedBy = (input.getAttribute("aria-describedby") ?? "").split(" ");
+    expect(describedBy).toContain(screen.getByText("Optional. Set both or neither.").id);
+    expect(describedBy).toContain(screen.getByText("Enter both sprint dates.").id);
+  });
 });

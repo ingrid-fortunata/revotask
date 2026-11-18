@@ -20,6 +20,7 @@ const onAccessLost = vi.fn();
 const figures = (completed: number): BoardAnalytics => ({
   week_start: "2026-11-09T00:00:00Z",
   week_end: "2026-11-16T00:00:00Z",
+  window: "week",
   cards_per_column: [{ column_id: "c1", name: "To do", count: completed }],
   completed_cards: completed,
   member_activity: [],
@@ -43,8 +44,15 @@ const flush = () => act(async () => {});
 
 function setup(initial: { boardId?: string; version?: number } = {}) {
   return renderHook(
-    (props: { boardId: string; version: number }) => useBoardAnalytics({ ...props, onAccessLost }),
-    { initialProps: { boardId: initial.boardId ?? BOARD, version: initial.version ?? 0 } },
+    (props: { boardId: string; version: number; sprintKey?: string }) =>
+      useBoardAnalytics({ sprintKey: "|", ...props, onAccessLost }),
+    {
+      initialProps: { boardId: initial.boardId ?? BOARD, version: initial.version ?? 0 } as {
+        boardId: string;
+        version: number;
+        sprintKey?: string;
+      },
+    },
   );
 }
 
@@ -226,3 +234,55 @@ describe("failures (design DD11)", () => {
     expect(hook.result.current.data).toEqual(figures(1));
   });
 });
+
+// Revision 2 (Requirement 9.8): a sprint change reads again, a mount does not read twice.
+describe("sprintKey (Revision 2)", () => {
+  it("does not read a second time for the key it mounted with", async () => {
+    const hook = setup();
+    await flush();
+    hook.rerender({ boardId: BOARD, version: 0, sprintKey: "|" });
+    await flush();
+    expect(calls()).toHaveLength(1);
+  });
+
+  it("reads again once when the sprint key changes, and not again for the same key", async () => {
+    const hook = setup();
+    await flush();
+    hook.rerender({ boardId: BOARD, version: 0, sprintKey: "2026-11-16|2026-11-22" });
+    await flush();
+    expect(calls()).toHaveLength(2);
+    hook.rerender({ boardId: BOARD, version: 0, sprintKey: "2026-11-16|2026-11-22" });
+    await flush();
+    expect(calls()).toHaveLength(2);
+    hook.rerender({ boardId: BOARD, version: 0, sprintKey: "|" }); // the sprint was cleared
+    await flush();
+    expect(calls()).toHaveLength(3);
+  });
+
+  it("aborts the read in flight and ignores its late answer when the sprint changes", async () => {
+    const first = deferred<unknown>();
+    vi.mocked(apiGet).mockReturnValueOnce(first.promise as never);
+    const hook = setup();
+    hook.rerender({ boardId: BOARD, version: 0, sprintKey: "2026-11-16|2026-11-22" });
+    await flush();
+    expect(calls()).toHaveLength(2);
+    expect((calls()[0][1] as AbortSignal).aborted).toBe(true);
+    first.resolve(raw(9));
+    await flush();
+    expect(hook.result.current.data).toEqual(figures(1)); // the newer read wins
+  });
+
+  it("keeps the held figures while the sprint read runs", async () => {
+    const hook = setup();
+    await flush();
+    const second = deferred<unknown>();
+    vi.mocked(apiGet).mockReturnValueOnce(second.promise as never);
+    hook.rerender({ boardId: BOARD, version: 0, sprintKey: "2026-11-16|2026-11-22" });
+    expect(hook.result.current.data).toEqual(figures(1));
+    expect(hook.result.current.busy).toBe(true);
+    second.resolve(raw(5));
+    await flush();
+    expect(hook.result.current.data).toEqual(figures(5));
+  });
+});
+

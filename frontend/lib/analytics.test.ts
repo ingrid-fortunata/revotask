@@ -7,6 +7,7 @@ import { analyticsPath, barPercent, formatWeekRange, parseAnalytics } from "./an
 const VALID = {
   week_start: "2026-11-09T00:00:00Z",
   week_end: "2026-11-16T00:00:00Z",
+  window: "week",
   cards_per_column: [
     { column_id: "c1", name: "To do", count: 3 },
     { column_id: "c2", name: "Done", count: 0 },
@@ -28,6 +29,18 @@ describe("parseAnalytics", () => {
     expect(parseAnalytics(empty)).toEqual(empty);
   });
 
+  it("accepts both window kinds (C40)", () => {
+    expect(parseAnalytics({ ...VALID, window: "sprint" }).window).toBe("sprint");
+    expect(parseAnalytics({ ...VALID, window: "week" }).window).toBe("week");
+  });
+
+  it.each([["a missing window", { ...VALID, window: undefined }], ["an unknown window", { ...VALID, window: "month" }], ["a non-string window", { ...VALID, window: 1 }]])(
+    "rejects %s",
+    (_label, value) => {
+      expect(() => parseAnalytics(value)).toThrow(ApiError);
+    },
+  );
+
   it("copies only the documented fields", () => {
     const noisy = {
       ...VALID,
@@ -37,7 +50,7 @@ describe("parseAnalytics", () => {
     };
     const parsed = parseAnalytics(noisy);
     expect(Object.keys(parsed).sort()).toEqual(
-      ["cards_per_column", "completed_cards", "member_activity", "week_end", "week_start"],
+      ["cards_per_column", "completed_cards", "member_activity", "week_end", "week_start", "window"],
     );
     expect(parsed.cards_per_column[0]).toEqual({ column_id: "c1", name: "A", count: 1 });
     expect(parsed.member_activity[0]).toEqual({ user_id: "u", name: "N", count: 1 });

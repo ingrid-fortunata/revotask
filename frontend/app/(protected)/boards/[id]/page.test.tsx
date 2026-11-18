@@ -32,7 +32,7 @@ const BOARD: BoardDetail = {
   id: BOARD_ID,
   name: "Launch plan",
   role: "admin",
-  position_version: 0,
+  position_version: 0, sprint_start: null, sprint_end: null,
   columns: [],
 };
 const MEMBERS: Membership[] = [

@@ -7,7 +7,14 @@ import { DELETE, PATCH } from "./route";
 const fetchMock = vi.fn();
 const COOKIE = "revotask_session=tok-sentinel-123";
 const BOARD_ID = "11111111-1111-4111-8111-111111111111";
-const BOARD = { id: BOARD_ID, name: "Renamed", role: "admin", position_version: 0 };
+const BOARD = {
+  id: BOARD_ID,
+  name: "Renamed",
+  role: "admin",
+  position_version: 0,
+  sprint_start: null,
+  sprint_end: null,
+};
 
 beforeEach(() => {
   vi.stubEnv("API_BASE_URL", API_BASE_URL);
@@ -200,16 +207,35 @@ describe("PATCH /api/boards/[id] body checks", () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
-  it("returns 400 with a field error for a missing name, an empty body or an unknown key", async () => {
-    const missing = await patch({ cookie: COOKIE, body: {} });
-    expect(missing.status).toBe(400);
-    expect((await missing.json()).error.fields).toEqual({ name: "Required." });
-
+  it("returns 400 with a field error for an unknown key", async () => {
     const unknown = await patch({ cookie: COOKIE, body: { name: "Renamed", deleted_at: "now" } });
     expect(unknown.status).toBe(400);
     expect((await unknown.json()).error.fields).toEqual({ deleted_at: "Unknown field." });
 
     expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("forwards an empty object to Flask, which answers 400 with `name` Required (Requirement 8.7)", async () => {
+    fetchMock.mockResolvedValue(
+      jsonReply(400, {
+        error: { code: "VALIDATION_ERROR", message: "Check the submitted fields.", fields: { name: "Required." } },
+      }),
+    );
+    const response = await patch({ cookie: COOKIE, body: {} });
+    expect(response.status).toBe(400);
+    expect((await response.json()).error.fields).toEqual({ name: "Required." });
+    expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toEqual({});
+  });
+
+  it.each([
+    ["the sprint pair alone", { sprint_start: "2026-11-16", sprint_end: "2026-11-22" }],
+    ["two nulls that clear the sprint", { sprint_start: null, sprint_end: null }],
+    ["the name and the pair", { name: "Renamed", sprint_start: "2026-11-16", sprint_end: "2026-11-22" }],
+  ])("forwards %s as the JSON body of PATCH", async (_label, body) => {
+    fetchMock.mockResolvedValue(jsonReply(200, { data: BOARD }));
+    const response = await patch({ cookie: COOKIE, body });
+    expect(response.status).toBe(200);
+    expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toEqual(body);
   });
 
   it("forwards the name as the JSON body of PATCH", async () => {

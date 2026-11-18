@@ -3,14 +3,16 @@ import { handlePrivateRead, handlePrivateWrite } from "@/lib/server/privateRoute
 
 type BoardRouteContext = { params: Promise<{ id: string }> };
 
-// PATCH /api/boards/[id] on the Next origin (E08). Renames a board. Admin only.
+// PATCH /api/boards/[id] on the Next origin (E08). Changes the name, the sprint pair or both. Admin
+// only. At least one key is required, and Flask answers an empty body with 400 (Requirement 8.7).
 export async function PATCH(request: NextRequest, context: BoardRouteContext) {
   const { id } = await context.params;
   return handlePrivateWrite(request, {
     route: "board",
     method: "PATCH",
     params: { boardId: id },
-    allowedKeys: ["name"],
+    allowedKeys: ["name", "sprint_start", "sprint_end"],
+    requiredKeys: [],
   });
 }
 

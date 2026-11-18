@@ -10,6 +10,8 @@ export interface AnalyticsPanelProps {
   boardId: string;
   /** The Kanban `position_version`. A rise makes an open analytics dialog read again (A8). */
   version: number;
+  /** The board's sprint as `start|end`, or `|` for none. A change makes an open dialog read again (9.8). */
+  sprintKey: string;
   /** The board is gone or access was lost (a 404). */
   onAccessLost: () => void;
 }
@@ -17,7 +19,7 @@ export interface AnalyticsPanelProps {
 // The analytics entry point (Requirement 6; design DD10 to DD12). A button near the board name
 // opens a modal dialog with the figures. The dialog content mounts only while open, so the read
 // starts on open and aborts on close, and a closed dialog sends no request.
-export function AnalyticsPanel({ boardId, version, onAccessLost }: AnalyticsPanelProps) {
+export function AnalyticsPanel({ boardId, version, sprintKey, onAccessLost }: AnalyticsPanelProps) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -32,7 +34,13 @@ export function AnalyticsPanel({ boardId, version, onAccessLost }: AnalyticsPane
         Analytics
       </BaseButton>
       <BaseModal open={open} labelledBy="analytics-heading" onClose={() => setOpen(false)} wide>
-        <AnalyticsBody boardId={boardId} version={version} onAccessLost={onAccessLost} onClose={() => setOpen(false)} />
+        <AnalyticsBody
+          boardId={boardId}
+          version={version}
+          sprintKey={sprintKey}
+          onAccessLost={onAccessLost}
+          onClose={() => setOpen(false)}
+        />
       </BaseModal>
     </>
   );
@@ -43,8 +51,8 @@ interface AnalyticsBodyProps extends AnalyticsPanelProps {
 }
 
 // Mounted only while the dialog is open, so the hook reads on open and aborts on close.
-function AnalyticsBody({ boardId, version, onAccessLost, onClose }: AnalyticsBodyProps) {
-  const { data, status, busy, error, refresh } = useBoardAnalytics({ boardId, version, onAccessLost });
+function AnalyticsBody({ boardId, version, sprintKey, onAccessLost, onClose }: AnalyticsBodyProps) {
+  const { data, status, busy, error, refresh } = useBoardAnalytics({ boardId, version, sprintKey, onAccessLost });
 
   let announcement = "";
   if (error) announcement = error;

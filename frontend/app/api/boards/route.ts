@@ -7,6 +7,8 @@ export async function POST(request: NextRequest) {
   return handlePrivateWrite(request, {
     route: "boards",
     method: "POST",
-    allowedKeys: ["name"],
+    // The sprint pair is optional (Requirement 8.1). Flask checks the pair rule.
+    allowedKeys: ["name", "sprint_start", "sprint_end"],
+    requiredKeys: ["name"],
   });
 }

@@ -36,5 +36,7 @@ export const detail = (columns: ColumnWithCards[], version: number) => ({
   name: "Board",
   role: "admin",
   position_version: version,
+  sprint_start: null,
+  sprint_end: null,
   columns,
 });
