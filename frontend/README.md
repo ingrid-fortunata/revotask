@@ -34,7 +34,7 @@ frontend/
 │   ├── (public)/            # /login, /register
 │   ├── (protected)/         # /, /boards/[id], /my-tasks, /profile (session required)
 │   ├── api/                 # Route Handlers: BFF proxy to the Flask API
-│   ├── layout.tsx, error.tsx, globals.css
+│   ├── layout.tsx, error.tsx, global-error.tsx, not-found.tsx, globals.css
 ├── components/
 │   ├── auth/  boards/  kanban/  tasks/  profile/
 │   ├── notifications/  analytics/
