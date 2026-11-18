@@ -4,6 +4,18 @@ Newest date first. Each `## YYYY-MM-DD` heading groups the commits made that day
 
 ## 2026-11-18
 
+### a76123b fix: serve parallel requests with gunicorn threads
+
+- The API image runs gunicorn with `--threads ${GUNICORN_THREADS:-4}` (default 4 per worker). One sync worker queued the parallel reads of a page. The login and register rate-limit counters stay exact because threads share one process.
+
+### 85dda7c feat: show a skeleton while protected pages load
+
+- Clicking Boards or a board now shows a skeleton at once (`app/(protected)/loading.tsx`) instead of the old page until the server finishes. A request without a session still gets an HTTP 307 to `/login`, checked with `next build` and `next start` on `/`, `/my-tasks` and a board URL.
+
+### 75a461a fix: run session check and page reads in parallel
+
+- The dashboard, board and My tasks pages start the session check and their Flask read together instead of one after the other, which removes one sequential round trip from each navigation. Flask still authorizes every read with the bearer token.
+
 ### 6b504d0 test: cover board sprint dates in the Playwright suite
 
 - The local acceptance journey `boards-membership › sprint dates` creates a board with a sprint, checks the header line and the analytics dialog, a member's read-only view, an edit (refused and valid), and Clear dates. It runs on all four projects. Full suite: 58 passed (54 before), 0 failed, cleanup count 0 (emulation, production Next server).

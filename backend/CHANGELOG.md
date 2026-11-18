@@ -4,6 +4,10 @@ Record actual changes for this component. Newest date first. Each `## YYYY-MM-DD
 
 ## 2026-11-18
 
+### a76123b fix: serve parallel requests with gunicorn threads
+
+- `Dockerfile`: gunicorn gets `--threads ${GUNICORN_THREADS:-4}`. No Python code changed. See the root entry in [the root changelog](../CHANGELOG.md).
+
 ### 0f58d2c feat: add board sprint range and sprint-based analytics window
 
 - `models/board.py` and migration `b7c1d4e9a203`: nullable `sprint_start` and `sprint_end` dates and `ck_boards_sprint_range_valid` (both or neither, end on or after start, at most 90 days inclusive).

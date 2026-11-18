@@ -4,6 +4,14 @@ Record actual changes for this component. Newest date first. Each `## YYYY-MM-DD
 
 ## 2026-11-18
 
+### 85dda7c feat: show a skeleton while protected pages load
+
+- Added `app/(protected)/loading.tsx`. The layout keeps its `getCurrentUser()` call above it, so a missing session still redirects with a 307. `pages.guard.test.ts` now checks that the layout verifies the session and that `loading.tsx` exists, instead of forbidding `loading.tsx`. See the root entry in [the root changelog](../CHANGELOG.md).
+
+### 75a461a fix: run session check and page reads in parallel
+
+- `app/(protected)/page.tsx`, `my-tasks/page.tsx` and `boards/[id]/page.tsx` use `Promise.all` for `getCurrentUser()` and their reads. The "does not read when the session check redirects" tests became "renders nothing when the session check redirects". See the root entry in [the root changelog](../CHANGELOG.md).
+
 ### 6b504d0 test: cover board sprint dates in the Playwright suite
 
 - `e2e/boards-membership.spec.ts`: new `sprint dates: create, show, edit, clear, member read-only` test (`@boards @matrix`). `e2e/support/ui.ts`: `createBoardUi(page, name, sprint?)` fills the two date inputs. No product code changed. See the root entry in [the root changelog](../CHANGELOG.md).
