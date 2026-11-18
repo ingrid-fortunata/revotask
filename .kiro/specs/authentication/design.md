@@ -350,7 +350,7 @@ No migration, model or index changes. The slice uses:
 
 Rules from the Next.js 16 docs that shape this:
 
-- Do not add `loading.tsx` under `(protected)`. The Next.js docs say `redirect()` in a streaming context "will insert a meta tag to emit the redirect on the client side" and not an HTTP redirect. A plain 307 is what the smoke check and non-JavaScript clients see, so the shell avoids `loading.tsx`. The `loading.tsx` case itself was not tested.
+- `app/(protected)/loading.tsx` exists and shows a skeleton during client navigation. The layout sits above it and awaits `getCurrentUser()` before anything streams, so a request without a session still gets a plain 307 (checked with `next build` and `next start` on `/`, `/my-tasks` and a board URL). Pages run `getCurrentUser()` in parallel with their data read, because Flask authorizes every read with the bearer token.
 - The Next.js 16 authentication guide says a layout does not re-render on navigation, so authorization checks belong near the data. This is why every page and every data helper calls the session helper.
 - Pages are dynamic because `getCurrentUser()` reads `cookies()`. The self-hosting guide says dynamic pages get `Cache-Control: private, no-cache, no-store, max-age=0, must-revalidate`. Task 2.11 confirms the header on the actual response.
 - `cookies()` is async in this Next version.

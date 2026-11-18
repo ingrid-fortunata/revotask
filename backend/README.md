@@ -93,7 +93,7 @@ Copy `.env.example` to `.env`. Real `.env` files are git-ignored.
 | `LOG_LEVEL` | No | Defaults to `INFO` |
 | `TEST_DATABASE_URL` | Tests | Local database whose name ends in `_test` |
 | `RATE_LIMIT_ENABLED` | No | `true` by default. Refused when `APP_ENV=production` if set to `false` |
-| `PORT`, `GUNICORN_WORKERS` | Container | Set by Compose or Render. The image defaults to 2 workers |
+| `PORT`, `GUNICORN_WORKERS`, `GUNICORN_THREADS` | Container | Set by Compose or Render. The image defaults to 2 workers and 4 threads per worker. Threads let the parallel reads of one page run together, and they share the in-memory rate-limit counters |
 
 ## Run with Docker
 
