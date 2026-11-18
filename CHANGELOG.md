@@ -2,6 +2,12 @@
 
 Newest date first. Each `## YYYY-MM-DD` heading groups the commits made that day. Each commit has a `### <short-sha> <subject>` entry with its notes. Follows the [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) style.
 
+## 2026-11-18
+
+### 4240cf0 feat: add global error boundary and app-wide not found page
+
+- A crash in the root layout now shows a "Something went wrong" screen with Try again (`global-error.tsx`), and an unknown URL shows a "Page not found" screen with a link back to the app (`not-found.tsx`), instead of the default Next.js pages.
+
 ## 2026-11-17
 
 ### 23ac801 fix: drop analytics completed count when a card leaves done

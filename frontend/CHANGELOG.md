@@ -2,6 +2,12 @@
 
 Record actual changes for this component. Newest date first. Each `## YYYY-MM-DD` heading groups the commits made that day, and each commit has a `### <short-sha> <subject>` entry. Reference the matching root entry for the same commit in [the root changelog](../CHANGELOG.md).
 
+## 2026-11-18
+
+### 4240cf0 feat: add global error boundary and app-wide not found page
+
+- Added `app/global-error.tsx` (own `<html>` and `<body>`, imports `globals.css`, `retry()`, no error text) and `app/not-found.tsx`, with tests in `app/global-error.test.tsx`. See the root entry for 4240cf0 in [the root changelog](../CHANGELOG.md).
+
 ## 2026-11-17
 
 ### 29144c6 style: make kanban end drop zone card-sized while dragging
