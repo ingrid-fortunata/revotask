@@ -172,7 +172,13 @@ def _extra_key_params():
 def test_property_2_declared_fields_are_exactly_the_contract(schema_cls, fields, valid):
     """Feature: boards-membership, Property 2: Request schemas accept exactly their field set."""
     schema = schema_cls()
-    assert set(schema.fields) == fields
+    # E06 and E08 also declare the optional sprint pair (Revision 2, DS6).
+    sprint = (
+        {"sprint_start", "sprint_end"}
+        if schema_cls in (BoardCreateSchema, BoardUpdateSchema)
+        else set()
+    )
+    assert set(schema.fields) == fields | sprint
     assert schema.unknown == RAISE
 
 

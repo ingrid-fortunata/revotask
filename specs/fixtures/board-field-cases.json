@@ -1,5 +1,5 @@
 {
- "_note": "Shared boundary cases for the board name and member email rules (boards-membership design DD9, DD14, DD16; Requirements 1.2, 3.4, 4.6). The Flask schema tests and the frontend boardRules tests both read this file, the same way auth-field-cases.json is read. Each case starts from the form's base body, applies 'set' then 'drop', and expects either 'accepted' (fields whose normalized value is checked; the output keys must equal the form's key set) or the exact 'fields' map of messages. Values: {\"repeat\": s, \"times\": n} is s repeated n times; {\"concat\": [a, b]} joins parts. Lengths count Unicode code points. board_create is the E06 body and board_update (E08) uses the same name rule. member_add is the E11 body. Member emails use the register email rule: trimmed, lowercased, at most 254 characters, one simple format check. An empty or blank email is 'Enter a valid email address.' because the field is present and format-checked, the same as register.",
+ "_note": "Shared boundary cases for the board name and member email rules (boards-membership design DD9, DD14, DD16; Requirements 1.2, 3.4, 4.6). The Flask schema tests and the frontend boardRules tests both read this file, the same way auth-field-cases.json is read. Each case starts from the form's base body, applies 'set' then 'drop', and expects either 'accepted' (fields whose normalized value is checked; the output keys must equal the form's key set) or the exact 'fields' map of messages. Values: {\"repeat\": s, \"times\": n} is s repeated n times; {\"concat\": [a, b]} joins parts. Lengths count Unicode code points. board_create is the E06 body and board_update (E08) uses the same name rule. member_add is the E11 body. Member emails use the register email rule: trimmed, lowercased, at most 254 characters, one simple format check. An empty or blank email is 'Enter a valid email address.' because the field is present and format-checked, the same as register. Revision 2 (sprint, DS6, DS8): board_sprint_create is the E06 body and board_sprint_update the E08 body with the optional pair sprint_start and sprint_end (YYYY-MM-DD or null, both or neither, end on or after start, at most 90 days). In an 'accepted' case the listed fields are checked and the other loaded keys must be the form's name key when it is present. A case with backend_only is not run by the frontend rule tests (an unknown key is a server concern).",
  "board_create": {
   "base": {
    "name": "Team Alpha"
@@ -379,6 +379,494 @@
       "role": "Unknown field."
      }
     }
+   }
+  ]
+ },
+ "board_sprint_create": {
+  "base": {
+   "name": "Team Alpha"
+  },
+  "cases": [
+   {
+    "id": "sprint-omitted",
+    "set": {},
+    "drop": [],
+    "expect": {
+     "accepted": {}
+    }
+   },
+   {
+    "id": "sprint-both-null",
+    "set": {
+     "sprint_start": null,
+     "sprint_end": null
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "sprint_start": null,
+      "sprint_end": null
+     }
+    }
+   },
+   {
+    "id": "sprint-both-dates",
+    "set": {
+     "sprint_start": "2026-11-16",
+     "sprint_end": "2026-11-22"
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "sprint_start": "2026-11-16",
+      "sprint_end": "2026-11-22"
+     }
+    }
+   },
+   {
+    "id": "sprint-one-day",
+    "set": {
+     "sprint_start": "2026-11-16",
+     "sprint_end": "2026-11-16"
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "sprint_start": "2026-11-16",
+      "sprint_end": "2026-11-16"
+     }
+    }
+   },
+   {
+    "id": "sprint-90-days-accepted",
+    "set": {
+     "sprint_start": "2026-11-01",
+     "sprint_end": "2027-01-29"
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "sprint_start": "2026-11-01",
+      "sprint_end": "2027-01-29"
+     }
+    }
+   },
+   {
+    "id": "sprint-91-days-rejected",
+    "set": {
+     "sprint_start": "2026-11-01",
+     "sprint_end": "2027-01-30"
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "sprint_end": "Must be at most 90 days long."
+     }
+    }
+   },
+   {
+    "id": "sprint-leap-day",
+    "set": {
+     "sprint_start": "2028-02-29",
+     "sprint_end": "2028-03-02"
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "sprint_start": "2028-02-29",
+      "sprint_end": "2028-03-02"
+     }
+    }
+   },
+   {
+    "id": "sprint-in-the-past",
+    "set": {
+     "sprint_start": "2020-01-06",
+     "sprint_end": "2020-01-12"
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "sprint_start": "2020-01-06",
+      "sprint_end": "2020-01-12"
+     }
+    }
+   },
+   {
+    "id": "sprint-in-the-future",
+    "set": {
+     "sprint_start": "2035-06-01",
+     "sprint_end": "2035-06-14"
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "sprint_start": "2035-06-01",
+      "sprint_end": "2035-06-14"
+     }
+    }
+   },
+   {
+    "id": "sprint-only-start",
+    "set": {
+     "sprint_start": "2026-11-16"
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "sprint_end": "Enter both sprint dates."
+     }
+    }
+   },
+   {
+    "id": "sprint-only-end",
+    "set": {
+     "sprint_end": "2026-11-22"
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "sprint_start": "Enter both sprint dates."
+     }
+    }
+   },
+   {
+    "id": "sprint-start-date-end-null",
+    "set": {
+     "sprint_start": "2026-11-16",
+     "sprint_end": null
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "sprint_end": "Enter both sprint dates."
+     }
+    }
+   },
+   {
+    "id": "sprint-start-null-end-date",
+    "set": {
+     "sprint_start": null,
+     "sprint_end": "2026-11-22"
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "sprint_start": "Enter both sprint dates."
+     }
+    }
+   },
+   {
+    "id": "sprint-end-before-start",
+    "set": {
+     "sprint_start": "2026-11-22",
+     "sprint_end": "2026-11-16"
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "sprint_end": "Must be on or after the start date."
+     }
+    }
+   },
+   {
+    "id": "sprint-not-a-real-date",
+    "set": {
+     "sprint_start": "2026-02-30",
+     "sprint_end": "2026-03-05"
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "sprint_start": "Enter a valid date."
+     }
+    }
+   },
+   {
+    "id": "sprint-compact-date",
+    "set": {
+     "sprint_start": "20261116",
+     "sprint_end": "2026-11-22"
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "sprint_start": "Enter a valid date."
+     }
+    }
+   },
+   {
+    "id": "sprint-week-date",
+    "set": {
+     "sprint_start": "2026-W47-1",
+     "sprint_end": "2026-11-22"
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "sprint_start": "Enter a valid date."
+     }
+    }
+   },
+   {
+    "id": "sprint-day-first-date",
+    "set": {
+     "sprint_start": "2026-11-16",
+     "sprint_end": "22/11/2026"
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "sprint_end": "Enter a valid date."
+     }
+    }
+   },
+   {
+    "id": "sprint-timestamp",
+    "set": {
+     "sprint_start": "2026-11-16T00:00:00Z",
+     "sprint_end": "2026-11-22"
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "sprint_start": "Enter a valid date."
+     }
+    }
+   },
+   {
+    "id": "sprint-padded-date",
+    "set": {
+     "sprint_start": " 2026-11-16",
+     "sprint_end": "2026-11-22"
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "sprint_start": "Enter a valid date."
+     }
+    }
+   },
+   {
+    "id": "sprint-empty-string",
+    "set": {
+     "sprint_start": "",
+     "sprint_end": "2026-11-22"
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "sprint_start": "Enter a valid date."
+     }
+    }
+   },
+   {
+    "id": "sprint-number",
+    "set": {
+     "sprint_start": 20261116,
+     "sprint_end": "2026-11-22"
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "sprint_start": "Enter a valid date."
+     }
+    }
+   },
+   {
+    "id": "sprint-both-invalid",
+    "set": {
+     "sprint_start": "nope",
+     "sprint_end": "also nope"
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "sprint_start": "Enter a valid date.",
+      "sprint_end": "Enter a valid date."
+     }
+    }
+   },
+   {
+    "id": "sprint-unknown-key-beside-dates",
+    "set": {
+     "sprint_start": "2026-11-16",
+     "sprint_end": "2026-11-22",
+     "role": "admin"
+    },
+    "drop": [],
+    "expect": {
+     "fields": {
+      "role": "Unknown field."
+     }
+    },
+    "backend_only": true
+   }
+  ]
+ },
+ "board_sprint_update": {
+  "base": {
+   "name": "Team Alpha"
+  },
+  "cases": [
+   {
+    "id": "update-empty-body",
+    "set": {},
+    "drop": [
+     "name"
+    ],
+    "expect": {
+     "fields": {
+      "name": "Required."
+     }
+    }
+   },
+   {
+    "id": "update-name-only",
+    "set": {},
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "name": "Team Alpha"
+     }
+    }
+   },
+   {
+    "id": "update-sprint-only",
+    "set": {
+     "sprint_start": "2026-11-16",
+     "sprint_end": "2026-11-22"
+    },
+    "drop": [
+     "name"
+    ],
+    "expect": {
+     "accepted": {
+      "sprint_start": "2026-11-16",
+      "sprint_end": "2026-11-22"
+     }
+    }
+   },
+   {
+    "id": "update-clear-sprint",
+    "set": {
+     "sprint_start": null,
+     "sprint_end": null
+    },
+    "drop": [
+     "name"
+    ],
+    "expect": {
+     "accepted": {
+      "sprint_start": null,
+      "sprint_end": null
+     }
+    }
+   },
+   {
+    "id": "update-name-and-sprint",
+    "set": {
+     "sprint_start": "2026-11-16",
+     "sprint_end": "2026-11-22"
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "name": "Team Alpha",
+      "sprint_start": "2026-11-16",
+      "sprint_end": "2026-11-22"
+     }
+    }
+   },
+   {
+    "id": "update-one-date",
+    "set": {
+     "sprint_start": "2026-11-16"
+    },
+    "drop": [
+     "name"
+    ],
+    "expect": {
+     "fields": {
+      "sprint_end": "Enter both sprint dates."
+     }
+    }
+   },
+   {
+    "id": "update-null-beside-date",
+    "set": {
+     "sprint_start": null,
+     "sprint_end": "2026-11-22"
+    },
+    "drop": [
+     "name"
+    ],
+    "expect": {
+     "fields": {
+      "sprint_start": "Enter both sprint dates."
+     }
+    }
+   },
+   {
+    "id": "update-end-before-start",
+    "set": {
+     "sprint_start": "2026-11-22",
+     "sprint_end": "2026-11-16"
+    },
+    "drop": [
+     "name"
+    ],
+    "expect": {
+     "fields": {
+      "sprint_end": "Must be on or after the start date."
+     }
+    }
+   },
+   {
+    "id": "update-91-days",
+    "set": {
+     "sprint_start": "2026-11-01",
+     "sprint_end": "2027-01-30"
+    },
+    "drop": [
+     "name"
+    ],
+    "expect": {
+     "fields": {
+      "sprint_end": "Must be at most 90 days long."
+     }
+    }
+   },
+   {
+    "id": "update-not-a-real-date",
+    "set": {
+     "sprint_start": "2026-02-30",
+     "sprint_end": "2026-03-05"
+    },
+    "drop": [
+     "name"
+    ],
+    "expect": {
+     "fields": {
+      "sprint_start": "Enter a valid date."
+     }
+    }
+   },
+   {
+    "id": "update-unknown-key-only",
+    "set": {
+     "role": "admin"
+    },
+    "drop": [
+     "name"
+    ],
+    "expect": {
+     "fields": {
+      "role": "Unknown field.",
+      "name": "Required."
+     }
+    },
+    "backend_only": true
    }
   ]
  }

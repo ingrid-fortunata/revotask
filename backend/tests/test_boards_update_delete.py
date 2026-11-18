@@ -113,7 +113,7 @@ def test_admin_rename_returns_trimmed_summary_and_stores_the_name(client, board_
 
     assert response.status_code == 200
     data = response.get_json()["data"]
-    assert set(data) == {"id", "name", "role", "position_version"}
+    assert set(data) == {"id", "name", "role", "position_version", "sprint_start", "sprint_end"}
     assert data["id"] == str(seed.board_id)
     assert data["name"] == "Sprint planning"
     assert data["role"] == "admin"

@@ -39,7 +39,14 @@ RENAME_TO = "Renamed by property test"
 NEW_BOARD_NAME = "Created by property test"
 OTHER_SECRET = "another-secret-0123456789abcdefghijkl"
 
-BOARD_SUMMARY_KEYS = {"id", "name", "role", "position_version"}
+BOARD_SUMMARY_KEYS = {
+    "id",
+    "name",
+    "role",
+    "position_version",
+    "sprint_start",
+    "sprint_end",
+}
 MEMBERSHIP_KEYS = {"user_id", "name", "role"}
 COLUMN_KEYS = {"id", "board_id", "name", "is_done", "order", "cards"}
 CARD_KEYS = {"id", "column_id", "title", "description", "assignee_id", "assignee_name", "order"}

@@ -81,7 +81,7 @@ def test_create_returns_201_summary_and_admin_membership(
     assert response.status_code == 201
     assert response.headers["Cache-Control"] == "private, no-store"
     data = response.get_json()["data"]
-    assert set(data) == {"id", "name", "role", "position_version"}
+    assert set(data) == {"id", "name", "role", "position_version", "sprint_start", "sprint_end"}
     assert data["name"] == stored
     assert data["role"] == "admin"
     board_id = board_tracker.record_board_from_response(response)
@@ -177,7 +177,10 @@ def test_list_returns_only_active_memberships_in_name_order(client, app, board_t
         ("charlie", "member"),
     ]
     assert [item["id"] for item in items] == [str(alpha), str(bravo), str(charlie)]
-    assert all(set(item) == {"id", "name", "role", "position_version"} for item in items)
+    assert all(
+        set(item) == {"id", "name", "role", "position_version", "sprint_start", "sprint_end"}
+        for item in items
+    )
 
 
 def test_list_breaks_equal_names_by_board_id(client, app, board_tracker):

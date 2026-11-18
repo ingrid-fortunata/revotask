@@ -51,7 +51,12 @@ def list_boards_view():
 @token_required
 def create_board_view():
     payload = load_json_body(BoardCreateSchema())
-    board = service.create_board(g.current_user.id, payload["name"])
+    board = service.create_board(
+        g.current_user.id,
+        payload["name"],
+        payload.get("sprint_start"),
+        payload.get("sprint_end"),
+    )
     return jsonify(data=BoardSummarySchema().dump(board)), 201
 
 
@@ -67,10 +72,10 @@ def get_board_view(board_id: str):
 
 @boards_bp.patch("/api/boards/<board_id>")
 @token_required
-def rename_board_view(board_id: str):
+def update_board_view(board_id: str):
     board_uuid = _board_id(board_id)
     payload = load_json_body(BoardUpdateSchema())
-    board = service.rename_board(board_uuid, g.current_user.id, payload["name"])
+    board = service.update_board(board_uuid, g.current_user.id, payload)
     return jsonify(data=BoardSummarySchema().dump(board))
 
 

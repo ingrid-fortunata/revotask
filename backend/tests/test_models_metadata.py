@@ -31,6 +31,8 @@ EXPECTED = {
         "creator_id": False,
         "name": False,
         "position_version": False,
+        "sprint_start": True,
+        "sprint_end": True,
         "created_at": False,
         "updated_at": False,
         "deleted_at": True,
@@ -125,6 +127,7 @@ RELATIONSHIP_PAIRS = [
 EXPECTED_CHECKS = {
     "ck_users_email_normalized",
     "ck_boards_position_version_nonnegative",
+    "ck_boards_sprint_range_valid",
     "ck_board_members_role",
     "ck_board_columns_order_finite_positive",
     "ck_cards_order_finite_positive",

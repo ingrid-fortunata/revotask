@@ -14,6 +14,7 @@ from __future__ import annotations
 import uuid
 from collections.abc import Sequence
 from dataclasses import dataclass
+from datetime import date
 from typing import Any
 
 from sqlalchemy import case, select, update
@@ -44,6 +45,8 @@ class BoardAccess:
     role: str
     name: str
     position_version: int
+    sprint_start: date | None
+    sprint_end: date | None
 
 
 def _active_access(board_id: uuid.UUID, user_id: uuid.UUID) -> Row[Any] | None:
@@ -53,7 +56,13 @@ def _active_access(board_id: uuid.UUID, user_id: uuid.UUID) -> Row[Any] | None:
     instead of returning an object cached in the session.
     """
     return db.session.execute(
-        select(BoardMember.role, Board.name, Board.position_version)
+        select(
+            BoardMember.role,
+            Board.name,
+            Board.position_version,
+            Board.sprint_start,
+            Board.sprint_end,
+        )
         .join(Board, Board.id == BoardMember.board_id)
         .where(
             BoardMember.board_id == board_id,
@@ -99,6 +108,8 @@ def authorize_board(
         role=access.role,
         name=access.name,
         position_version=access.position_version,
+        sprint_start=access.sprint_start,
+        sprint_end=access.sprint_end,
     )
 
 
@@ -111,21 +122,43 @@ def commit_or_rollback() -> None:
         raise
 
 
-def _summary(board_id: uuid.UUID, name: str, role: str, position_version: int) -> dict:
+def _summary(
+    board_id: uuid.UUID,
+    name: str,
+    role: str,
+    position_version: int,
+    sprint_start: date | None,
+    sprint_end: date | None,
+) -> dict:
     """The BoardSummary fields for one board as seen by one caller."""
-    return {"id": board_id, "name": name, "role": role, "position_version": position_version}
+    return {
+        "id": board_id,
+        "name": name,
+        "role": role,
+        "position_version": position_version,
+        "sprint_start": sprint_start,
+        "sprint_end": sprint_end,
+    }
 
 
-def create_board(user_id: uuid.UUID, name: str) -> dict:
+def create_board(
+    user_id: uuid.UUID,
+    name: str,
+    sprint_start: date | None = None,
+    sprint_end: date | None = None,
+) -> dict:
     """Create an active board and the caller's admin membership in one transaction (E06).
 
-    Duplicate names are accepted (DD16).
+    Duplicate names are accepted (DD16). The sprint pair is both dates or neither (the schema
+    checked it). A board without a sprint keeps both columns null.
     """
-    board = Board(name=name, creator_id=user_id)
+    board = Board(name=name, creator_id=user_id, sprint_start=sprint_start, sprint_end=sprint_end)
     board.members.append(BoardMember(user_id=user_id, role="admin"))
     db.session.add(board)
     commit_or_rollback()
-    return _summary(board.id, board.name, "admin", board.position_version)
+    return _summary(
+        board.id, board.name, "admin", board.position_version, board.sprint_start, board.sprint_end
+    )
 
 
 def list_boards(user_id: uuid.UUID) -> list[dict]:
@@ -134,7 +167,14 @@ def list_boards(user_id: uuid.UUID) -> list[dict]:
     Sorted by name in the database collation, then by ID (Requirements 1.3, R11).
     """
     rows = db.session.execute(
-        select(Board.id, Board.name, BoardMember.role, Board.position_version)
+        select(
+            Board.id,
+            Board.name,
+            BoardMember.role,
+            Board.position_version,
+            Board.sprint_start,
+            Board.sprint_end,
+        )
         .join(BoardMember, BoardMember.board_id == Board.id)
         .where(
             BoardMember.user_id == user_id,
@@ -143,7 +183,17 @@ def list_boards(user_id: uuid.UUID) -> list[dict]:
         )
         .order_by(Board.name, Board.id)
     ).all()
-    return [_summary(row.id, row.name, row.role, row.position_version) for row in rows]
+    return [
+        _summary(
+            row.id,
+            row.name,
+            row.role,
+            row.position_version,
+            row.sprint_start,
+            row.sprint_end,
+        )
+        for row in rows
+    ]
 
 
 def get_board_detail(board_id: uuid.UUID, user_id: uuid.UUID) -> dict:
@@ -155,9 +205,15 @@ def get_board_detail(board_id: uuid.UUID, user_id: uuid.UUID) -> dict:
     """
     access = authorize_board(board_id, user_id)
     columns = read_columns(board_id)
-    return _summary(board_id, access.name, access.role, access.position_version) | {
-        "columns": columns
-    }
+    summary = _summary(
+        board_id,
+        access.name,
+        access.role,
+        access.position_version,
+        access.sprint_start,
+        access.sprint_end,
+    )
+    return summary | {"columns": columns}
 
 
 def read_columns(board_id: uuid.UUID, column_ids: Sequence[uuid.UUID] | None = None) -> list[dict]:
@@ -224,12 +280,25 @@ def read_columns(board_id: uuid.UUID, column_ids: Sequence[uuid.UUID] | None = N
     return list(columns.values())
 
 
-def rename_board(board_id: uuid.UUID, user_id: uuid.UUID, name: str) -> dict:
-    """Rename an active board as its admin under the board lock (E08)."""
+def update_board(board_id: uuid.UUID, user_id: uuid.UUID, changes: dict[str, Any]) -> dict:
+    """Change the name, the sprint or both on an active board as its admin (E08, DS4).
+
+    `changes` holds only the submitted keys (`name`, `sprint_start`, `sprint_end`), already
+    validated, so a field that was not sent is never written. Both sprint dates `None` clears the
+    sprint. The board lock is held for the write, and the summary is the locked read plus
+    `changes`.
+    """
     access = authorize_board(board_id, user_id, role="admin", lock=True)
-    db.session.execute(update(Board).where(Board.id == board_id).values(name=name))
+    db.session.execute(update(Board).where(Board.id == board_id).values(**changes))
     commit_or_rollback()
-    return _summary(board_id, name, access.role, access.position_version)
+    return _summary(
+        board_id,
+        changes.get("name", access.name),
+        access.role,
+        access.position_version,
+        changes.get("sprint_start", access.sprint_start),
+        changes.get("sprint_end", access.sprint_end),
+    )
 
 
 def delete_board(board_id: uuid.UUID, user_id: uuid.UUID) -> None:

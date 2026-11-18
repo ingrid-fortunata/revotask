@@ -7,6 +7,7 @@ also run against BoardUpdateSchema. These are pure schema tests: they need no da
 
 import json
 import uuid
+from datetime import date
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -63,7 +64,9 @@ def _check(schema_cls, body, expect, keys):
     assert messages is None, messages
     assert set(loaded) == keys
     for name, value in expect["accepted"].items():
-        assert loaded[name] == value
+        # A loaded sprint date is a `date`. The fixture writes it as `YYYY-MM-DD` or null.
+        actual = loaded[name].isoformat() if isinstance(loaded[name], date) else loaded[name]
+        assert actual == value
 
 
 @pytest.mark.parametrize(("body", "expect"), _shared_cases("board_create"))
@@ -76,12 +79,24 @@ def test_board_update_uses_the_same_name_rule(body, expect):
     _check(BoardUpdateSchema, body, expect, {"name"})
 
 
+@pytest.mark.parametrize(("body", "expect"), _shared_cases("board_sprint_create"))
+def test_board_create_matches_shared_sprint_cases(body, expect):
+    _check(BoardCreateSchema, body, expect, set(body))
+
+
+@pytest.mark.parametrize(("body", "expect"), _shared_cases("board_sprint_update"))
+def test_board_update_matches_shared_sprint_cases(body, expect):
+    _check(BoardUpdateSchema, body, expect, set(body))
+
+
 @pytest.mark.parametrize(("body", "expect"), _shared_cases("member_add"))
 def test_member_add_matches_shared_email_cases(body, expect):
     _check(MemberAddSchema, body, expect, {"email"})
 
 
-@pytest.mark.parametrize("form", ["board_create", "member_add"])
+@pytest.mark.parametrize(
+    "form", ["board_create", "board_sprint_create", "board_sprint_update", "member_add"]
+)
 def test_shared_case_ids_are_unique(form):
     ids = [param.id for param in _shared_cases(form)]
     assert len(ids) == len(set(ids))
@@ -142,6 +157,8 @@ def test_board_summary_dump_is_limited_to_documented_fields():
         name="Team Alpha",
         role="admin",
         position_version=3,
+        sprint_start=date(2026, 11, 16),
+        sprint_end=date(2026, 11, 22),
         creator_id=USER_ID,
         deleted_at=None,
         updated_at="2024-01-01T00:00:00Z",
@@ -151,7 +168,23 @@ def test_board_summary_dump_is_limited_to_documented_fields():
         "name": "Team Alpha",
         "role": "admin",
         "position_version": 3,
+        "sprint_start": "2026-11-16",
+        "sprint_end": "2026-11-22",
     }
+
+
+def test_board_summary_dumps_a_missing_sprint_as_null():
+    row = SimpleNamespace(
+        id=BOARD_ID,
+        name="Team Alpha",
+        role="member",
+        position_version=0,
+        sprint_start=None,
+        sprint_end=None,
+    )
+    dumped = BoardSummarySchema().dump(row)
+    assert dumped["sprint_start"] is None
+    assert dumped["sprint_end"] is None
 
 
 @pytest.mark.parametrize(

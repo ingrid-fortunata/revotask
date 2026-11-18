@@ -19,7 +19,15 @@ from app.models.board_column import BoardColumn
 from app.models.card import Card
 from tests.auth_helpers import bearer
 
-BOARD_KEYS = {"id", "name", "role", "position_version", "columns"}
+BOARD_KEYS = {
+    "id",
+    "name",
+    "role",
+    "position_version",
+    "sprint_start",
+    "sprint_end",
+    "columns",
+}
 COLUMN_KEYS = {"id", "board_id", "name", "is_done", "order", "cards"}
 CARD_KEYS = {"id", "column_id", "title", "description", "assignee_id", "assignee_name", "order"}
 

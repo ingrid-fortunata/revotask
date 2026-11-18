@@ -1,11 +1,12 @@
-"""boards table: name, creator, nonnegative position_version. Soft-deletable."""
+"""boards table: name, creator, position_version, optional sprint range. Soft-deletable."""
 
 from __future__ import annotations
 
 import uuid
+from datetime import date
 from typing import TYPE_CHECKING
 
-from sqlalchemy import CheckConstraint, ForeignKey, Integer
+from sqlalchemy import CheckConstraint, Date, ForeignKey, Integer
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.types import Uuid
 
@@ -22,6 +23,13 @@ class Board(UUIDPrimaryKeyMixin, AuditMixin, SoftDeleteMixin, db.Model):
     __tablename__ = "boards"
     __table_args__ = (
         CheckConstraint("position_version >= 0", name="position_version_nonnegative"),
+        # Both sprint dates or neither. The range holds 1 to 90 days counting both ends (SP4, DS1).
+        CheckConstraint(
+            "(sprint_start IS NULL AND sprint_end IS NULL) OR "
+            "(sprint_start IS NOT NULL AND sprint_end IS NOT NULL "
+            "AND sprint_end >= sprint_start AND sprint_end - sprint_start <= 89)",
+            name="sprint_range_valid",
+        ),
     )
 
     creator_id: Mapped[uuid.UUID] = mapped_column(
@@ -31,6 +39,8 @@ class Board(UUIDPrimaryKeyMixin, AuditMixin, SoftDeleteMixin, db.Model):
     position_version: Mapped[int] = mapped_column(
         Integer, nullable=False, default=0, server_default="0"
     )
+    sprint_start: Mapped[date | None] = mapped_column(Date, nullable=True)
+    sprint_end: Mapped[date | None] = mapped_column(Date, nullable=True)
 
     creator: Mapped[User] = relationship(
         back_populates="created_boards", foreign_keys="Board.creator_id"

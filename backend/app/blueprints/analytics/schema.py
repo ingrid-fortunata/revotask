@@ -35,6 +35,7 @@ class ActivityCountSchema(Schema):
 class AnalyticsSchema(Schema):
     week_start = fields.String(dump_only=True)
     week_end = fields.String(dump_only=True)
+    window = fields.String(dump_only=True)
     cards_per_column = fields.Nested(ColumnCountSchema, many=True, dump_only=True)
     completed_cards = fields.Integer(dump_only=True)
     member_activity = fields.Nested(ActivityCountSchema, many=True, dump_only=True)

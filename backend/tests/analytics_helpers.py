@@ -13,11 +13,21 @@ import uuid
 from datetime import datetime
 from typing import Any
 
-from app.extensions import db
-from app.models.board_event import BoardEvent
-from tests.kanban_helpers import Kanban, _write
+from sqlalchemy import func, select, update
 
-DATA_KEYS = {"week_start", "week_end", "cards_per_column", "completed_cards", "member_activity"}
+from app.extensions import db
+from app.models.board import Board
+from app.models.board_event import BoardEvent
+from tests.kanban_helpers import Kanban, _read, _write
+
+DATA_KEYS = {
+    "week_start",
+    "week_end",
+    "window",
+    "cards_per_column",
+    "completed_cards",
+    "member_activity",
+}
 COLUMN_KEYS = {"column_id", "name", "count"}
 ACTIVITY_KEYS = {"user_id", "name", "count"}
 
@@ -64,3 +74,24 @@ def analytics_data(client, kanban: Kanban, **kwargs) -> dict:
     response = get_analytics(client, kanban, **kwargs)
     assert response.status_code == 200, response.get_json()
     return response.get_json()["data"]
+
+
+def sprint_board(app, board_id: uuid.UUID, start: str | None, end: str | None) -> None:
+    """Set or clear a board's sprint directly. `start` and `end` are `YYYY-MM-DD` or None."""
+    values = {
+        "sprint_start": datetime.fromisoformat(start).date() if start else None,
+        "sprint_end": datetime.fromisoformat(end).date() if end else None,
+    }
+    _write(
+        app, lambda: db.session.execute(update(Board).where(Board.id == board_id).values(**values))
+    )
+
+
+def event_count(app, board_id: uuid.UUID) -> int:
+    """How many `board_events` rows a board has. A sprint edit must not change it."""
+    return _read(
+        app,
+        lambda: db.session.scalar(
+            select(func.count()).select_from(BoardEvent).where(BoardEvent.board_id == board_id)
+        ),
+    )

@@ -23,6 +23,8 @@ COLUMN_TYPES = {
     ("users", "updated_at"): ("timestamp with time zone", "NO"),
     ("boards", "position_version"): ("integer", "NO"),
     ("boards", "deleted_at"): ("timestamp with time zone", "YES"),
+    ("boards", "sprint_start"): ("date", "YES"),
+    ("boards", "sprint_end"): ("date", "YES"),
     ("board_members", "role"): ("character varying", "NO"),
     ("board_columns", "is_done"): ("boolean", "NO"),
     ("board_columns", "order"): ("double precision", "NO"),
@@ -49,6 +51,7 @@ PRIMARY_KEYS = {
 CHECK_FRAGMENTS = {
     "ck_users_email_normalized": "lower(btrim(",
     "ck_boards_position_version_nonnegative": "position_version >= 0",
+    "ck_boards_sprint_range_valid": "sprint_end >= sprint_start",
     "ck_board_members_role": "'admin'",
     "ck_board_columns_order_finite_positive": "Infinity",
     "ck_cards_order_finite_positive": "Infinity",
