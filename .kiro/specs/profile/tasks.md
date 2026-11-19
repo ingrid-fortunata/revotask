@@ -4,11 +4,11 @@
 
 This plan implements the profile update (E31), the `/profile` page, the safe user context refresh and the AppHeader account link described in `design.md` (root T12). Order of work: the shared message map, schema, service and route, the shared fixture, the backend tests and a backend checkpoint, the frontend foundation (rules, client allowlist, Next handler, context setter), the form and page, the AppHeader link, the measured mobile check with the journey, the full verification checkpoint, and the documentation checkpoint.
 
-**Status:** Done locally (2026-11-14). Requirements and design were approved (decisions P1–P11 with clarifications), and the user's `implement profile T12` invocation for all tasks approved this plan. Every group is verified; see `evidence/profile-T12.md`. Open outside this plan: Playwright (V10), real-device checks (T15), deployment and the T16 security items (reauthentication, new-address confirmation, old-address notice, the E31 rate limit).
+**Status:** Revision 1 (name and email) done locally on 2026-11-14 and verified (groups 0 to 10, see `evidence/profile-T12.md`). **Revision 2 (2026-11-19) is done locally and verified:** the email is read-only and the profile has an optional password change (decisions P12–P18 in `requirements.md`, `design.md` DD1–DD10). Requirements, design and this task plan were approved in chat on 2026-11-19, and groups 11 to 17 were implemented the same day (see `evidence/profile-T12.md`, Revision 2). Groups 0 to 10 stay checked as the record of Revision 1. Where a Revision 1 task describes behavior that Revision 2 removes (the email edit, the 409, the unavailable-password sentence), the matching Revision 2 task replaces it. Open outside this plan: Playwright (V10), real-device checks (T15), deployment and the T16 security items (the E31 rate limit, revoking other sessions after a password change, a change notice).
 
-**Root task:** T12. Existing root IDs are preserved and no new root ID is proposed. Root T12 stays unchecked in `specs/tasks.md` until its checks pass.
+**Root task:** T12. Existing root IDs are preserved and no new root ID is proposed. Root T12 stays checked in `specs/tasks.md`. Its note records Revision 2 as done locally (task 17.5).
 
-**Inputs:** `requirements.md` (Requirements 1 to 8, P1–P11), `design.md` (DD1–DD9, Properties 1–14, C23–C27, R1–R5).
+**Inputs:** `requirements.md` (Requirements 1 to 8, P1–P18), `design.md` (DD1–DD10, Properties 1–15, C23–C27, R1–R8).
 
 ## Dependency gates
 
@@ -18,6 +18,9 @@ This plan implements the profile update (E31), the `/profile` page, the safe use
 | B | The backend E31 checks pass before any frontend task that calls it. | 3.7 |
 | C | The frontend and the full suites pass before the mobile record is final. | 9 |
 | D | Root T12 is checked only after the backend, frontend, measured mobile check, journey and documentation pass. Unverified work stays open with the actual reason. | 10.5 |
+| B2 | Revision 2: the backend E31 checks pass before the frontend sends a password key. | 14.7 |
+| C2 | Revision 2: the frontend suite, the full backend suite and `next build` pass before the mobile record is final. | 16.1, 17.1 |
+| D2 | Revision 2 is recorded complete only after groups 11 to 17 pass. | 17.5 |
 
 ## Test conventions (all groups)
 
@@ -185,13 +188,134 @@ This plan implements the profile update (E31), the `/profile` page, the safe use
     - Acceptance: the checkbox matches the evidence.
     - _Root: T12_
 
+## Revision 2 tasks (2026-11-19): read-only email and optional password change
+
+Order of work: finalize the shared documents, the backend schema, service and route, the shared fixture, the backend tests and a checkpoint, the frontend rules, `FormField`, handler and form, the page, the measured mobile check and journey, the full verification, and the documentation checkpoint. Every task below is unchecked until its acceptance check passes.
+
+- [x] 11. Finalize the Revision 2 spec (documents only)
+  - [x] 11.1 Synchronize the shared documents with `design.md` ("Contract and Document Impact")
+    - Update `docs/API.md` (E31 row and the C23–C27 paragraph), `backend/specs/api-contract.md` (`users_bp` row), `specs/requirements.md` AC12.1, `specs/traceability.md` (AC12.1, E31, `/profile`: Revision 2 open), the T12 row of `specs/tasks.md` (a "Revision 2 in progress" note, T12 stays checked), `docs/TEST-PLAN.md` V07 and V11, `frontend/specs/pages-and-components.md` and `api-integration.md`. Record before, after, reason and verification in `specs/CHANGELOG.md`, and the plan approval in `evidence/spec-review.md`. Change no source code, test, README or application changelog.
+    - Acceptance: each document says the same as `design.md`: E31 takes `name`, `current_password` and `new_password`, rejects `email` with `Unknown field.`, returns no 409, and a wrong current password is 400 on `fields.current_password`.
+    - _Requirements: 3.8, 8.9; Root: T12; Decisions: P12–P18_
+
+- [x] 12. Backend: schema, service and route (WP-B3)
+  - [x] 12.1 Share the password composition rule
+    - In `backend/app/blueprints/auth/schema.py`, rename `_password_composition` to `password_composition` and update its use in `RegisterSchema`.
+    - Acceptance: the existing auth schema, register and login tests pass unchanged.
+    - _Requirements: 1.3; Root: T12; Decisions: P17, R3_
+  - [x] 12.2 Revise `ProfileUpdateSchema`
+    - In `backend/app/blueprints/users/schema.py`: remove `email`. Add `current_password` (`fields.String`, `Length(1, PASSWORD_MAX, error=LOGIN_PASSWORD_LENGTH)`) and `new_password` (`fields.String`, `Length(PASSWORD_MIN, PASSWORD_MAX, error=REGISTER_PASSWORD_LENGTH)` then `password_composition`), both optional with `error_messages=FIELD_MESSAGES`, not trimmed. Add the pairing check as in `design.md` ("Schema sketch"): `@validates_schema(pass_original=True, skip_on_field_errors=False)`, a `Required.` on the missing key when exactly one of the two is present. Update the module docstring.
+    - Acceptance: `email`, `password` and an unknown key give `Unknown field.`. A half pair gives `Required.` on the missing key, also when the present half is invalid. No message contains a submitted value.
+    - _Requirements: 1.3, 2.2–2.5; Root: T12; Decisions: P12, P13, P17, DD2, R7_
+  - [x] 12.3 Revise `update_profile` and the E31 route
+    - In `backend/app/blueprints/users/service.py`, replace the email argument with `current_password` and `new_password` as in `design.md` ("Service sketch"): lock the row, verify the current password on the locked row with `verify_password`, on a mismatch roll back and raise `RequestValidationError(fields={"current_password": WRONG_PASSWORD})`, set `password_hash = hash_password(new_password)`, set the name when it differs, commit once. Remove the `EMAIL_UNIQUE_CONSTRAINT`, `is_unique_violation` and `EmailAlreadyExistsError` imports and the `IntegrityError` branch. `routes.py` keeps its handler body. Update the docstrings of the module, the function and the route (no email, the password step, no 409).
+    - Acceptance: a wrong current password writes nothing, also with a valid name. A right one stores a new Argon2id hash. A name-only request that sends the stored name runs no `UPDATE`. No code path returns 409. The function never logs a name or a password.
+    - _Requirements: 1.1, 1.2, 1.4–1.6, 1.8, 1.10, 2.6, 2.8–2.10, 3.5–3.7; Root: T12; Decisions: P12–P16, DD1, DD4, R1, R2_
+
+- [x] 13. Shared fixture
+  - [x] 13.1 Rewrite the `profile` section of `specs/fixtures/auth-field-cases.json`
+    - Base `{name, current_password, new_password}` with fixed non-secret test values (`Ada Lovelace`, `Old#pass1`, `New#pass2`), and cases in the existing `set` and `drop` form: name only, password pair only, all three, the name cases of Revision 1 (with both password keys dropped), `new_password` at 7, 8, 10 and 11 characters, without an uppercase letter, a lowercase letter and a special character, with a space only as the special character, with Unicode code-point counting, `current_password` at 0, 1, 10 and 11 characters and spaces only, `null`, a number, a boolean, an array and an object for each of the three keys, each half pair, `email` alone and beside valid fields, `password`, `password_hash` and `id` alone and beside valid fields. Update the `_note`. Leave the register and login cases unchanged.
+    - Acceptance: the file parses, every case names `accepted` or the exact `fields` map, and the register and login readers still pass. No case holds a real credential.
+    - _Requirements: 8.6; Root: T12; Decisions: P12, P13, P17, DD3_
+
+- [x] 14. Backend tests and checkpoint (WP-B4)
+  - [x] 14.1 `profile_helpers.py` and every caller of the old email edit
+    - Update `backend/tests/profile_helpers.py` for the new body keys and a helper that creates a user with a known registered password. Find every other backend test that sends `email` to E31 (`grep -rn "users/me" backend/tests`) and change or remove it, so no test expects an email edit or a 409.
+    - Acceptance: no backend test sends `email` to E31 except as a rejected key.
+    - _Requirements: 8.4, 8.7; Root: T12_
+  - [x] 14.2 `test_users_profile_schema.py`
+    - Run every rewritten `profile` fixture case through `ProfileUpdateSchema` and `load_json_body`. Assert the accepted output or the exact `fields`, that `FIELD_MESSAGES` is the map the register and profile schemas use, that the new-password rule matches the register rule and the current-password rule matches the login rule, the pairing rule with an invalid present half, and that no message contains a sentinel password.
+    - Acceptance: every case passes.
+    - _Requirements: 1.3, 2.2–2.5, 8.4, 8.6; Root: T12; Decisions: P12, P13, P17, DD3_
+  - [x] 14.3 `test_users_profile.py`
+    - Revise as in `design.md` ("Backend test files"): 200 for name only, pair only and both, the trimmed name, an unchanged name (`updated_at` unchanged), `updated_at` moved by every password change, the response allowlist, no event and no notification row, `Cache-Control` on every response. 400 for `{}`, a non-object, `email` alone and beside a valid field, `password`, `password_hash`, `id`, `created_at`, an unknown key, `null`, wrong types, the name, `new_password` and `current_password` boundaries, each half pair, each leaving the stored row unchanged. 415, 413, malformed JSON. 401 for no token, malformed, expired and revoked. The check order, with `verify_password` patched to prove that no hash check runs for a rejected body.
+    - Acceptance: each case is its own parameterized id. A failed request leaves the row as it was.
+    - _Requirements: 1.1–1.5, 1.7, 1.10, 2.1–2.5, 2.7, 2.9, 3.1, 3.2, 3.6, 8.4, 8.5; Root: T12; Decisions: P1, P2, P12, P13_
+  - [x] 14.4 `test_users_profile_password.py` (replaces `test_users_profile_conflict.py`)
+    - Delete `test_users_profile_conflict.py`. Cover a wrong `current_password` (400, `fields.current_password` with the fixed message, no submitted value in the body), a valid name beside a wrong password (the stored name and hash read from the database are the originals), a right password (an Argon2id hash that verifies the new password and not the old, different from the old hash), a stored hash that cannot be parsed (the same 400, no 500), and the email unchanged after every request in the file.
+    - Acceptance: the atomicity case asserts the stored name and hash directly in the database.
+    - _Requirements: 1.6, 1.10, 2.6, 3.5, 8.4, 8.5; Root: T12; Decisions: P14, P16_
+  - [x] 14.5 `test_users_profile_concurrency.py`
+    - Revise: keep the deterministic lock test for a name-only request. Replace the email cases with a name-only and a Password_Pair request on one account, repeated with a barrier, keeping both changes. Two name requests leave one of the two names and no error. Two Password_Pair requests with the same `current_password` leave exactly one 200 and one 400, and the stored hash verifies the winner's new password. A request with both fields applies together (a concurrent reader never sees one without the other).
+    - Acceptance: the deterministic case and the same-password race fail against an implementation that has no row lock or verifies before the lock. Every repeat ends with one valid serial outcome.
+    - _Requirements: 1.2, 1.8, 8.5; Root: T12; Decisions: P10, DD1, R2_
+  - [x] 14.6 `test_users_profile_session.py`, `test_users_profile_names.py` and `test_users_profile_logging.py`
+    - Session: a token minted before a password change still works, and so does a second session's token. E30 returns the unchanged email. A fresh login with the same email succeeds with the new password and returns 401 `INVALID_CREDENTIALS` with the old. Names: unchanged checks, plus another user's row unchanged after a password change. Logging: sentinel names and passwords for a successful update, a pair update and a rejected body never appear in the log output, and no body either.
+    - Acceptance: the login checks use a user created through the register path, and the tracker removes it. The sentinels never appear.
+    - _Requirements: 1.9, 3.4, 3.5, 3.7, 3.9, 8.5; Root: T12; Decisions: P9, P15_
+  - [x] 14.7 Backend checkpoint (gate B2)
+    - Run the profile files, `test_profile_cleanup.py`, the auth, users, boards and cards suites and the full backend suite, then `ruff`. Confirm the sentinel-user cleanup still passes.
+    - Acceptance: all pass. Record the counts in the evidence log. Nothing reads or writes `DATABASE_URL`.
+    - _Requirements: 8.4, 8.5, 8.7; Root: T12_
+
+- [x] 15. Frontend: rules, `FormField`, handler and form (WP-F4)
+  - [x] 15.1 Profile rules in `lib/authRules.ts`
+    - Replace `PROFILE_FIELDS` with `["name", "current_password", "new_password"]` and rebuild `PROFILE_SPEC` (`name` from `REGISTER_SPEC.name`, `current_password` from `LOGIN_SPEC.password`, `new_password` from `REGISTER_SPEC.password`). Rewrite `profileChanges(values, savedName)` (the name when its normalized value differs, each password key only when non-empty) and `validateProfile(raw)` (the partial `validate`, plus `Required.` on the missing half of the pair). Revise `lib/authRules.test.ts` to run the rewritten `profile` fixture cases and test `profileChanges`, a half pair, an unknown key and `email`.
+    - Acceptance: every `profile` case gives the same accepted values or messages as the Flask test. The register and login tests still pass.
+    - _Requirements: 4.6, 4.7, 8.6; Root: T12; Decisions: P7, P13, P17, DD3, DD5_
+  - [x] 15.2 `FormField` `readOnly`
+    - Add the optional `readOnly?: boolean` prop to `components/shared/FormField.tsx`, passed to the input only. Extend `FormField.test.tsx`: the attribute is set when asked, absent otherwise, and nothing else changes. Note the prop in the `guidelines/frontend.md` component table.
+    - Acceptance: every existing `FormField` and form test passes.
+    - _Requirements: 4.2, 7.3; Root: T12; Decisions: DD9, R4_
+  - [x] 15.3 Next handler keys
+    - In `app/api/users/me/route.ts`, set `allowedKeys: ["name", "current_password", "new_password"]`. Revise `route.test.ts`: a valid request for name only, pair only and both, 403 for a wrong Origin, 401 clears the cookie, 415, 413, 400 for malformed JSON, 400 `Unknown field.` for `email`, `password` and an unknown key (not forwarded), `{}` forwarded, no token in the response, `private, no-store`, a Flask 400 passed through, no password in any console output of the test.
+    - Acceptance: the handler still exports no `GET`. The upstream call goes to `/api/users/me` only.
+    - _Requirements: 8.1, 8.2; Root: T12; Decisions: P4, P12_
+  - [x] 15.4 Revise `ProfileForm`
+    - Rewrite `components/profile/ProfileForm.tsx` as in `design.md` ("ProfileForm"): Name; Email read-only (`readOnly`, `value={user.email}`, `inputClassName="bg-base-200 text-base-content/70"`, the hint "You sign in with this email. It cannot be changed.", not part of `values`); the toggle (`BaseButton variant="ghost"`, `aria-expanded`, `aria-controls`, "Change password" and "Cancel password change"); the always-present `div` with `hidden`, holding the Current password and New password fields (`type="password"`, `autoComplete` `current-password` and `new-password`, `PASSWORD_HINT`) only while open; closing empties them and their errors; Save disabled when nothing differs or while pending; the name and the pair sent only as `profileChanges` says; success path (`setSavedName`, reseed, closed and empty section, `setUser`, `router.refresh()`, `notifySuccess("Profile updated.")`); failure path through `useErrorHandler` with the typed values kept and the section open. Mobile: base classes for the smallest width, `BaseButton` `w-full sm:w-auto`.
+    - Acceptance: see 15.5. Every control renders at 44 by 44 CSS px with 16 px text.
+    - _Requirements: 4.2, 4.4–4.7, 5.1–5.8, 7.1–7.3, 7.5; Root: T12; Decisions: P12–P14, P16, DD5, DD9, DD10_
+  - [x] 15.5 Revise `ProfileForm.test.tsx`
+    - Cover as in `design.md` ("Frontend test files"): seeded Name, read-only Email that is never in a request, the collapsed section with no password input in the DOM, open and close with `aria-expanded`, closing empties the fields and errors, Save disabled when pristine and while pending, the name sent only when changed, the pair sent only when a password field holds text, `Required.` for the empty half and no request, the field rules, inline 400 messages with focus order Name, Current password, New password, the inline wrong-current-password message that keeps the section open and the typed text and leaves the context unchanged, the success toast, the reseed and the emptied and closed section, `setUser` and `router.refresh()` called once, a second submit ignored while pending, a 5xx and a transport error that keep the text and enable Save again, the `AUTH_REQUIRED` redirect. Remove the email-edit and 409 cases of Revision 1.
+    - Acceptance: each state asserts text, roles and the request sent.
+    - _Requirements: 4.2, 4.4–4.7, 5.1–5.8, 8.6; Root: T12_
+  - [x] 15.6 Page copy
+    - In `app/(protected)/profile/page.tsx`, replace the sentence with "Change your name or your password. Your email cannot be changed." Revise `page.test.tsx`: the helper is called, the form shows the stored values, the old "not available yet" text is gone, a missing session redirects, a read failure reaches the error boundary.
+    - Acceptance: the page makes no client request and sends no token. The mobile-guard test passes.
+    - _Requirements: 4.1, 4.3, 4.9, 7.3; Root: T12; Decisions: P4_
+  - [x] 15.7 Frontend checkpoint
+    - From `frontend/`: `npm run lint`, `npm run typecheck`, `npm test`, `npm run build`. Search the frontend for any other code that sends `email` to E31 or reads `PROFILE_FIELDS` with the old values and fix it. A failure in an unrelated test is reported with its cause.
+    - Acceptance: all four pass. Record the counts.
+    - _Requirements: 8.6, 8.8; Root: T12_
+
+- [x] 16. Measured mobile check and journey (WP-M2)
+  - [x] 16.1 Extend `evidence/profile-mobile-measure.mjs`
+    - Run Chrome (device emulation) at 320, 375, 768 and 1280 px against the local app with seeded users. For `/profile`: pristine, a field error, the Password_Section open, the wrong-current-password error and after a save, with no horizontal page scroll (section closed and open), Name, the read-only Email, the Change password control, both password fields and Save at least 44 by 44 CSS px (`elementFromPoint` at the center) and 16 px field text. Repeat the AppHeader check at 320 and 375 px. Save screenshots and the JSON result under `evidence/profile-screenshots/` and `evidence/profile-mobile.json` (Revision 2 files named so Revision 1 files stay).
+    - Acceptance: the script exits with 0 failed checks, or the failure is recorded and fixed.
+    - _Requirements: 6.3, 7.1, 7.2, 7.6; Root: T12; Decisions: P5_
+  - [x] 16.2 Manual journey
+    - Open the account link, change the name, save, see the header update, reload and see the stored name and a closed Password_Section, confirm the email field cannot be edited, open Change password, enter a wrong current password and see the inline error with the section still open, enter the right one with a new password, save, sign out and sign in with the same email and the new password (and see the old one refused). Record the real result with the browser type (emulator, not a real device).
+    - Acceptance: every step has a recorded result. A defect found is fixed with a test that failed first, or recorded open.
+    - _Requirements: 7.4, 7.6; Root: T12_
+
+- [x] 17. Full verification and documentation checkpoint
+  - [x] 17.1 Backend and frontend suites
+    - Run the full backend suite, `ruff`, the full frontend suite, lint, typecheck and `npm run build`, with the T11 tests included. If time allows, run `npm run e2e` to confirm Revision 2 broke no existing journey. Record the commands and the real counts.
+    - Acceptance: all pass, or the failure and its cause are recorded and the task stays open.
+    - _Requirements: 8.4–8.8; Root: T12_
+  - [x] 17.2 Review the diff against the spec
+    - Compare the diff with `requirements.md`, `design.md` and FE-D1 to FE-D9. Confirm no new color, font, dependency, migration or route, no `email` write on any path, no password in a response, a log line, the context, storage or the URL, no 409 on E31, and that the T11 changes in shared files are intact.
+    - Acceptance: each finding is fixed or recorded.
+    - _Requirements: 3.7, 4.2, 4.10, 6.6, 8.2; Root: T12_
+  - [x] 17.3 Evidence record
+    - Add a "Revision 2" section to `evidence/profile-T12.md`: commands and counts, the measured mobile result and screenshots (emulator or real device), the manual journey, the handler checks, defects found and fixed, and what stayed open (Playwright profile steps, real-device checks, T16: the E31 rate limit, revoking other sessions, a change notice). Record the implementation in `evidence/spec-review.md`.
+    - _Requirements: 7.6, 8.9; Root: T12_
+  - [x] 17.4 Changelogs, README and layer docs
+    - Add concise entries under the `## YYYY-MM-DD` heading for the commit date, with a `### <short-sha> <subject>` entry in `CHANGELOG.md`, `backend/CHANGELOG.md` and `frontend/CHANGELOG.md`. Update `specs/CHANGELOG.md` with any deviation. Update the `README.md` status and feature facts, `docs/USER_GUIDE.md` (the Profile page: name, read-only email, Change password), `specs/traceability.md` and `docs/TEST-PLAN.md` with verified results only. Check `backend/specs/` and `frontend/specs/` still match the code.
+    - _Root: T12_
+  - [x] 17.5 Revision 2 status (gate D2)
+    - Mark groups 11 to 17 complete only when each acceptance check passes. Remove the "Revision 2 in progress" note from root T12 in `specs/tasks.md` when it does. Otherwise leave it open with the real reason in the evidence record.
+    - Acceptance: the checkboxes match the evidence.
+    - _Root: T12_
+
 ## Notes
 
 - Test sub-tasks are not marked optional. Root completion in `specs/tasks.md` needs V07 and V11, so they are required here.
 - Each backend test file covers one concern, as listed in `design.md` ("Backend test files").
 - All database-writing tests clean up automatically through `BoardTracker` and run only on `TEST_DATABASE_URL` (tasks 3.2 to 3.7).
 - Local checks prove local behavior only. Playwright (V10), real-device checks and deployment stay open for T15 and T16.
-- Password change, reauthentication, new-address confirmation, an old-address notice, an E31 rate limit, avatar upload, account deletion, notifications (T13) and analytics (T14) are out of scope. The last four security items are tracked in T16.
+- Out of scope for Revision 1 and still out of scope: avatar upload, account deletion, notifications (T13) and analytics (T14). Revision 1 left password change out; Revision 2 adds it (groups 11 to 17). Password reset, a confirm-password field, a show-password control, revoking other sessions, an E31 rate limit and a change notice stay out of scope. The last three are tracked in T16.
+- Revision 2 database-writing tests also run only on `TEST_DATABASE_URL`, track every user and use fixed non-secret test passwords (14.1 to 14.6).
 - Attach `guidelines/backend.md`, `guidelines/database.md` or `guidelines/frontend.md` when creating a file with no matching file context.
 
 ## Task Dependency Graph
@@ -212,7 +336,21 @@ This plan implements the profile update (E31), the `/profile` page, the safe use
     { "id": 10, "tasks": ["8.1", "8.2"] },
     { "id": 11, "tasks": ["9.1", "9.2"] },
     { "id": 12, "tasks": ["10.1", "10.2", "10.3", "10.4"] },
-    { "id": 13, "tasks": ["10.5"] }
+    { "id": 13, "tasks": ["10.5"] },
+    { "id": 14, "tasks": ["11.1"] },
+    { "id": 15, "tasks": ["12.1", "13.1"] },
+    { "id": 16, "tasks": ["12.2"] },
+    { "id": 17, "tasks": ["12.3"] },
+    { "id": 18, "tasks": ["14.1", "14.2", "14.3", "14.4", "14.5", "14.6"] },
+    { "id": 19, "tasks": ["14.7"] },
+    { "id": 20, "tasks": ["15.1", "15.2", "15.3"] },
+    { "id": 21, "tasks": ["15.4", "15.6"] },
+    { "id": 22, "tasks": ["15.5"] },
+    { "id": 23, "tasks": ["15.7"] },
+    { "id": 24, "tasks": ["16.1", "16.2"] },
+    { "id": 25, "tasks": ["17.1", "17.2"] },
+    { "id": 26, "tasks": ["17.3", "17.4"] },
+    { "id": 27, "tasks": ["17.5"] }
   ]
 }
 ```

@@ -42,7 +42,7 @@ Use this map to verify that every route and page has a task. The acceptance matr
 | E21–E22 My Tasks and search              | T11                 |
 | E30 GET current user                     | T03                 |
 | E30 consumption by the protected shell   | T04                 |
-| E31 profile update and profile UI        | T12 (done locally)  |
+| E31 profile update and profile UI        | T12 (done locally, Revision 2 included) |
 | E27–E28 notifications and the bell       | T13 (done locally)  |
 | E29 analytics and the board panel        | T14                 |
 | /register and /login                     | T04                 |
@@ -80,7 +80,7 @@ Local status only. The planned verification rows above stay the reference. Evide
 | AC02.1 | E03 and `/login`: JWT, HttpOnly cookie, login opens the protected shell at `/` | Passed locally. Dashboard content arrives with T06 |
 | AC02.2 | Identical 401 for a wrong password and an unknown email. Absent, expired, revoked and tampered sessions return 401 and redirect to `/login` | Passed locally (V02 local part) |
 | AC02.3 | E04: revocation, token replay rejected, cookie cleared, idempotent browser logout, retry when Flask is down, Back after sign out | Passed locally in Chrome device emulation. The Playwright run (V09) passed locally in T15 (LA-2a to LA-2d). The back-forward cache `pageshow` path has unit tests only |
-| AC12.1 | E30 read and E31 (`PATCH /api/users/me`: partial update, no-op keeps `updated_at`, 409 rolls back the whole update, per-field last write wins, no password field, session stays valid after an email change, C23–C27), `/profile`, the AppHeader account link, the safe user context refresh | Passed locally (V07, V11): `evidence/profile-T12.md`. Playwright (V10) and real-device checks are T15. Reauthentication, new-address confirmation, an old-address notice and the E31 rate limit are tracked for public release in T16 |
+| AC12.1 | E30 read and E31 (`PATCH /api/users/me`: partial update of `name` and an optional password pair with the current password, `email` rejected as an unknown key, no-op keeps `updated_at`, a wrong current password is a 400 that rolls back the whole update, per-field last write wins, no password in any response, every session stays valid after a password change, C23–C27), `/profile` (read-only email, Change password section), the AppHeader account link, the safe user context refresh | Revision 1 (name and email) passed locally (V07, V11): `evidence/profile-T12.md`. **Revision 2 (read-only email, password change) passed locally 2026-11-19 (V07, V11): backend 2234 passed, frontend 2221 passed, a 457-check Chrome run, Playwright 58 passed; `evidence/profile-T12.md`, Revision 2.** Playwright (V10) and real-device checks are T15. The E31 rate limit, revoking other sessions and a change notice are tracked for public release in T16 |
 | AC13.1 | AUTH-R13 for `/login`, `/register`, the shell and the error state at 320, 375, 768 and 1280 px | Passed locally in emulation. No real phone, no on-screen keyboard. The same check repeats in every later UI slice, in T15 and in T16 |
 | AC13.3 | `no-store` on private responses, exact `Origin` check on the three auth handlers, secrets absent from the browser bundle | Partial. The same checks on later handlers, the full V13 run (T15) and the live cookie flags (T16) remain |
 | AC14.1 | Local register and login | Partial. Live Render checks are T16 |
@@ -129,7 +129,7 @@ Local status only. The planned verification rows above stay the reference. Evide
 | AC06.2 | E21 and `/my-tasks`: every active card assigned to the caller on boards they can access, Done cards included, case-insensitive board name order, grouped on the page, board links, empty state | Passed locally: backend tests (exclusions, sort, removal, read-only) and UI tests. A 359-check Chrome run and the 375 px journey passed |
 | AC09.1 | E22 and the Search cards field: title match, 300 ms debounce, 20-result cap, literal wildcards, blank clears at once, late responses ignored, results follow rename, move and delete, query validation (repeated, unknown, blank, over-long, NUL) in Flask and through the Next handler | Passed locally: backend tests, hook and component tests, handler tests, the journey and four handler checks in Chrome |
 | AC13.1 | `/my-tasks`, the search states and the Boards and My tasks header links at 375 px and wider | Passed locally in emulation at 320, 375, 768 and 1280 px (44 px targets, no horizontal scroll, no sticky-bar overlap). No real phone |
-| V07 | E21 and E22 pytest and the UI tests; E31 pytest (99 tests) and the profile UI tests | Passed locally (T11, T12) |
+| V07 | E21 and E22 pytest and the UI tests; E31 pytest (156 tests in the eight profile files after Revision 2) and the profile UI tests | Passed locally (T11, T12) |
 | V11 | Mobile and accessibility of the new screens, search debounce | Passed locally in emulation. The Playwright matrix passed in T15 (LA-8) |
 | NFR 1 (reference) | E22 and E21 on 100 cards | Recorded locally: E22 p95 4.8 ms, E21 p95 5.8 ms (direct to Flask). Not a T11 gate. Deployed timing is T16 |
 

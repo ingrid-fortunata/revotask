@@ -385,6 +385,31 @@ The user's invocation `/revotask-feature implement profile T12` (all tasks) was 
 
 All native groups of `.kiro/specs/profile/tasks.md` were implemented by Claude Code (`/revotask-feature implement profile T12`, all tasks). The plan approval was the user's invocation. The decisions P1–P11 and the design held without change. Deviations that touched the spec (no behavior or contract change) are in `specs/CHANGELOG.md`: the names test covers E10, E21 and E23 (E22 returns no names), `ProfileForm` shows a form-level message for a 400 key that has no field, and `profileChanges` takes a plain `{name, email}` record. Checks: backend 1907 passed and 1 skipped, frontend 1845 passed, `next build` succeeds, a 376-check Chrome run (device emulation) passed with 0 failed, and removing the row lock makes the lock test fail. Root T12 is checked in `specs/tasks.md`. Open: Playwright (V10), real-device checks (T15), deployment (T16), and the T16 security items from P8 and P11 (reauthentication, new-address confirmation, old-address notice, E31 rate limit). Evidence: `evidence/profile-T12.md`.
 
+### Profile Revision 2: read-only email and optional password change (2026-11-19)
+
+Requested by the user in chat: `/revotask-feature spec profile T12. I think the email should be fix (can't be edited) because its become our important key. So what we can edit just the name and password only.` Claude Code revised `requirements.md` in place. Spec review only: no source code, test, root spec, API doc, README or changelog was changed and no test was run. T12 Revision 1 stays verified and root T12 stays checked.
+
+| Phase | Status | Note |
+| --- | --- | --- |
+| Requirements | Approved 2026-11-19 (user, in chat: "approve and write design.md"), P16–P18 included | Same 8 requirements, revised. Decisions P12–P15 are the user's answers, P16–P18 were defaults and are approved as written. |
+| Design | Approved 2026-11-19 (user, in chat, by asking for `tasks.md`) | `design.md` rewritten: DD1–DD10, 15 properties, C23–C27 revised, review items R1–R8 (R5, the single "Profile updated." toast, accepted as proposed). One shared-part change (`FormField` `readOnly`), one rename (`password_composition`), no schema, migration or dependency change. |
+| Tasks | Approved 2026-11-19 (user, by invoking `/revotask-feature implement all the tasks`) | `tasks.md`: groups 0 to 10 kept checked as the Revision 1 record, new groups 11 to 17 (26 sub-tasks, all unchecked) with gates B2, C2 and D2. Group 11 is the finalize step (shared documents), 12 to 14 backend, 15 frontend, 16 mobile check and journey, 17 verification and documentation. |
+| Finalize | Done 2026-11-19 (Claude Code) | Tasks approved in chat by the user's `implement all the tasks` invocation. Group 11 synchronized `docs/API.md` (E31 and C23–C27), `backend/specs/api-contract.md`, `specs/requirements.md` AC12.1, `specs/traceability.md`, `specs/tasks.md`, `docs/TEST-PLAN.md`, `frontend/specs/pages-and-components.md`, `guidelines/backend.md`, `guidelines/frontend.md` and `specs/CHANGELOG.md`. |
+| Implementation | Done 2026-11-19, local checks (Claude Code) | Groups 12 to 17 of `tasks.md`. See `evidence/profile-T12.md` (Revision 2). |
+
+User answers in chat (2026-11-19):
+
+| Question | Answer | Decision |
+| --- | --- | --- |
+| Reject an `email` key on E31 like an unknown key? | Reject with 400. | P12 |
+| Where does the password change live? | The same `PATCH /api/users/me`. "I want we can edit the name. But optional for edit password. I think on frontend, we can differentiate if the user want to change password or not." | P13 |
+| Is the current password required? | Yes. | P14 |
+| Other sessions after a password change? | Keep all sessions valid. | P15 |
+
+Implementation record (2026-11-19): all of groups 11 to 17 were implemented by Claude Code. The decisions P12–P18 and the design held without change. Deviations (no behavior or contract change) are in `evidence/profile-T12.md`: the Cancel control uses the existing `x` icon, the read-only email takes a no-op `onChange`, and the password-rule parity test compares schema outcomes. Checks: backend 2234 passed and 1 skipped, frontend 2221 passed, `next build` succeeds, a 457-check Chrome run (device emulation) passed with 0 failed, Playwright 58 passed, and removing the row lock makes three concurrency tests fail. Open: real-device checks and T16 items (the E31 rate limit, revoking other sessions, a change notice).
+
+Defaults chosen to complete the draft (approved with the requirements): P16 (a wrong current password is a 400 on `fields.current_password`, not a 401, so the session stays), P17 (register rule for the new password, login rule for the current one, no confirm field and no show-password control, no "must differ" rule) and P18 (the E31 rate limit stays deferred to T16, with the guessing risk named). Revised from Revision 1: P1, P2, P3, P6, P7, P10, P11. Superseded: P8.
+
 ## Notifications review record (T13)
 
 Review of `.kiro/specs/notifications/`. Requirements were drafted by Claude Code (`/revotask-feature spec notifications T13`, 2026-11-14), revised with the user's clarifications the same day, the design and the task plan were drafted by Claude Code afterwards (design approved by the user on 2026-11-14). Spec review only: no source code, test, README, root `specs/tasks.md` or changelog was changed and no test was run. Root T13 stays unchecked. Prerequisite check: kanban and comments are verified (root T07 to T10 checked in `specs/tasks.md`, `evidence/kanban-T07-T09.md`, `evidence/comments-T10.md`). The `notifications` table, its indexes and the `User.notifications` relationship already exist, so no migration is planned. The working tree holds uncommitted T11 and T12 changes in shared files (`AppHeader.tsx`, `flask.ts`, `privateRoute.ts`, `apiClient.ts`, `types.ts`, `cards/service.py`); this slice must build on them.

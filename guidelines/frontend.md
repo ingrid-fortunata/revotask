@@ -21,7 +21,7 @@
 | `CardSearch.tsx` | Client. Owns the field and the search states through `useCardSearch`. Props: the live columns and `onOpenCard`. | Search a board by title and list the results from the live board state. |
 | `MyTasks.tsx` | Server-compatible, props-only. | Render the My tasks title, summary, groups and empty state. |
 | `TaskGroup.tsx` | Server-compatible, props-only. | Render one board's tasks with links to the board. |
-| `ProfileForm.tsx` | Client. Controlled form seeded from the stored user. Uses `useAuth().setUser`, `useErrorHandler` and `router.refresh()`. | Edit the caller's name and email through `PATCH /api/users/me`, sending only changed fields. |
+| `ProfileForm.tsx` | Client. Controlled form seeded from the stored user. Uses `useAuth().setUser`, `useErrorHandler` and `router.refresh()`. | Edit the caller's name and, optionally, the password (current and new) through `PATCH /api/users/me`, sending only changed fields. The email is read-only. |
 | `NotificationBell.tsx` | Client. The header bell. Owns the open state and `useNotifications`. A 44 px button named "Notifications, N unread" (exact count) with a badge that is hidden at 0 and caps at `99+`. | Show the unread count on every screen and open the panel. |
 | `NotificationPanel.tsx` | Client, props only. A `BaseModal` named "Notifications" with the count line, the loading, empty and error states, a divided list and Newer and Older paging. Sets `text-base-content` because the header renders it. | List the notifications and page through them. |
 | `NotificationRow.tsx` | Server-compatible, props only. A link to the board, an Unread text badge, the board name and time, and a Mark as read button. | Show one notification. |
@@ -80,7 +80,7 @@ The app reads as a work dashboard: a dark ink sidebar, a cool grey canvas, white
 | FE-D8 | Keep one memorable thing per screen and keep the rest quiet. Here it is the board tiles on the dashboard and the ink sidebar. Motion only answers an action (dialog open, pending spinner). No entrance animations or hover effects on every card. | Tiles change only their border on hover. |
 | FE-D9 | Design never overrides FE-S4 to FE-S6. A UI slice records a screenshot check at 375, 768 and 1280 px (no horizontal page scroll, controls at least 44 px) next to the FE-S6 record. Component tests assert behavior, roles and text. Assert layout classes only for a mobile rule (FE-S4, FE-S5). | The boards screens were checked at 375, 768 and 1280 px. |
 
-Shared visual parts: `AppHeader` (shell), `BrandMark` (logo and name), `Avatar` (initials, decorative), `BaseBadge`, `BaseButton`, `BaseModal`, `ConfirmDialog`, `FormField` (a text input, a search input with `maxLength`, or a textarea with `multiline`), `SelectField` (a labelled select) and `CheckboxField` (a labelled 44 px checkbox with a text hint). A new screen composes these and the `.surface` utility. Add a new shared part only when two screens need it.
+Shared visual parts: `AppHeader` (shell), `BrandMark` (logo and name), `Avatar` (initials, decorative), `BaseBadge`, `BaseButton`, `BaseModal`, `ConfirmDialog`, `FormField` (a text input, a search input with `maxLength`, a read-only input with `readOnly` for the profile email, or a textarea with `multiline`), `SelectField` (a labelled select) and `CheckboxField` (a labelled 44 px checkbox with a text hint). A new screen composes these and the `.surface` utility. Add a new shared part only when two screens need it.
 
 ## State Management
 
