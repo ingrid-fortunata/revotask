@@ -28,8 +28,8 @@ PRODUCTION_MIN_SECRET_LENGTH = 32
 ACCESS_TOKEN_TTL_SECONDS = 3600
 MAX_REQUEST_BODY_BYTES = 64 * 1024
 NAME_MAX = 80
-PASSWORD_MIN = 8  # register only; login accepts any length from 1 (AUTH-AC2.4)
-PASSWORD_MAX = 128
+PASSWORD_MIN = 8  # register only; login accepts 1 to PASSWORD_MAX (AUTH-AC2.4)
+PASSWORD_MAX = 10  # revision 5 (C12); was 128
 # Rate limits (local development, in-memory storage). Shared storage and trusted client
 # address handling are decided before production traffic (root T16).
 REGISTER_RATE_LIMIT = "5 per minute"

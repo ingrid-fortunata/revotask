@@ -22,9 +22,9 @@ export function titleFor(runId: string, kind: string, n: number | string = ""): 
   return `LA ${runId} ${kind}${n === "" ? "" : ` ${n}`}`;
 }
 
-/** Meets the registration rule: 8 to 128 characters, upper, lower, and an ASCII special character. */
+/** Meets the registration rule: 8 to 10 characters, upper, lower, and an ASCII special character. */
 export function makePassword(): string {
-  return `Aa1!${randomBytes(12).toString("hex")}`;
+  return `Aa1!${randomBytes(3).toString("hex")}`;
 }
 
 export type RunEnv = { runId: string; ownerPassword: string; memberPassword: string };

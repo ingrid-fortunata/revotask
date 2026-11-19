@@ -12,7 +12,7 @@ import {
 import { POST } from "./route";
 
 const fetchMock = vi.fn();
-const CREDENTIALS = { email: "ada@example.com", password: "correct horse battery" };
+const CREDENTIALS = { email: "ada@example.com", password: "Correct-pw" };
 const USER = { id: "1", name: "Ada", email: "ada@example.com" };
 
 beforeEach(() => {

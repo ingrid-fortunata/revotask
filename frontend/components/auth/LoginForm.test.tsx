@@ -41,10 +41,10 @@ describe("LoginForm", () => {
   it("sends exactly email and password, with the email normalized and the password untouched", async () => {
     vi.mocked(apiPost).mockResolvedValue({ user: {} });
     render(<LoginForm redirectTo="/" />);
-    const user = await fill("  Ada@Example.COM ", "  my password  ");
+    const user = await fill("  Ada@Example.COM ", "  my-pw  ");
     await user.click(screen.getByRole("button", { name: "Sign in" }));
     await waitFor(() => expect(apiPost).toHaveBeenCalledTimes(1));
-    expect(apiPost).toHaveBeenCalledWith("/api/auth/login", { email: "ada@example.com", password: "  my password  " });
+    expect(apiPost).toHaveBeenCalledWith("/api/auth/login", { email: "ada@example.com", password: "  my-pw  " });
     expect(Object.keys(vi.mocked(apiPost).mock.calls[0][1] as object)).toEqual(["email", "password"]);
   });
 
@@ -52,7 +52,7 @@ describe("LoginForm", () => {
     render(<LoginForm redirectTo="/" />);
     await userEvent.click(screen.getByRole("button", { name: "Sign in" }));
     expect(screen.getAllByText("Required.")).toHaveLength(1);
-    expect(screen.getByText("Must be 1 to 128 characters.")).toBeInTheDocument();
+    expect(screen.getByText("Must be 1 to 10 characters.")).toBeInTheDocument();
     expect(screen.getByLabelText("Email")).toHaveFocus();
     expect(screen.getByLabelText("Email")).toHaveAttribute("aria-invalid", "true");
     expect(apiPost).not.toHaveBeenCalled();
@@ -90,12 +90,12 @@ describe("LoginForm", () => {
 
   it("shows server field errors inline and focuses the first one", async () => {
     vi.mocked(apiPost).mockRejectedValue(
-      apiError(400, "VALIDATION_ERROR", "Check the submitted fields.", { fields: { password: "Must be 1 to 128 characters." } }),
+      apiError(400, "VALIDATION_ERROR", "Check the submitted fields.", { fields: { password: "Must be 1 to 10 characters." } }),
     );
     render(<LoginForm redirectTo="/" />);
     const user = await fill("ada@example.com", "x");
     await user.click(screen.getByRole("button", { name: "Sign in" }));
-    expect(await screen.findByText("Must be 1 to 128 characters.")).toBeInTheDocument();
+    expect(await screen.findByText("Must be 1 to 10 characters.")).toBeInTheDocument();
     expect(screen.getByLabelText("Password")).toHaveFocus();
   });
 

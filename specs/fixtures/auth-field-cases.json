@@ -1,10 +1,10 @@
 {
- "_note": "Shared boundary cases for the auth field rules (design 4.4, AUTH-AC10.7). The Flask schema tests and the frontend authRules tests both read this file. Each case starts from the form's base body, applies 'set' then 'drop', and expects either 'accepted' (fields whose normalized value is checked; the output keys must equal the form's key set) or the exact 'fields' map of messages. Values: {\"repeat\": s, \"times\": n} is s repeated n times; {\"concat\": [a, b]} joins parts. Lengths count Unicode code points. Password rules: register requires 8 to 128 characters with at least one ASCII uppercase letter, one ASCII lowercase letter and one ASCII special character (0x21-0x2F, 0x3A-0x40, 0x5B-0x60, 0x7B-0x7E; a space is not special). Login accepts 1 to 128 characters and no composition check. The profile section (E31, a partial update) uses the same forms: the body is the base with 'set' applied and 'drop' removed, so a body may hold one key. 'accepted' lists the normalized values and the output keys must equal the body's keys. An empty object is not a case here: Flask returns 400 for it and the form never sends it.",
+ "_note": "Shared boundary cases for the auth field rules (design 4.4, AUTH-AC10.7). The Flask schema tests and the frontend authRules tests both read this file. Each case starts from the form's base body, applies 'set' then 'drop', and expects either 'accepted' (fields whose normalized value is checked; the output keys must equal the form's key set) or the exact 'fields' map of messages. Values: {\"repeat\": s, \"times\": n} is s repeated n times; {\"concat\": [a, b]} joins parts. Lengths count Unicode code points. Password rules: register requires 8 to 10 characters with at least one ASCII uppercase letter, one ASCII lowercase letter and one ASCII special character (0x21-0x2F, 0x3A-0x40, 0x5B-0x60, 0x7B-0x7E; a space is not special). Login accepts 1 to 10 characters and no composition check. The profile section (E31, a partial update) uses the same forms: the body is the base with 'set' applied and 'drop' removed, so a body may hold one key. 'accepted' lists the normalized values and the output keys must equal the body's keys. An empty object is not a case here: Flask returns 400 for it and the form never sends it.",
  "register": {
   "base": {
    "name": "Ada Lovelace",
    "email": "ada@example.com",
-   "password": "Horse-Battery-42"
+   "password": "Horse-4Bat"
   },
   "cases": [
    {
@@ -321,7 +321,7 @@
     "drop": [],
     "expect": {
      "fields": {
-      "password": "Must be 8 to 128 characters."
+      "password": "Must be 8 to 10 characters."
      }
     }
    },
@@ -333,7 +333,7 @@
     "drop": [],
     "expect": {
      "fields": {
-      "password": "Must be 8 to 128 characters."
+      "password": "Must be 8 to 10 characters."
      }
     }
    },
@@ -350,14 +350,26 @@
     }
    },
    {
-    "id": "password-128-chars",
+    "id": "password-9-chars",
+    "set": {
+     "password": "Aa1!aaaaa"
+    },
+    "drop": [],
+    "expect": {
+     "accepted": {
+      "password": "Aa1!aaaaa"
+     }
+    }
+   },
+   {
+    "id": "password-10-chars",
     "set": {
      "password": {
       "concat": [
        "Aa1!",
        {
         "repeat": "a",
-        "times": 124
+        "times": 6
        }
       ]
      }
@@ -370,7 +382,7 @@
         "Aa1!",
         {
          "repeat": "a",
-         "times": 124
+         "times": 6
         }
        ]
       }
@@ -378,14 +390,14 @@
     }
    },
    {
-    "id": "password-129-chars",
+    "id": "password-11-chars",
     "set": {
      "password": {
       "concat": [
        "Aa1!",
        {
         "repeat": "a",
-        "times": 125
+        "times": 7
        }
       ]
      }
@@ -393,7 +405,7 @@
     "drop": [],
     "expect": {
      "fields": {
-      "password": "Must be 8 to 128 characters."
+      "password": "Must be 8 to 10 characters."
      }
     }
    },
@@ -485,14 +497,14 @@
     }
    },
    {
-    "id": "password-128-emoji",
+    "id": "password-10-chars-with-emoji",
     "set": {
      "password": {
       "concat": [
        "Aa1!",
        {
         "repeat": "😀",
-        "times": 124
+        "times": 6
        }
       ]
      }
@@ -505,7 +517,7 @@
         "Aa1!",
         {
          "repeat": "😀",
-         "times": 124
+         "times": 6
         }
        ]
       }
@@ -513,14 +525,14 @@
     }
    },
    {
-    "id": "password-129-emoji",
+    "id": "password-11-chars-with-emoji",
     "set": {
      "password": {
       "concat": [
        "Aa1!",
        {
         "repeat": "😀",
-        "times": 125
+        "times": 7
        }
       ]
      }
@@ -528,7 +540,7 @@
     "drop": [],
     "expect": {
      "fields": {
-      "password": "Must be 8 to 128 characters."
+      "password": "Must be 8 to 10 characters."
      }
     }
    },
@@ -758,7 +770,7 @@
     "drop": [],
     "expect": {
      "fields": {
-      "password": "Must be 1 to 128 characters."
+      "password": "Must be 1 to 10 characters."
      }
     }
    },
@@ -787,11 +799,11 @@
     }
    },
    {
-    "id": "password-128-chars",
+    "id": "password-10-chars",
     "set": {
      "password": {
       "repeat": "a",
-      "times": 128
+      "times": 10
      }
     },
     "drop": [],
@@ -799,23 +811,23 @@
      "accepted": {
       "password": {
        "repeat": "a",
-       "times": 128
+       "times": 10
       }
      }
     }
    },
    {
-    "id": "password-129-chars",
+    "id": "password-11-chars",
     "set": {
      "password": {
       "repeat": "a",
-      "times": 129
+      "times": 11
      }
     },
     "drop": [],
     "expect": {
      "fields": {
-      "password": "Must be 1 to 128 characters."
+      "password": "Must be 1 to 10 characters."
      }
     }
    },
@@ -1261,7 +1273,7 @@
    {
     "id": "unknown-password-alone",
     "set": {
-     "password": "Horse-Battery-42"
+     "password": "Horse-4Bat"
     },
     "drop": [
      "name",
@@ -1276,7 +1288,7 @@
    {
     "id": "unknown-password-beside-valid",
     "set": {
-     "password": "Horse-Battery-42"
+     "password": "Horse-4Bat"
     },
     "drop": [],
     "expect": {

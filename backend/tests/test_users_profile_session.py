@@ -69,4 +69,4 @@ def test_the_password_still_works_after_a_name_and_email_change(client, tracker,
     new_email = f"again-{user.email}"
     patch_me(client, tracker, user, {"name": "Renamed", "email": new_email})
     assert _login(client, new_email).status_code == 200
-    assert _login(client, new_email, "Wrong-Password-1!").status_code == 401
+    assert _login(client, new_email, "Wrong-Pw-1").status_code == 401

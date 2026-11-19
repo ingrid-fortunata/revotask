@@ -17,7 +17,7 @@ from app.extensions import db
 from app.models.user import User
 from tests.auth_helpers import bearer
 
-PASSWORD = "Horse-Battery-42"
+PASSWORD = "Horse-4Bat"
 
 
 def patch_me(client, tracker, user, body: Any = None, **kwargs):

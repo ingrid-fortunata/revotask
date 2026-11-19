@@ -13,7 +13,8 @@ vi.mock("@/lib/apiClient", () => ({ apiPost: vi.fn() }));
 vi.mock("@/lib/navigation", () => ({ hardRedirect: vi.fn() }));
 vi.mock("@/lib/toast", () => ({ notifyError: vi.fn(), notifySuccess: vi.fn() }));
 
-const PASSWORD = "Horse-Battery-42";
+const PASSWORD = "Horse-4Bat";
+const PADDED_PASSWORD = " Hor-4Bt "; // 9 characters: padding counts toward the 10 maximum
 
 beforeEach(() => {
   push.mockReset();
@@ -40,13 +41,13 @@ describe("RegisterForm", () => {
   it("sends exactly name, email and password, normalized, and the password untouched", async () => {
     vi.mocked(apiPost).mockResolvedValue({});
     render(<RegisterForm />);
-    const user = await fill("  Ada Lovelace  ", " Ada@Example.COM ", ` ${PASSWORD} `);
+    const user = await fill("  Ada Lovelace  ", " Ada@Example.COM ", PADDED_PASSWORD);
     await user.click(screen.getByRole("button", { name: "Create account" }));
     await waitFor(() => expect(apiPost).toHaveBeenCalledTimes(1));
     expect(apiPost).toHaveBeenCalledWith("/api/auth/register", {
       name: "Ada Lovelace",
       email: "ada@example.com",
-      password: ` ${PASSWORD} `,
+      password: PADDED_PASSWORD,
     });
     expect(Object.keys(vi.mocked(apiPost).mock.calls[0][1] as object)).toEqual(["name", "email", "password"]);
   });
@@ -57,7 +58,7 @@ describe("RegisterForm", () => {
     await user.click(screen.getByRole("button", { name: "Create account" }));
     expect(screen.getByText("Must be 1 to 80 characters.")).toBeInTheDocument();
     expect(screen.getByText("Enter a valid email address.")).toBeInTheDocument();
-    expect(screen.getByText("Must be 8 to 128 characters.")).toBeInTheDocument();
+    expect(screen.getByText("Must be 8 to 10 characters.")).toBeInTheDocument();
     expect(screen.getByLabelText("Name")).toHaveFocus();
     expect(screen.getByLabelText("Email")).toHaveValue("not-an-email");
     expect(apiPost).not.toHaveBeenCalled();
@@ -131,7 +132,7 @@ describe("RegisterForm password rules", () => {
   it("shows the password rules as a hint linked to the password input", () => {
     render(<RegisterForm />);
     const input = screen.getByLabelText(/^Password/);
-    const hint = screen.getByText(/At least 8 characters, with an uppercase letter/);
+    const hint = screen.getByText(/8 to 10 characters, with an uppercase letter/);
     expect(input).toHaveAttribute("aria-describedby", hint.id);
     expect(screen.getByLabelText("Password")).toHaveAttribute("name", "password");
   });

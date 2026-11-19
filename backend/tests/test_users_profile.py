@@ -141,11 +141,9 @@ def test_no_event_and_no_notification_is_recorded(client, tracker, app):
 
 REJECTED = [
     pytest.param({}, None, id="empty-object"),
+    pytest.param({"password": "Horse-4Bat"}, {"password": "Unknown field."}, id="password-alone"),
     pytest.param(
-        {"password": "Horse-Battery-42"}, {"password": "Unknown field."}, id="password-alone"
-    ),
-    pytest.param(
-        {"name": "Valid", "password": "Horse-Battery-42"},
+        {"name": "Valid", "password": "Horse-4Bat"},
         {"password": "Unknown field."},
         id="password-beside-valid-name",
     ),

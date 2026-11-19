@@ -66,7 +66,7 @@ def test_messages_never_echo_the_submitted_value():
 
 
 def test_password_is_kept_exactly_as_entered():
-    body = {"name": "Ada", "email": "ada@example.com", "password": " Spaced Pass 1! "}
+    body = {"name": "Ada", "email": "ada@example.com", "password": " Sp 1!aB "}
     assert RegisterSchema().load(body)["password"] == body["password"]
     assert (
         LoginSchema().load({"email": "a@b.co", "password": body["password"]})["password"]
@@ -125,4 +125,4 @@ def test_password_length_message_comes_first_when_both_rules_fail():
     with pytest.raises(ValidationError) as caught:
         RegisterSchema().load({"name": "Ada", "email": "a@b.co", "password": "abc"})
     fields = first_messages(caught.value.messages)
-    assert fields == {"password": "Must be 8 to 128 characters."}
+    assert fields == {"password": "Must be 8 to 10 characters."}

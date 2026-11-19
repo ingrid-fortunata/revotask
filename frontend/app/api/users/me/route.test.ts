@@ -90,8 +90,8 @@ describe("PATCH /api/users/me", () => {
   );
 
   it.each([
-    [{ password: "Horse-Battery-42" }, ["password"]],
-    [{ name: "Ada", password: "Horse-Battery-42" }, ["password"]],
+    [{ password: "Horse-4Bat" }, ["password"]],
+    [{ name: "Ada", password: "Horse-4Bat" }, ["password"]],
     [{ current_password: "x", id: "1" }, ["current_password", "id"]],
     [{ email: "a@b.co", created_at: "2026-01-01" }, ["created_at"]],
   ])("returns 400 with Unknown field. for %j and does not forward it", async (body, keys) => {

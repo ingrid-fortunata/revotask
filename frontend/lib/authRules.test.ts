@@ -103,8 +103,8 @@ describe("normalization and lengths", () => {
   it("trims names and trims and lowercases emails, but never touches the password", () => {
     expect(normalizeName("  Ada  Lovelace ")).toBe("Ada  Lovelace");
     expect(normalizeEmail("  Ada@Example.COM\t")).toBe("ada@example.com");
-    const result = validateRegister({ name: "A", email: "a@b.co", password: "  Spaced Pass 1!  " });
-    expect(result.body.password).toBe("  Spaced Pass 1!  ");
+    const result = validateRegister({ name: "A", email: "a@b.co", password: " Sp 1!aB " });
+    expect(result.body.password).toBe(" Sp 1!aB ");
     expect(result.fields).toEqual({});
   });
 
@@ -115,7 +115,7 @@ describe("normalization and lengths", () => {
   });
 
   it("reports only the first failing message per field", () => {
-    expect(validateRegister({ name: "A", email: "x".repeat(300), password: "Horse-Battery-42" }).fields).toEqual({
+    expect(validateRegister({ name: "A", email: "x".repeat(300), password: "Horse-4Bat" }).fields).toEqual({
       email: "Must be at most 254 characters.",
     });
   });
@@ -130,7 +130,7 @@ describe("normalization and lengths", () => {
   it("returns a body with exactly the form's keys when the input is valid", () => {
     const login = validateLogin({ email: " A@B.Co ", password: "x" });
     expect(login.body).toEqual({ email: "a@b.co", password: "x" });
-    expect(Object.keys(validateRegister({ name: "Ada", email: "a@b.co", password: "Horse-Battery-42" }).body)).toEqual(["name", "email", "password"]);
+    expect(Object.keys(validateRegister({ name: "Ada", email: "a@b.co", password: "Horse-4Bat" }).body)).toEqual(["name", "email", "password"]);
   });
 });
 
@@ -145,8 +145,8 @@ describe("password composition", () => {
   });
 
   it("reports the length message first when both rules fail", () => {
-    expect(register("abc").fields).toEqual({ password: "Must be 8 to 128 characters." });
-    expect(register("").fields).toEqual({ password: "Must be 8 to 128 characters." });
+    expect(register("abc").fields).toEqual({ password: "Must be 8 to 10 characters." });
+    expect(register("").fields).toEqual({ password: "Must be 8 to 10 characters." });
   });
 
   it("does not count a space, an accented letter or an emoji as special", () => {

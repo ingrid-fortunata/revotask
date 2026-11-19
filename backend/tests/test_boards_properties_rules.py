@@ -287,7 +287,7 @@ def test_property_3_accepted_iff_normalized_is_at_most_254_and_matches_pattern(v
         assert exc.fields == {"email": message}
 
 
-REGISTER_OK = {"name": "Ada", "password": "Horse-Battery-42"}
+REGISTER_OK = {"name": "Ada", "password": "Horse-4Bat"}
 
 
 def _email_outcome(schema_cls, body):

@@ -4,7 +4,7 @@ import { API_BASE_URL, APP_ORIGIN, authRequest, jsonReply, setCookies } from "@/
 import { POST } from "./route";
 
 const fetchMock = vi.fn();
-const VALID = { name: "Ada", email: "ada@example.com", password: "Horse-Battery-42" };
+const VALID = { name: "Ada", email: "ada@example.com", password: "Horse-4Bat" };
 
 beforeEach(() => {
   vi.stubEnv("API_BASE_URL", API_BASE_URL);

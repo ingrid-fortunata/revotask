@@ -16,7 +16,7 @@ test("a generated password meets the registration rule and appears in no generat
   const id = newRunId();
   const password = makePassword();
   expect(password.length).toBeGreaterThanOrEqual(8);
-  expect(password.length).toBeLessThanOrEqual(128);
+  expect(password.length).toBeLessThanOrEqual(10);
   expect(password).toMatch(/[A-Z]/);
   expect(password).toMatch(/[a-z]/);
   expect(password).toMatch(/[!-/:-@[-`{-~]/);

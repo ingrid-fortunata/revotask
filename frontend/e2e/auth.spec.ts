@@ -23,7 +23,7 @@ test("valid login opens the dashboard (LA-2a)", async ({ page, context }) => {
 test("invalid credentials show one generic message (LA-2b)", async ({ page }) => {
   await page.goto("/login");
   await page.getByLabel("Email").fill(owner);
-  await page.getByLabel("Password").fill(`${run.ownerPassword}-wrong`);
+  await page.getByLabel("Password").fill("Wrong-Pw-9");
   await page.getByRole("button", { name: "Sign in" }).click();
   await expect(page.getByText("Invalid email or password.", { exact: true })).toBeVisible();
 });

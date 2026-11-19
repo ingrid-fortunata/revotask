@@ -16,7 +16,7 @@ from app.extensions import db, limiter
 from app.models.user import User
 from tests.auth_helpers import JWT_TEST_SECRET, unique_email
 
-PASSWORD = "Horse-Battery-42"
+PASSWORD = "Horse-4Bat"
 
 
 def make_app(test_db_url, enabled="true"):
@@ -177,7 +177,7 @@ def test_five_invalid_logins_then_429_for_one_normalized_email(limited_app):
     email = unique_email("login-seq")
     spellings = [email, email.upper(), f"  {email}  ", email.title(), email, f" {email.upper()}"]
     responses = [
-        client.post("/api/auth/login", json={"email": spelling, "password": "wrong-password-0"})
+        client.post("/api/auth/login", json={"email": spelling, "password": "wrong-pw-0"})
         for spelling in spellings
     ]
     assert [r.status_code for r in responses] == [401, 401, 401, 401, 401, 429]
@@ -186,12 +186,23 @@ def test_five_invalid_logins_then_429_for_one_normalized_email(limited_app):
     assert_rate_limited(responses[5])
 
 
+def test_over_length_login_passwords_still_count_toward_the_email_limit(limited_app):
+    """Revision 5 (C12): a 400 for an 11-character password spends login quota like any attempt."""
+    client = limited_app.test_client()
+    email = unique_email("login-long")
+    statuses = [
+        client.post("/api/auth/login", json={"email": email, "password": "a" * 11}).status_code
+        for _ in range(6)
+    ]
+    assert statuses == [400, 400, 400, 400, 400, 429]
+
+
 def test_login_and_register_spend_separate_quotas(limited_app):
     """A blocked login does not block registration, and registration does not use login quota."""
     client = limited_app.test_client()
     email = unique_email("separate")
     for _ in range(6):
-        client.post("/api/auth/login", json={"email": email, "password": "wrong-password-0"})
+        client.post("/api/auth/login", json={"email": email, "password": "wrong-pw-0"})
     assert_rate_limited(client.post("/api/auth/login", json={"email": email, "password": "x"}))
 
     limited_app.created_emails.append(email)
@@ -207,9 +218,7 @@ def test_retry_after_is_sent_only_with_429(limited_app):
     email = unique_email("retry-after")
     statuses = []
     for _ in range(6):
-        response = client.post(
-            "/api/auth/login", json={"email": email, "password": "wrong-password-0"}
-        )
+        response = client.post("/api/auth/login", json={"email": email, "password": "wrong-pw-0"})
         statuses.append(response.status_code)
         if response.status_code == 401:
             assert "Retry-After" not in response.headers

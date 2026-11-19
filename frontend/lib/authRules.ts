@@ -5,8 +5,8 @@
 
 export const NAME_MAX = 80;
 export const EMAIL_MAX = 254;
-export const PASSWORD_MIN = 8; // register only; login accepts 1 to 128 (AUTH-AC2.4)
-export const PASSWORD_MAX = 128;
+export const PASSWORD_MIN = 8; // register only; login accepts 1 to 10 (AUTH-AC2.4)
+export const PASSWORD_MAX = 10; // revision 5 (C12); was 128
 
 export const MESSAGES = {
   required: "Required.",
@@ -32,7 +32,7 @@ export const PASSWORD_SPECIAL = /[\x21-\x2f\x3a-\x40\x5b-\x60\x7b-\x7e]/;
 
 /** The hint shown under the register password field. It states the same rules as the messages. */
 export const PASSWORD_HINT =
-  "At least 8 characters, with an uppercase letter, a lowercase letter and a special character such as ! ? # or %.";
+  "8 to 10 characters, with an uppercase letter, a lowercase letter and a special character such as ! ? # or %.";
 
 export const REGISTER_FIELDS = ["name", "email", "password"] as const;
 export const LOGIN_FIELDS = ["email", "password"] as const;
