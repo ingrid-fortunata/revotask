@@ -31,10 +31,10 @@ describe("BoardCard", () => {
     );
     const first = screen.getByRole("button", { name: "Open Fix login" }).parentElement as HTMLElement;
     const second = screen.getByRole("button", { name: "Open Write docs" }).parentElement as HTMLElement;
-    expect(first).toHaveTextContent(/^Fix loginGraceMove$/);
+    expect(first).toHaveTextContent(/^Fix loginGGraceMove$/);
     expect(second).toHaveTextContent(/^Write docsUnassignedMove$/);
     expect(screen.getByRole("button", { name: "Move Write docs" })).toHaveTextContent("Move");
-    expect(screen.queryByText("Grace", { selector: "p" })).toBeInTheDocument();
+    expect(screen.queryByText("Grace", { selector: "span" })).toBeInTheDocument();
     expect(screen.getAllByText("Unassigned")).toHaveLength(1);
   });
 

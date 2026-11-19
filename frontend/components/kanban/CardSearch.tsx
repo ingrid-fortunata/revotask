@@ -1,6 +1,7 @@
 "use client";
 
 import { BaseButton } from "@/components/shared/BaseButton";
+import { Icon } from "@/components/shared/Icon";
 import { FormField } from "@/components/shared/FormField";
 import { useCardSearch } from "@/hooks/useCardSearch";
 import { resolveSearchResults, SEARCH_QUERY_MAX, SEARCH_RESULT_LIMIT } from "@/lib/cardSearch";
@@ -37,12 +38,18 @@ export function CardSearch({ boardId, columns, onOpenCard, onAccessLost }: CardS
   else if (status === "error") announcement = fieldError ?? ERROR_TEXT;
 
   return (
-    <div className="surface flex flex-col gap-3 p-4 sm:p-5">
-      <div className="w-full sm:max-w-md">
+    <div className="flex flex-col gap-3">
+      <div className="relative w-full sm:max-w-sm">
+        <span className="pointer-events-none absolute left-3 z-10 top-[1.375rem] -translate-y-1/2 text-base-content/50">
+          <Icon name="search" className="size-4" />
+        </span>
         <FormField
           id="card-search"
           name="card-search"
           label="Search cards"
+          hideLabel
+          placeholder="Search cards"
+          inputClassName="pl-9"
           type="search"
           autoComplete="off"
           maxLength={SEARCH_QUERY_MAX}
@@ -56,6 +63,8 @@ export function CardSearch({ boardId, columns, onOpenCard, onAccessLost }: CardS
         {announcement}
       </p>
 
+      {status !== "idle" ? (
+      <div className="surface flex flex-col gap-3 p-3 sm:p-4">
       {status === "loading" ? (
         <p aria-busy="true" className="break-words text-sm text-base-content/70">
           Searching…
@@ -94,6 +103,8 @@ export function CardSearch({ boardId, columns, onOpenCard, onAccessLost }: CardS
           </ul>
           {atLimit ? <p className="text-sm text-base-content/70">Showing {plural(visible.length)}.</p> : null}
         </>
+      ) : null}
+      </div>
       ) : null}
     </div>
   );

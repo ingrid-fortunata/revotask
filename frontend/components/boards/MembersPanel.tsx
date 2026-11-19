@@ -116,8 +116,8 @@ export function MembersPanel({ boardId, viewerRole, members, onMemberRemoved }: 
         </span>
       </button>
       {controls.canAddMember ? (
-        <BaseButton variant="ghost" className="border-base-300" onClick={() => setOpen(true)}>
-          <span aria-hidden="true">+</span> Add member
+        <BaseButton variant="ghost" iconOnly icon="user-plus" className="border border-base-300" onClick={() => setOpen(true)}>
+          Add member
         </BaseButton>
       ) : null}
       <BaseModal open={open} labelledBy={headingId} onClose={() => setOpen(false)}>
@@ -141,6 +141,8 @@ export function MembersPanel({ boardId, viewerRole, members, onMemberRemoved }: 
                   {canRemoveMember(viewerRole, row) ? (
                     <BaseButton
                       variant="ghost"
+                      iconOnly
+                      icon="trash"
                       className="text-error"
                       aria-label={`Remove ${row.name}`}
                       onClick={() => setTarget(row)}

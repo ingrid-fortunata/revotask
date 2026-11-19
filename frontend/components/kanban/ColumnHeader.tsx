@@ -16,17 +16,17 @@ export interface ColumnHeaderProps {
 // (Requirement 6.3). Long names wrap (FE-S4).
 export function ColumnHeader({ headingId, name, count, isDone, controls }: ColumnHeaderProps) {
   return (
-    <header className="flex flex-col gap-2">
-      <div className="flex items-start gap-2">
-        <div className="min-w-0 flex-1">
-          <h3 id={headingId} className="break-words text-lg font-semibold">
+    <header className="flex items-start gap-1">
+      <div className="min-w-0 flex-1 py-1">
+        <div className="flex flex-wrap items-center gap-x-2">
+          <h3 id={headingId} className="break-words text-base font-semibold">
             {name}
           </h3>
-          <p className="text-sm tabular-nums text-base-content/70">
-            {count} {count === 1 ? "card" : "cards"}
-          </p>
+          {isDone ? <BaseBadge variant="primary" className="badge-sm">Done</BaseBadge> : null}
         </div>
-        {isDone ? <BaseBadge variant="primary">Done</BaseBadge> : null}
+        <p className="text-sm tabular-nums text-base-content/70">
+          {count} {count === 1 ? "card" : "cards"}
+        </p>
       </div>
       {controls}
     </header>

@@ -81,7 +81,7 @@ function CardDetailBody({ titleId, card, members, onSave, onDelete, onClose, res
         <h2 id={titleId} className="break-words text-lg font-bold">
           Card details
         </h2>
-        <BaseButton variant="ghost" aria-label="Close card details" onClick={onClose}>
+        <BaseButton variant="ghost" iconOnly icon="x" aria-label="Close card details" onClick={onClose}>
           Close
         </BaseButton>
       </div>

@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { ReactNode, RefObject } from "react";
 import { BaseBadge } from "@/components/shared/BaseBadge";
 import { BaseButton } from "@/components/shared/BaseButton";
+import { Icon } from "@/components/shared/Icon";
 import { boardControls } from "@/lib/boardPermissions";
 import type { BoardRole } from "@/lib/types";
 
@@ -44,9 +45,7 @@ export function BoardHeader({
           href="/"
           className="-ml-1 inline-flex min-h-11 w-fit items-center gap-1 rounded-field px-1 text-sm text-base-content/70 hover:text-primary"
         >
-          <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-            <path d="m15 6-6 6 6 6" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
+          <Icon name="chevron-left" className="size-4" />
           All boards
         </Link>
         <div className="flex min-w-0 flex-wrap items-center gap-2">
@@ -63,6 +62,7 @@ export function BoardHeader({
             <BaseButton
               ref={renameButtonRef}
               variant="ghost"
+              icon="pencil"
               className="border-base-300"
               aria-expanded={renameOpen}
               onClick={onToggleRename}
@@ -71,7 +71,7 @@ export function BoardHeader({
             </BaseButton>
           ) : null}
           {controls.canDelete ? (
-            <BaseButton variant="ghost" className="border-base-300 text-error" onClick={onRequestDelete}>
+            <BaseButton variant="ghost" iconOnly icon="trash" className="border-base-300 text-error" onClick={onRequestDelete}>
               Delete board
             </BaseButton>
           ) : null}

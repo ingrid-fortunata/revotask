@@ -30,12 +30,13 @@ export function AddCardForm({ columnId, columnName, disabled, onAdd }: AddCardFo
     <>
       <BaseButton
         variant="ghost"
+        icon="plus"
         className="w-full justify-start text-base-content/70"
         aria-label={`Add card to ${columnName}`}
         disabled={disabled}
         onClick={() => setOpen(true)}
       >
-        <span aria-hidden="true">+</span> Add card
+        Add card
       </BaseButton>
       <BaseModal open={open} labelledBy={titleId} initialFocusRef={inputRef} onClose={() => setOpen(false)}>
         <AddCardModalForm

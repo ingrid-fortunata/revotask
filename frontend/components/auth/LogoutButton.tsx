@@ -25,7 +25,7 @@ export function LogoutButton({ className }: { className?: string }) {
   }
 
   return (
-    <BaseButton variant="ghost" className={className} loading={pending} onClick={handleClick}>
+    <BaseButton variant="ghost" icon="logout" className={className} loading={pending} onClick={handleClick}>
       {pending ? "Signing out…" : "Sign out"}
     </BaseButton>
   );

@@ -44,8 +44,8 @@ export function BoardsDashboard({ initialBoards }: BoardsDashboardProps) {
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between gap-3">
         <h1 className="min-w-0 break-words text-2xl font-semibold tracking-tight sm:text-3xl">Your boards</h1>
-        <BaseButton onClick={() => setCreateOpen(true)}>
-          <span aria-hidden="true">+</span> Create board
+        <BaseButton icon="plus" onClick={() => setCreateOpen(true)}>
+          Create board
         </BaseButton>
       </div>
       {boards.length > 0 ? (

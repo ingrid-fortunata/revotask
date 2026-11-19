@@ -30,8 +30,8 @@ export function AddColumnForm({ hasDone, disabled, onAdd }: AddColumnFormProps) 
   const inputRef = useRef<HTMLInputElement>(null);
   return (
     <>
-      <BaseButton disabled={disabled} onClick={() => setOpen(true)}>
-        <span aria-hidden="true">+</span> Add column
+      <BaseButton icon="plus" disabled={disabled} onClick={() => setOpen(true)}>
+        Add column
       </BaseButton>
       <BaseModal open={open} labelledBy={titleId} initialFocusRef={inputRef} onClose={() => setOpen(false)}>
         <AddColumnModalForm

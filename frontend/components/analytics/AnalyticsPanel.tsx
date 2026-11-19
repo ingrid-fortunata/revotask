@@ -26,6 +26,7 @@ export function AnalyticsPanel({ boardId, version, sprintKey, onAccessLost }: An
     <>
       <BaseButton
         variant="ghost"
+        icon="chart"
         className="border border-base-300"
         aria-haspopup="dialog"
         aria-expanded={open}
@@ -66,10 +67,10 @@ function AnalyticsBody({ boardId, version, sprintKey, onAccessLost, onClose }: A
           Analytics
         </h2>
         <div className="flex flex-wrap gap-2">
-          <BaseButton variant="ghost" className="border border-base-300" onClick={() => void refresh()}>
+          <BaseButton variant="ghost" iconOnly icon="refresh" className="border border-base-300" onClick={() => void refresh()}>
             Refresh
           </BaseButton>
-          <BaseButton variant="ghost" className="border border-base-300" onClick={onClose}>
+          <BaseButton variant="ghost" iconOnly icon="x" className="border border-base-300" onClick={onClose}>
             Close
           </BaseButton>
         </div>
