@@ -57,7 +57,7 @@ function record(role, page, width, check, pass, detail = "") {
 const SUFFIX = randomBytes(4).toString("hex");
 const ADMIN = { email: `kc-admin-${SUFFIX}@kanban-check.example.test`, name: "Check Admin" };
 const MEMBER = { email: `kc-member-${SUFFIX}@kanban-check.example.test`, name: "Check Member" };
-const PASSWORD = `Aa1!${randomBytes(9).toString("hex")}`;
+const PASSWORD = `Aa1!${randomBytes(3).toString("hex")}`;
 const SECRETS = [ADMIN.email, MEMBER.email, PASSWORD];
 
 async function api(method, path, token, body) {

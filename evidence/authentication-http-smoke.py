@@ -94,7 +94,7 @@ def reset_limiter(label):
 
 # ---------------------------------------------------------------- setup
 email = f"smoke-{int(time.time())}-{uuid.uuid4().hex[:6]}@example.test"
-password = os.urandom(12).hex() + "Aa1!"           # meets the register rules; never printed
+password = "Aa1!" + os.urandom(3).hex()           # 10 characters, meets the register rules; never printed
 name = "Smoke User"
 good = {"name": name, "email": f"  {email.upper()} ", "password": password}
 print(f"throwaway account: {email}")
@@ -145,7 +145,8 @@ section("1b. Password rules (rejected before any account is written)")
 # from a reset limiter and stays within its own quota, so the policy checks never spend the quota
 # of the register rate-limit check, and a 429 here could only mean a real problem.
 policy_email = f"policy-{uuid.uuid4().hex[:8]}@example.test"
-LEN_MSG = "Must be 8 to 128 characters."
+LEN_MSG = "Must be 8 to 10 characters."
+LOGIN_LEN_MSG = "Must be 1 to 10 characters."
 COMP_MSG = "Must include an uppercase letter, a lowercase letter and a special character."
 reset_limiter("before the five Next-level policy checks")
 for label, pw, want in [
@@ -165,10 +166,23 @@ r = request(NEXT, "POST", "/api/auth/login", with_origin(), {"email": policy_ema
 show("login with a short, simple password (Next)", r, str(js(r)["error"]["code"])); check("401 INVALID_CREDENTIALS, not a policy message", r["status"] == 401 and js(r)["error"]["code"] == "INVALID_CREDENTIALS")
 check("the rejected registrations wrote no account", request(FLASK, "POST", "/api/auth/login", {}, {"email": policy_email, "password": "x"})["status"] == 401)
 
+# Revision 5 (C12): the maximum is 10 characters at register and at login, at Next and at Flask.
+reset_limiter("before the length boundary checks")
+long_pw = "Aa1!" + "a" * 7                          # 11 characters, otherwise valid
+r = request(NEXT, "POST", "/api/auth/register", with_origin(), {"name": "P", "email": policy_email, "password": long_pw})
+show("register, 11 characters (Next)", r, str((js(r) or {}).get("error", {}).get("fields"))); check(f"400 with: {LEN_MSG}", r["status"] == 400 and js(r)["error"]["fields"] == {"password": LEN_MSG})
+r = request(FLASK, "POST", "/api/auth/register", {}, {"name": "P", "email": policy_email, "password": long_pw})
+show("register, 11 characters, straight to Flask", r); check(f"Flask 400 with: {LEN_MSG}", r["status"] == 400 and js(r)["error"]["fields"] == {"password": LEN_MSG})
+long_login_email = f"long-{uuid.uuid4().hex[:8]}@example.test"
+r = request(NEXT, "POST", "/api/auth/login", with_origin(), {"email": long_login_email, "password": "a" * 11})
+show("login, 11 characters (Next)", r, str((js(r) or {}).get("error", {}).get("fields"))); check(f"400 with: {LOGIN_LEN_MSG}", r["status"] == 400 and js(r)["error"]["fields"] == {"password": LOGIN_LEN_MSG} and session_cookie(r) is None)
+r = request(FLASK, "POST", "/api/auth/login", {}, {"email": long_login_email, "password": "a" * 11})
+show("login, 11 characters, straight to Flask", r); check(f"Flask 400 with: {LOGIN_LEN_MSG}", r["status"] == 400 and js(r)["error"]["fields"] == {"password": LOGIN_LEN_MSG})
+
 # ---------------------------------------------------------------- 2
 section("2. Invalid credentials")
-bad_pw = request(NEXT, "POST", "/api/auth/login", with_origin(), {"email": email, "password": "wrong-password-0000"})
-unknown = request(NEXT, "POST", "/api/auth/login", with_origin(), {"email": f"nobody-{uuid.uuid4().hex[:8]}@example.test", "password": "wrong-password-0000"})
+bad_pw = request(NEXT, "POST", "/api/auth/login", with_origin(), {"email": email, "password": "wrong-pw-0"})
+unknown = request(NEXT, "POST", "/api/auth/login", with_origin(), {"email": f"nobody-{uuid.uuid4().hex[:8]}@example.test", "password": "wrong-pw-0"})
 show("login, wrong password", bad_pw); show("login, unknown email", unknown)
 def body_wo_id(res):
     d = js(res); d["error"].pop("request_id", None); return d
@@ -308,7 +322,7 @@ victim = f"ratelimit-{uuid.uuid4().hex[:8]}@example.test"
 spellings = [victim, victim.upper(), f"  {victim}  ", victim.title(), victim, f" {victim.upper()} "]
 responses = []
 for spelling in spellings:
-    responses.append(request(NEXT, "POST", "/api/auth/login", with_origin(), {"email": spelling, "password": "wrong-password-0"}))
+    responses.append(request(NEXT, "POST", "/api/auth/login", with_origin(), {"email": spelling, "password": "wrong-pw-0"}))
 codes = [r["status"] for r in responses]
 print("        statuses:", codes)
 check("first five invalid attempts return 401 INVALID_CREDENTIALS", codes[:5] == [401] * 5 and all(js(r)["error"]["code"] == "INVALID_CREDENTIALS" for r in responses[:5]), str(codes))
@@ -318,7 +332,7 @@ check("429 RATE_LIMITED with Retry-After and a request id", js(last)["error"]["c
 check("401 responses carry no Retry-After", all(not hv(r, "Retry-After") for r in responses[:5]))
 # Next forwards Retry-After only on 429, so check Flask's own reply directly as well.
 direct_email = f"ratelimit-direct-{uuid.uuid4().hex[:8]}@example.test"
-direct = request(FLASK, "POST", "/api/auth/login", {}, {"email": direct_email, "password": "wrong-password-0"})
+direct = request(FLASK, "POST", "/api/auth/login", {}, {"email": direct_email, "password": "wrong-pw-0"})
 show("first invalid login, straight to Flask", direct)
 check("Flask 401 carries no Retry-After", direct["status"] == 401 and not hv(direct, "Retry-After"), str(hv(direct, "Retry-After")))
 

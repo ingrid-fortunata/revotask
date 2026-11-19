@@ -26,7 +26,7 @@ const isoDay = (offsetDays) => new Date(Date.now() + offsetDays * 86_400_000).to
 
 const API = new URL(process.env.API_URL ?? "").origin;
 const SUFFIX = randomBytes(4).toString("hex");
-const PASSWORD = `Aa1!${randomBytes(9).toString("hex")}`;
+const PASSWORD = `Aa1!${randomBytes(3).toString("hex")}`;
 
 async function api(method, path, token, body) {
   const response = await fetch(`${API}${path}`, {

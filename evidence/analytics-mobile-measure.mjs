@@ -56,7 +56,7 @@ function record(role, page, width, check, pass, detail = "") {
 
 // ---- seed through the Flask API ------------------------------------------------------------
 const SUFFIX = randomBytes(4).toString("hex");
-const PASSWORD = `Aa1!${randomBytes(9).toString("hex")}`;
+const PASSWORD = `Aa1!${randomBytes(3).toString("hex")}`;
 const ADMIN = { email: `an-admin-${SUFFIX}@t14-check.example.test`, name: "Check Admin" };
 const MEMBER = { email: `an-member-${SUFFIX}@t14-check.example.test`, name: "M".repeat(60) };
 const LONG_COLUMN = "C".repeat(60);

@@ -223,7 +223,7 @@ async function api(path, init) {
 
 const email = `m-${randomBytes(4).toString("hex")}-${"x".repeat(40)}@example.test`;
 const longName = "W".repeat(80);
-const password = `${randomBytes(12).toString("hex")}Aa1!`; // meets the register rules
+const password = `Aa1!${randomBytes(3).toString("hex")}`; // 10 characters, meets the register rules
 
 async function main() {
   const reg = await api("/api/auth/register", { method: "POST", body: JSON.stringify({ name: longName, email, password }) });
@@ -275,7 +275,7 @@ async function main() {
     console.log("\n### B2. Register password rules in the browser @375px");
     await page.goto(NEXT + "/register");
     const hint = await page.eval("(() => { const i = document.querySelector('input[name=password]'); const h = document.getElementById(i.getAttribute('aria-describedby') || ''); return { describedBy: !!h, text: h ? h.textContent : '', visible: !!h && h.getBoundingClientRect().height > 0 }; })()");
-    check("register password input is described by the visible rules hint", hint.describedBy && hint.visible && hint.text.includes("At least 8 characters"), JSON.stringify(hint));
+    check("register password input is described by the visible rules hint", hint.describedBy && hint.visible && hint.text.includes("8 to 10 characters"), JSON.stringify(hint));
     await page.type("input[name=name]", "Policy Check");
     await page.type("input[name=email]", `policy-${randomBytes(4).toString("hex")}@example.test`);
     await page.type("input[name=password]", "abcdefgh");
@@ -285,6 +285,23 @@ async function main() {
     check("composition message shows and the password field takes focus", focus === "password");
     const compMeasure = await page.eval(MEASURE);
     reportPage("/register with a password error", 375, compMeasure);
+
+    // Revision 5 (C12): 11 characters fail the length rule on register and on login.
+    await page.goto(NEXT + "/register");
+    await page.type("input[name=name]", "Policy Check");
+    await page.type("input[name=email]", `policy-${randomBytes(4).toString("hex")}@example.test`);
+    await page.type("input[name=password]", "Aa1!aaaaaaa");
+    await page.eval("document.querySelector('form').requestSubmit()");
+    await page.waitFor("document.body.innerText.includes('Must be 8 to 10 characters.')", "register length message");
+    check("register, 11 characters: the length message shows and the password field takes focus", (await page.eval("document.activeElement.name")) === "password");
+    reportPage("/register with an 11-character password", 375, await page.eval(MEASURE));
+    await page.goto(NEXT + "/login");
+    await page.type("#login-email", "someone@example.test");
+    await page.type("#login-password", "aaaaaaaaaaa");
+    await page.eval("document.querySelector('form').requestSubmit()");
+    await page.waitFor("document.body.innerText.includes('Must be 1 to 10 characters.')", "login length message");
+    check("login, 11 characters: the length message shows and the password field takes focus", (await page.eval("document.activeElement.id")) === "login-password");
+    reportPage("/login with an 11-character password", 375, await page.eval(MEASURE));
 
     console.log("\n### C. Sign in through the real UI, redirects and Back-after-sign-out @375px");
     // unsafe next
@@ -346,7 +363,7 @@ async function main() {
         await page.send("Network.clearBrowserCookies");
         await page.goto(NEXT + "/login");
         await page.type("#login-email", "someone@example.test");
-        await page.type("#login-password", "a-password-value");
+        await page.type("#login-password", "pw-value");
         await page.eval("document.querySelector('form').requestSubmit()");
         await page.waitFor("!!document.querySelector('[role=status]') && document.querySelector('[role=status]').innerText.length > 0", "toast");
         const toast = await page.eval("(() => { const t = [...document.querySelectorAll('[role=status]')].find(e => e.innerText.length > 0); const r = t.getBoundingClientRect(); return { left: r.left, right: r.right, vw: innerWidth, text: t.innerText }; })()");

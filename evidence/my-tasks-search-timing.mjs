@@ -12,7 +12,7 @@ import { writeFileSync } from "node:fs";
 const API = new URL(process.env.API_URL ?? "").origin;
 const SUFFIX = randomBytes(4).toString("hex");
 const EMAIL = `ts-timing-${SUFFIX}@t11-check.example.test`;
-const PASSWORD = `Aa1!${randomBytes(9).toString("hex")}`;
+const PASSWORD = `Aa1!${randomBytes(3).toString("hex")}`;
 
 async function api(method, path, token, body) {
   const response = await fetch(`${API}${path}`, {

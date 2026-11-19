@@ -55,7 +55,7 @@ function record(role, page, width, check, pass, detail = "") {
 
 // ---- seed through the Flask API ------------------------------------------------------------
 const SUFFIX = randomBytes(4).toString("hex");
-const PASSWORD = `Aa1!${randomBytes(9).toString("hex")}`;
+const PASSWORD = `Aa1!${randomBytes(3).toString("hex")}`;
 const ADMIN = { email: `sp-admin-${SUFFIX}@sprint-check.example.test`, name: "Sprint Admin" };
 const MEMBER = { email: `sp-member-${SUFFIX}@sprint-check.example.test`, name: "Sprint Member" };
 const SPRINT = { sprint_start: "2026-11-16", sprint_end: "2026-11-22" };
