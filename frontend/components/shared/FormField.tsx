@@ -10,6 +10,11 @@ export interface FormFieldProps {
   /** Visible help text, linked to the input with aria-describedby. */
   hint?: string;
   autoComplete?: string;
+  /** Keep the label for screen readers only, for a compact field such as the board search. */
+  hideLabel?: boolean;
+  placeholder?: string;
+  /** Extra classes for the input, such as left padding for an icon. */
+  inputClassName?: string;
   /** UTF-16 unit limit on a single-line input. Only the search field sets it (a limit below the API rule). */
   maxLength?: number;
   inputRef?: Ref<HTMLInputElement>;
@@ -34,6 +39,9 @@ export function FormField({
   error,
   hint,
   autoComplete,
+  hideLabel = false,
+  placeholder,
+  inputClassName = "",
   maxLength,
   inputRef,
   multiline = false,
@@ -45,8 +53,8 @@ export function FormField({
   const hintId = `${id}-hint`;
   const describedBy = [hint ? hintId : null, error ? errorId : null].filter(Boolean).join(" ") || undefined;
   return (
-    <div className="flex w-full flex-col gap-1">
-      <label htmlFor={id} className="text-sm font-medium">
+    <div className="relative flex w-full flex-col gap-1">
+      <label htmlFor={id} className={hideLabel ? "sr-only" : "text-sm font-medium"}>
         {label}
       </label>
       {multiline ? (
@@ -69,11 +77,12 @@ export function FormField({
           type={type}
           value={value}
           autoComplete={autoComplete}
+          placeholder={placeholder}
           maxLength={maxLength}
           onChange={(event) => onChange(event.target.value)}
           aria-invalid={error ? true : undefined}
           aria-describedby={describedBy}
-          className={`input input-bordered min-h-11 min-w-11 w-full text-base${error ? " input-error" : ""}`}
+          className={`input input-bordered min-h-11 min-w-11 w-full text-base${error ? " input-error" : ""} ${inputClassName}`.trim()}
         />
       )}
       {hint ? (
