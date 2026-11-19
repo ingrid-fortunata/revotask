@@ -53,3 +53,21 @@ def test_another_users_row_is_unchanged(world, app, board_tracker):
     admin_before = user_row(app, world.kanban.admin.id)
     patch_me(app.test_client(), board_tracker, world.member, {"name": "Only Mia"})
     assert user_row(app, world.kanban.admin.id) == admin_before
+
+
+def test_another_users_row_is_unchanged_after_a_password_change(world, app, board_tracker):
+    from tests.profile_helpers import NEW_PASSWORD, PASSWORD
+
+    member = world.member
+    with app.app_context():
+        from app.blueprints.auth.service import hash_password
+        from app.extensions import db
+        from app.models.user import User
+
+        db.session.get(User, member.id).password_hash = hash_password(PASSWORD)
+        db.session.commit()
+        db.session.remove()
+    admin_before = user_row(app, world.kanban.admin.id)
+    body = {"current_password": PASSWORD, "new_password": NEW_PASSWORD}
+    assert patch_me(app.test_client(), board_tracker, member, body).status_code == 200
+    assert user_row(app, world.kanban.admin.id) == admin_before

@@ -17,7 +17,8 @@ from app.extensions import db
 from app.models.user import User
 from tests.auth_helpers import bearer
 
-PASSWORD = "Horse-4Bat"
+PASSWORD = "Horse-4Bat"  # fixed non-secret test value, 10 characters, meets the register rule
+NEW_PASSWORD = "New#pass2"  # a second fixed non-secret test value
 
 
 def patch_me(client, tracker, user, body: Any = None, **kwargs):

@@ -43,7 +43,7 @@ PASSWORD_SPECIAL = re.compile(r"[\x21-\x2f\x3a-\x40\x5b-\x60\x7b-\x7e]")
 _MESSAGES = FIELD_MESSAGES
 
 
-def _password_composition(value: str) -> None:
+def password_composition(value: str) -> None:
     if not (
         PASSWORD_UPPERCASE.search(value)
         and PASSWORD_LOWERCASE.search(value)
@@ -74,7 +74,7 @@ class RegisterSchema(Schema):
         # Length first, then composition: the first message reported matches authRules.ts.
         validate=[
             validate.Length(min=PASSWORD_MIN, max=PASSWORD_MAX, error=REGISTER_PASSWORD_LENGTH),
-            _password_composition,
+            password_composition,
         ],
     )
 

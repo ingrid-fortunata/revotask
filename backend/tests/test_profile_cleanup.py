@@ -23,14 +23,15 @@ def _fail_after_profile_changes(tracker, app, state: dict) -> None:
     first = tracker.make_user(name="Profile One")
     second = tracker.make_user(name="Profile Two")
     client = app.test_client()
+    assert patch_me(client, tracker, first, {"name": "Changed One"}).status_code == 200
     assert (
         patch_me(
-            client, tracker, first, {"name": "Changed One", "email": "changed-one@example.test"}
+            client,
+            tracker,
+            second,
+            {"current_password": "Wrong#pw1", "new_password": "New#pass2"},
         ).status_code
-        == 200
-    )
-    assert (
-        patch_me(client, tracker, second, {"email": "changed-one@example.test"}).status_code == 409
+        == 400
     )
     state["ids"] = [first.id, second.id]
     raise AssertionError("harness: deliberate failure after profile changes")

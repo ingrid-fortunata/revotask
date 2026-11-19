@@ -1,4 +1,7 @@
-"""E30 GET /api/users/me and E31 PATCH /api/users/me. Thin routes: decode, call, serialize."""
+"""E30 GET /api/users/me and E31 PATCH /api/users/me (name and password only; the email is fixed).
+
+Thin routes: decode, call, serialize.
+"""
 
 from flask import g, jsonify
 

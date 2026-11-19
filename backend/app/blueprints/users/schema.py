@@ -1,23 +1,28 @@
 """Public user DTO and the profile update request (BE03, D3).
 
 `PublicUserSchema` is an explicit allowlist of `id`, `name` and `email`. `ProfileUpdateSchema`
-(E31) applies the E02 name and email rules to the keys that are sent. The rules and messages
-come from the same validators as registration, and `specs/fixtures/auth-field-cases.json` (the
-`profile` section) runs the same cases in the UI tests, so a difference fails a test.
+(E31) accepts `name`, the pair `current_password` and `new_password`, or both. The name follows
+the E02 rule, the new password the E02 register rule and the current password the E03 login rule,
+all from the same validators as registration. The email is the fixed login key, so it is not a
+declared field and any `email` key is `Unknown field.` (P12). Passwords are never trimmed.
+`specs/fixtures/auth-field-cases.json` (the `profile` section) runs the same cases in the UI
+tests, so a difference fails a test.
 """
 
-from marshmallow import RAISE, Schema, fields, validate
+from typing import Any
 
-from app.blueprints.auth.schema import NAME_LENGTH
-from app.config import NAME_MAX
-from app.validation import (
-    EMAIL_LENGTH,
-    EMAIL_MAX,
-    FIELD_MESSAGES,
-    NormalizedString,
-    TrimmedString,
-    email_format,
+from marshmallow import RAISE, Schema, ValidationError, fields, validate, validates_schema
+
+from app.blueprints.auth.schema import (
+    LOGIN_PASSWORD_LENGTH,
+    NAME_LENGTH,
+    REGISTER_PASSWORD_LENGTH,
+    password_composition,
 )
+from app.config import NAME_MAX, PASSWORD_MAX, PASSWORD_MIN
+from app.validation import FIELD_MESSAGES, REQUIRED, TrimmedString
+
+PASSWORD_PAIR = ("current_password", "new_password")
 
 
 class PublicUserSchema(Schema):
@@ -30,7 +35,7 @@ class PublicUserSchema(Schema):
 
 
 class ProfileUpdateSchema(Schema):
-    """`name`, `email` or both. Any other key is `Unknown field.` (`password` included)."""
+    """`name`, `current_password` and `new_password`. Any other key is `Unknown field.`"""
 
     class Meta:
         unknown = RAISE
@@ -39,7 +44,24 @@ class ProfileUpdateSchema(Schema):
         error_messages=FIELD_MESSAGES,
         validate=validate.Length(min=1, max=NAME_MAX, error=NAME_LENGTH),
     )
-    email = NormalizedString(
+    current_password = fields.String(
         error_messages=FIELD_MESSAGES,
-        validate=[validate.Length(max=EMAIL_MAX, error=EMAIL_LENGTH), email_format],
+        validate=validate.Length(min=1, max=PASSWORD_MAX, error=LOGIN_PASSWORD_LENGTH),
     )
+    new_password = fields.String(
+        error_messages=FIELD_MESSAGES,
+        validate=[
+            validate.Length(min=PASSWORD_MIN, max=PASSWORD_MAX, error=REGISTER_PASSWORD_LENGTH),
+            password_composition,
+        ],
+    )
+
+    @validates_schema(pass_original=True, skip_on_field_errors=False)
+    def both_or_neither(self, _data: dict[str, Any], original: Any, **_kwargs: Any) -> None:
+        """The password pair comes together: the missing half is `Required.` (P13)."""
+        if not isinstance(original, dict):
+            return
+        present = [key for key in PASSWORD_PAIR if key in original]
+        if len(present) == 1:
+            missing = next(key for key in PASSWORD_PAIR if key not in present)
+            raise ValidationError(REQUIRED, missing)

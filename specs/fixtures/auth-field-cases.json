@@ -1,5 +1,5 @@
 {
- "_note": "Shared boundary cases for the auth field rules (design 4.4, AUTH-AC10.7). The Flask schema tests and the frontend authRules tests both read this file. Each case starts from the form's base body, applies 'set' then 'drop', and expects either 'accepted' (fields whose normalized value is checked; the output keys must equal the form's key set) or the exact 'fields' map of messages. Values: {\"repeat\": s, \"times\": n} is s repeated n times; {\"concat\": [a, b]} joins parts. Lengths count Unicode code points. Password rules: register requires 8 to 10 characters with at least one ASCII uppercase letter, one ASCII lowercase letter and one ASCII special character (0x21-0x2F, 0x3A-0x40, 0x5B-0x60, 0x7B-0x7E; a space is not special). Login accepts 1 to 10 characters and no composition check. The profile section (E31, a partial update) uses the same forms: the body is the base with 'set' applied and 'drop' removed, so a body may hold one key. 'accepted' lists the normalized values and the output keys must equal the body's keys. An empty object is not a case here: Flask returns 400 for it and the form never sends it.",
+ "_note": "Shared boundary cases for the auth field rules (design 4.4, AUTH-AC10.7). The Flask schema tests and the frontend authRules tests both read this file. Each case starts from the form's base body, applies 'set' then 'drop', and expects either 'accepted' (fields whose normalized value is checked; the output keys must equal the form's key set) or the exact 'fields' map of messages. Values: {\"repeat\": s, \"times\": n} is s repeated n times; {\"concat\": [a, b]} joins parts. Lengths count Unicode code points. Password rules: register requires 8 to 10 characters with at least one ASCII uppercase letter, one ASCII lowercase letter and one ASCII special character (0x21-0x2F, 0x3A-0x40, 0x5B-0x60, 0x7B-0x7E; a space is not special). Login accepts 1 to 10 characters and no composition check. The profile section (E31, a partial update of `name` and the password pair `current_password` and `new_password`; `email` is not editable, so it is an unknown key) uses the same forms: the body is the base with 'set' applied and 'drop' removed, so a body may hold one key. Its base passwords are fixed non-secret test values. The new password follows the register rule and the current password the login rule; passwords are never trimmed; a half pair is 'Required.' on the missing key. 'accepted' lists the normalized values and the output keys must equal the body's keys. An empty object is not a case here: Flask returns 400 for it and the form never sends it.",
  "register": {
   "base": {
    "name": "Ada Lovelace",
@@ -898,14 +898,16 @@
  "profile": {
   "base": {
    "name": "Ada Lovelace",
-   "email": "ada@example.com"
+   "current_password": "Old#pass1",
+   "new_password": "New#pass2"
   },
   "cases": [
    {
     "id": "name-only",
     "set": {},
     "drop": [
-     "email"
+     "current_password",
+     "new_password"
     ],
     "expect": {
      "accepted": {
@@ -914,28 +916,29 @@
     }
    },
    {
-    "id": "email-only",
+    "id": "password-pair-only",
     "set": {},
     "drop": [
      "name"
     ],
     "expect": {
      "accepted": {
-      "email": "ada@example.com"
+      "current_password": "Old#pass1",
+      "new_password": "New#pass2"
      }
     }
    },
    {
-    "id": "both-fields",
+    "id": "all-three",
     "set": {
-     "name": "Grace Hopper",
-     "email": "grace@example.com"
+     "name": "Grace Hopper"
     },
     "drop": [],
     "expect": {
      "accepted": {
       "name": "Grace Hopper",
-      "email": "grace@example.com"
+      "current_password": "Old#pass1",
+      "new_password": "New#pass2"
      }
     }
    },
@@ -945,7 +948,8 @@
      "name": ""
     },
     "drop": [
-     "email"
+     "current_password",
+     "new_password"
     ],
     "expect": {
      "fields": {
@@ -959,7 +963,8 @@
      "name": "   "
     },
     "drop": [
-     "email"
+     "current_password",
+     "new_password"
     ],
     "expect": {
      "fields": {
@@ -973,7 +978,8 @@
      "name": "A"
     },
     "drop": [
-     "email"
+     "current_password",
+     "new_password"
     ],
     "expect": {
      "accepted": {
@@ -990,7 +996,8 @@
      }
     },
     "drop": [
-     "email"
+     "current_password",
+     "new_password"
     ],
     "expect": {
      "accepted": {
@@ -1010,7 +1017,8 @@
      }
     },
     "drop": [
-     "email"
+     "current_password",
+     "new_password"
     ],
     "expect": {
      "fields": {
@@ -1024,7 +1032,8 @@
      "name": "  Ada  Lovelace  "
     },
     "drop": [
-     "email"
+     "current_password",
+     "new_password"
     ],
     "expect": {
      "accepted": {
@@ -1038,7 +1047,8 @@
      "name": null
     },
     "drop": [
-     "email"
+     "current_password",
+     "new_password"
     ],
     "expect": {
      "fields": {
@@ -1052,7 +1062,8 @@
      "name": 5
     },
     "drop": [
-     "email"
+     "current_password",
+     "new_password"
     ],
     "expect": {
      "fields": {
@@ -1066,7 +1077,8 @@
      "name": true
     },
     "drop": [
-     "email"
+     "current_password",
+     "new_password"
     ],
     "expect": {
      "fields": {
@@ -1082,7 +1094,8 @@
      ]
     },
     "drop": [
-     "email"
+     "current_password",
+     "new_password"
     ],
     "expect": {
      "fields": {
@@ -1098,7 +1111,8 @@
      }
     },
     "drop": [
-     "email"
+     "current_password",
+     "new_password"
     ],
     "expect": {
      "fields": {
@@ -1107,29 +1121,71 @@
     }
    },
    {
-    "id": "email-padded-and-mixed-case",
+    "id": "new-password-empty",
     "set": {
-     "email": "  Ada@Example.COM "
+     "new_password": ""
+    },
+    "drop": [
+     "name"
+    ],
+    "expect": {
+     "fields": {
+      "new_password": "Must be 8 to 10 characters."
+     }
+    }
+   },
+   {
+    "id": "new-password-7-chars",
+    "set": {
+     "new_password": "Aa1!aaa"
+    },
+    "drop": [
+     "name"
+    ],
+    "expect": {
+     "fields": {
+      "new_password": "Must be 8 to 10 characters."
+     }
+    }
+   },
+   {
+    "id": "new-password-8-chars",
+    "set": {
+     "new_password": "Aa1!aaaa"
     },
     "drop": [
      "name"
     ],
     "expect": {
      "accepted": {
-      "email": "ada@example.com"
+      "new_password": "Aa1!aaaa"
      }
     }
    },
    {
-    "id": "email-254-chars",
+    "id": "new-password-9-chars",
     "set": {
-     "email": {
+     "new_password": "Aa1!aaaaa"
+    },
+    "drop": [
+     "name"
+    ],
+    "expect": {
+     "accepted": {
+      "new_password": "Aa1!aaaaa"
+     }
+    }
+   },
+   {
+    "id": "new-password-10-chars",
+    "set": {
+     "new_password": {
       "concat": [
+       "Aa1!",
        {
         "repeat": "a",
-        "times": 242
-       },
-       "@example.com"
+        "times": 6
+       }
       ]
      }
     },
@@ -1138,28 +1194,20 @@
     ],
     "expect": {
      "accepted": {
-      "email": {
-       "concat": [
-        {
-         "repeat": "a",
-         "times": 242
-        },
-        "@example.com"
-       ]
-      }
+      "new_password": "Aa1!aaaaaa"
      }
     }
    },
    {
-    "id": "email-255-chars",
+    "id": "new-password-11-chars",
     "set": {
-     "email": {
+     "new_password": {
       "concat": [
+       "Aa1!",
        {
         "repeat": "a",
-        "times": 243
-       },
-       "@example.com"
+        "times": 7
+       }
       ]
      }
     },
@@ -1168,91 +1216,449 @@
     ],
     "expect": {
      "fields": {
-      "email": "Must be at most 254 characters."
+      "new_password": "Must be 8 to 10 characters."
      }
     }
    },
    {
-    "id": "email-no-at",
+    "id": "new-password-spaces-around-kept",
     "set": {
-     "email": "ada.example.com"
+     "new_password": " Aa1!bc "
+    },
+    "drop": [
+     "name"
+    ],
+    "expect": {
+     "accepted": {
+      "new_password": " Aa1!bc "
+     }
+    }
+   },
+   {
+    "id": "new-password-8-spaces-only-fails-composition",
+    "set": {
+     "new_password": {
+      "repeat": " ",
+      "times": 8
+     }
     },
     "drop": [
      "name"
     ],
     "expect": {
      "fields": {
-      "email": "Enter a valid email address."
+      "new_password": "Must include an uppercase letter, a lowercase letter and a special character."
      }
     }
    },
    {
-    "id": "email-empty",
+    "id": "new-password-no-uppercase",
     "set": {
-     "email": ""
+     "new_password": "aa1!aaaa"
     },
     "drop": [
      "name"
     ],
     "expect": {
      "fields": {
-      "email": "Enter a valid email address."
+      "new_password": "Must include an uppercase letter, a lowercase letter and a special character."
      }
     }
    },
    {
-    "id": "email-spaces-only",
+    "id": "new-password-no-lowercase",
     "set": {
-     "email": "   "
+     "new_password": "AA1!AAAA"
     },
     "drop": [
      "name"
     ],
     "expect": {
      "fields": {
-      "email": "Enter a valid email address."
+      "new_password": "Must include an uppercase letter, a lowercase letter and a special character."
      }
     }
    },
    {
-    "id": "email-null",
+    "id": "new-password-no-special",
     "set": {
-     "email": null
+     "new_password": "Aa1aaaaa"
     },
     "drop": [
      "name"
     ],
     "expect": {
      "fields": {
-      "email": "Required."
+      "new_password": "Must include an uppercase letter, a lowercase letter and a special character."
      }
     }
    },
    {
-    "id": "email-number",
+    "id": "new-password-emoji-is-not-special",
     "set": {
-     "email": 5
+     "new_password": "Aaaaaaa😀"
     },
     "drop": [
      "name"
     ],
     "expect": {
      "fields": {
-      "email": "Must be text."
+      "new_password": "Must include an uppercase letter, a lowercase letter and a special character."
      }
     }
    },
    {
-    "id": "email-boolean",
+    "id": "new-password-10-chars-with-emoji",
     "set": {
-     "email": false
+     "new_password": {
+      "concat": [
+       "Aa1!",
+       {
+        "repeat": "😀",
+        "times": 6
+       }
+      ]
+     }
+    },
+    "drop": [
+     "name"
+    ],
+    "expect": {
+     "accepted": {
+      "new_password": "Aa1!😀😀😀😀😀😀"
+     }
+    }
+   },
+   {
+    "id": "new-password-11-chars-with-emoji",
+    "set": {
+     "new_password": {
+      "concat": [
+       "Aa1!",
+       {
+        "repeat": "😀",
+        "times": 7
+       }
+      ]
+     }
     },
     "drop": [
      "name"
     ],
     "expect": {
      "fields": {
-      "email": "Must be text."
+      "new_password": "Must be 8 to 10 characters."
+     }
+    }
+   },
+   {
+    "id": "new-password-null",
+    "set": {
+     "new_password": null
+    },
+    "drop": [
+     "name"
+    ],
+    "expect": {
+     "fields": {
+      "new_password": "Required."
+     }
+    }
+   },
+   {
+    "id": "new-password-number",
+    "set": {
+     "new_password": 5
+    },
+    "drop": [
+     "name"
+    ],
+    "expect": {
+     "fields": {
+      "new_password": "Must be text."
+     }
+    }
+   },
+   {
+    "id": "new-password-boolean",
+    "set": {
+     "new_password": true
+    },
+    "drop": [
+     "name"
+    ],
+    "expect": {
+     "fields": {
+      "new_password": "Must be text."
+     }
+    }
+   },
+   {
+    "id": "new-password-array",
+    "set": {
+     "new_password": [
+      "Aa1!aaaa"
+     ]
+    },
+    "drop": [
+     "name"
+    ],
+    "expect": {
+     "fields": {
+      "new_password": "Must be text."
+     }
+    }
+   },
+   {
+    "id": "new-password-object",
+    "set": {
+     "new_password": {
+      "a": "b"
+     }
+    },
+    "drop": [
+     "name"
+    ],
+    "expect": {
+     "fields": {
+      "new_password": "Must be text."
+     }
+    }
+   },
+   {
+    "id": "current-password-empty",
+    "set": {
+     "current_password": ""
+    },
+    "drop": [
+     "name"
+    ],
+    "expect": {
+     "fields": {
+      "current_password": "Must be 1 to 10 characters."
+     }
+    }
+   },
+   {
+    "id": "current-password-1-char",
+    "set": {
+     "current_password": "a"
+    },
+    "drop": [
+     "name"
+    ],
+    "expect": {
+     "accepted": {
+      "current_password": "a"
+     }
+    }
+   },
+   {
+    "id": "current-password-10-chars",
+    "set": {
+     "current_password": {
+      "repeat": "a",
+      "times": 10
+     }
+    },
+    "drop": [
+     "name"
+    ],
+    "expect": {
+     "accepted": {
+      "current_password": "aaaaaaaaaa"
+     }
+    }
+   },
+   {
+    "id": "current-password-11-chars",
+    "set": {
+     "current_password": {
+      "repeat": "a",
+      "times": 11
+     }
+    },
+    "drop": [
+     "name"
+    ],
+    "expect": {
+     "fields": {
+      "current_password": "Must be 1 to 10 characters."
+     }
+    }
+   },
+   {
+    "id": "current-password-no-composition-needed",
+    "set": {
+     "current_password": "password"
+    },
+    "drop": [
+     "name"
+    ],
+    "expect": {
+     "accepted": {
+      "current_password": "password"
+     }
+    }
+   },
+   {
+    "id": "current-password-spaces-only-kept",
+    "set": {
+     "current_password": "   "
+    },
+    "drop": [
+     "name"
+    ],
+    "expect": {
+     "accepted": {
+      "current_password": "   "
+     }
+    }
+   },
+   {
+    "id": "current-password-null",
+    "set": {
+     "current_password": null
+    },
+    "drop": [
+     "name"
+    ],
+    "expect": {
+     "fields": {
+      "current_password": "Required."
+     }
+    }
+   },
+   {
+    "id": "current-password-number",
+    "set": {
+     "current_password": 5
+    },
+    "drop": [
+     "name"
+    ],
+    "expect": {
+     "fields": {
+      "current_password": "Must be text."
+     }
+    }
+   },
+   {
+    "id": "current-password-boolean",
+    "set": {
+     "current_password": false
+    },
+    "drop": [
+     "name"
+    ],
+    "expect": {
+     "fields": {
+      "current_password": "Must be text."
+     }
+    }
+   },
+   {
+    "id": "current-password-array",
+    "set": {
+     "current_password": [
+      "Old#pass1"
+     ]
+    },
+    "drop": [
+     "name"
+    ],
+    "expect": {
+     "fields": {
+      "current_password": "Must be text."
+     }
+    }
+   },
+   {
+    "id": "current-password-object",
+    "set": {
+     "current_password": {
+      "a": "b"
+     }
+    },
+    "drop": [
+     "name"
+    ],
+    "expect": {
+     "fields": {
+      "current_password": "Must be text."
+     }
+    }
+   },
+   {
+    "id": "half-pair-current-only",
+    "set": {},
+    "drop": [
+     "name",
+     "new_password"
+    ],
+    "expect": {
+     "fields": {
+      "new_password": "Required."
+     }
+    }
+   },
+   {
+    "id": "half-pair-new-only",
+    "set": {},
+    "drop": [
+     "name",
+     "current_password"
+    ],
+    "expect": {
+     "fields": {
+      "current_password": "Required."
+     }
+    }
+   },
+   {
+    "id": "half-pair-beside-valid-name",
+    "set": {},
+    "drop": [
+     "new_password"
+    ],
+    "expect": {
+     "fields": {
+      "new_password": "Required."
+     }
+    }
+   },
+   {
+    "id": "half-pair-with-invalid-present-half",
+    "set": {
+     "current_password": {
+      "repeat": "a",
+      "times": 11
+     }
+    },
+    "drop": [
+     "name",
+     "new_password"
+    ],
+    "expect": {
+     "fields": {
+      "current_password": "Must be 1 to 10 characters.",
+      "new_password": "Required."
+     }
+    }
+   },
+   {
+    "id": "half-pair-with-null-present-half",
+    "set": {
+     "new_password": null
+    },
+    "drop": [
+     "name",
+     "current_password"
+    ],
+    "expect": {
+     "fields": {
+      "new_password": "Required.",
+      "current_password": "Required."
      }
     }
    },
@@ -1260,24 +1666,70 @@
     "id": "both-invalid",
     "set": {
      "name": "",
-     "email": "x"
+     "new_password": "x"
     },
     "drop": [],
     "expect": {
      "fields": {
       "name": "Must be 1 to 80 characters.",
-      "email": "Enter a valid email address."
+      "new_password": "Must be 8 to 10 characters."
+     }
+    }
+   },
+   {
+    "id": "unknown-email-alone",
+    "set": {
+     "email": "ada@example.com"
+    },
+    "drop": [
+     "name",
+     "current_password",
+     "new_password"
+    ],
+    "expect": {
+     "fields": {
+      "email": "Unknown field."
+     }
+    }
+   },
+   {
+    "id": "unknown-email-beside-valid-name",
+    "set": {
+     "email": "ada@example.com"
+    },
+    "drop": [
+     "current_password",
+     "new_password"
+    ],
+    "expect": {
+     "fields": {
+      "email": "Unknown field."
+     }
+    }
+   },
+   {
+    "id": "unknown-email-beside-valid-pair",
+    "set": {
+     "email": "ada@example.com"
+    },
+    "drop": [
+     "name"
+    ],
+    "expect": {
+     "fields": {
+      "email": "Unknown field."
      }
     }
    },
    {
     "id": "unknown-password-alone",
     "set": {
-     "password": "Horse-4Bat"
+     "password": "New#pass2"
     },
     "drop": [
      "name",
-     "email"
+     "current_password",
+     "new_password"
     ],
     "expect": {
      "fields": {
@@ -1288,9 +1740,12 @@
    {
     "id": "unknown-password-beside-valid",
     "set": {
-     "password": "Horse-4Bat"
+     "password": "New#pass2"
     },
-    "drop": [],
+    "drop": [
+     "current_password",
+     "new_password"
+    ],
     "expect": {
      "fields": {
       "password": "Unknown field."
@@ -1298,16 +1753,18 @@
     }
    },
    {
-    "id": "unknown-current-password",
+    "id": "unknown-password-hash",
     "set": {
-     "current_password": "x"
+     "password_hash": "x"
     },
     "drop": [
-     "email"
+     "name",
+     "current_password",
+     "new_password"
     ],
     "expect": {
      "fields": {
-      "current_password": "Unknown field."
+      "password_hash": "Unknown field."
      }
     }
    },
@@ -1316,7 +1773,11 @@
     "set": {
      "id": "1"
     },
-    "drop": [],
+    "drop": [
+     "name",
+     "current_password",
+     "new_password"
+    ],
     "expect": {
      "fields": {
       "id": "Unknown field."
@@ -1329,7 +1790,9 @@
      "created_at": "2026-01-01"
     },
     "drop": [
-     "email"
+     "name",
+     "current_password",
+     "new_password"
     ],
     "expect": {
      "fields": {
@@ -1344,7 +1807,8 @@
      "name": ""
     },
     "drop": [
-     "email"
+     "current_password",
+     "new_password"
     ],
     "expect": {
      "fields": {

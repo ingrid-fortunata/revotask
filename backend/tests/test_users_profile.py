@@ -14,9 +14,12 @@ from datetime import timedelta
 import pytest
 from sqlalchemy import func, select
 
+from app.blueprints.auth.service import hash_password, verify_password
+from app.blueprints.users import service as users_service
 from app.extensions import db
 from app.models.board_event import BoardEvent
 from app.models.notification import Notification
+from app.models.user import User
 from tests.auth_helpers import bearer, decode_unverified, raw_token
 from tests.profile_helpers import patch_me, user_row
 
@@ -37,52 +40,67 @@ def _assert_private(response):
 
 # --- success -----------------------------------------------------------------------------
 
+OLD_PASSWORD = "Old#pass1"
+NEW_PASSWORD = "New#pass2"
+
+
+def _make_user(tracker, app, **kwargs):
+    """A tracked user whose stored password is OLD_PASSWORD."""
+    user = tracker.make_user(**kwargs)
+    with app.app_context():
+        try:
+            row = db.session.get(User, user.id)
+            row.password_hash = hash_password(OLD_PASSWORD)
+            db.session.commit()
+        finally:
+            db.session.remove()
+    return user
+
+
+PAIR = {"current_password": OLD_PASSWORD, "new_password": NEW_PASSWORD}
+
 
 @pytest.mark.parametrize(
-    ("body", "expected_name", "expected_email"),
+    ("body", "expected_name", "password_changes"),
     [
-        pytest.param({"name": "New Name"}, "New Name", "old@example.test", id="name-only"),
-        pytest.param(
-            {"email": "new@example.test"}, "Old Name", "new@example.test", id="email-only"
-        ),
-        pytest.param(
-            {"name": "New Name", "email": "new@example.test"},
-            "New Name",
-            "new@example.test",
-            id="both",
-        ),
-        pytest.param(
-            {"name": "  Padded Name  ", "email": "  MiXed@Example.TEST "},
-            "Padded Name",
-            "mixed@example.test",
-            id="trimmed-and-lowercased",
-        ),
+        pytest.param({"name": "New Name"}, "New Name", False, id="name-only"),
+        pytest.param(dict(PAIR), "Old Name", True, id="password-pair-only"),
+        pytest.param({"name": "New Name", **PAIR}, "New Name", True, id="name-and-pair"),
+        pytest.param({"name": "  Padded Name  "}, "Padded Name", False, id="trimmed-name"),
     ],
 )
-def test_success_stores_only_the_submitted_normalized_fields(
-    client, tracker, app, body, expected_name, expected_email
+def test_success_stores_only_the_submitted_fields(
+    client, tracker, app, body, expected_name, password_changes
 ):
-    user = tracker.make_user(name="Old Name", email="old@example.test")
+    user = _make_user(tracker, app, name="Old Name", email="old@example.test")
     before = user_row(app, user.id)
     response = patch_me(client, tracker, user, body)
     assert response.status_code == 200, response.get_json()
     assert response.get_json() == {
-        "data": {"id": str(user.id), "name": expected_name, "email": expected_email}
+        "data": {"id": str(user.id), "name": expected_name, "email": "old@example.test"}
     }
     _assert_private(response)
     after = user_row(app, user.id)
-    assert (after["name"], after["email"]) == (expected_name, expected_email)
-    assert after["password_hash"] == before["password_hash"]
+    assert (after["name"], after["email"]) == (expected_name, "old@example.test")
     assert after["created_at"] == before["created_at"]
     assert after["updated_at"] > before["updated_at"]
+    if password_changes:
+        assert after["password_hash"] != before["password_hash"]
+        assert verify_password(after["password_hash"], NEW_PASSWORD)
+        assert not verify_password(after["password_hash"], OLD_PASSWORD)
+    else:
+        assert after["password_hash"] == before["password_hash"]
 
 
-def test_response_has_no_secret_or_timestamp_field(client, tracker):
-    user = tracker.make_user()
-    response = patch_me(client, tracker, user, {"name": "Shown"})
+def test_response_has_no_secret_or_timestamp_field(client, tracker, app):
+    user = _make_user(tracker, app)
+    response = patch_me(client, tracker, user, {"name": "Shown", **PAIR})
     text = response.get_data(as_text=True)
     assert set(response.get_json()["data"]) == {"id", "name", "email"}
-    assert not any(word in text for word in ("password", "hash", "created_at", "updated_at"))
+    assert not any(
+        word in text
+        for word in ("password", "hash", "created_at", "updated_at", OLD_PASSWORD, NEW_PASSWORD)
+    )
 
 
 @pytest.mark.parametrize(
@@ -90,12 +108,9 @@ def test_response_has_no_secret_or_timestamp_field(client, tracker):
     [
         pytest.param({"name": "Same Name"}, id="same-name"),
         pytest.param({"name": "  Same Name  "}, id="same-name-padded"),
-        pytest.param({"email": "same@example.test"}, id="same-email"),
-        pytest.param({"email": "SAME@Example.TEST"}, id="own-email-in-another-case"),
-        pytest.param({"name": "Same Name", "email": " Same@example.test "}, id="both-unchanged"),
     ],
 )
-def test_unchanged_values_are_a_no_op(client, tracker, app, body):
+def test_an_unchanged_name_is_a_no_op(client, tracker, app, body):
     user = tracker.make_user(name="Same Name", email="same@example.test")
     before = user_row(app, user.id)
     response = patch_me(client, tracker, user, body)
@@ -109,25 +124,36 @@ def test_unchanged_values_are_a_no_op(client, tracker, app, body):
     _assert_private(response)
 
 
-def test_a_partial_change_beside_an_unchanged_field_moves_updated_at(client, tracker, app):
-    user = tracker.make_user(name="Same Name", email="same@example.test")
+def test_a_password_change_beside_an_unchanged_name_moves_updated_at(client, tracker, app):
+    user = _make_user(tracker, app, name="Same Name")
     before = user_row(app, user.id)
-    response = patch_me(client, tracker, user, {"name": "Same Name", "email": "other@example.test"})
+    response = patch_me(client, tracker, user, {"name": "Same Name", **PAIR})
     assert response.status_code == 200
     after = user_row(app, user.id)
-    assert after["email"] == "other@example.test" and after["name"] == "Same Name"
+    assert after["name"] == "Same Name"
+    assert after["password_hash"] != before["password_hash"]
+    assert after["updated_at"] > before["updated_at"]
+
+
+def test_the_same_new_password_still_stores_a_new_hash(client, tracker, app):
+    user = _make_user(tracker, app)
+    before = user_row(app, user.id)
+    body = {"current_password": OLD_PASSWORD, "new_password": OLD_PASSWORD}
+    assert patch_me(client, tracker, user, body).status_code == 200
+    after = user_row(app, user.id)
+    assert after["password_hash"] != before["password_hash"]  # a fresh salt
     assert after["updated_at"] > before["updated_at"]
 
 
 def test_no_event_and_no_notification_is_recorded(client, tracker, app):
-    user = tracker.make_user()
+    user = _make_user(tracker, app)
     with app.app_context():
         counts = (
             db.session.scalar(select(func.count()).select_from(BoardEvent)),
             db.session.scalar(select(func.count()).select_from(Notification)),
         )
         db.session.remove()
-    assert patch_me(client, tracker, user, {"name": "Changed"}).status_code == 200
+    assert patch_me(client, tracker, user, {"name": "Changed", **PAIR}).status_code == 200
     with app.app_context():
         after = (
             db.session.scalar(select(func.count()).select_from(BoardEvent)),
@@ -139,43 +165,76 @@ def test_no_event_and_no_notification_is_recorded(client, tracker, app):
 
 # --- rejected input ----------------------------------------------------------------------
 
+U = "Unknown field."
+LEN8 = "Must be 8 to 10 characters."
+COMP = "Must include an uppercase letter, a lowercase letter and a special character."
+
 REJECTED = [
     pytest.param({}, None, id="empty-object"),
-    pytest.param({"password": "Horse-4Bat"}, {"password": "Unknown field."}, id="password-alone"),
+    pytest.param({"email": "new@example.test"}, {"email": U}, id="email-alone"),
     pytest.param(
-        {"name": "Valid", "password": "Horse-4Bat"},
-        {"password": "Unknown field."},
-        id="password-beside-valid-name",
+        {"name": "Valid", "email": "new@example.test"}, {"email": U}, id="email-beside-name"
     ),
+    pytest.param({**PAIR, "email": "new@example.test"}, {"email": U}, id="email-beside-pair"),
+    pytest.param({"email": None}, {"email": U}, id="email-null"),
+    pytest.param({"password": NEW_PASSWORD}, {"password": U}, id="password-alone"),
     pytest.param(
-        {"current_password": "x"}, {"current_password": "Unknown field."}, id="current-password"
+        {"name": "Valid", "password": NEW_PASSWORD}, {"password": U}, id="password-beside-name"
     ),
-    pytest.param({"id": str(uuid.uuid4())}, {"id": "Unknown field."}, id="id"),
-    pytest.param({"created_at": "2026-01-01"}, {"created_at": "Unknown field."}, id="created-at"),
-    pytest.param(
-        {"email": "new@example.test", "role": "admin"}, {"role": "Unknown field."}, id="unknown-key"
-    ),
+    pytest.param({"password_hash": "x"}, {"password_hash": U}, id="password-hash"),
+    pytest.param({"id": str(uuid.uuid4())}, {"id": U}, id="id"),
+    pytest.param({"created_at": "2026-01-01"}, {"created_at": U}, id="created-at"),
+    pytest.param({"name": "Valid", "role": "admin"}, {"role": U}, id="unknown-key"),
     pytest.param({"name": None}, {"name": "Required."}, id="name-null"),
-    pytest.param({"email": None}, {"email": "Required."}, id="email-null"),
     pytest.param({"name": 5}, {"name": "Must be text."}, id="name-number"),
-    pytest.param({"email": ["a@b.co"]}, {"email": "Must be text."}, id="email-array"),
     pytest.param({"name": "   "}, {"name": "Must be 1 to 80 characters."}, id="name-blank"),
     pytest.param({"name": "a" * 81}, {"name": "Must be 1 to 80 characters."}, id="name-81"),
-    pytest.param({"email": ""}, {"email": "Enter a valid email address."}, id="email-blank"),
+    pytest.param({**PAIR, "new_password": "Aa1!aaa"}, {"new_password": LEN8}, id="new-7-chars"),
     pytest.param(
-        {"email": "not-an-email"}, {"email": "Enter a valid email address."}, id="email-format"
+        {**PAIR, "new_password": "Aa1!aaaaaaa"}, {"new_password": LEN8}, id="new-11-chars"
     ),
     pytest.param(
-        {"email": "a" * 243 + "@example.com"},
-        {"email": "Must be at most 254 characters."},
-        id="email-255",
+        {**PAIR, "new_password": "aa1!aaaa"}, {"new_password": COMP}, id="new-no-uppercase"
+    ),
+    pytest.param(
+        {**PAIR, "new_password": "AA1!AAAA"}, {"new_password": COMP}, id="new-no-lowercase"
+    ),
+    pytest.param({**PAIR, "new_password": "Aa1aaaaa"}, {"new_password": COMP}, id="new-no-special"),
+    pytest.param({**PAIR, "new_password": None}, {"new_password": "Required."}, id="new-null"),
+    pytest.param({**PAIR, "new_password": 5}, {"new_password": "Must be text."}, id="new-number"),
+    pytest.param(
+        {**PAIR, "current_password": ""},
+        {"current_password": "Must be 1 to 10 characters."},
+        id="current-empty",
+    ),
+    pytest.param(
+        {**PAIR, "current_password": "a" * 11},
+        {"current_password": "Must be 1 to 10 characters."},
+        id="current-11-chars",
+    ),
+    pytest.param(
+        {**PAIR, "current_password": None}, {"current_password": "Required."}, id="current-null"
+    ),
+    pytest.param(
+        {**PAIR, "current_password": ["x"]},
+        {"current_password": "Must be text."},
+        id="current-array",
+    ),
+    pytest.param(
+        {"current_password": OLD_PASSWORD}, {"new_password": "Required."}, id="current-only"
+    ),
+    pytest.param({"new_password": NEW_PASSWORD}, {"current_password": "Required."}, id="new-only"),
+    pytest.param(
+        {"name": "Valid", "new_password": NEW_PASSWORD},
+        {"current_password": "Required."},
+        id="new-only-beside-name",
     ),
 ]
 
 
 @pytest.mark.parametrize(("body", "fields"), REJECTED)
 def test_rejected_body_is_400_and_changes_nothing(client, tracker, app, body, fields):
-    user = tracker.make_user(name="Keep Name", email="keep@example.test")
+    user = _make_user(tracker, app, name="Keep Name", email="keep@example.test")
     before = user_row(app, user.id)
     response = patch_me(client, tracker, user, body)
     assert response.status_code == 400, response.get_json()
@@ -302,18 +361,56 @@ def test_token_without_exp_is_401(client, tracker):
 
 
 def test_a_bad_token_wins_over_a_bad_body(client):
-    response = client.patch("/api/users/me", json={"password": "x"}, headers=bearer("junk"))
+    response = client.patch("/api/users/me", json={"email": "x"}, headers=bearer("junk"))
     assert response.status_code == 401
 
 
-def test_a_bad_body_wins_over_a_duplicate_email(client, tracker, app):
-    owner = tracker.make_user(email="taken@example.test")
-    user = tracker.make_user(name="Keep Name")
+def test_a_bad_body_wins_over_a_wrong_current_password(client, tracker, app):
+    user = _make_user(tracker, app, name="Keep Name")
     before = user_row(app, user.id)
-    response = patch_me(client, tracker, user, {"email": owner.email, "password": "x"})
+    body = {
+        "current_password": "Wrong#pw1",
+        "new_password": NEW_PASSWORD,
+        "email": "x@example.test",
+    }
+    response = patch_me(client, tracker, user, body)
     assert response.status_code == 400
-    assert response.get_json()["error"]["fields"] == {"password": "Unknown field."}
+    assert response.get_json()["error"]["fields"] == {"email": U}
     assert user_row(app, user.id) == before
+
+
+@pytest.mark.parametrize(
+    "body",
+    [
+        pytest.param({}, id="empty-object"),
+        pytest.param({"new_password": NEW_PASSWORD}, id="half-pair"),
+        pytest.param({**PAIR, "new_password": "short"}, id="invalid-new-password"),
+        pytest.param({**PAIR, "email": "a@b.co"}, id="unknown-key"),
+    ],
+)
+def test_no_password_check_runs_for_a_rejected_body(client, tracker, app, monkeypatch, body):
+    calls = []
+    monkeypatch.setattr(
+        users_service,
+        "verify_password",
+        lambda *args, **kwargs: calls.append(args) or True,
+    )
+    user = _make_user(tracker, app)
+    assert patch_me(client, tracker, user, body).status_code == 400
+    assert calls == []
+
+
+def test_a_password_check_runs_once_for_a_valid_pair(client, tracker, app, monkeypatch):
+    calls = []
+    real = users_service.verify_password
+    monkeypatch.setattr(
+        users_service,
+        "verify_password",
+        lambda *args, **kwargs: calls.append(args) or real(*args, **kwargs),
+    )
+    user = _make_user(tracker, app)
+    assert patch_me(client, tracker, user, PAIR).status_code == 200
+    assert len(calls) == 1
 
 
 def test_the_caller_is_the_token_user_and_no_other_row_changes(client, tracker, app):
