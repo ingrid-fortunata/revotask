@@ -38,14 +38,11 @@ export function NotificationRow({ item, marking, disabled, notice, onMark, onFol
           <span className="min-w-0 [overflow-wrap:anywhere]">{text}</span>
         </Link>
         {unread ? <BaseBadge variant="primary" className="mt-3">Unread</BaseBadge> : null}
-      </div>
-      <p className="min-w-0 text-sm text-base-content/70 [overflow-wrap:anywhere]">
-        {item.board_name} · <time dateTime={item.created_at}>{formatCommentTime(item.created_at)}</time>
-      </p>
-      {unread ? (
-        <div>
+        {unread ? (
           <BaseButton
             variant="ghost"
+            iconOnly
+            icon="check"
             aria-label={`Mark as read: ${text}`}
             loading={marking}
             disabled={disabled}
@@ -53,8 +50,11 @@ export function NotificationRow({ item, marking, disabled, notice, onMark, onFol
           >
             Mark as read
           </BaseButton>
-        </div>
-      ) : null}
+        ) : null}
+      </div>
+      <p className="min-w-0 text-sm text-base-content/70 [overflow-wrap:anywhere]">
+        {item.board_name} · <time dateTime={item.created_at}>{formatCommentTime(item.created_at)}</time>
+      </p>
       {notice ? (
         <p role="alert" className="text-sm text-error [overflow-wrap:anywhere]">
           {notice}

@@ -111,7 +111,7 @@ export function ProfileForm({ user }: { user: PublicUser }) {
         onChange={(email) => setValues((current) => ({ ...current, email }))}
       />
       <div>
-        <BaseButton type="submit" loading={pending} disabled={!dirty} className="w-full sm:w-auto">
+        <BaseButton type="submit" icon="check" loading={pending} disabled={!dirty} className="w-full sm:w-auto">
           {pending ? "Saving…" : "Save changes"}
         </BaseButton>
       </div>

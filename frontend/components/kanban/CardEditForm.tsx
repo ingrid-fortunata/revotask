@@ -106,14 +106,14 @@ export function CardEditForm({ card, members, lockCard = false, onSave, onDelete
         <FormField id="edit-card-description" name="description" label="Description" multiline value={description} error={errors.description} onChange={setDescription} />
         <SelectField id="edit-card-assignee" name="assignee_id" label="Assignee" value={assignee} options={options} error={errors.assignee_id} onChange={setAssignee} />
         <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
-          <BaseButton variant="ghost" className="w-full text-error sm:w-auto" disabled={pending || lockCard} onClick={() => setConfirmOpen(true)}>
+          <BaseButton variant="ghost" icon="trash" className="w-full text-error sm:w-auto" disabled={pending || lockCard} onClick={() => setConfirmOpen(true)}>
             Delete card
           </BaseButton>
           <div className="flex flex-col gap-2 sm:flex-row">
             <BaseButton variant="ghost" className="w-full sm:w-auto" disabled={pending} onClick={onClose}>
               Cancel
             </BaseButton>
-            <BaseButton type="submit" className="w-full sm:w-auto" loading={pending} disabled={lockCard}>
+            <BaseButton type="submit" icon="check" className="w-full sm:w-auto" loading={pending} disabled={lockCard}>
               Save card
             </BaseButton>
           </div>

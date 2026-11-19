@@ -128,7 +128,9 @@ export function CommentItem({ comment, isAuthor, disabled, onEdit, onDelete }: C
           <BaseButton
             ref={editButtonRef}
             variant="ghost"
-            className="border-base-300"
+            iconOnly
+            icon="pencil"
+            className="border border-base-300"
             aria-label={`Edit your comment from ${day}`}
             disabled={disabled}
             onClick={openEditor}
@@ -137,7 +139,9 @@ export function CommentItem({ comment, isAuthor, disabled, onEdit, onDelete }: C
           </BaseButton>
           <BaseButton
             variant="ghost"
-            className="border-base-300 text-error"
+            iconOnly
+            icon="trash"
+            className="border border-base-300 text-error"
             aria-label={`Delete your comment from ${day}`}
             disabled={disabled}
             onClick={() => setConfirmOpen(true)}

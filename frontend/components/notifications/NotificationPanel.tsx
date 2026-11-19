@@ -60,7 +60,7 @@ export function NotificationPanel({
               {unread ?? 0} unread of {total}
             </p>
           </div>
-          <BaseButton variant="ghost" onClick={onClose} aria-label="Close notifications">
+          <BaseButton variant="ghost" iconOnly icon="x" onClick={onClose} aria-label="Close notifications">
             Close
           </BaseButton>
         </div>
@@ -95,7 +95,7 @@ export function NotificationPanel({
           {status === "error" ? (
             <div role="alert" className="flex flex-wrap items-center gap-2 py-3">
               <p className="min-w-0 flex-1 text-sm text-error">Notifications could not be loaded.</p>
-              <BaseButton variant="ghost" onClick={onRetry}>
+              <BaseButton variant="ghost" icon="refresh" onClick={onRetry}>
                 Retry
               </BaseButton>
             </div>
@@ -104,13 +104,13 @@ export function NotificationPanel({
 
         {pageCount > 1 && !loading ? (
           <nav aria-label="Notification pages" className="mt-2 flex items-center justify-between gap-2 border-t border-base-300 pt-3">
-            <BaseButton variant="ghost" disabled={page <= 1} onClick={() => onPage(page - 1)}>
+            <BaseButton variant="ghost" iconOnly icon="chevron-left" disabled={page <= 1} onClick={() => onPage(page - 1)}>
               Newer
             </BaseButton>
             <span className="text-sm tabular-nums text-base-content/70">
               Page {page} of {pageCount}
             </span>
-            <BaseButton variant="ghost" disabled={page >= pageCount} onClick={() => onPage(page + 1)}>
+            <BaseButton variant="ghost" iconOnly icon="chevron-right" disabled={page >= pageCount} onClick={() => onPage(page + 1)}>
               Older
             </BaseButton>
           </nav>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Icon } from "@/components/shared/Icon";
 import { chipClass } from "@/lib/boardChip";
 import type { TaskGroup as TaskGroupData } from "@/lib/types";
 
@@ -31,12 +32,17 @@ export function TaskGroup({ group }: TaskGroupProps) {
             <Link
               href={href}
               aria-label={`${task.title}, ${group.boardName}`}
-              className="flex min-h-11 min-w-11 flex-col justify-center gap-1 py-3"
+              className="flex min-h-11 min-w-11 items-center gap-3 py-3"
             >
-              <span className="min-w-0 break-words font-medium">{task.title}</span>
-              {task.description ? (
-                <span className="line-clamp-2 min-w-0 break-words text-sm text-base-content/70">{task.description}</span>
-              ) : null}
+              <span className="flex min-w-0 flex-1 flex-col gap-1">
+                <span className="min-w-0 break-words font-medium">{task.title}</span>
+                {task.description ? (
+                  <span className="line-clamp-2 min-w-0 break-words text-sm text-base-content/70">{task.description}</span>
+                ) : null}
+              </span>
+              <span className="text-base-content/50">
+                <Icon name="chevron-right" />
+              </span>
             </Link>
           </li>
         ))}
