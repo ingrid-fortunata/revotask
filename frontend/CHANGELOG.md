@@ -2,6 +2,16 @@
 
 Record actual changes for this component. Newest date first. Each `## YYYY-MM-DD` heading groups the commits made that day, and each commit has a `### <short-sha> <subject>` entry. Reference the matching root entry for the same commit in [the root changelog](../CHANGELOG.md).
 
+## 2026-11-19
+
+### f117eb9 style: use icon buttons and tinted lanes on board and dashboard
+
+- `ColumnHeader`, `KanbanColumn`, `BoardCard`, `BoardHeader`, `MembersPanel`, `AnalyticsPanel`, `CardSearch`, `CardDetailModal`, `LogoutButton` and the Add forms use `BaseButton icon` and `iconOnly`. `BoardCard.test.tsx` expects the avatar initials. See the root entry in [the root changelog](../CHANGELOG.md).
+
+### 54ed689 style: add icon buttons and compact search field options
+
+- New `components/shared/Icon.tsx`. `BaseButton` gets `icon` and `iconOnly` (the icon-only button is `relative`, so its `sr-only` text cannot widen a scroll area). `FormField` gets `hideLabel`, `placeholder` and `inputClassName`. See the root entry in [the root changelog](../CHANGELOG.md).
+
 ## 2026-11-18
 
 ### 85dda7c feat: show a skeleton while protected pages load

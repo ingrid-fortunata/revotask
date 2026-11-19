@@ -2,6 +2,16 @@
 
 Newest date first. Each `## YYYY-MM-DD` heading groups the commits made that day. Each commit has a `### <short-sha> <subject>` entry with its notes. Follows the [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) style.
 
+## 2026-11-19
+
+### f117eb9 style: use icon buttons and tinted lanes on board and dashboard
+
+- Edit, delete, move, close, refresh and remove are now 44 px icon buttons with a tooltip and the same accessible name. Column controls sit in the column header row, the card Move button sits beside the assignee (now with an avatar), and the board search is one compact row. Kanban lanes are a tinted track with white cards.
+
+### 54ed689 style: add icon buttons and compact search field options
+
+- `BaseButton` takes `icon` and `iconOnly`, `FormField` takes `hideLabel`, `placeholder` and `inputClassName`, and `components/shared/Icon.tsx` holds the icon set.
+
 ## 2026-11-18
 
 ### a76123b fix: serve parallel requests with gunicorn threads
