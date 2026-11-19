@@ -4,6 +4,10 @@ Record actual changes for this component. Newest date first. Each `## YYYY-MM-DD
 
 ## 2026-11-19
 
+### 606ea6a feat: limit passwords to 10 characters (authentication revision 5)
+
+- `lib/authRules.ts`: `PASSWORD_MAX = 10` and `PASSWORD_HINT` reads "8 to 10 characters, with an uppercase letter, a lowercase letter and a special character such as ! ? # or %." Tests, the Playwright password generator (`e2e/support/run.ts`) and the wrong-password step in `e2e/auth.spec.ts` use at most 10 characters. See the root entry in [the root changelog](../CHANGELOG.md).
+
 ### e2c89ef style: use icon buttons on notifications, comments, profile and tasks
 
 - `NotificationPanel`, `NotificationRow`, `CommentItem`, `CardEditForm`, `ProfileForm` and `TaskGroup` use `BaseButton icon` and `iconOnly`. See the root entry in [the root changelog](../CHANGELOG.md).

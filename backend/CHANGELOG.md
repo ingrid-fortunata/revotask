@@ -2,6 +2,12 @@
 
 Record actual changes for this component. Newest date first. Each `## YYYY-MM-DD` heading groups the commits made that day, and each commit has a `### <short-sha> <subject>` entry. Reference the matching root entry for the same commit in [the root changelog](../CHANGELOG.md).
 
+## 2026-11-19
+
+### 606ea6a feat: limit passwords to 10 characters (authentication revision 5)
+
+- `app/config.py`: `PASSWORD_MAX = 10` (was 128). The auth schemas read the constant, so register is 8 to 10 characters and login is 1 to 10, with the messages `Must be 8 to 10 characters.` and `Must be 1 to 10 characters.` Tests use `Horse-4Bat` and wrong passwords of at most 10 characters, plus new cases for an 11-character login (400, and it counts toward the limit). See the root entry in [the root changelog](../CHANGELOG.md).
+
 ## 2026-11-18
 
 ### a76123b fix: serve parallel requests with gunicorn threads
