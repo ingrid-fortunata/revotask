@@ -4,6 +4,14 @@ Newest date first. Each `## YYYY-MM-DD` heading groups the commits made that day
 
 ## 2026-11-19
 
+### e2c89ef style: use icon buttons on notifications, comments, profile and tasks
+
+- Mark as read sits in the notification row beside Unread, and Close, Newer, Older, comment Edit and Delete are icon buttons. Delete card, Save card and Save changes get an icon, and each My tasks row shows a chevron.
+
+### 9c66e64 style: add check icon
+
+- New `check` icon in `components/shared/Icon.tsx`.
+
 ### f117eb9 style: use icon buttons and tinted lanes on board and dashboard
 
 - Edit, delete, move, close, refresh and remove are now 44 px icon buttons with a tooltip and the same accessible name. Column controls sit in the column header row, the card Move button sits beside the assignee (now with an avatar), and the board search is one compact row. Kanban lanes are a tinted track with white cards.

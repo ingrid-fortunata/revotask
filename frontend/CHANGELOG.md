@@ -4,6 +4,14 @@ Record actual changes for this component. Newest date first. Each `## YYYY-MM-DD
 
 ## 2026-11-19
 
+### e2c89ef style: use icon buttons on notifications, comments, profile and tasks
+
+- `NotificationPanel`, `NotificationRow`, `CommentItem`, `CardEditForm`, `ProfileForm` and `TaskGroup` use `BaseButton icon` and `iconOnly`. See the root entry in [the root changelog](../CHANGELOG.md).
+
+### 9c66e64 style: add check icon
+
+- Added `check` to `components/shared/Icon.tsx`. See the root entry in [the root changelog](../CHANGELOG.md).
+
 ### f117eb9 style: use icon buttons and tinted lanes on board and dashboard
 
 - `ColumnHeader`, `KanbanColumn`, `BoardCard`, `BoardHeader`, `MembersPanel`, `AnalyticsPanel`, `CardSearch`, `CardDetailModal`, `LogoutButton` and the Add forms use `BaseButton icon` and `iconOnly`. `BoardCard.test.tsx` expects the avatar initials. See the root entry in [the root changelog](../CHANGELOG.md).
