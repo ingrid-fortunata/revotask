@@ -65,3 +65,56 @@ Local checks prove local behavior only. The browser run used Chrome device emula
 - Playwright journey (V10), real-device and on-screen-keyboard checks (T15), live deployment and live cookie checks (T16).
 - Tracked in T16 for public release: reauthentication for an email change, confirmation of the new address, a notice to the old address, and the E31 rate limit. The 409 `EMAIL_ALREADY_EXISTS` is an additional account-enumeration path next to E02 (P11).
 - A simultaneous swap of two accounts' emails can make PostgreSQL abort one request as a deadlock (design risk). It was not tested.
+
+
+---
+
+# Revision 2 (2026-11-19): read-only email and optional password change
+
+Feature spec: `.kiro/specs/profile/` (native groups 11 to 17). Requested by the user: "the email should be fix (can't be edited) because its become our important key. So what we can edit just the name and password only." Implemented by Claude Code (`/revotask-feature implement profile`, run scope: all tasks, 2026-11-19). The spec phases were also produced by Claude Code and the user approved each in chat. Decisions P12–P18: see `.kiro/specs/profile/requirements.md`.
+
+Local checks prove local behavior only. The browser run used Chrome device emulation (headless Chrome 157.0.8103.80 with touch emulation below 640 px), not a real phone and not an on-screen keyboard.
+
+## Summary
+
+| Area | Result |
+| --- | --- |
+| Backend | `pytest` 2234 passed, 1 skipped (the deliberate E05 skip), 2177 before. `ruff check .` and `ruff format --check .` clean. The eight profile files hold 156 tests: `test_users_profile_schema.py` 71, `test_users_profile.py` 61, `test_users_profile_password.py` 7 (replaces `test_users_profile_conflict.py`), `_concurrency` 6, `_session` 6, `_names` 3, `_logging` 1, `test_profile_cleanup.py` 1. |
+| Frontend | `npm run lint` and `npm run typecheck` clean. `npm test` 2221 tests in 100 files passed (2173 before). `npm run build` succeeded. |
+| Browser (V07, V11) | `evidence/profile-mobile-measure.mjs`: 457 checks at 320, 375, 768 and 1280 px for two accounts (one with a very long unbroken name and email), plus the scripted 375 px journey. 0 failed. Report: `evidence/profile-mobile-rev2.json`. Screenshots: `evidence/profile-screenshots-rev2/`. |
+| Playwright (V10) | `npm run e2e`: 58 passed, 0 failed (native Flask on the test database, Next dev server, Chromium emulation). No suite change was needed: no existing journey edits the email. Teardown verified 0 rows left. |
+| Open | Real-device and on-screen-keyboard checks (T15 and later), a Playwright profile journey (none exists), deployment (T16). T16 security items: the E31 rate limit, revoking other sessions after a password change, a change notice. |
+
+## Commands and results
+
+- Backend (from `backend/`): `.venv/bin/python -m pytest tests/test_users_profile*.py tests/test_profile_cleanup.py -p no:cacheprovider` 156 passed. Full: `.venv/bin/python -m pytest -q -p no:cacheprovider` 2234 passed, 1 skipped. `ruff check .` and `ruff format --check .` clean.
+- Mutation check (task 14.5): replacing the locked re-read in `update_profile` with the stale `user` object made `test_the_last_request_wins_a_field_it_submits`, `test_two_password_requests_with_one_current_password_leave_one_winner` and `test_the_password_check_waits_for_the_row_lock` fail (3 failed, 3 passed). The service was restored and all 6 pass.
+- Frontend (from `frontend/`): `npm run lint`, `npm run typecheck`, `npm test` (2221 passed), `npm run build`. New or revised: `lib/authRules.test.ts` (the 59 rewritten `profile` fixture cases plus `profileChanges` and `validateProfile`), `components/profile/ProfileForm.test.tsx` (read-only email never sent, collapsed section with no password input, open and close with `aria-expanded`, closing empties fields and errors, name and pair sent only when changed or typed, `Required.` for the empty half, inline messages and focus order, the wrong current password kept inline with the section open, success reseed and closed section, pending, 5xx, transport and rate limit, `AUTH_REQUIRED` redirect), `components/shared/FormField.test.tsx` (`readOnly`), `app/api/users/me/route.test.ts` (`email` and `password` rejected without a forward, name, pair and both forwarded, no password in the response or the console), `app/(protected)/profile/page.test.tsx`.
+- Browser: `BASE_URL=http://localhost:3101 API_URL=http://127.0.0.1:5002 REPORT_FILE=evidence/profile-mobile-rev2.json SHOT_DIR=evidence/profile-screenshots-rev2 node evidence/profile-mobile-measure.mjs`, against my own Flask on `TEST_DATABASE_URL` with rate limiting off (127.0.0.1:5002) and a production Next server (localhost:3101). Result: 457 checks, 0 failed, exit 0. Both servers were stopped afterwards. The throwaway accounts stay in the test database (users cannot be deleted through the API).
+- Playwright: Flask on port 5001 (test database, rate limits on), `npm run dev` on port 3000, `npm run e2e`: 58 passed in 1.5 minutes.
+
+## Browser check details
+
+- Per width and account: `/profile` pristine (Name, a read-only Email that cannot be edited and stays focusable, a closed password section with no password input, Save disabled, the page text "Your email cannot be changed." and no "not available yet" text, seeded values, a pristine submit sends no request, the header controls, keyboard reach of the header controls, the fields and the Change password control), with the password section open (two password fields with `current-password` and `new-password` autocomplete, the rules hint, no confirm field, `aria-expanded`), with a field error (focus on the first invalid field, no request), with a wrong current password from Flask (inline under Current password, the section stays open, the typed values and header name stay, Save enabled, nothing stored, read from Flask), and after a name-only save (exactly one PATCH whose body is only `name`, the header changes at once, Flask stores the new name and keeps the email). Each state: no horizontal page scroll, every interactive box at least 44 by 44 CSS px with `elementFromPoint` at the center, 16 px field text.
+- Journey at 375 px (all passed): account link by touch emulation, change the name, save (toast and header update), reload (stored name, closed and empty password section), the email shown read-only, Change password, a wrong current password (inline error, section open), the right current password (toast, section closed), the session still signed in, sign out, sign in with the old password fails with "Invalid email or password.", sign in with the same email and the new password works.
+- Screenshots reviewed at 375 and 1280 px (wrong-password state and pristine state): the muted read-only email, the "Cancel password change" control, the inline error and the single `.surface` panel match the design system. No new color or font.
+
+## Deviations from the approved design (no behavior or contract change)
+
+- The "Cancel password change" control uses the existing `x` icon and the "Change password" control has no icon, because the shared icon set has no lock icon and the slice adds no icon.
+- `ProfileForm` passes a no-op `onChange` to the read-only email, because `FormField` requires the prop.
+- The password-rule parity test compares Flask schema outcomes (profile versus register and login) instead of comparing validator objects.
+
+## Diff review against the spec (task 17.2)
+
+- No new color, font, dependency, migration or route. One shared-part prop (`FormField` `readOnly`) and one rename (`password_composition`).
+- No `email` write on any path: `update_profile` takes no email argument and the schema has no `email` field. The form's email value comes from the user prop and is not part of the request state.
+- No password in a response, a log line, the context, browser storage or the URL: asserted by the backend response and log tests, the route test (no password in the response or console) and the form test (the context call holds three fields, the toast holds no password).
+- No 409 on E31. The T11 changes in the shared files are intact (the full frontend suite, including the T11 tests, passes).
+- A generated `frontend/AGENTS.md` that `next` wrote while the servers ran was removed. The Playwright run also rewrote `evidence/local-acceptance-T15-mobile.json` and `local-acceptance-T15-timing.json` with fresh run values. They were restored to the recorded T15 versions, because this slice does not re-record T15 evidence. Neither is part of the change.
+
+## What stayed open
+
+- Real-device and on-screen-keyboard checks, a Playwright profile journey and live deployment checks (T15 and T16).
+- Tracked in T16 for public release: the E31 rate limit (a stolen session can guess the current password through E31, and the 10-character maximum makes that easier), revoking other sessions after a password change, a change notice, and whether to keep the 10-character cap.
+- A mistyped new password locks the user out because no reset exists and the form has no confirm field or show-password control (P17).

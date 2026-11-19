@@ -1,15 +1,16 @@
-// Real-browser check for the profile slice (T12): Requirements 4 to 7 (page, feedback, header link,
-// mobile) and the manual journey of Requirement 7.6.
+// Real-browser check for the profile slice (T12, Revision 2: read-only email and optional password
+// change): Requirements 4 to 7 (page, feedback, header link, mobile) and the manual journey of
+// Requirement 7.6.
 //
 // Drives headless Google Chrome over the DevTools Protocol with Node's built-in WebSocket, so it
 // needs no npm dependency. It uses Chrome's device emulation (not a real phone) and says so in the
 // report. Playwright replaces it in T15. The stack must already be running: this script does not
 // start Flask, Next.js or the database. It seeds its own throwaway accounts through the Flask API
-// (three: the user under test, a second user whose email is "taken", and a user with a very long
-// unbroken name and email), so it needs no pre-made accounts.
+// (the user under test, an unused second account, and a user with a very long unbroken name and
+// email), so it needs no pre-made accounts.
 //
 //   BASE_URL=http://localhost:3101 API_URL=http://127.0.0.1:5002 \
-//   REPORT_FILE=evidence/profile-mobile.json SHOT_DIR=evidence/profile-screenshots \
+//   REPORT_FILE=evidence/profile-mobile-rev2.json SHOT_DIR=evidence/profile-screenshots-rev2 \
 //   node evidence/profile-mobile-measure.mjs
 //
 // Environment variables
@@ -60,7 +61,9 @@ const LONG_NAME = "N".repeat(80);
 const USER = { email: `ts-user-${SUFFIX}@t12-check.example.test`, name: "Check User" };
 const OTHER = { email: `ts-taken-${SUFFIX}@t12-check.example.test`, name: "Taken Owner" };
 const LONG = { email: `${"l".repeat(70)}-${SUFFIX}@t12-check.example.test`, name: LONG_NAME };
-const SECRETS = [PASSWORD];
+const NEW_PASSWORD = `Bb2@${randomBytes(3).toString("hex")}`;
+const WRONG_PASSWORD = `Cc3#${randomBytes(3).toString("hex")}`;
+const SECRETS = [PASSWORD, NEW_PASSWORD, WRONG_PASSWORD];
 
 async function api(method, path, token, body) {
   const response = await fetch(`${API}${path}`, {
@@ -318,11 +321,11 @@ const SUBMIT = `document.querySelector('main form').requestSubmit()`;
 const SAVE_DISABLED = `document.querySelector('main form button[type=submit]').disabled`;
 const PROFILE_LINK = `document.querySelector('header a[href="/profile"]')`;
 
-async function login(page, email) {
+async function login(page, email, password = PASSWORD) {
   await page.send("Network.clearBrowserCookies");
   await page.goto(`${ORIGIN}/login`);
   await page.type("#login-email", email);
-  await page.type("#login-password", PASSWORD);
+  await page.type("#login-password", password);
   await page.eval("document.querySelector('form').requestSubmit()");
   await page.waitFor("location.pathname === '/' && document.body.innerText.includes('Sign out')", "signed-in dashboard");
 }
@@ -398,7 +401,7 @@ async function tabSequence(page, count) {
 }
 
 async function keyboardChecks(role, label, width, page, expectFormControls) {
-  const seen = await tabSequence(page, 9);
+  const seen = await tabSequence(page, 10);
   const labels = seen.map((s) => s.label);
   const need = [(l) => l.startsWith("Profile, "), (l) => l === "Boards", (l) => l === "My tasks", (l) => l === "Sign out"];
   const reached = need.every((test) => labels.some(test));
@@ -408,6 +411,7 @@ async function keyboardChecks(role, label, width, page, expectFormControls) {
   if (expectFormControls) {
     const fields = seen.filter((s) => s.label === "profile-name" || s.label === "profile-email");
     record(role, label, width, "Tab reaches the Name and Email fields, each with a visible focus indicator", fields.length === 2 && fields.every((s) => s.outlineStyle !== "none" || s.outlineWidth > 0), fields.map((s) => `${s.label}: ${s.outlineWidth}px ${s.outlineStyle}`).join("; "));
+    record(role, label, width, "Tab reaches the Change password control, with a visible focus ring", seen.some((s) => s.label === "Change password" && s.outlineStyle !== "none" && s.outlineWidth >= 2), labels.join(" | "));
     record(role, label, width, "Save changes is skipped by Tab while the form is pristine (it is disabled)", !labels.includes("Save changes"));
   }
 }
@@ -423,11 +427,14 @@ const bump = (name, suffix) => (name.length + suffix.length + 1 <= 80 ? `${name}
 
 const COPY = {
   nameError: "Must be 1 to 80 characters.",
-  taken: "An account with this email already exists.",
+  newPasswordError: "Must be 8 to 10 characters.",
+  wrongCurrent: "Current password is incorrect.",
   toast: "Profile updated.",
 };
 
-// ---- per width: the four states of /profile (Requirement 7.6) -------------------------------
+// ---- per width: the states of /profile (Requirement 7.6) ------------------------------------
+const TOGGLE = `[...document.querySelectorAll('main form button')].find((b) => /password/i.test(b.textContent))`;
+
 async function widthChecks(role, page, width, account) {
   const tag = (n) => `/profile ${n}`;
   await page.goto(`${ORIGIN}/profile`);
@@ -436,9 +443,10 @@ async function widthChecks(role, page, width, account) {
   // pristine
   const m = await page.eval(measureExpr("main"));
   reportPage(role, tag("pristine"), width, m);
-  record(role, tag("pristine"), width, "the form has Name and Email and no password field", await page.eval(`document.querySelectorAll('main form input').length === 2 && !document.querySelector('input[type=password]') && !!document.querySelector('#profile-name') && !!document.querySelector('#profile-email')`));
+  record(role, tag("pristine"), width, "the form has Name, a read-only Email and a closed password section (no password input)", await page.eval(`document.querySelectorAll('main form input').length === 2 && !document.querySelector('input[type=password]') && !!document.querySelector('#profile-name') && document.querySelector('#profile-email').readOnly && ${TOGGLE}.getAttribute('aria-expanded') === 'false'`));
+  record(role, tag("pristine"), width, "the Email field cannot be edited (a typed key does not change it) and stays focusable", await page.eval(`(() => { const el = document.querySelector('#profile-email'); el.focus(); return document.activeElement === el && el.readOnly && !el.disabled; })()`));
   record(role, tag("pristine"), width, "Save changes is disabled while pristine", await page.eval(SAVE_DISABLED));
-  record(role, tag("pristine"), width, "the password sentence is shown", await page.eval(`document.body.innerText.includes('Password changes are not available yet.')`));
+  record(role, tag("pristine"), width, "the page says the email cannot be changed and no longer says password changes are unavailable", await page.eval(`document.body.innerText.includes('Your email cannot be changed.') && !document.body.innerText.includes('not available yet')`));
   record(role, tag("pristine"), width, "the form is seeded with the stored name and email", await page.eval(`document.querySelector('#profile-name').value === ${JSON.stringify(account.name)} && document.querySelector('#profile-email').value === ${JSON.stringify(account.email)}`));
   const before = patches(page).length;
   await page.eval(SUBMIT);
@@ -448,38 +456,50 @@ async function widthChecks(role, page, width, account) {
   await keyboardChecks(role, tag("pristine"), width, page, true);
   await shot(page, width, "profile-pristine");
 
-  // a field error (client rules)
+  // the password section open
+  await page.eval(`${TOGGLE}.click()`);
+  await page.waitFor("!!document.querySelector('#profile-current-password')", "password section");
+  reportPage(role, tag("password section open"), width, await page.eval(measureExpr("main")));
+  record(role, tag("password section open"), width, "two password fields appear with the right autocomplete, the rules hint and no confirm field", await page.eval(`document.querySelectorAll('main form input[type=password]').length === 2 && document.querySelector('#profile-current-password').autocomplete === 'current-password' && document.querySelector('#profile-new-password').autocomplete === 'new-password' && document.body.innerText.includes('8 to 10 characters')`));
+  record(role, tag("password section open"), width, "the control reads Cancel password change and announces aria-expanded", await page.eval(`${TOGGLE}.getAttribute('aria-expanded') === 'true' && ${TOGGLE}.textContent.includes('Cancel password change')`));
+  record(role, tag("password section open"), width, "Save changes stays disabled while both password fields are empty", await page.eval(SAVE_DISABLED));
+  await shot(page, width, "profile-password-open");
+
+  // a field error (client rules): bad name, new password too short
   await page.eval(setValue("#profile-name", ""));
-  await page.eval(setValue("#profile-email", "not-an-email"));
+  await page.eval(setValue("#profile-current-password", WRONG_PASSWORD));
+  await page.eval(setValue("#profile-new-password", "short"));
   await page.eval(SUBMIT);
   await page.waitFor(`document.body.innerText.includes(${JSON.stringify(COPY.nameError)})`, "name error");
   reportPage(role, tag("field error"), width, await page.eval(measureExpr("main")));
-  record(role, tag("field error"), width, "both inline messages show and focus is on the first invalid field", await page.eval(`document.body.innerText.includes('Enter a valid email address.') && document.activeElement.id === 'profile-name' && document.querySelector('#profile-name').getAttribute('aria-invalid') === 'true'`));
+  record(role, tag("field error"), width, "both inline messages show and focus is on the first invalid field", await page.eval(`document.body.innerText.includes(${JSON.stringify(COPY.newPasswordError)}) && document.activeElement.id === 'profile-name' && document.querySelector('#profile-name').getAttribute('aria-invalid') === 'true' && document.querySelector('#profile-new-password').getAttribute('aria-invalid') === 'true'`));
   record(role, tag("field error"), width, "the invalid form sent no request", patches(page).length === before);
   await shot(page, width, "profile-field-error");
 
-  // a 409 from Flask
+  // a wrong current password from Flask (400 on that field), with a valid name beside it
   const typedName = bump(account.name, "Edited");
   await page.eval(setValue("#profile-name", typedName));
-  await page.eval(setValue("#profile-email", OTHER.email));
+  await page.eval(setValue("#profile-current-password", WRONG_PASSWORD));
+  await page.eval(setValue("#profile-new-password", NEW_PASSWORD));
   await page.eval(SUBMIT);
-  await page.waitFor(`document.body.innerText.includes(${JSON.stringify(COPY.taken)})`, "409 message");
-  reportPage(role, tag("409"), width, await page.eval(measureExpr("main")));
-  record(role, tag("409"), width, "the 409 shows inline under Email, keeps both typed values and the header name", await page.eval(`document.querySelector('#profile-email').getAttribute('aria-invalid') === 'true' && document.querySelector('#profile-email').value === ${JSON.stringify(OTHER.email)} && document.querySelector('#profile-name').value === ${JSON.stringify(typedName)} && ${PROFILE_LINK}.getAttribute('aria-label') === ${JSON.stringify(`Profile, ${account.name}`)}`));
-  record(role, tag("409"), width, "Save changes is enabled again after the 409", !(await page.eval(SAVE_DISABLED)));
+  await page.waitFor(`document.body.innerText.includes(${JSON.stringify(COPY.wrongCurrent)})`, "wrong current password message");
+  reportPage(role, tag("wrong current password"), width, await page.eval(measureExpr("main")));
+  record(role, tag("wrong current password"), width, "the message shows under Current password, the section stays open, the typed values and the header name stay", await page.eval(`document.querySelector('#profile-current-password').getAttribute('aria-invalid') === 'true' && ${TOGGLE}.getAttribute('aria-expanded') === 'true' && document.querySelector('#profile-name').value === ${JSON.stringify(typedName)} && document.querySelector('#profile-new-password').value.length > 0 && ${PROFILE_LINK}.getAttribute('aria-label') === ${JSON.stringify(`Profile, ${account.name}`)}`));
+  record(role, tag("wrong current password"), width, "Save changes is enabled again", !(await page.eval(SAVE_DISABLED)));
   const stillStored = await stored(account.email);
-  record(role, tag("409"), width, "nothing was stored by the 409 (the name is the original, read from Flask)", stillStored.name === account.name && stillStored.email === account.email);
-  await shot(page, width, "profile-409");
+  record(role, tag("wrong current password"), width, "nothing was stored (the name is the original, read from Flask)", stillStored.name === account.name && stillStored.email === account.email);
+  await shot(page, width, "profile-wrong-password");
 
-  // a name-only save: only `name` is sent
+  // Cancel empties the section, then a name-only save sends only `name`
+  await page.eval(`${TOGGLE}.click()`);
+  record(role, tag("saved"), width, "Cancel password change closes the section and removes the password inputs", await page.eval(`!document.querySelector('input[type=password]') && ${TOGGLE}.getAttribute('aria-expanded') === 'false'`));
   const count = patches(page).length;
-  await page.eval(setValue("#profile-email", account.email));
   const savedName = bump(account.name, String(width));
   await page.eval(setValue("#profile-name", savedName));
   await page.eval(SUBMIT);
   await page.waitFor(`document.body.innerText.includes(${JSON.stringify(COPY.toast)})`, "success toast");
   const sent = patches(page).slice(count);
-  record(role, tag("saved"), width, "a name-only save sends one PATCH with only the name", sent.length === 1 && JSON.stringify(Object.keys(JSON.parse(sent[0].postData ?? "{}"))) === '["name"]', sent.map((s) => s.postData ? Object.keys(JSON.parse(s.postData)).join(",") : "?").join(" | "));
+  record(role, tag("saved"), width, "a name-only save sends one PATCH with only the name (no email, no password key)", sent.length === 1 && JSON.stringify(Object.keys(JSON.parse(sent[0].postData ?? "{}"))) === '["name"]', sent.map((x) => x.postData ? Object.keys(JSON.parse(x.postData)).join(",") : "?").join(" | "));
   account.name = savedName;
   await page.waitFor(`${PROFILE_LINK}.getAttribute('aria-label') === ${JSON.stringify(`Profile, ${account.name}`)}`, "header name update");
   record(role, tag("saved"), width, "the header shows the new name at once, without a reload", true);
@@ -507,27 +527,29 @@ async function journey(page, account) {
   record("user", J, 375, "change the name, save, see the toast and the header update", true);
   await page.goto(`${ORIGIN}/profile`);
   await page.waitFor("!!document.querySelector('#profile-name')", "reload");
-  record("user", J, 375, "after a reload the stored name shows in the form and the header", await page.eval(`document.querySelector('#profile-name').value === 'Journey Name' && ${PROFILE_LINK}.getAttribute('aria-label') === 'Profile, Journey Name'`));
-  await page.eval(setValue("#profile-email", OTHER.email.toUpperCase()));
+  record("user", J, 375, "after a reload the stored name shows in the form and the header, and the password section is closed and empty", await page.eval(`document.querySelector('#profile-name').value === 'Journey Name' && ${PROFILE_LINK}.getAttribute('aria-label') === 'Profile, Journey Name' && !document.querySelector('input[type=password]')`));
+  record("user", J, 375, "the email field shows the stored email and cannot be edited", await page.eval(`document.querySelector('#profile-email').value === ${JSON.stringify(account.email)} && document.querySelector('#profile-email').readOnly`));
+  await page.eval(`${TOGGLE}.click()`);
+  await page.waitFor("!!document.querySelector('#profile-current-password')", "password section");
+  await page.eval(setValue("#profile-current-password", WRONG_PASSWORD));
+  await page.eval(setValue("#profile-new-password", NEW_PASSWORD));
   await page.eval(SUBMIT);
-  await page.waitFor(`document.body.innerText.includes(${JSON.stringify(COPY.taken)})`, "taken email");
-  record("user", J, 375, "an email that belongs to another user (in capitals) shows the inline error", true);
-  const oldEmail = account.email;
-  account.email = `ts-user-moved-${SUFFIX}@t12-check.example.test`;
-  await page.eval(setValue("#profile-email", ` ${account.email.toUpperCase()} `));
+  await page.waitFor(`document.body.innerText.includes(${JSON.stringify(COPY.wrongCurrent)})`, "wrong current password");
+  record("user", J, 375, "a wrong current password shows the inline error and keeps the section open", await page.eval(`!!document.querySelector('#profile-current-password') && document.querySelector('#profile-current-password').getAttribute('aria-invalid') === 'true'`));
+  await page.eval(setValue("#profile-current-password", PASSWORD));
   await page.eval(SUBMIT);
-  await page.waitFor(`document.body.innerText.includes(${JSON.stringify(COPY.toast)}) && document.querySelector('#profile-email').value === ${JSON.stringify(account.email)}`, "email saved");
-  record("user", J, 375, "a free email (padded, in capitals) saves, and the form shows it trimmed and lowercased", true);
-  record("user", J, 375, "the session stayed valid after the email change (the page still renders signed in)", await page.eval(`document.body.innerText.includes('Sign out') && location.pathname === '/profile'`));
+  await page.waitFor(`document.body.innerText.includes(${JSON.stringify(COPY.toast)}) && !document.querySelector('input[type=password]')`, "password saved");
+  record("user", J, 375, "the right current password saves, shows the toast, closes and empties the section", true);
+  record("user", J, 375, "the session stayed valid after the password change (the page still renders signed in)", await page.eval(`document.body.innerText.includes('Sign out') && location.pathname === '/profile'`));
   await page.eval(`[...document.querySelectorAll('header button')].find((b) => b.textContent.trim() === 'Sign out').click()`);
   await page.waitFor("location.pathname === '/login'", "signed out");
-  await page.type("#login-email", oldEmail);
+  await page.type("#login-email", account.email);
   await page.type("#login-password", PASSWORD);
   await page.eval("document.querySelector('form').requestSubmit()");
-  await page.waitFor("document.body.innerText.includes('Invalid email or password.')", "old email refused");
-  record("user", J, 375, "signing in with the old email fails", true);
-  await login(page, account.email);
-  record("user", J, 375, "signing in with the new email works", true);
+  await page.waitFor("document.body.innerText.includes('Invalid email or password.')", "old password refused");
+  record("user", J, 375, "signing in with the old password fails", true);
+  await login(page, account.email, NEW_PASSWORD);
+  record("user", J, 375, "signing in with the same email and the new password works", true);
 }
 
 async function main() {
@@ -552,7 +574,7 @@ async function main() {
   }
   const failed = results.filter((r) => !r.pass);
   const report = {
-    slice: "profile (T12)",
+    slice: "profile (T12, Revision 2)",
     browser: version,
     mode: "headless Chrome with device emulation (not a real phone), touch emulation below 640 px",
     widths: WIDTHS,
