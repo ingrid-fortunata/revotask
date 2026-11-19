@@ -67,35 +67,73 @@ runCases("login", validateLogin, LOGIN_FIELDS);
 runCases("profile", validateProfile, null);
 
 describe("profile rules", () => {
-  const saved = { name: "Ada Lovelace", email: "ada@example.com" };
+  const blank = { name: "Ada Lovelace", current_password: "", new_password: "" };
 
-  it("lists the two profile fields", () => {
-    expect([...PROFILE_FIELDS]).toEqual(["name", "email"]);
+  it("lists the profile fields: the name and the password pair, never the email", () => {
+    expect([...PROFILE_FIELDS]).toEqual(["name", "current_password", "new_password"]);
   });
 
-  it("sends nothing when the normalized values equal the saved ones", () => {
-    expect(profileChanges({ name: "  Ada Lovelace ", email: " ADA@Example.com " }, saved)).toEqual({});
+  it("sends nothing when the name is unchanged after trimming and no password is typed", () => {
+    expect(profileChanges({ ...blank, name: "  Ada Lovelace " }, "Ada Lovelace")).toEqual({});
   });
 
-  it("sends only the field that changed, as typed (the caller normalizes through validateProfile)", () => {
-    expect(profileChanges({ name: "Grace", email: "ada@example.com" }, saved)).toEqual({ name: "Grace" });
-    expect(profileChanges({ name: "Ada Lovelace", email: "grace@example.com" }, saved)).toEqual({
-      email: "grace@example.com",
+  it("sends the name only when it changed, as typed (the caller normalizes through validateProfile)", () => {
+    expect(profileChanges({ ...blank, name: "Grace" }, "Ada Lovelace")).toEqual({ name: "Grace" });
+  });
+
+  it("sends each password key only when its field holds text", () => {
+    expect(profileChanges({ ...blank, current_password: "Old#pass1", new_password: "New#pass2" }, "Ada Lovelace")).toEqual({
+      current_password: "Old#pass1",
+      new_password: "New#pass2",
     });
-    expect(profileChanges({ name: "Grace", email: "grace@example.com" }, saved)).toEqual({
-      name: "Grace",
-      email: "grace@example.com",
+    expect(profileChanges({ ...blank, current_password: "Old#pass1" }, "Ada Lovelace")).toEqual({
+      current_password: "Old#pass1",
+    });
+    expect(profileChanges({ ...blank, new_password: "New#pass2" }, "Ada Lovelace")).toEqual({
+      new_password: "New#pass2",
     });
   });
 
-  it("treats a case-only change of the email as no change", () => {
-    expect(profileChanges({ name: saved.name, email: "Ada@EXAMPLE.com" }, saved)).toEqual({});
+  it("keeps spaces in a password and sends a space-only password", () => {
+    expect(profileChanges({ ...blank, current_password: "   " }, "Ada Lovelace")).toEqual({ current_password: "   " });
+  });
+
+  it("sends the name and the pair together", () => {
+    expect(
+      profileChanges({ name: "Grace", current_password: "Old#pass1", new_password: "New#pass2" }, "Ada Lovelace"),
+    ).toEqual({ name: "Grace", current_password: "Old#pass1", new_password: "New#pass2" });
   });
 
   it("validates a partial body: an absent key is not an error, an unknown key is", () => {
     expect(validateProfile({})).toEqual({ body: {}, fields: {} });
     expect(validateProfile({ name: "  Grace " })).toEqual({ body: { name: "Grace" }, fields: {} });
     expect(validateProfile({ password: "x" }).fields).toEqual({ password: "Unknown field." });
+  });
+
+  it("rejects the email as an unknown key, alone and beside valid fields", () => {
+    expect(validateProfile({ email: "ada@example.com" }).fields).toEqual({ email: "Unknown field." });
+    expect(validateProfile({ name: "Ada", email: "ada@example.com" }).fields).toEqual({ email: "Unknown field." });
+  });
+
+  it("reports Required. on the missing half of the password pair, also beside another error", () => {
+    expect(validateProfile({ new_password: "New#pass2" }).fields).toEqual({ current_password: "Required." });
+    expect(validateProfile({ current_password: "Old#pass1" }).fields).toEqual({ new_password: "Required." });
+    expect(validateProfile({ current_password: "x".repeat(11) }).fields).toEqual({
+      current_password: "Must be 1 to 10 characters.",
+      new_password: "Required.",
+    });
+  });
+
+  it("applies the register rule to the new password and the login rule to the current one", () => {
+    expect(validateProfile({ current_password: "password", new_password: "short" }).fields).toEqual({
+      new_password: "Must be 8 to 10 characters.",
+    });
+    expect(validateProfile({ current_password: "password", new_password: "Aa1!aaaa" }).fields).toEqual({});
+  });
+
+  it("never trims a password", () => {
+    const result = validateProfile({ current_password: " Old#p1 ", new_password: " New#p2a " });
+    expect(result.body).toEqual({ current_password: " Old#p1 ", new_password: " New#p2a " });
   });
 });
 

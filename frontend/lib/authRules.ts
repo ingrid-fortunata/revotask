@@ -142,26 +142,49 @@ export function validateLogin(raw: Record<string, unknown>) {
   return validate(LOGIN_SPEC, raw);
 }
 
-export const PROFILE_FIELDS = ["name", "email"] as const;
+export const PROFILE_FIELDS = ["name", "current_password", "new_password"] as const;
 export type ProfileKey = (typeof PROFILE_FIELDS)[number];
+export const PASSWORD_PAIR = ["current_password", "new_password"] as const;
 
-// The E02 name and email rules, for a partial update (E31). Flask stays authoritative.
-const PROFILE_SPEC: Record<ProfileKey, FieldSpec> = { name: REGISTER_SPEC.name, email: REGISTER_SPEC.email };
+// E31 (Revision 2): the name follows the E02 name rule, the new password the register rule and the
+// current password the login rule (P17). The email is the fixed login key, so it is not here and
+// an `email` key is "Unknown field." like on Flask (P12). Flask stays authoritative.
+const PROFILE_SPEC: Record<ProfileKey, FieldSpec> = {
+  name: REGISTER_SPEC.name,
+  current_password: LOGIN_SPEC.password,
+  new_password: REGISTER_SPEC.password,
+};
 
-/** The fields whose normalized value differs from the saved one: the only ones the form sends (P7). */
+/**
+ * The values the form sends (P7, P13): `name` when its normalized value differs from the saved
+ * one, and each password key only when its field holds text. An empty password field is "not
+ * sent", so a half pair reaches `validateProfile`, which reports `Required.` for the empty half.
+ */
 export function profileChanges(
   values: Record<ProfileKey, string>,
-  saved: Record<ProfileKey, string>,
+  savedName: string,
 ): Partial<Record<ProfileKey, string>> {
   const changes: Partial<Record<ProfileKey, string>> = {};
-  for (const key of PROFILE_FIELDS) {
-    const next = PROFILE_SPEC[key].normalize(values[key]);
-    if (next !== PROFILE_SPEC[key].normalize(saved[key])) changes[key] = values[key];
+  if (PROFILE_SPEC.name.normalize(values.name) !== PROFILE_SPEC.name.normalize(savedName)) {
+    changes.name = values.name;
+  }
+  for (const key of PASSWORD_PAIR) {
+    if (values[key] !== "") changes[key] = values[key];
   }
   return changes;
 }
 
-/** Validate and normalize the keys present in `raw`. An unknown key is "Unknown field.", an absent key is fine. */
+/**
+ * Validate and normalize the keys present in `raw`. An unknown key is "Unknown field.", an absent
+ * key is fine, and when exactly one password key is present the other is "Required." (the pairing
+ * rule of Flask, P13).
+ */
 export function validateProfile(raw: Record<string, unknown>) {
-  return validate(PROFILE_SPEC, raw, true);
+  const result = validate(PROFILE_SPEC, raw, true);
+  const present = PASSWORD_PAIR.filter((key) => Object.hasOwn(raw, key));
+  if (present.length === 1) {
+    const missing = PASSWORD_PAIR.find((key) => !present.includes(key))!;
+    result.fields[missing] = MESSAGES.required;
+  }
+  return result;
 }

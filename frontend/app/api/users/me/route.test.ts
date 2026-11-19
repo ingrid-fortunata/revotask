@@ -90,10 +90,13 @@ describe("PATCH /api/users/me", () => {
   );
 
   it.each([
-    [{ password: "Horse-4Bat" }, ["password"]],
-    [{ name: "Ada", password: "Horse-4Bat" }, ["password"]],
-    [{ current_password: "x", id: "1" }, ["current_password", "id"]],
-    [{ email: "a@b.co", created_at: "2026-01-01" }, ["created_at"]],
+    [{ email: "ada@example.com" }, ["email"]],
+    [{ name: "Ada", email: "ada@example.com" }, ["email"]],
+    [{ current_password: "Old#pass1", new_password: "New#pass2", email: "a@b.co" }, ["email"]],
+    [{ password: "New#pass2" }, ["password"]],
+    [{ name: "Ada", password: "New#pass2" }, ["password"]],
+    [{ current_password: "x", id: "1" }, ["id"]],
+    [{ email: "a@b.co", created_at: "2026-01-01" }, ["email", "created_at"]],
   ])("returns 400 with Unknown field. for %j and does not forward it", async (body, keys) => {
     const response = await patch({ body });
     expect(response.status).toBe(400);
@@ -113,7 +116,11 @@ describe("PATCH /api/users/me", () => {
     expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toEqual({});
   });
 
-  it.each([{ name: "Ada" }, { email: "ada@example.com" }, { name: "Ada", email: "ada@example.com" }])(
+  it.each([
+    { name: "Ada" },
+    { current_password: "Old#pass1", new_password: "New#pass2" },
+    { name: "Ada", current_password: "Old#pass1", new_password: "New#pass2" },
+  ])(
     "forwards %j with the cookie bearer and passes the user through",
     async (body) => {
       fetchMock.mockResolvedValue(jsonReply(200, { data: USER }));
@@ -132,6 +139,14 @@ describe("PATCH /api/users/me", () => {
     },
   );
 
+  it("never echoes or logs a password and never puts it in the response", async () => {
+    fetchMock.mockResolvedValue(jsonReply(200, { data: USER }));
+    const response = await patch({ body: { current_password: "Sentinel#pw1", new_password: "Sentinel#pw2" } });
+    const text = JSON.stringify([...response.headers.entries()]) + (await response.text());
+    expect(text).not.toMatch(/Sentinel#pw/);
+    expect(JSON.stringify(vi.mocked(console.error).mock.calls)).not.toMatch(/Sentinel#pw/);
+  });
+
   it("never puts the token in the response", async () => {
     fetchMock.mockResolvedValue(jsonReply(200, { data: USER }));
     const response = await patch({ body: { name: "Ada" } });
@@ -140,10 +155,10 @@ describe("PATCH /api/users/me", () => {
 
   it.each([
     [400, "VALIDATION_ERROR", { name: "Must be 1 to 80 characters." }],
-    [409, "EMAIL_ALREADY_EXISTS", undefined],
+    [400, "VALIDATION_ERROR", { current_password: "Current password is incorrect." }],
   ])("passes a Flask %i %s envelope through and keeps the cookie", async (status, code, fields) => {
     fetchMock.mockResolvedValue(jsonReply(status, { error: { code, message: "Fixed message.", fields } }));
-    const response = await patch({ body: { email: "taken@example.com" } });
+    const response = await patch({ body: { current_password: "Wrong#pw1", new_password: "New#pass2" } });
     expect(response.status).toBe(status);
     const error = (await response.json()).error;
     expect(error.code).toBe(code);

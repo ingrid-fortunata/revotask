@@ -140,4 +140,21 @@ describe("FormField search type and maxLength", () => {
     expect(describedBy).toContain(screen.getByText("Optional. Set both or neither.").id);
     expect(describedBy).toContain(screen.getByText("Enter both sprint dates.").id);
   });
+
+  it("sets readOnly only when asked, and keeps the input focusable", () => {
+    const { rerender } = render(<FormField id="a" name="a" label="A" value="x" onChange={() => {}} />);
+    expect(screen.getByLabelText("A")).not.toHaveAttribute("readonly");
+    rerender(<FormField id="a" name="a" label="A" value="x" readOnly onChange={() => {}} />);
+    const input = screen.getByLabelText("A");
+    expect(input).toHaveAttribute("readonly");
+    expect(input).not.toBeDisabled();
+    input.focus();
+    expect(input).toHaveFocus();
+  });
+
+  it("does not change the typed value of a read-only input", async () => {
+    render(<FormField id="a" name="a" label="A" value="fixed" readOnly onChange={() => {}} />);
+    await userEvent.type(screen.getByLabelText("A"), "more");
+    expect(screen.getByLabelText("A")).toHaveValue("fixed");
+  });
 });

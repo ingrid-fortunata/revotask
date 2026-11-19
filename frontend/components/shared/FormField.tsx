@@ -17,6 +17,8 @@ export interface FormFieldProps {
   inputClassName?: string;
   /** UTF-16 unit limit on a single-line input. Only the search field sets it (a limit below the API rule). */
   maxLength?: number;
+  /** Show the value and keep it focusable and readable by a screen reader, but not editable (the profile email). */
+  readOnly?: boolean;
   inputRef?: Ref<HTMLInputElement>;
   /** Render a textarea instead of an input (the card description). Same label, hint and error. */
   multiline?: boolean;
@@ -43,6 +45,7 @@ export function FormField({
   placeholder,
   inputClassName = "",
   maxLength,
+  readOnly = false,
   inputRef,
   multiline = false,
   rows = 4,
@@ -79,6 +82,7 @@ export function FormField({
           autoComplete={autoComplete}
           placeholder={placeholder}
           maxLength={maxLength}
+          readOnly={readOnly || undefined}
           onChange={(event) => onChange(event.target.value)}
           aria-invalid={error ? true : undefined}
           aria-describedby={describedBy}

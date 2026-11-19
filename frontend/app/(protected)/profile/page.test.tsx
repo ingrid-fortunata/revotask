@@ -24,10 +24,11 @@ describe("ProfilePage", () => {
     expect(screen.getByRole("heading", { level: 1, name: "Profile" })).toBeVisible();
     expect(screen.getByLabelText("Name")).toHaveValue("Ada Lovelace");
     expect(screen.getByLabelText("Email")).toHaveValue("ada@example.com");
-    expect(screen.getByText(/Password changes are not available yet\./)).toBeVisible();
+    expect(screen.getByText(/Your email cannot be changed\./)).toBeVisible();
+    expect(screen.queryByText(/not available yet/)).toBeNull();
     expect(container.querySelector("main")?.className).toBe("mx-auto w-full max-w-6xl p-4 sm:p-6 lg:p-8");
     expect(container.querySelectorAll(".surface")).toHaveLength(1);
-    expect(container.querySelector("input[type=password]")).toBeNull();
+    expect(container.querySelector("input[type=password]")).toBeNull(); // the section starts closed
   });
 
   it("renders no token or private data into the page", async () => {
