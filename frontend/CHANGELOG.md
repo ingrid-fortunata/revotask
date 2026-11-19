@@ -4,6 +4,11 @@ Record actual changes for this component. Newest date first. Each `## YYYY-MM-DD
 
 ## 2026-11-19
 
+### (commit pending) feat: read-only email and optional password change on the profile (profile revision 2)
+
+- `ProfileForm` shows the email read-only (`FormField` gets an optional `readOnly` prop) and a "Change password" control (`aria-expanded`, `aria-controls`) that opens Current password and New password fields. It sends `name` only when changed and the password pair only when a field holds text, shows a wrong current password under that field, and on success empties and closes the section. `lib/authRules.ts`: `PROFILE_FIELDS` is `name`, `current_password`, `new_password`, with the pairing rule. `app/api/users/me/route.ts` allows those three keys. The page text now says the email cannot be changed.
+- Tests: `ProfileForm.test.tsx`, `authRules.test.ts`, `route.test.ts`, `FormField.test.tsx` and the page test are revised. 2221 passed, lint, typecheck and `next build` clean. See the root entry in [the root changelog](../CHANGELOG.md).
+
 ### 606ea6a feat: limit passwords to 10 characters (authentication revision 5)
 
 - `lib/authRules.ts`: `PASSWORD_MAX = 10` and `PASSWORD_HINT` reads "8 to 10 characters, with an uppercase letter, a lowercase letter and a special character such as ! ? # or %." Tests, the Playwright password generator (`e2e/support/run.ts`) and the wrong-password step in `e2e/auth.spec.ts` use at most 10 characters. See the root entry in [the root changelog](../CHANGELOG.md).

@@ -4,6 +4,11 @@ Record actual changes for this component. Newest date first. Each `## YYYY-MM-DD
 
 ## 2026-11-19
 
+### (commit pending) feat: read-only email and optional password change on the profile (profile revision 2)
+
+- `users/schema.py`: `ProfileUpdateSchema` drops `email` (now `Unknown field.`), adds `current_password` (login rule) and `new_password` (register rule) and a pairing check (`Required.` on the missing half). `auth/schema.py`: `_password_composition` is now `password_composition` so the profile schema can import it. `users/service.py`: `update_profile(user, *, name, current_password, new_password)` locks the user row, verifies the current password on that row with `verify_password`, stores a new Argon2id hash and the name in one commit, and raises a 400 on `fields.current_password` for a wrong password with a full rollback. The `uq_users_email` 409 path is removed.
+- Tests: `test_users_profile_conflict.py` is replaced by `test_users_profile_password.py`. `test_users_profile.py`, `_schema`, `_concurrency` (a lock test that fails without the row lock and a same-current-password race), `_session`, `_names`, `_logging` and `test_profile_cleanup.py` are revised. The shared fixture `specs/fixtures/auth-field-cases.json` has a new `profile` section (59 cases). 2234 passed and 1 skipped, ruff clean. See the root entry in [the root changelog](../CHANGELOG.md).
+
 ### 606ea6a feat: limit passwords to 10 characters (authentication revision 5)
 
 - `app/config.py`: `PASSWORD_MAX = 10` (was 128). The auth schemas read the constant, so register is 8 to 10 characters and login is 1 to 10, with the messages `Must be 8 to 10 characters.` and `Must be 1 to 10 characters.` Tests use `Horse-4Bat` and wrong passwords of at most 10 characters, plus new cases for an 11-character login (400, and it counts toward the limit). See the root entry in [the root changelog](../CHANGELOG.md).

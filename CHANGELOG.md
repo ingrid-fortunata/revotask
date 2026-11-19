@@ -4,6 +4,12 @@ Newest date first. Each `## YYYY-MM-DD` heading groups the commits made that day
 
 ## 2026-11-19
 
+### (commit pending) feat: read-only email and optional password change on the profile (profile revision 2)
+
+- The profile email can no longer be changed: E31 rejects an `email` key with 400 `Unknown field.` and the form shows the email read-only. E31 now accepts `name`, the pair `current_password` and `new_password`, or both. The new password follows the register rule (8 to 10 characters with an uppercase letter, a lowercase letter and a special character), the current password the login rule (1 to 10). A wrong current password is 400 on `fields.current_password` ("Current password is incorrect.") and changes nothing, a valid name included. E31 returns no 409. Other sessions stay valid after a password change. The profile page keeps the password fields behind a "Change password" control.
+- Known risks: a stolen session can guess the current password through E31 (the rate limit is deferred to T16), a mistyped new password locks the user out (no reset), and other sessions survive a password change (T16).
+- Checks: backend 2234 passed and 1 skipped (2177 before), ruff clean. Frontend 2221 Vitest tests passed (2173 before), lint, typecheck and `next build` clean. Chrome 157 headless with device emulation: 457 checks, 0 failed (320, 375, 768 and 1280 px, section closed and open, plus the scripted 375 px journey with a sign-in on the new password). Playwright `npm run e2e`: 58 passed, 0 failed. Not run: a real phone and on-screen keyboard. See [spec changelog](specs/CHANGELOG.md) and `evidence/profile-T12.md` (Revision 2).
+
 ### 606ea6a feat: limit passwords to 10 characters (authentication revision 5)
 
 - Register now accepts passwords of 8 to 10 characters (still with an uppercase letter, a lowercase letter and a special character) and login accepts 1 to 10 (was 8 to 128 and 1 to 128). The register hint says "8 to 10 characters". A login password of 11 or more characters returns 400 `Must be 1 to 10 characters.` and still counts toward the login rate limit. The authentication field file, tests, smoke script, browser script and the generators in the other evidence scripts now use passwords of at most 10 characters. Requested by the user, change C12 in `.kiro/specs/authentication/`.
