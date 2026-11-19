@@ -81,6 +81,43 @@ Findings below were confirmed by a check, a probe or a read of the code or the i
 | F-AUTH-13  | Live check before the fix                            | Before: Flask-Limiter put `Retry-After` on every response, including 401. After: an after-request filter keeps it on 429 only.                                                                                                                                                                                                  | `test_retry_after_is_sent_only_with_429`; direct Flask check in the smoke                                                                                              | `backend/app/response_headers.py`                                            |
 | F-AUTH-14  | Revision 3 smoke run, password-rule section          | Before: section 1 and the policy checks shared one register quota, so three policy checks returned 429. Revision 3 used a sleep. After revision 4: the backend restarts before each group, so each group starts with its own quota.                                                                                             | Smoke rerun, 75 of 75                                                                                                                                                  | `evidence/authentication-http-smoke.py` `reset_limiter()`                    |
 
+### Revision 5: password maximum of 10 (2026-11-19, Claude Code, requirements phase, pending approval)
+
+Request: `/revotask-feature spec authentication, register and login password max 10 (8-10 chars) and other rules stay in range of chars.` Claude Code revised `.kiro/specs/authentication/requirements.md` only (AUTH-AC1.3, AUTH-AC2.4, change C12, A1, P11 note, Open item 8). No design, tasks, source, test, root spec, changelog or README was changed, and no test was run. The code and shared documents still follow revision 4. Root T03 and T04 stay checked.
+
+| Item | Proposed reading | Needs the user |
+| --- | --- | --- |
+| Register | 8–10 characters, with the uppercase, lowercase and ASCII special-character rules kept | Confirm |
+| Login | 1–10 characters, no composition rule. "8-10" is read as the register range | **Confirm, or say login also needs 8** |
+| Fixtures | `Horse-Battery-42` (16 characters) becomes invalid. Tests, the case file, `frontend/e2e/support/run.ts` and the smoke script need a base of at most 10 characters. The exact value is chosen in design | Design phase |
+| Existing accounts | An account with a password of 11 or more characters gets a 400 at login and cannot sign in. No reset exists | Accept (Open item 8) |
+| Strength | A 10-character maximum limits password strength. Argon2id needs no cap. Decision on keeping it before public release goes to T16 | Accept, tracked |
+
+Status: requirements approved by the user in chat on 2026-11-19 ("yes continue to design.md"), which also accepted the login minimum of 1, the lockout of older accounts and the strength trade-off. Design drafted by Claude Code the same day (see below). Tasks have not started.
+
+#### Revision 5 design (2026-11-19, Claude Code, pending approval)
+
+`.kiro/specs/authentication/design.md` revised only: DD15 revised, DD16 and §4.10 new, §4.1, §4.4, §6.8, §8, §9, §10, §11 and §12 updated. No source, test, shared document or changelog was changed and no test was run. Findings from the repository sweep that shaped the design:
+
+| Finding | Design response |
+| --- | --- |
+| `Horse-Battery-42` (16) is the valid base in 8 test files and the case file | New base `Horse-4Bat` (10) |
+| Login tests and the smoke script send wrong passwords of 11 to 25 characters (`wrong-password-0`, `not the right password`, `correct horse battery`). They would now get 400, not 401 | Replace with wrong passwords of at most 10 characters. A repo-wide check task catches stragglers |
+| Nine evidence scripts and `frontend/e2e/support/run.ts` generate 22 to 28 character passwords for register | Generators produce 10 characters, `Aa1!` plus 6 hex digits |
+| Login rate-limit tests count 401s then 429 | Same, with short wrong passwords. A 400 for a long password still counts against the limiter |
+
+#### Revision 5 tasks (2026-11-19, Claude Code, pending approval)
+
+Design approved by the user in chat on 2026-11-19 ("yes continue to tasks.md"). `.kiro/specs/authentication/tasks.md` gained group 4 (tasks 4.1 to 4.7) and updated the status line, inputs, dependency note and coverage table. Order: case file first so the new boundary cases fail at the old constants, then backend and frontend constants and test data, then smoke and measure scripts, then a straggler search, then the gates, the real HTTP smoke and a 375 px browser check, then the documentation checkpoint. All boxes are open. Root T03 and T04 stay checked. No source, test, shared document or changelog was changed and no test was run. The finalize step (link from root tasks, root spec sync, `specs/CHANGELOG.md`) waits for approval of this plan.
+
+#### Revision 5 plan approval, finalize and task 4.1 (2026-11-19, Claude Code)
+
+The user ran `/revotask-feature implement authentication`. As in earlier slices (see the profile implementation record), Claude Code took that invocation as approval of the task plan, so the user can reverse it. Finalize: the root rows T03 and T04 in `specs/tasks.md` already link the native spec, so they are unchanged. `specs/CHANGELOG.md` gained one entry with the verification marked pending. The shared contract documents in design §10 (API, layer specs, user guide, test plan, root design D2) are **not** changed yet. Task 4.7 applies them after the checks pass, so the documents never describe a rule the code does not enforce. Scope of the first run: the default of one task, 4.1.
+
+#### Revision 5 implementation record (2026-11-19, Claude Code)
+
+The user then ran `/revotask-feature implement authentication all of the tasks`. Claude Code did tasks 4.2 to 4.7 in that run. The decisions and the design held without change. Deviations that touched only test data and scripts: two tests the first search missed (found by the full backend run), a 16-character wrong password in `frontend/e2e/auth.spec.ts`, and the padded password in `RegisterForm.test.tsx` (padding counts toward the maximum). Claude Code started Docker Desktop, rebuilt the backend image and stopped the backend service and the Next server afterwards. The shared contract documents were changed in task 4.7, after the checks passed, and the sentence in `backend/specs/api-contract.md` that older accounts are never locked out was replaced. Checks: backend 2177 passed and 1 skipped, frontend 2173 passed, `next build`, an HTTP smoke of 79 checks and a Chrome run of 106 checks (device emulation). Playwright `npm run e2e` was run afterwards at the user's request ("run the Playwright suite and adjust accordingly"): 58 passed, 0 failed, no adjustment needed. Pending: a real phone, a browser-level step for the 11-character rejection, the T16 decision on keeping the 10-character cap. Root T03 and T04 stay checked. Evidence: `evidence/authentication-T03-T04.md`, Revision 5.
+
 ## Boards-membership review record (T05–T06)
 
 Review of `.kiro/specs/boards-membership/` (requirements.md, design.md, tasks.md). The user approved the plan on 2026-11-13, based on decisions R1–R14 below. Specification changes are in `specs/CHANGELOG.md`. Spec review only: no source code, test, README or application changelog was changed, and no test was run. Implementation checks and their outcomes will be recorded in `evidence/boards-membership-T05-T06.md` when they happen. Root T05 and T06 stay unchecked in `specs/tasks.md`.

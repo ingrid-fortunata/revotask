@@ -133,3 +133,5 @@ browser: Chrome/157.0.8103.51 (headless, device emulation, not a real phone)
   / error state                       1280px  1280/1280  1 controls
 
 RESULT: ALL PASS
+
+(2026-11-19) This file records an earlier run, made when the register password rule was 8 to 128 characters. Revision 5 changed it to 8 to 10. The new run is in `authentication-T03-T04-browser-check-rev5.txt`.

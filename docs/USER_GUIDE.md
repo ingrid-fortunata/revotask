@@ -2,7 +2,7 @@
 
 Verify these labels and steps against the live app before submission. Link the verified deployment in the root README.
 
-1. Register with a name, an email and a password of 8 to 128 characters. The password needs an uppercase letter, a lowercase letter and a special character such as `!`, `?`, `#` or `%`. Then sign in. The dashboard lists boards you can access.
+1. Register with a name, an email and a password of 8 to 10 characters. The password needs an uppercase letter, a lowercase letter and a special character such as `!`, `?`, `#` or `%`. Then sign in. The dashboard lists boards you can access.
 2. Create a board as its admin. In Create a board you can also set a sprint with the optional Sprint start and Sprint end dates (both or neither, at most 90 days). An admin can change or clear the dates later with Edit board (Clear dates, then Save changes). The sprint shows under the board name. Use the Members control to add a registered teammate by email. Add workflow columns, and flag one empty column as Done if you want completion reporting.
 3. Add a card to a column. Click its title (**Open**) to see Card details. Edit the title or description, assign a participant and post a comment. Only you can edit or remove your own comments. If a comment may not have posted because the connection dropped, the dialog says so and shows the refreshed list before you try again.
 4. Drag a card on desktop or use its **Move** control with keyboard or touch. After moving it, reload to verify the new position. If a move fails, look for feedback and retry after the board refreshes.

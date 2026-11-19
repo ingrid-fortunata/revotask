@@ -155,3 +155,5 @@ Next localhost:3100  Flask 127.0.0.1:5001  APP_ORIGIN=http://localhost:3100
   deleted revoked_tokens: 2
 
 RESULT: ALL PASS
+
+(2026-11-19) This file records an earlier run, made when the register password rule was 8 to 128 characters. Revision 5 changed it to 8 to 10. The new run is in `authentication-T03-T04-http-smoke-rev5.txt`.

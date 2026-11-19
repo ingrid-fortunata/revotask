@@ -1,10 +1,10 @@
 # Tasks · authentication (T03–T04)
 
-**Status:** Implemented and verified locally. Revision 3 (password policy, P11) is applied and verified in `evidence/authentication-T03-T04.md`, section "Revision 3" (task 0.1 in the spec round, tasks 1.1 to 3.2 in the implementation round). Results and open items are in `evidence/authentication-T03-T04.md`. Rate-limit results are local behavior only. Real-phone checks, Playwright and the production rate-limit decisions stay open for T15 and T16.
+**Status:** Implemented and verified locally at revision 5. **Revision 5 (password maximum of 10, change C12) is group 4 (tasks 4.1–4.7), done on 2026-11-19 after the `implement authentication` invocation approved the plan. Checks and results are in `evidence/authentication-T03-T04.md`, Revision 5. The Playwright suite passed 58 of 58 afterwards. Pending: a real phone, a browser-level step for the 11-character rejection, and the T16 decision on keeping the cap.** Revision 3 (password policy, P11) is applied and verified in `evidence/authentication-T03-T04.md`, section "Revision 3" (task 0.1 in the spec round, tasks 1.1 to 3.2 in the implementation round). Results and open items are in `evidence/authentication-T03-T04.md`. Rate-limit results are local behavior only. Real-phone checks, Playwright and the production rate-limit decisions stay open for T15 and T16.
 
 **Root tasks:** T03 (native 1.1–1.11), T04 (native 2.1–2.11), plus decision task 0.1 and handoff tasks 3.1–3.2. Existing root IDs are preserved. No new root IDs are proposed.
 
-**Inputs:** `requirements.md` (AUTH-R1–R13, decisions P1–P10, changes C1–C10, assumptions A1–A15) and `design.md` (DD1–DD14, §3–§12).
+**Inputs:** `requirements.md` (AUTH-R1–R13, decisions P1–P11, changes C1–C12, assumptions A1–A15) and `design.md` (DD1–DD16, §3–§12, revision 5 in DD16 and §4.10).
 
 ## Rules for this task list
 
@@ -61,6 +61,8 @@ flowchart LR
     t2_11 --> t3_1["3.1"]
     t3_1 --> t3_2["3.2"]
 ```
+
+Group 4 (revision 5) runs after 3.2 in the order 4.1, then 4.2 and 4.3 (parallel), 4.4, 4.5, 4.6, 4.7.
 
 After 1.1, tasks 1.2 to 1.5 can be done in any order that respects the arrows. Tasks 2.6 and 2.7 are independent of 2.3 to 2.5.
 
@@ -295,6 +297,65 @@ After 1.1, tasks 1.2 to 1.5 can be done in any order that respects the arrows. T
   - Done when: native checkboxes and the root tracker agree, and the final report lists changed files, completed IDs, checks run, open work and documentation updated.
   - _Requirements: AUTH-AC12.5. Verification: AUTH-V9._
 
+### Group 4 · Revision 5: password maximum of 10 (C12, DD16)
+
+Root tasks: T03 and T04 stay checked. Revision 5 refines verified work, so each task below records its own verification and reopens nothing. Order follows `design.md` §4.10: case file first so the tests fail for the right reason, then constants, then test data, then scripts, then the straggler check, then the gates, then documents. Run group 4 on a branch or a clean tree, so one commit holds the revision.
+
+- [x] **4.1 Update the shared case file and see the tests fail**
+  - Root tasks: T03, T04. Depends on: plan approval.
+  - In `specs/fixtures/auth-field-cases.json`: change the `_note` to "8 to 10" and "1 to 10". Replace the base password `Horse-Battery-42` with `Horse-4Bat` (both register and profile sections). Change every `Must be 8 to 128 characters.` to `Must be 8 to 10 characters.` and every `Must be 1 to 128 characters.` to `Must be 1 to 10 characters.`
+  - Register cases: replace the 128 and 129 character cases with 10 (accepted) and 11 (rejected). Add 7 (rejected), 8 and 9 (accepted), `Aa1!` plus 6 emoji (10, accepted) and `Aa1!` plus 7 emoji (11, rejected with the length message). Login cases: replace the 128 and 129 cases with 10 (accepted) and 11 (rejected), and keep empty (rejected) and 1 character (accepted). Keep every composition case, now at lengths of 10 or less (`Éééééééé1` stays at 9 and `Aaaaaaa😀` at 8).
+  - Run `pytest tests/test_auth_schema.py` and `npx vitest run lib/authRules.test.ts` before any code change. Record that the new boundary cases fail at the old constants. That shows the cases test the limit.
+  - Done when: the file parses as JSON, the register and login case counts are recorded, and the 10 and 11 character cases fail against the revision 4 constants.
+  - **Result (2026-11-19, Claude Code):** register 43 cases (42 before: 9-character case added, 128 and 129 cases replaced by 10 and 11, in plain and emoji forms), login 19 (the 128 and 129 cases replaced by 10 and 11). The file parses, and no `128` or `Horse-Battery` text remains in it. Against the revision 4 constants, `tests/test_auth_schema.py` shows 6 failed and 96 passed, and `lib/authRules.test.ts` shows 6 failed and 101 passed: `password-empty` and `password-7-chars` (register) and `password-empty` (login) fail on the message, `password-11-chars` (register and login) and `password-11-chars-with-emoji` fail because 11 characters are still accepted. The same six IDs fail on both sides. The repository is red on these cases until 4.2 and 4.3.
+  - _Requirements: AUTH-AC1.3, AUTH-AC2.4, AUTH-AC10.7, C12. Verification: AUTH-V1, AUTH-V5._
+- [x] **4.2 Backend: set the maximum and update backend test data**
+  - Root task: T03. Depends on: 4.1.
+  - `backend/app/config.py`: `PASSWORD_MAX = 10`. Do not touch `schema.py`. Its messages and `validate.Length` calls read the constants.
+  - Replace `Horse-Battery-42` with `Horse-4Bat` where it is a valid register or login password: `test_auth_register.py`, `test_auth_login.py`, `test_auth_logout.py`, `test_rate_limit.py`, `test_users_me.py`, `profile_helpers.py`. Leave it where it is an unknown-key value (`test_users_profile.py`, `test_boards_properties_rules.py` `REGISTER_OK` if it never reaches register), and record each decision.
+  - Replace wrong login passwords of 11 or more characters with `wrong-pw-0` (or another of at most 10 characters): `test_rate_limit.py`, `test_auth_login.py` (`not the right password`, `wrong password`). Replace the log sentinel `secret-wrong-password-777` with `S3cret-pw!` and keep the assertions. Update the message strings in `test_auth_schema.py`.
+  - Add to `test_auth_login.py` a case that an 11-character password returns 400 `VALIDATION_ERROR` with `fields.password` = `Must be 1 to 10 characters.` and still counts toward the login limit in `test_rate_limit.py`. `test_auth_passwords.py` stays unchanged.
+  - Done when: `ruff check .`, `ruff format --check .` and `pytest -v` pass from `backend/`, with the passed count compared to the pre-change count. Foundation and other feature tests that register users still pass.
+  - **Result (2026-11-19, Claude Code):** `PASSWORD_MAX = 10`. `Horse-4Bat` replaced `Horse-Battery-42` in the 8 listed test files, including the unknown-key uses in `test_users_profile.py` (harmless, and fewer straggler hits). Wrong login passwords are `wrong-pw-0`, `wrong-pw-1`, `wrong-pw-2`, and the log sentinel is `S3cret-pw!`. Two more tests needed changes that the search missed: `test_users_profile_session.py` (`Wrong-Password-1!`, then its first replacement was 11 characters) and `test_auth_schema.py` (`" Spaced Pass 1! "`). Two tests added (login 11 characters, 400 with the message and a 10-character wrong password still 401; the limiter counts five 400s then 429). `ruff check .` and `ruff format --check .` clean, `pytest`: 2177 passed and 1 skipped (2173 and 1 before).
+  - _Requirements: AUTH-AC1.3, AUTH-AC2.4, AUTH-AC6.2, C12. Verification: AUTH-V1, AUTH-V3._
+- [x] **4.3 Frontend: set the maximum, hint and frontend test data**
+  - Root task: T04. Depends on: 4.1. May run in parallel with 4.2.
+  - `frontend/lib/authRules.ts`: `PASSWORD_MAX = 10`, the comment on `PASSWORD_MIN` ("login accepts 1 to 10"), and `PASSWORD_HINT` = `8 to 10 characters, with an uppercase letter, a lowercase letter and a special character such as ! ? # or %.`
+  - Tests: `Horse-4Bat` as the valid base in `RegisterForm.test.tsx`, `register/route.test.ts`, `authRules.test.ts`. Message strings to 8 to 10 and 1 to 10 in `authRules.test.ts`, `RegisterForm.test.tsx` and `LoginForm.test.tsx`. Wrong or entered login passwords of 11 or more characters (`correct horse battery` in `login/route.test.ts`, `  my password  ` in `LoginForm.test.tsx`) become values of at most 10 characters. Assert the new hint text in `RegisterForm.test.tsx`. Leave `users/me/route.test.ts` and `flask.test.ts` unchanged when the value is an unknown-key or sentinel value that never meets a length rule, and record that.
+  - `frontend/e2e/support/run.ts`: `makePassword()` returns `Aa1!${randomBytes(3).toString("hex")}` (10 characters) and its doc comment says "8 to 10". `run.unit.ts`: the upper bound becomes 10.
+  - Done when: `npm run lint`, `npm run typecheck`, `npm test` and `npm run e2e:unit -- run.unit.ts` pass from `frontend/`.
+  - **Result (2026-11-19, Claude Code):** done as listed. The padded password in `RegisterForm.test.tsx` is now `" Hor-4Bt "` (9 characters) because padding counts toward the maximum. `e2e/auth.spec.ts` also needed a change: its wrong password (`${ownerPassword}-wrong`, 16 characters) would have returned 400. `npm run lint`, `npm run typecheck` clean, `npm test`: 2173 passed in 100 files (2172 before), `npm run e2e:unit -- run.unit.ts`: 2 passed. The live Playwright run followed on 2026-11-19: 58 passed.
+  - _Requirements: AUTH-AC10.7, AUTH-AC10.8, C12. Verification: AUTH-V5._
+- [x] **4.4 Update the smoke and measure scripts**
+  - Root tasks: T03, T04. Depends on: 4.2, 4.3.
+  - `evidence/authentication-http-smoke.py`: `LEN_MSG` to `Must be 8 to 10 characters.`, the wrong passwords at lines near 170, 311 and 321 to at most 10 characters, and the password-rule section to probe 7, 8, 10 and 11 characters at Next and at Flask. Add one login check: an 11-character password returns 400 `Must be 1 to 10 characters.` at both.
+  - `evidence/authentication-mobile-measure.mjs`: the generated password (`${randomBytes(12).toString("hex")}Aa1!`) and `a-password-value` to 10 characters or fewer. The nine other scripts (`analytics-`, `boards-membership-sprint-`, `comments-`, `kanban-`, `my-tasks-search-` `mobile-measure` or `timing`, `notifications-`, `profile-`, `analytics-timing`) change `randomBytes(9)` to `randomBytes(3)`.
+  - Done when: `python3 -m py_compile` passes on the smoke script and `node --check` passes on every changed `.mjs`. A script that registers users and cannot run here (it needs a live stack) is recorded as "syntax checked only".
+  - **Result (2026-11-19, Claude Code):** smoke script: 10-character generated password, `LEN_MSG` 8 to 10, wrong passwords `wrong-pw-0`, and a new length-boundary group (11 characters at register and login, at Next and at Flask, after a limiter reset). `authentication-mobile-measure.mjs` also checks the new hint text and the two 11-character messages at 375 px. `py_compile` passes and `node --check` passes on all changed `.mjs`. The nine other measure and timing scripts are syntax checked only.
+  - _Requirements: AUTH-AC12.3, C12. Verification: AUTH-V6._
+- [x] **4.5 Check for stragglers**
+  - Root tasks: T03, T04. Depends on: 4.2, 4.3, 4.4.
+  - Search `backend`, `frontend`, `evidence`, `specs` and `docs` (excluding `node_modules`, `.next`, `playwright-report`, `.venv`) for `Horse-Battery`, `to 128 characters`, `randomBytes(9)`, `randomBytes(12)`, `PASSWORD_MAX = 128` and `1–128` or `8–128`. Read each remaining hit. A hit is allowed only when it is (a) an unknown-key value recorded in 4.2 or 4.3, (b) a historic evidence file that records a revision 4 run, or (c) a document that task 4.7 will change. List every allowed hit with its reason in the evidence file.
+  - Done when: the search output and the list of allowed hits are saved, and no other hit remains.
+  - **Result (2026-11-19, Claude Code):** no code, test or script hit remains. Allowed hits are the changelogs, `evidence/spec-review.md`, the revision 4 smoke and browser text files, the Revision 3 section of the evidence file and the three native spec files (history). The list is in `evidence/authentication-T03-T04.md`, Revision 5.
+  - _Requirements: C12. Verification: AUTH-V9._
+- [x] **4.6 Run the gates, the real HTTP smoke and the browser check**
+  - Root tasks: T03, T04. Depends on: 4.5.
+  - Backend gate and frontend gate as in tasks 1.11 and 2.10 (`ruff`, `pytest -v`, `npm run lint`, `npm run typecheck`, `npm test`, `npm run build`). Record the passed counts against the pre-change counts. Run the full backend suite, not only the auth files, because other features register users.
+  - Start the stack as in task 2.11 (Compose backend with one worker, Next on its own port, `APP_ORIGIN` to match). Run the smoke script and record the result. Local accounts with a longer password cannot sign in, so the smoke creates its own throwaway users and deletes them with a targeted `DELETE` on those emails. The change does not reset or drop any database.
+  - Manual browser check at 375 px (record browser, version, emulator or device): `/register` shows the new hint, an 11-character password shows the length error in the same place and takes focus, a 10-character valid password registers and signs in, and `/login` with an 11-character password shows `Must be 1 to 10 characters.`. Confirm the page has no horizontal scroll on these screens (AUTH-AC13.1).
+  - Done when: every gate command passes with output saved, the smoke has no failed check, and the browser results are recorded. A step that cannot run is recorded as blocked and 4.7 does not start.
+  - **Result (2026-11-19, Claude Code):** backend gate, frontend gate and `next build` pass. Docker Desktop was started, the backend image rebuilt and Flask run with one worker. Smoke: 79 of 79. Chrome emulation (not a real phone): 106 of 106 including the new 375 px checks. Details and counts: `evidence/authentication-T03-T04.md`, Revision 5. The Playwright suite ran afterwards: 58 passed (see Revision 5 in the evidence file).
+  - _Requirements: AUTH-AC12.1–12.3, AUTH-AC13.1, C12. Verification: AUTH-V1, AUTH-V3, AUTH-V5, AUTH-V6, AUTH-V7._
+- [x] **4.7 Apply the documentation checkpoint and record evidence**
+  - Root tasks: T03, T04. Depends on: 4.6.
+  - Apply the §10 "Revision 5 document impact" table: `docs/API.md` E02 and E03, `backend/specs/api-contract.md`, `specs/design.md` D2, `docs/USER_GUIDE.md`, `frontend/specs/pages-and-components.md`, `docs/TEST-PLAN.md` V01 and V02. Re-read each against a test or smoke result.
+  - `specs/CHANGELOG.md`: one entry with before (8 to 128 at register, 1 to 128 at login), after (8 to 10 and 1 to 10), reason (owner request, 2026-11-19) and the verification from 4.6. `CHANGELOG.md`, `backend/CHANGELOG.md`, `frontend/CHANGELOG.md`: entries under the `## YYYY-MM-DD` heading for the commit date, with a `### <short-sha> <subject>` entry. `README.md`: only if its status text names the password rule.
+  - `evidence/authentication-T03-T04.md`: a "Revision 5" section with the commands, counts, smoke result, browser result, the allowed straggler hits and the lockout note (Open item 8). Add a dated note to the revision 4 smoke and browser text files that they record the earlier rule. In `requirements.md` and `design.md` change the status lines from "awaits approval" to "implemented and verified locally", only after 4.6 passes. Leave root T03 and T04 checked.
+  - Done when: each statement in the documents matches a command output in the evidence file, and any unverified item says "pending".
+  - **Result (2026-11-19, Claude Code):** applied the §10 table to `docs/API.md`, `backend/specs/api-contract.md` (the sentence that a stored account is never locked out by a policy change is replaced, because older long passwords are now locked out), `specs/design.md` D2, `docs/USER_GUIDE.md`, `frontend/specs/pages-and-components.md` and `docs/TEST-PLAN.md` V01. README status (rule and verified counts), `CHANGELOG.md`, `backend/CHANGELOG.md`, `frontend/CHANGELOG.md`, `specs/CHANGELOG.md` verification, the evidence file, `evidence/README.md` row and dated notes on the two revision 4 text files. Entries use `(commit pending)` because nothing is committed yet.
+  - _Requirements: AUTH-AC12.4, C12. Verification: AUTH-V9._
+
 ## Implementation notes
 
 Where the work differed from the plan. Each item is also in the evidence file (findings F-T03-xx and F-T04-xx).
@@ -310,25 +371,27 @@ Where the work differed from the plan. Each item is also in the evidence file (f
 - **2.10:** `lib/mobileGuard.test.ts` is in place and passes on the real tree.
 - **Revision 4 (rate limit, one worker):** Compose runs `GUNICORN_WORKERS=1`. The limiter test resets state and checks the normalized-email sequence (five 401s then 429). Login and register use separate limit keys, tested. A 401 no longer carries `Retry-After` (`response_headers.py`). The smoke restarts the backend before each check group so no group spends another's quota. Live results: `evidence/authentication-T03-T04.md`, revision 4.
 - **Revision 3 (password policy):** the register rule is 8 to 128 characters with an uppercase letter, a lowercase letter and an ASCII special character, applied in `backend/app/blueprints/auth/schema.py` and `frontend/lib/authRules.ts`. The shared case file and the tests were updated, and the register form shows the rules as a hint (`FormField` `hint`). Login is unchanged. The smoke script and the browser check now also test the rejections, and were re-run after the change.
+- **Revision 5 (password maximum of 10):** `PASSWORD_MAX = 10` in `backend/app/config.py` and `frontend/lib/authRules.ts`. The schemas needed no change. Two tests the first search missed were found by the full backend run, and `e2e/auth.spec.ts` had a 16-character wrong password (evidence F-AUTH-R5-01, F-AUTH-R5-02). The smoke is 79 checks, the Chrome run 106, and Playwright 58 passed with no suite change.
 - **2.11:** port 3000 was held by a `next-server` that was not started in this work, so the smoke used port 3100 with `APP_ORIGIN` set to match. The two scripts are in `evidence/`. The real-browser script found the `reset()` bug and was extended to delete its own tokens.
 
 ## Coverage check
 
 | Requirement | Tasks |
 |---|---|
-| AUTH-R1 | 1.5, 1.6, 1.11 |
-| AUTH-R2 | 1.5, 1.7, 1.11 |
+| AUTH-R1 | 1.5, 1.6, 1.11, 4.1, 4.2, 4.6 |
+| AUTH-R2 | 1.5, 1.7, 1.11, 4.1, 4.2, 4.6 |
 | AUTH-R3 | 1.3, 1.11 |
 | AUTH-R4 | 1.8, 1.11 |
 | AUTH-R5 | 1.5, 1.9, 1.11 |
-| AUTH-R6 | 1.4, 1.10, 1.11, 2.11, 3.1 |
+| AUTH-R6 | 1.4, 1.10, 1.11, 2.11, 3.1, 4.2 |
 | AUTH-R7 | 1.2, 1.11 |
 | AUTH-R8 | 2.3, 2.4, 2.5, 2.10, 2.11 |
 | AUTH-R9 | 2.2, 2.6, 2.10 |
-| AUTH-R10 | 1.5, 2.6, 2.7, 2.8, 2.10, 2.11 |
+| AUTH-R10 | 1.5, 2.6, 2.7, 2.8, 2.10, 2.11, 4.1, 4.3, 4.6 |
 | AUTH-R11 | 2.9, 2.10, 2.11 |
-| AUTH-R12 | 1.11, 2.10, 2.11, 3.1, 3.2 |
+| AUTH-R12 | 1.11, 2.10, 2.11, 3.1, 3.2, 4.6, 4.7 |
 | AUTH-R13 | 2.6, 2.7, 2.8, 2.9, 2.10, 2.11 |
 | P1–P10 (recorded) | 0.1 |
+| C12 (revision 5: AUTH-AC1.3, 2.4, 6.2, 10.7, 10.8) | 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 4.7 |
 
 Every acceptance criterion in `requirements.md` appears in at least one task's **Requirements** line or in the table above. The verification IDs AUTH-V1 to AUTH-V9 are defined in `design.md` §8.

@@ -2,6 +2,18 @@
 
 Spec versioning tracks review rounds independently of application releases. Record the old behavior, the agreed change, why it changed, the refinement prompt, and what was checked. Record the commit and link evidence when available. Newest date first. Each `## YYYY-MM-DD` heading groups the commits made that day, and each commit has a `### <short-sha> <subject>` entry. Release labels from 2026-11-13 stay under that date.
 
+## 2026-11-19
+
+### (commit pending) docs: password maximum of 10 characters for authentication
+
+- **authentication (T03–T04) · AUTH-AC1.3, AUTH-AC2.4, AUTH-AC10.7, AUTH-AC10.8, DD15, DD16, change C12 (requested by the user: "register and login password max 10 (8-10 chars) and other rules stay in range of chars"):**
+  - **Before:** Register accepted passwords of 8 to 128 characters with an uppercase letter, a lowercase letter and an ASCII special character. Login accepted 1 to 128 characters with no composition rule.
+  - **After:** Register accepts 8 to 10 characters with the same composition rule. Login accepts 1 to 10 characters. Messages are `Must be 8 to 10 characters.` and `Must be 1 to 10 characters.` The register hint names the maximum. A login password of 11 or more characters returns 400 before any hash check. The native spec (`.kiro/specs/authentication/`) holds the requirements, the design (DD16, §4.10) and tasks 4.1 to 4.7.
+  - **Reason:** Owner request. Accepted consequences: an account whose stored password is longer than 10 characters cannot sign in (no reset exists), and a short maximum limits password strength. Argon2id does not need the cap. T16 decides whether to keep it before public release (requirements Open item 8).
+  - **Prompt/run:** `/revotask-feature spec authentication, register and login password max 10 ...` with approvals of requirements, design and tasks in chat, then `/revotask-feature implement authentication` (Claude Code, 2026-11-19).
+  - **Also changed:** `backend/specs/api-contract.md` no longer says a stored account is never locked out by a policy change, because accounts with a password longer than 10 characters now cannot sign in.
+  - **Verification:** The shared case file's new boundary cases failed against the old constants on both sides (6 failed each), then passed after the change. Backend `ruff` clean and `pytest` 2177 passed and 1 skipped. Frontend lint, typecheck, `npm test` (2173 passed) and `next build` clean. HTTP smoke against rebuilt Flask in Docker (one worker) and `next start`: 79 of 79. Chrome 157 headless with device emulation: 106 of 106 including 375 px checks of the hint and the register and login length messages. Playwright `npm run e2e`: 58 passed, 0 failed (native Flask on the test database, Next dev server, Chromium emulation), with no suite change needed. Not run: a real phone. Evidence: `evidence/authentication-T03-T04.md` (Revision 5), `authentication-T03-T04-http-smoke-rev5.txt`, `authentication-T03-T04-browser-check-rev5.txt`.
+
 ## 2026-11-18
 
 ### (commit pending) test: cover board sprint dates in the Playwright suite

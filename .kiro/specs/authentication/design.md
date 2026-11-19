@@ -1,8 +1,8 @@
 # Design · authentication (T03–T04)
 
-**Status:** Implemented and verified locally. Where the build differed from this design, the design now says so (DD11, §4.4 email rule, §6.5 cookie, §6.6 redirect helpers, §6.1 `retry()`, and the "Added during implementation" note in §3). This design refines root `specs/design.md` D2, D5 and D6. The contract and ownership changes it depends on were applied to the shared documents in the spec round (§10).
+**Status:** Implemented and verified locally at revision 4. **Revision 5 (password maximum of 10, change C12) is designed here, approved in chat on 2026-11-19 (design by the user, the task plan by the `implement authentication` invocation) and implemented and verified locally the same day (`tasks.md` group 4). DD16 and §4.10 describe it, and the sections it touches are marked "revision 5". The code, tests and shared documents follow revision 5. Where the text below says 128, it is the revision 4 value.** Where the build differed from this design, the design now says so (DD11, §4.4 email rule, §6.5 cookie, §6.6 redirect helpers, §6.1 `retry()`, and the "Added during implementation" note in §3). This design refines root `specs/design.md` D2, D5 and D6. The contract and ownership changes it depends on were applied to the shared documents in the spec round (§10).
 
-**Requirements:** `requirements.md` in this folder (AUTH-R1 to AUTH-R12, decisions P1–P10, assumptions A1–A15).
+**Requirements:** `requirements.md` in this folder (AUTH-R1 to AUTH-R12, decisions P1–P11, change C12, assumptions A1–A15).
 **Guidelines applied:** BE01–BE08, DB04, FE-C1, FE-C2, FE-C3, FE-C4, FE-N1–N9, FE-S1–S3, FE-A1, FE-A2, FE-A4.
 
 ## 1. Overview
@@ -54,7 +54,8 @@ The browser talks only to the Next origin. Flask never sees a browser `Origin` a
 | DD12 | **`APP_ORIGIN` decides the cookie's `Secure` flag and must be https or an explicit loopback http origin.** | `NODE_ENV` decides: it breaks production-mode runs on `http://localhost` and does not say whether the site is deployed. A separate `ALLOW_INSECURE_COOKIES` switch: one more way to misconfigure. | There is no default, so plain http is always a conscious setting. Any non-loopback http value fails closed. |
 | DD13 | **Cookie `Max-Age` is `min(expires_in, seconds until the token's exp)`.** The handler reads `exp` from the token payload without verifying it. | `Max-Age = expires_in`: simple, but the cookie can outlive the token by the response latency. Verify the JWT in Next: needs the signing secret in the Next process, which D1 keeps in Flask. | A small base64 parse in the login handler. Flask has already verified the token, and a bad payload makes the handler fail closed. |
 | DD14 | **413 and 415 are distinct statuses with their own codes, enforced in the Next auth handlers and in Flask.** | Map both to 400: no contract change, but the client cannot tell a defect from a user mistake. Enforce only in Flask: the browser-facing handler would forward oversized bodies. | Two contract rows added (`docs/API.md`, `backend/specs/api-contract.md`). The handler cap equals Flask's. |
-| DD15 | **The password policy is 8 to 128 characters with an uppercase letter, a lowercase letter and an ASCII special character, enforced at register only.** Login accepts any password of 1 to 128 characters. | (a) Keep 12 characters: rejected by the owner as too long. (b) Apply the composition rule at login: a stored account created under an earlier policy, or a typo, would get a policy message instead of a plain 401, and a future policy change would lock people out. (c) Count any Unicode symbol as special: the rule would depend on the font and the keyboard. | Both layers use the same ASCII ranges and the shared case file (§4.4). A space is not special. No common-password list is checked, and a deliberate follow-up can add one. |
+| DD15 | **The password policy is 8 to 10 characters (revision 5, DD16; 8 to 128 before) with an uppercase letter, a lowercase letter and an ASCII special character, enforced at register only.** Login accepts any password of 1 to 10 characters. | (a) Keep 12 characters: rejected by the owner as too long. (b) Apply the composition rule at login: a stored account created under an earlier policy, or a typo, would get a policy message instead of a plain 401, and a future policy change would lock people out. (c) Count any Unicode symbol as special: the rule would depend on the font and the keyboard. | Both layers use the same ASCII ranges and the shared case file (§4.4). A space is not special. No common-password list is checked, and a deliberate follow-up can add one. |
+| DD16 | **Revision 5: one maximum of 10 characters, shared by register and login.** `PASSWORD_MAX` becomes 10 in `config.py` and `authRules.ts`. Register is 8–10 with the composition rule. Login is 1–10 with none. The length check runs first on both, so an over-length password never reaches the hasher or the database. | (a) A separate `LOGIN_PASSWORD_MAX` of 128 so older accounts can still sign in: rejected, because the owner asked for the limit on both forms and one number is one thing to state and test. (b) Login minimum of 8: rejected in requirements review, because a mistyped short password should get the generic 401 and not a policy message. (c) Truncate a long login password to 10 and compare: rejected, it would let an 11-character password match a 10-character hash and hides the rule. | Accounts with a stored password of 11 or more characters cannot sign in (requirements Open item 8). The change is two constants and the message strings, plus the test data in §4.10. Argon2id and the 64 KiB body cap are untouched. A cap this low limits strength, so T16 decides whether to keep it before public release. |
 
 ## 3. Planned repository layout
 
@@ -126,7 +127,7 @@ Named constants, as foundation does for its timeouts:
 | `REGISTER_RATE_LIMIT`                                   | `"5 per minute"`  | E02 per address                             |
 | `LOGIN_ADDRESS_RATE_LIMIT`                              | `"20 per minute"` | E03 per address                             |
 | `LOGIN_EMAIL_RATE_LIMIT`                                | `"5 per minute"`  | E03 per normalized email                    |
-| `NAME_MAX`, `EMAIL_MAX`, `PASSWORD_MIN`, `PASSWORD_MAX` | 80, 254, 8, 128  | Schemas                                     |
+| `NAME_MAX`, `EMAIL_MAX`, `PASSWORD_MIN`, `PASSWORD_MAX` | 80, 254, 8, 10 (128 before revision 5) | Schemas                                     |
 
 `Settings` gains `rate_limit_enabled: bool`, read from optional `RATE_LIMIT_ENABLED` (`true` or `false`, default `true`, anything else is a `ConfigError` naming the variable). In production `false` is also a `ConfigError` (AUTH-AC6.4). `create_app` sets:
 
@@ -187,23 +188,23 @@ One rule table serves the API schemas and the UI rules module (AUTH-AC10.7). Len
 |---|---|---|---|---|
 | Register | `name` | trim | required string, 1–80 | `Required.` · `Must be text.` · `Must be 1 to 80 characters.` |
 | Register | `email` | trim, lowercase | required string, valid address, at most 254 | `Required.` · `Must be text.` · `Enter a valid email address.` · `Must be at most 254 characters.` |
-| Register | `password` | none | required string, 8–128, then at least one ASCII uppercase letter, one lowercase letter and one ASCII special character | `Required.` · `Must be text.` · `Must be 8 to 128 characters.` · `Must include an uppercase letter, a lowercase letter and a special character.` (the first failing message is reported) |
+| Register | `password` | none | required string, 8–10, then at least one ASCII uppercase letter, one lowercase letter and one ASCII special character | `Required.` · `Must be text.` · `Must be 8 to 10 characters.` · `Must include an uppercase letter, a lowercase letter and a special character.` (the first failing message is reported) |
 | Login | `email` | trim, lowercase | required string, at most 254, no format check | `Required.` · `Must be text.` · `Must be at most 254 characters.` |
-| Login | `password` | none | required string, 1–128 | `Required.` · `Must be text.` · `Must be 1 to 128 characters.` |
+| Login | `password` | none | required string, 1–10 | `Required.` · `Must be text.` · `Must be 1 to 10 characters.` |
 
 - Register accepts exactly `name`, `email`, `password`. Login accepts exactly `email`, `password`. Any other key is `Unknown field.` (Flask: `unknown=RAISE`. Next: key-set check. UI: the form has no other field.)
 - Email format is one regular expression written the same way on both sides: `[^\s@]+@[^\s@]+\.[^\s@]+`, matched against the whole normalized value (Python `re.fullmatch`, TypeScript anchored `test`). It replaced the earlier plan to use Marshmallow's `Email` validator as the reference, so there is no second definition of "valid" to drift. Checks run in a fixed order and the first failing message is reported: required and type, then length, then format. On login an empty or whitespace-only email is `Required.`, and there is no format check.
 - `normalize_email()` (Python) and `normalizeEmail()` (TypeScript) are the only places that trim and lowercase an email. Python also uses it for the limiter key.
-- Password composition (register only): at least one `[A-Z]`, one `[a-z]` and one special character from the ASCII punctuation ranges `0x21-0x2F`, `0x3A-0x40`, `0x5B-0x60` and `0x7B-0x7E`. A space is not special, and accented letters and emoji do not count. The same ranges are written in Python and TypeScript. The length rule runs first, so a short password reports only the length message. Login has no composition rule (AUTH-AC2.4).
+- Password composition (register only): at least one `[A-Z]`, one `[a-z]` and one special character from the ASCII punctuation ranges `0x21-0x2F`, `0x3A-0x40`, `0x5B-0x60` and `0x7B-0x7E`. A space is not special, and accented letters and emoji do not count. The same ranges are written in Python and TypeScript. The length rule runs first, so a short password reports only the length message. Login has no composition rule (AUTH-AC2.4). The 10-character maximum (revision 5) is a length rule and runs first, so on register an 11-character password reports only the length message.
 - `PublicUserSchema` (dump only) is an explicit allowlist: `id`, `name`, `email`. Unknown attributes, `password_hash` and timestamps never serialize.
 
-**Shared boundary cases.** `specs/fixtures/auth-field-cases.json` lists inputs and expected outcomes (accepted with the normalized value, or the exact `fields` map). A value may be written `{"repeat": "a", "times": 81}` to avoid 128-character literals. The Flask schema tests and the `authRules.ts` tests both load this file, so a drift between the two fails a test. Minimum content:
+**Shared boundary cases.** `specs/fixtures/auth-field-cases.json` lists inputs and expected outcomes (accepted with the normalized value, or the exact `fields` map). A value may be written `{"repeat": "a", "times": 81}` to avoid long literals. The Flask schema tests and the `authRules.ts` tests both load this file, so a drift between the two fails a test. Minimum content:
 
 | Field | Cases |
 |---|---|
 | `name` | `""`, `"   "`, 1 character, 80 characters, 81 characters, internal spaces kept, padded value trimmed, emoji counted as one character, a number, `null`, missing |
 | `email` | padded and mixed case (`"  A@B.Co "` becomes `a@b.co`), 254 and 255 characters, no `@`, two `@`, no domain dot, whitespace inside, a number, missing |
-| `password` | empty, 7, 8, 128 and 129 characters; `Aa1!aaaa` accepted; `Aa1!` plus 124 emoji (128 characters) accepted; 8 spaces, no uppercase, no lowercase, no special character, an accented letter or an emoji as the only symbol, each rejected with the composition message; leading and trailing spaces kept; a number, null, missing |
+| `password` | empty, 7, 8, 10 and 11 characters on register, and empty, 1, 10 and 11 on login; `Aa1!aaaa` accepted; `Aa1!` plus 6 emoji (10 characters) accepted and `Aa1!` plus 7 emoji (11) rejected with the length message; 8 spaces, no uppercase, no lowercase, no special character, an accented letter or an emoji as the only symbol, each rejected with the composition message; leading and trailing spaces kept; a number, null, missing |
 | Key sets | extra key on each form, missing key on each form, `{}` |
 
 ### 4.5 Passwords (in `blueprints/auth/service.py`)
@@ -324,6 +325,35 @@ def get_me():
 ### 4.9 Private caching (`response_headers.py`, AUTH-AC6.5)
 
 An `after_request` hook sets `Cache-Control: private, no-store` on every response whose path starts with `/api/`, except the E01 endpoint. New routes in T05–T14 are private by default. Foundation's `X-Request-ID` header is untouched.
+
+### 4.10 Revision 5 · password maximum of 10 (C12, DD16)
+
+**Code (four lines of logic).**
+
+| File | Change |
+|---|---|
+| `backend/app/config.py` | `PASSWORD_MAX = 10`. The comment on `PASSWORD_MIN` stays |
+| `backend/app/blueprints/auth/schema.py` | None. `REGISTER_PASSWORD_LENGTH`, `LOGIN_PASSWORD_LENGTH` and both `validate.Length` calls already read `PASSWORD_MIN` and `PASSWORD_MAX`, so the messages become `Must be 8 to 10 characters.` and `Must be 1 to 10 characters.` |
+| `frontend/lib/authRules.ts` | `PASSWORD_MAX = 10`, the comment on `PASSWORD_MIN`, and `PASSWORD_HINT` (§6.8). The messages and both validators already read the constants |
+| `backend/specs/api-contract.md`, `docs/API.md`, `docs/USER_GUIDE.md`, `specs/design.md` D2, `frontend/specs/pages-and-components.md`, `docs/TEST-PLAN.md` V01 | Wording, §10 |
+
+Nothing else changes. `hash_password` and `verify_password` stay length-free (§4.5), the Next handlers still check only the key set (AUTH-AC8.5), and the limiter still runs before validation, so a 400 for an over-length login password counts toward the 5 per minute per email and 20 per minute per address (AUTH-AC6.2).
+
+**Test data that breaks, and its replacement.** The sweep (`grep` over `backend`, `frontend`, `evidence`, `specs`) found these.
+
+| Data | Where | Replacement |
+|---|---|---|
+| Valid register password `Horse-Battery-42` (16) | `test_auth_register.py`, `test_auth_login.py`, `test_auth_logout.py`, `test_rate_limit.py`, `test_users_me.py` (local variable), `profile_helpers.py`, `RegisterForm.test.tsx`, `register/route.test.ts`, `authRules.test.ts`, `auth-field-cases.json` (base bodies) | `Horse-4Bat` (10: upper `H` and `B`, lower, special `-`). Occurrences used only as an unknown-key value in a profile test (`test_users_profile.py`, `users/me/route.test.ts`, `test_boards_properties_rules.py`) are not valid-password uses and may keep the old text, but a check task confirms each |
+| Wrong login passwords of 11 or more characters: `wrong-password-0`, `wrong-password-0000`, `not the right password`, `wrong password`, `secret-wrong-password-777`, `correct horse battery`, `  my password  ` | `test_rate_limit.py`, `test_auth_login.py`, `login/route.test.ts`, `LoginForm.test.tsx`, `authentication-http-smoke.py` | A wrong password of at most 10 characters, for example `wrong-pw-0`. Each would otherwise return 400 and not 401. `secret-wrong-password-777` is a log-sentinel and keeps its role with a sentinel of at most 10 characters, such as `S3cret-pw!` |
+| Generators `Aa1!` plus 18 hex digits (22) and `<24 hex>Aa1!` (28) | `makePassword()` in `frontend/e2e/support/run.ts`, nine `evidence/*-measure.mjs` and `*-timing.mjs` scripts, `authentication-mobile-measure.mjs` | `Aa1!${randomBytes(3).toString("hex")}`: 10 characters, 24 bits of randomness. Enough for throw-away test accounts that are deleted after the run. The doc comment on `makePassword()` says "8 to 10 characters" |
+| Length messages and cases | `schema` tests, `authRules.test.ts`, `RegisterForm.test.tsx`, `LoginForm.test.tsx`, smoke `LEN_MSG`, the `auth-field-cases.json` note and the 128-character cases | 8 to 10 and 1 to 10 wording. 128 and 129 cases become 10 and 11 |
+| Hash-only tests | `test_auth_passwords.py` | None. They call `hash_password` directly and the hasher has no limit |
+
+**Check for stragglers.** A last task runs a repository search for `Horse-Battery`, `to 128 characters`, `randomBytes(9)`, `randomBytes(12)` and `PASSWORD_MAX = 128`, and reads each remaining hit. Historic evidence files (`evidence/authentication-T03-T04*.txt`) keep their revision 4 results and gain a dated note, because they record what ran.
+
+**Order of work.** Constants and messages first (backend, then frontend), then the case file, then test data, then the smoke script and measure scripts, then documents. The backend and frontend gates run after the data change, since the old data fails first.
+
+**Existing local data.** Accounts in the development and test databases whose password is longer than 10 characters cannot sign in. The check task re-registers the accounts a script or a manual check needs. No migration is written. Dropping the local database is a user action and is not done by this change.
 
 ## 5. Data design
 
@@ -450,7 +480,7 @@ The cookie is read from `request.cookies` and written with `response.headers.app
 ### 6.8 Forms and shared UI (`components/auth/LoginForm.tsx`, `RegisterForm.tsx`, `components/shared/FormField.tsx`, `BaseButton.tsx`, `lib/authRules.ts`)
 
 - `lib/authRules.ts` holds the §4.4 table: `NAME_MAX`, `EMAIL_MAX`, `PASSWORD_MIN`, `PASSWORD_MAX`, `normalizeEmail`, `normalizeName`, `codePointLength` (`Array.from(value).length`), and `validateRegister` / `validateLogin`. Each validator takes the raw form values and returns `{ body, fields }`, where `body` holds exactly the form's keys with normalized values and `fields` maps a field to its fixed message. The password is never trimmed.
-- `FormField` is props-driven: `id`, `label`, `type`, `value`, `error`, `hint`, `autoComplete`, `onChange`. `hint` is visible help text, and the input's `aria-describedby` lists the hint and the error. The register password field passes `PASSWORD_HINT`, which states the rules. It renders the label, the input with `aria-invalid` and `aria-describedby`, and the error text. It sets no `minLength` or `maxLength` (C5).
+- `FormField` is props-driven: `id`, `label`, `type`, `value`, `error`, `hint`, `autoComplete`, `onChange`. `hint` is visible help text, and the input's `aria-describedby` lists the hint and the error. The register password field passes `PASSWORD_HINT`, which states the rules. Revision 5 rewords it to `8 to 10 characters, with an uppercase letter, a lowercase letter and a special character such as ! ? # or %.` so the visible rule names the maximum (AUTH-AC10.8). `RegisterForm.test.tsx` asserts the new text. It renders the label, the input with `aria-invalid` and `aria-describedby`, and the error text. It sets no `minLength` or `maxLength` (C5).
 - `BaseButton` maps `variant` to daisyUI classes (`btn-primary`, `btn-ghost`) and a `loading` prop to `disabled` plus a spinner (FE-C3, FE-S1).
 - Each form holds `values`, `fieldErrors`, `formError` and `pending` in local state (FE-A2). `handleSubmit` first runs the validator. If `fields` is not empty it shows them, focuses the first invalid field in field order, and sends nothing. Otherwise it sends `body` through `apiClient`. A server error goes through `useErrorHandler` and shows in the same places, with entered values kept.
 - `RegisterForm` renders exactly `name`, `email` and `password` inputs and sends exactly those keys. `LoginForm` renders exactly `email` and `password`. The field `name` attributes equal the API keys, and a test checks that. Autocomplete values are `name`, `email`, `new-password` (register) and `email`, `current-password` (login).
@@ -536,7 +566,11 @@ Isolated PostgreSQL fixtures as in foundation. Backend tests build the schema th
 | Logout | `test_auth_logout.py`; `logout/route.test.ts` (matrix); `LogoutButton` test | Smoke steps 6 and 8; manual Back check |
 | Unsafe redirects | `safeRedirectPath` cases; `LoginPage` test with `next=//evil.example`; `useErrorHandler` test | Smoke step 9 (RSC payload contains no unsafe target); manual address-bar check |
 
+**Revision 5 verification (C12, AUTH-AC1.3, AUTH-AC2.4, AUTH-AC10.7, AUTH-AC10.8).** AUTH-V1 and AUTH-V5 gain the boundary cases in §4.4. AUTH-V6 repeats the password-rule section of the smoke script with 7, 8, 10 and 11 characters at Next and at Flask, and a login with an 11-character password returns 400 with `Must be 1 to 10 characters.` at both. A manual Chrome check (AUTH-V7) shows the new hint text, the register error for 11 characters and the login error for 11 characters.
+
 Existing tests that change:
+
+- Revision 5 changes the test data listed in §4.10. No test changes its assertion except the length boundaries and messages.
 
 - `tests/test_errors.py::test_other_framework_400_keeps_flask_default_response_until_t03` asserts HTML for a bare `abort(400)`. Under P3 a `BadRequest` becomes a JSON 400. The test is replaced by a check that bare `abort(400)` returns the `VALIDATION_ERROR` envelope, and a new check that `abort(406)` (another 4xx) keeps Flask's default response. Task 1.2 makes the edit and states why.
 - `tests/conftest.py` passes `"RATE_LIMIT_ENABLED": "false"` to `create_app`. `test_rate_limit.py` builds its own app with the limiter on.
@@ -547,9 +581,9 @@ Existing tests that change:
 
 | AC | API / UI | Task | Verification |
 |---|---|---|---|
-| AUTH-AC1.1–1.3 | E02 `register()`, `RegisterSchema` | 1.5, 1.6 | AUTH-V1 |
+| AUTH-AC1.1–1.3 | E02 `register()`, `RegisterSchema` (revision 5: `PASSWORD_MAX` 10) | 1.5, 1.6, revision 5 tasks | AUTH-V1 |
 | AUTH-AC1.4–1.6 | E02, `uq_users_email` | 1.6 | AUTH-V1 |
-| AUTH-AC2.1–2.5 | E03 `login()`, `LoginSchema` | 1.5, 1.7 | AUTH-V1 |
+| AUTH-AC2.1–2.5 | E03 `login()`, `LoginSchema` (revision 5: 1–10) | 1.5, 1.7, revision 5 tasks | AUTH-V1 |
 | AUTH-AC3.1–3.4 | `token_required`, JWT callbacks | 1.3 | AUTH-V2, AUTH-V3 |
 | AUTH-AC4.1–4.5 | E04 `logout()`, `revoke_token` | 1.8 | AUTH-V2 |
 | AUTH-AC5.1–5.2 | E30 `get_me()` | 1.9 | AUTH-V2 |
@@ -563,7 +597,7 @@ Existing tests that change:
 | AUTH-AC9.2–9.3 | `useErrorHandler`, `apiClient`, `toast`, `ToasterHost` | 2.6 | AUTH-V5 |
 | AUTH-AC10.1, 10.2, 10.4, 10.5 | `/register`, `/login`, forms | 2.8 | AUTH-V5, AUTH-V7 |
 | AUTH-AC10.3 | `safeRedirectPath` | 2.7 | AUTH-V5, AUTH-V6, AUTH-V7 |
-| AUTH-AC10.7 | `authRules.ts`, shared case file | 1.5, 2.7, 2.8 | AUTH-V1, AUTH-V5 |
+| AUTH-AC10.7, 10.8 | `authRules.ts`, `PASSWORD_HINT`, shared case file | 1.5, 2.7, 2.8, revision 5 tasks | AUTH-V1, AUTH-V5, AUTH-V6, AUTH-V7 |
 | AUTH-AC10.6, 11.8 | Page and header layout (see AUTH-R13) | 2.8, 2.9 | AUTH-V7 |
 | AUTH-AC13.1, 13.5, 13.7 | All auth surfaces at 320–1280 px | 2.11 | AUTH-V7 |
 | AUTH-AC13.2, 13.4 | `BaseButton`, `FormField`, layouts, header, error boundary | 2.6, 2.7, 2.8, 2.9 | AUTH-V5, AUTH-V7 |
@@ -586,6 +620,22 @@ Existing tests that change:
 | P4–P5 | `specs/design.md` D2, `frontend/specs/api-integration.md`, `docs/API.md` E03, E04, `docs/DEPLOYMENT.md` section 4 | "Secure in production". Missing `Origin` unspecified. | Host-only cookie, expiry bound, `Secure` on https, loopback-only http, missing `Origin` returns 403. |
 | P9–P10 | `frontend/specs/api-integration.md`, `docs/API.md` E04 | Safe local redirect, logout cases partly implied. | Plain `/login` for server redirects, `next` only when same-origin, idempotent browser logout. |
 | P2 | `specs/design.md` D2, `specs/tasks.md` T16, `docs/DEPLOYMENT.md` section 3 | Shared store "if deploying multiple instances". | Local in-memory proof only. Shared store and trusted client address are a tracked release item. |
+
+**Revision 5 document impact (C12, applied in task 4.7 on 2026-11-19).**
+
+| Document | Before | After |
+|---|---|---|
+| `docs/API.md` E02 | `password` 8–128 with the composition rule | `password` 8–10 with the composition rule |
+| `docs/API.md` E03 | `password` 1–128, no composition rule | `password` 1–10, no composition rule |
+| `backend/specs/api-contract.md` (`auth_bp` row) | 8–128 and 1–128 | 8–10 and 1–10 |
+| `specs/design.md` D2 | "a password of 8–128 characters" | "8–10 characters" |
+| `docs/USER_GUIDE.md` | "8 to 128 characters" | "8 to 10 characters" |
+| `frontend/specs/pages-and-components.md` | Register hint and rules | Hint names 8 to 10 |
+| `docs/TEST-PLAN.md` V01, V02 | Password rule cases | Boundary cases at 7, 8, 10 and 11 |
+| `specs/CHANGELOG.md` | | One entry: before, after, reason, verification |
+| `CHANGELOG.md`, `backend/CHANGELOG.md`, `frontend/CHANGELOG.md`, `README.md` | | Implementation entries and status only after the checks pass |
+
+`specs/requirements.md` and `specs/traceability.md` need no wording change: the root ACs state no length. This slice's own `tasks.md` and `evidence/authentication-T03-T04.md` get a revision 5 entry. Root T03 and T04 stay checked, since revision 5 is a refinement of verified work, and the entry records its own verification.
 
 **Not changed on purpose:** `specs/requirements.md` (the root ACs still hold), `docs/API.md` E30 row, the nine-table schema, and the application changelogs and README. The last two change at implementation under the documentation checkpoint (task 3.1).
 
@@ -610,7 +660,7 @@ Documents updated at handoff under the documentation checkpoint (task 3.1), usin
 - **Algorithm confusion.** Flask accepts only the configured HS256 algorithm, and a test sends `alg: none`.
 - **Upstream trust.** Next calls one fixed origin, forwards no caller headers, rejects redirects, and never returns upstream text.
 - **Brute force.** The per-email login limit applies even when requests arrive from one shared egress address. Argon2 cost adds friction per guess. The limiter is local-only until the T16 decision.
-- **Large inputs.** Request bodies are capped at 64 KiB on both layers, and password length is capped at 128 before hashing on register and login.
+- **Large inputs.** Request bodies are capped at 64 KiB on both layers, and password length is capped at 10 (revision 5; 128 before) before hashing on register and login. An over-length login password returns a 400 before any hash work, and the response says only the length rule, which the register form already shows.
 
 ## 12. Risks
 
@@ -625,3 +675,5 @@ Documents updated at handoff under the documentation checkpoint (task 3.1), usin
 | In-memory limits differ per worker and see the proxy's address. | Tracked for T16 (AUTH-AC6.6). Not claimed as production protection. |
 | A layout works in a desktop emulator but not on a real phone. | The manual check records emulator or device (AUTH-AC13.7). Real-device proof is part of the T16 mobile walkthrough. |
 | A Server Component cannot clear a stale cookie. | `/login` tolerates it and the next login overwrites it (A9). |
+| Revision 5: a leftover test or script still sends a password of 11 or more characters and fails with 400 where it expected 201 or 401. | Task list ends with a repo-wide check (§4.10) for old literals and generators, then the full backend, frontend and smoke runs. |
+| Revision 5: a 10-character maximum weakens passwords, and older accounts are locked out. | Accepted by the owner (requirements Open item 8). Local databases are reset or re-registered. T16 decides before public release. |

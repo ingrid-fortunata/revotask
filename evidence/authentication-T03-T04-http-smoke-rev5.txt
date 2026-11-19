@@ -1,0 +1,166 @@
+throwaway account: smoke-1795097455-dc3373@example.test
+Next localhost:3100  Flask 127.0.0.1:5001  APP_ORIGIN=http://localhost:3100
+
+### 1. Exact fields, content type, size and Origin
+  (limiter state reset: before section 1)
+  register, no Origin (Next)                                 -> 403 
+  [PASS] 403 without Origin
+  register, Origin http://evil.example (Next)                -> 403 
+  [PASS] 403 for a cross-site Origin
+  register, extra field `role` (Next)                        -> 400 {'role': 'Unknown field.'}
+  [PASS] 400 Unknown field.
+  register, missing `password` (Next)                        -> 400 {'password': 'Required.'}
+  [PASS] 400 Required.
+  register, Content-Type text/plain (Next)                   -> 415 
+  [PASS] 415
+  register, body over 64 KiB (Next)                          -> 413 
+  [PASS] 413
+  login, extra field `remember` (Next)                       -> 400 
+  [PASS] 400 Unknown field.
+  login, missing `password` (Next)                           -> 400 
+  [PASS] 400 Required.
+  login, Content-Type text/plain (Next)                      -> 415 
+  [PASS] 415
+  register, extra field, straight to Flask                   -> 400 {'role': 'Unknown field.'}
+  [PASS] Flask 400 Unknown field.
+  register, text/plain, straight to Flask                    -> 415 
+  [PASS] Flask 415
+  login, extra field, straight to Flask                      -> 400 
+  [PASS] Flask 400 Unknown field.
+  register, exact three fields, mixed-case padded email      -> 201 {'data': {'email': 'smoke-1795097455-dc3373@example.test', 'id': 'ef6f1500-c0a6-47be-895a-5c84820c7f31', 'name': 'Smoke User'}}
+  [PASS] 201 with only id, name, email
+  [PASS] email stored trimmed and lowercase
+  [PASS] no Set-Cookie after register (user stays signed out)
+  [PASS] no password or token in the body
+  register the same email again                              -> 409 
+  [PASS] 409 EMAIL_ALREADY_EXISTS
+
+### 1b. Password rules (rejected before any account is written)
+  (limiter state reset: before the five Next-level policy checks)
+  register, 7 characters (Next)                              -> 400 Must be 8 to 10 characters.
+  [PASS] 400 with: Must be 8 to 10 characters.
+  register, no uppercase (Next)                              -> 400 Must include an uppercase letter, a lowercase letter and a special character.
+  [PASS] 400 with: Must include an uppercase letter, a lowercase letter and a special character.
+  register, no lowercase (Next)                              -> 400 Must include an uppercase letter, a lowercase letter and a special character.
+  [PASS] 400 with: Must include an uppercase letter, a lowercase letter and a special character.
+  register, no special character (Next)                      -> 400 Must include an uppercase letter, a lowercase letter and a special character.
+  [PASS] 400 with: Must include an uppercase letter, a lowercase letter and a special character.
+  register, a space is not special (Next)                    -> 400 Must include an uppercase letter, a lowercase letter and a special character.
+  [PASS] 400 with: Must include an uppercase letter, a lowercase letter and a special character.
+  (limiter state reset: before the direct Flask policy check)
+  register, no uppercase, straight to Flask                  -> 400 
+  [PASS] Flask 400 with the composition message
+  login with a short, simple password (Next)                 -> 401 INVALID_CREDENTIALS
+  [PASS] 401 INVALID_CREDENTIALS, not a policy message
+  [PASS] the rejected registrations wrote no account
+  (limiter state reset: before the length boundary checks)
+  register, 11 characters (Next)                             -> 400 {'password': 'Must be 8 to 10 characters.'}
+  [PASS] 400 with: Must be 8 to 10 characters.
+  register, 11 characters, straight to Flask                 -> 400 
+  [PASS] Flask 400 with: Must be 8 to 10 characters.
+  login, 11 characters (Next)                                -> 400 {'password': 'Must be 1 to 10 characters.'}
+  [PASS] 400 with: Must be 1 to 10 characters.
+  login, 11 characters, straight to Flask                    -> 400 
+  [PASS] Flask 400 with: Must be 1 to 10 characters.
+
+### 2. Invalid credentials
+  login, wrong password                                      -> 401 
+  login, unknown email                                       -> 401 
+  [PASS] both 401 INVALID_CREDENTIALS
+  [PASS] identical bodies apart from request_id  ({'error': {'code': 'INVALID_CREDENTIALS', 'message': 'Invalid email or password.'}})
+  [PASS] no Set-Cookie on a failed login
+
+### 3. Login and cookie flags
+  login, correct credentials                                 -> 200 {'data': {'user': {'id': 'ef6f1500-c0a6-47be-895a-5c84820c7f31', 'name': 'Smoke User', 'email': 'smoke-1795097455-dc3373@example.test'}}}
+  [PASS] 200 with {data:{user}} only
+  [PASS] no access_token or hash in the body
+        Set-Cookie: revotask_session=<redacted>; Path=/; Max-Age=3599; HttpOnly; SameSite=Lax
+  [PASS] HttpOnly
+  [PASS] SameSite=Lax
+  [PASS] Path=/
+  [PASS] no Domain (host-only)
+  [PASS] no Secure on the loopback http origin
+  [PASS] Max-Age at most 3600  (3599)
+  [PASS] the token appears only in Set-Cookie
+  [PASS] Cache-Control private, no-store
+
+### 4. Protected render
+  GET / without a cookie                                     -> 307 Location=['/login']
+  [PASS] 307 to /login
+  [PASS] no private content in the redirect body
+  GET / with the session cookie                              -> 200 
+  [PASS] 200 with the user's name and Sign out
+        Cache-Control (signed in): ['private, no-cache, no-store, max-age=0, must-revalidate']
+        Cache-Control (redirect):  ['private, no-cache, no-store, max-age=0, must-revalidate']
+  [PASS] no-store on both responses
+  [PASS] token not present in the HTML
+  [PASS] password and hash not present in the HTML
+
+### 5. Expired and tampered sessions
+  expired token -> Flask GET /api/users/me                   -> 401 
+  [PASS] 401 AUTH_REQUIRED
+  expired token as cookie -> Next GET /                      -> 307 Location=['/login']
+  [PASS] 307 to /login
+  tampered cookie -> Next GET /                              -> 307 
+  [PASS] 307 to /login
+  tampered cookie -> Next GET /login                         -> 200 
+  [PASS] 200: /login tolerates a stale cookie
+  tampered cookie -> Next GET /register                      -> 200 
+  [PASS] 200
+
+### 6. Logout
+  logout without Origin                                      -> 403 
+  [PASS] 403
+  [PASS] session still valid after the rejected logout
+  logout with Origin and cookie                              -> 200 {'data': None}
+        Set-Cookie: revotask_session=<empty>; Path=/; Max-Age=0; HttpOnly; SameSite=Lax
+  [PASS] 200 {data:null}
+  [PASS] cookie cleared: empty value, Max-Age=0, Path=/, no Domain
+  logout again with no cookie                                -> 200 
+  [PASS] 200 and cookie cleared (idempotent)
+  logout with the already-revoked cookie                     -> 200 
+  [PASS] 200 and cookie cleared
+
+### 7. Revoked session replay
+  old token -> Flask GET /api/users/me                       -> 401 
+  [PASS] 401 AUTH_REQUIRED
+  old cookie -> Next GET /                                   -> 307 Location=['/login']
+  [PASS] 307 to /login
+
+### 8. Upstream failure (Flask stopped)
+  [PASS] fresh session issued
+  GET / while Flask is down                                  -> 500 Location=[]
+  [PASS] 500 and no redirect to /login
+  [PASS] no internals in the server HTML  ([])
+        (the visible error state and Try again render client-side; checked in the browser run)
+  logout while Flask is down                                 -> 503 {'error': {'code': 'SERVICE_UNAVAILABLE', 'message': 'The service is temporarily unavailable. Try again shortly.', 'request_id': '2c7276fa-a416-42a1-834e-b3bfe4d6b048'}}
+  [PASS] 503 SERVICE_UNAVAILABLE
+  [PASS] the cookie is kept (no clearing Set-Cookie)
+  login while Flask is down                                  -> 503 
+  [PASS] 503 and no cookie
+  GET / after Flask is back, same cookie                     -> 200 
+  [PASS] 200: the session survived the outage
+  [PASS] logout now succeeds
+
+### 9. Unsafe redirects (the `next` value reaches the form only if safe)
+  [PASS] next=//evil.example -> the form receives redirectTo=/  (got /)
+  [PASS] next=https://evil.example -> the form receives redirectTo=/  (got /)
+  [PASS] next=/login -> the form receives redirectTo=/  (got /)
+  [PASS] next=/\evil.example -> the form receives redirectTo=/  (got /)
+  [PASS] next=/boards/abc -> the form receives redirectTo=/boards/abc  (got /boards/abc)
+
+### 10. Rate limit (fresh limiter state, one Gunicorn worker)
+  (limiter state reset: before the login rate-limit check)
+        statuses: [401, 401, 401, 401, 401, 429]
+  [PASS] first five invalid attempts return 401 INVALID_CREDENTIALS  ([401, 401, 401, 401, 401, 429])
+  [PASS] sixth attempt returns 429  ([401, 401, 401, 401, 401, 429])
+  [PASS] 429 RATE_LIMITED with Retry-After and a request id  (Retry-After=['60'])
+  [PASS] 401 responses carry no Retry-After
+  first invalid login, straight to Flask                     -> 401 
+  [PASS] Flask 401 carries no Retry-After  ([])
+
+### Cleanup
+  deleted users: 1
+  deleted revoked_tokens: 2
+
+RESULT: ALL PASS

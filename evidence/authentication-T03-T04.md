@@ -170,6 +170,37 @@ The limiter keeps counters in each Gunicorn worker's memory. The image default i
 
 **Still open:** shared limiter storage and trusted client address handling (T16). Real-phone checks and Playwright (T15).
 
+## Revision 5: password maximum of 10 characters (change C12, 2026-11-19, Claude Code)
+
+**Change:** register accepts 8 to 10 characters (the uppercase, lowercase and special-character rules are unchanged) and login accepts 1 to 10 characters. Before: 8 to 128 and 1 to 128. Requested by the user. Specification: `.kiro/specs/authentication/` (requirements C12, design DD16 and §4.10, tasks 4.1 to 4.7). Code: `backend/app/config.py` (`PASSWORD_MAX = 10`) and `frontend/lib/authRules.ts` (`PASSWORD_MAX = 10`, `PASSWORD_HINT`). The schemas and validators read the constants, so no other logic changed.
+
+**Checks run (all from this session):**
+
+| Check | Result |
+| --- | --- |
+| Task 4.1, new boundary cases against the old constants | `test_auth_schema.py`: 6 failed, 96 passed. `authRules.test.ts`: 6 failed, 101 passed. The same six case IDs on both sides |
+| Backend, `ruff check .`, `ruff format --check .`, `pytest` | Clean. 2177 passed and 1 skipped (2173 passed and 1 skipped on the revision 4 code and the old case file) |
+| Frontend, `npm run lint`, `npm run typecheck`, `npm test` | Clean. 2173 tests in 100 files passed (2172 on the revision 4 code) |
+| Frontend `npm run e2e:unit -- run.unit.ts` | 2 passed |
+| Frontend `npm run build` | Succeeds |
+| Docker image rebuilt (`docker compose build backend`), Flask on 5001 with one worker, `next start -p 3100` with `APP_ORIGIN=http://localhost:3100` | A login with 11 characters straight to Flask returned 400 `Must be 1 to 10 characters.` |
+| HTTP smoke `evidence/authentication-http-smoke.py` | RESULT: ALL PASS, 79 checks (75 in revision 4). The four new checks send 11 characters to register and to login, at Next and at Flask: 400 with the fixed message, and no cookie on the login. Output: `evidence/authentication-T03-T04-http-smoke-rev5.txt`. The script deleted its one throwaway user and two revoked-token rows |
+| Playwright `npm run e2e` (2026-11-19, after the checks above) | 58 passed, 0 failed, 1.5 minutes, the same count as the T15 run. Native Flask on 5001 against `revotask_test` (the preflight proved it), Next dev server on 3000, `desktop`, `viewport-320`, `mobile-375` and `viewport-768` projects (Chromium emulation, not a real device). It includes the LA-2a to LA-2d auth journey, which uses the new 10-character `makePassword()` and the 10-character wrong password. Teardown deleted every row of run `55977c60` and verified 0 left in all nine tables. No change to the suite was needed |
+| Chrome run `evidence/authentication-mobile-measure.mjs` | RESULT: ALL PASS, 106 checks, Chrome 157 headless with device emulation (not a real phone). It now checks the "8 to 10 characters" hint, and the register and login length messages with focus on the password field at 375 px, with no horizontal scroll. Output: `evidence/authentication-T03-T04-browser-check-rev5.txt` |
+
+**Findings:**
+
+- F-AUTH-R5-01. Searching for old literals missed three leftovers that only the full backend run found: a wrong login password `Wrong-Password-1!` in `test_users_profile_session.py`, the padded password `" Spaced Pass 1! "` in `test_auth_schema.py` and the same in two frontend tests, and ` ${PASSWORD} ` (12 characters) in `RegisterForm.test.tsx`. Each returned 400 where the test expected 401 or success. Fixed. Lesson: padding counts toward the 10 characters.
+- F-AUTH-R5-02. `frontend/e2e/auth.spec.ts` sent `${ownerPassword}-wrong` (16 characters) for the invalid-credentials step (LA-2b). It would have returned 400 and not shown the generic message. Changed to `Wrong-Pw-9`.
+
+**Straggler search (task 4.5).** Search for `Horse-Battery`, `to 128 characters`, `randomBytes(9)`, `randomBytes(12)`, `PASSWORD_MAX = 128`, `1–128`, `8–128`, `1-128` and `8-128` over the repository (without `node_modules`, `.next`, `.venv`, `.git`, `playwright-report`). Remaining files, all allowed as history: the changelogs (`CHANGELOG.md`, `backend/CHANGELOG.md`, `frontend/CHANGELOG.md`, `specs/CHANGELOG.md`) and `evidence/spec-review.md` record earlier entries, the revision 4 smoke and browser text files and the Revision 3 section above record what ran then, and the three native spec files state the before values.
+
+**Not run, so pending:** the Playwright suite has no step that checks the 11-character rejection in the browser (the smoke and the Chrome run do). The nine other evidence scripts (`*-mobile-measure.mjs`, `*-timing.mjs`) were syntax-checked with `node --check` and not run, because each needs a live stack and its own data. A real phone, live Render and Vercel checks, and the T16 decision on keeping the cap stay open.
+
+**Environment note:** Docker Desktop was not running. Claude Code started it for the smoke and the browser run, rebuilt the backend image, then stopped the `backend` Compose service and the Next server. For the Playwright run it started native Flask on 5001 (test database) and `npm run dev`, then stopped both. Next's dev server also wrote an untracked `frontend/AGENTS.md`, which was deleted. Docker Desktop itself was left running. No database was reset or dropped.
+
+**Known effect (requirements Open item 8):** an account registered with a password of 11 or more characters gets a 400 at login and cannot sign in. No local account was checked or changed.
+
 ## Open items and limits
 
 1. **No real phone.** All mobile results are from Chrome's device emulation. On-screen keyboard behavior is unverified. The T16 mobile walkthrough covers a real device.

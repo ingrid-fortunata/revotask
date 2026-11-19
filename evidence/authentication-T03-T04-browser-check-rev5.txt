@@ -1,0 +1,147 @@
+throwaway account created: name 80 characters, email 64 characters
+browser: Chrome/157.0.8103.80 (headless, device emulation, not a real phone)
+
+### A. Width-by-route measurement (flask up)
+  [PASS] /login @320px: no horizontal page scroll  (scrollWidth 320 <= clientWidth 320)
+  [PASS] /login @320px: 4 controls all >= 44x44 (min 44px)
+  [PASS] /login @320px: elementFromPoint at each center hits the control
+  [PASS] /login @320px: text inputs compute to >= 16px
+  [PASS] /register @320px: no horizontal page scroll  (scrollWidth 320 <= clientWidth 320)
+  [PASS] /register @320px: 5 controls all >= 44x44 (min 44px)
+  [PASS] /register @320px: elementFromPoint at each center hits the control
+  [PASS] /register @320px: text inputs compute to >= 16px
+  [PASS] / (signed in, 80-char name) @320px: no horizontal page scroll  (scrollWidth 320 <= clientWidth 320)
+  [PASS] / (signed in, 80-char name) @320px: 7 controls all >= 44x44 (min 44px)
+  [PASS] / (signed in, 80-char name) @320px: elementFromPoint at each center hits the control
+  [PASS] header @320px: the 80-character name truncates inside the viewport  ({"truncated":true,"right":81.59375,"vw":320})
+  [PASS] /login @375px: no horizontal page scroll  (scrollWidth 375 <= clientWidth 375)
+  [PASS] /login @375px: 4 controls all >= 44x44 (min 44px)
+  [PASS] /login @375px: elementFromPoint at each center hits the control
+  [PASS] /login @375px: text inputs compute to >= 16px
+  [PASS] /register @375px: no horizontal page scroll  (scrollWidth 375 <= clientWidth 375)
+  [PASS] /register @375px: 5 controls all >= 44x44 (min 44px)
+  [PASS] /register @375px: elementFromPoint at each center hits the control
+  [PASS] /register @375px: text inputs compute to >= 16px
+  [PASS] / (signed in, 80-char name) @375px: no horizontal page scroll  (scrollWidth 375 <= clientWidth 375)
+  [PASS] / (signed in, 80-char name) @375px: 7 controls all >= 44x44 (min 44px)
+  [PASS] / (signed in, 80-char name) @375px: elementFromPoint at each center hits the control
+  [PASS] header @375px: the 80-character name truncates inside the viewport  ({"truncated":true,"right":229.8125,"vw":375})
+  [PASS] /login @768px: no horizontal page scroll  (scrollWidth 768 <= clientWidth 768)
+  [PASS] /login @768px: 4 controls all >= 44x44 (min 44px)
+  [PASS] /login @768px: elementFromPoint at each center hits the control
+  [PASS] /login @768px: text inputs compute to >= 16px
+  [PASS] /register @768px: no horizontal page scroll  (scrollWidth 768 <= clientWidth 768)
+  [PASS] /register @768px: 5 controls all >= 44x44 (min 44px)
+  [PASS] /register @768px: elementFromPoint at each center hits the control
+  [PASS] /register @768px: text inputs compute to >= 16px
+  [PASS] / (signed in, 80-char name) @768px: no horizontal page scroll  (scrollWidth 768 <= clientWidth 768)
+  [PASS] / (signed in, 80-char name) @768px: 7 controls all >= 44x44 (min 44px)
+  [PASS] / (signed in, 80-char name) @768px: elementFromPoint at each center hits the control
+  [PASS] header @768px: the 80-character name truncates inside the viewport  ({"truncated":true,"right":622.8125,"vw":768})
+  [PASS] /login @1280px: no horizontal page scroll  (scrollWidth 1280 <= clientWidth 1280)
+  [PASS] /login @1280px: 4 controls all >= 44x44 (min 44px)
+  [PASS] /login @1280px: elementFromPoint at each center hits the control
+  [PASS] /login @1280px: text inputs compute to >= 16px
+  [PASS] /register @1280px: no horizontal page scroll  (scrollWidth 1280 <= clientWidth 1280)
+  [PASS] /register @1280px: 5 controls all >= 44x44 (min 44px)
+  [PASS] /register @1280px: elementFromPoint at each center hits the control
+  [PASS] /register @1280px: text inputs compute to >= 16px
+  [PASS] / (signed in, 80-char name) @1280px: no horizontal page scroll  (scrollWidth 1280 <= clientWidth 1280)
+  [PASS] / (signed in, 80-char name) @1280px: 7 controls all >= 44x44 (min 44px)
+  [PASS] / (signed in, 80-char name) @1280px: elementFromPoint at each center hits the control
+  [PASS] header @1280px: the 80-character name truncates inside the viewport  ({"truncated":true,"right":232,"vw":1280})
+
+### B. Keyboard and field focus @375px
+  [PASS] Tab order on /login: email, password, Sign in, Create an account  (["login-email","login-password","Sign in","Create an account"])
+  [PASS] empty submit: focus moves to the email field and both messages show  (["Required.","Must be 1 to 10 characters."])
+  [PASS] the focused invalid field is inside the visible area
+
+### B2. Register password rules in the browser @375px
+  [PASS] register password input is described by the visible rules hint  ({"describedBy":true,"text":"8 to 10 characters, with an uppercase letter, a lowercase letter and a special character such as ! ? # or %.","visible":true})
+  [PASS] composition message shows and the password field takes focus
+  [PASS] /register with a password error @375px: no horizontal page scroll  (scrollWidth 375 <= clientWidth 375)
+  [PASS] /register with a password error @375px: 5 controls all >= 44x44 (min 44px)
+  [PASS] /register with a password error @375px: elementFromPoint at each center hits the control
+  [PASS] /register with a password error @375px: text inputs compute to >= 16px
+  [PASS] register, 11 characters: the length message shows and the password field takes focus
+  [PASS] /register with an 11-character password @375px: no horizontal page scroll  (scrollWidth 375 <= clientWidth 375)
+  [PASS] /register with an 11-character password @375px: 5 controls all >= 44x44 (min 44px)
+  [PASS] /register with an 11-character password @375px: elementFromPoint at each center hits the control
+  [PASS] /register with an 11-character password @375px: text inputs compute to >= 16px
+  [PASS] login, 11 characters: the length message shows and the password field takes focus
+  [PASS] /login with an 11-character password @375px: no horizontal page scroll  (scrollWidth 375 <= clientWidth 375)
+  [PASS] /login with an 11-character password @375px: 4 controls all >= 44x44 (min 44px)
+  [PASS] /login with an 11-character password @375px: elementFromPoint at each center hits the control
+  [PASS] /login with an 11-character password @375px: text inputs compute to >= 16px
+
+### C. Sign in through the real UI, redirects and Back-after-sign-out @375px
+  [PASS] login with next=//evil.example lands on / of this site  ({"origin":"http://localhost:3100","path":"/"})
+  [PASS] the browser holds an HttpOnly cookie that page JavaScript cannot read
+  [PASS] cookie attributes in the browser: Lax, Path=/, host-only, not Secure on loopback http  ({"sameSite":"Lax","path":"/","domain":"localhost","secure":false})
+  [PASS] nothing in localStorage or sessionStorage  ({"local":0,"session":0})
+  [PASS] the page DOM does not contain the token or the password
+  [PASS] login with next=/?from=next lands on that path  (/?from=next)
+  [PASS] sign out: full page load of /login, no private content
+  [PASS] Back to an earlier private page: the server sends the user to /login  ({"path":"/login"})
+  [PASS] the session cookie is gone after sign out
+
+### D. Flask stopped: error state, retry, toast (measured at each width)
+  [PASS] error state @320px shows the retry copy and no internals
+  [PASS] / error state @320px: no horizontal page scroll  (scrollWidth 320 <= clientWidth 320)
+  [PASS] / error state @320px: 1 controls all >= 44x44 (min 44px)
+  [PASS] / error state @320px: elementFromPoint at each center hits the control
+  [PASS] error state @320px: the session cookie is kept
+  [PASS] toast @320px stays inside the viewport  (left 71, right 266, viewport 320)
+  [PASS] toast @320px: no horizontal page scroll while it shows
+  [PASS] error state @375px shows the retry copy and no internals
+  [PASS] / error state @375px: no horizontal page scroll  (scrollWidth 375 <= clientWidth 375)
+  [PASS] / error state @375px: 1 controls all >= 44x44 (min 44px)
+  [PASS] / error state @375px: elementFromPoint at each center hits the control
+  [PASS] error state @375px: the session cookie is kept
+  [PASS] toast @375px stays inside the viewport  (left 75, right 317, viewport 375)
+  [PASS] toast @375px: no horizontal page scroll while it shows
+  [PASS] error state @768px shows the retry copy and no internals
+  [PASS] / error state @768px: no horizontal page scroll  (scrollWidth 768 <= clientWidth 768)
+  [PASS] / error state @768px: 1 controls all >= 44x44 (min 44px)
+  [PASS] / error state @768px: elementFromPoint at each center hits the control
+  [PASS] error state @768px: the session cookie is kept
+  [PASS] toast @768px stays inside the viewport  (left 224, right 561, viewport 768)
+  [PASS] toast @768px: no horizontal page scroll while it shows
+  [PASS] error state @1280px shows the retry copy and no internals
+  [PASS] / error state @1280px: no horizontal page scroll  (scrollWidth 1280 <= clientWidth 1280)
+  [PASS] / error state @1280px: 1 controls all >= 44x44 (min 44px)
+  [PASS] / error state @1280px: elementFromPoint at each center hits the control
+  [PASS] error state @1280px: the session cookie is kept
+  [PASS] toast @1280px stays inside the viewport  (left 480, right 817, viewport 1280)
+  [PASS] toast @1280px: no horizontal page scroll while it shows
+  [PASS] Try again after Flask is back shows the signed-in shell (the session survived)
+
+### E. Sign out with Flask down keeps the session; retry works
+  [PASS] failed sign out: user stays on the page, button re-enabled, cookie kept, retry toast shown  ({"path":"/","signOut":true,"enabled":true})
+
+### Cleanup
+  deleted users: 1
+  deleted revoked_tokens: 1
+
+### Summary table (scrollWidth/clientWidth, controls measured)
+  /login                               320px    320/320  4 controls
+  /register                            320px    320/320  5 controls
+  / (signed in, 80-char name)          320px    320/320  7 controls
+  /login                               375px    375/375  4 controls
+  /register                            375px    375/375  5 controls
+  / (signed in, 80-char name)          375px    375/375  7 controls
+  /login                               768px    768/768  4 controls
+  /register                            768px    768/768  5 controls
+  / (signed in, 80-char name)          768px    768/768  7 controls
+  /login                              1280px  1280/1280  4 controls
+  /register                           1280px  1280/1280  5 controls
+  / (signed in, 80-char name)         1280px  1280/1280  7 controls
+  /register with a password error      375px    375/375  5 controls
+  /register with an 11-character password   375px    375/375  5 controls
+  /login with an 11-character password   375px    375/375  4 controls
+  / error state                        320px    320/320  1 controls
+  / error state                        375px    375/375  1 controls
+  / error state                        768px    768/768  1 controls
+  / error state                       1280px  1280/1280  1 controls
+
+RESULT: ALL PASS
