@@ -49,6 +49,8 @@ References: [Render Docker deploys](https://render.com/docs/docker), [Render web
 
 ## 4. Next.js on Vercel
 
+**Order for the My Tasks status change (my-tasks-search Revision 2).** The My Tasks parser requires the new `column_name` and `is_done` keys of E21, so a frontend deployed before Flask shows the error page on `/my-tasks`. Vercel deploys every push to `main` at once and Render deploys through the workflow in section 6, so push the backend change first, wait until the Render deploy and `curl -fsS https://<render-host>/api/health` succeed, and only then push the frontend change. An old frontend ignores the two new keys, so the reverse order is safe.
+
 1. Import the repo with the Next.js preset and set **Root Directory** to `frontend`.
 2. Set the server-only `API_BASE_URL=https://<render-service-host>` and `APP_ORIGIN=https://<canonical-vercel-host>` (the session cookie is `Secure` on https, and an http origin is accepted only for loopback development). Configure preview origin and isolated preview data separately if you use previews.
 3. Deploy the same candidate revision. Check registration, login, protected Server Components, browser mutations through same-origin handlers and logout on the canonical URL.
