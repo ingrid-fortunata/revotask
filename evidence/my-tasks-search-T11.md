@@ -91,3 +91,50 @@ Local checks prove local behavior only. The browser run used Chrome device emula
 - Playwright journey V10, real-device and on-screen-keyboard checks (T15).
 - Deployed timing and live verification (T16).
 - No trigram index and no pagination: out of scope for v1 (S1, S4). Revisit if a board grows past the ~100-card target.
+
+## Revision 2: task status badge and My Tasks search (2026-11-20)
+
+Implemented by Claude Code (`/revotask-feature implement my-tasks-search`, all Revision 2 tasks, groups 11 to 16 of `.kiro/specs/my-tasks-search/tasks.md`). Requirements 9 and 10 (S12–S17) and `design.md` (DD13–DD21, C42, R1–R6 at their defaults) were approved in chat on 2026-11-20. No design change was needed. Scope: the E21 item gains `column_name` and `is_done`, each My Tasks row shows a status badge, and a local title search filters the loaded tasks.
+
+### Commands and results
+
+- Backend, from `backend/`: `.venv/bin/python -m pytest -p no:cacheprovider -q` → 2236 passed, 1 skipped (2234 before; the 2 new tests are in `test_my_tasks.py`, and the key-set assertion of `test_returns_the_documented_fields` was extended). `.venv/bin/ruff check .` clean and `ruff format --check app tests` clean after three line-length fixes. The new cases failed against the old service before the change (3 failed), then passed. Database writes went to `TEST_DATABASE_URL` through `BoardTracker`. Its value is not recorded here.
+- Frontend, from `frontend/`: `npm run lint`, `npm run typecheck` and `npm run build` clean, `npm test` → 101 files, 2262 tests passed (2221 before; 2259 before the S18 refresh below). New or extended: `lib/tasks.test.ts` (parser keys, `filterTasks`), `lib/server/tasks.test.ts` (a missing `column_name` or `is_done` throws), `components/shared/BaseBadge.test.tsx` (new), `components/tasks/MyTasks.test.tsx` (badge and search), `app/(protected)/my-tasks/page.test.tsx` (fixtures and the new accessible name).
+- Mutation check (task 13.6): replacing `filterTasks` with an identity function made 15 tests fail, and removing the badge from `TaskGroup` made 3 fail. Both were restored and the suites pass again.
+- Not run: `npm run e2e` (Playwright). The only Playwright use of `/my-tasks` is `mobile.spec.ts`, which visits the route, so no journey reads a row name. The My Tasks Playwright steps stay open for T15.
+
+### Browser and mobile check (tasks 14.1, 14.2)
+
+- Setup: my own Flask (gunicorn, one worker with four threads, `127.0.0.1:5002`) on `TEST_DATABASE_URL` with rate limiting off, and a production Next server (`localhost:3101`, `API_BASE_URL=http://127.0.0.1:5002`). Your stack on 5001 and 3000 was not used. Both servers were stopped afterwards.
+- Command: `BASE_URL=http://localhost:3101 API_URL=http://127.0.0.1:5002 REPORT_FILE=evidence/my-tasks-search-mobile-rev2.json SHOT_DIR=evidence/my-tasks-search-screenshots-rev2 node evidence/my-tasks-search-mobile-measure.mjs`. Result: **448 checks, 0 failed** (447 before S18, and the Back check was a recorded observation then), exit 0, headless Chrome 157 with device emulation, not a real phone. Screenshots at 375, 768 and 1280 px are in `evidence/my-tasks-search-screenshots-rev2/` (`my-tasks-*`, `my-tasks-search-match-*`, `my-tasks-search-nomatch-*`, `my-tasks-empty-*`). The Revision 1 files stay.
+- New checks on `/my-tasks` at 320, 375, 768 and 1280 px: a Done-column row has a success badge, a check icon and the text "Done"; an open row has a ghost badge, no icon and "To do"; an 80-character unbroken column name stays inside its row, wraps and takes at most 45% of the row; every badge sits inside its row; no horizontal page scroll; a matching query shows "1 of 5 tasks on 1 board" and hides the other group; typing sends no request (0 requests); a non-matching query shows `No tasks match “zzzz”.` and "0 of 5 tasks", not the empty state; Clear search empties and focuses the field and restores the list; the field and Clear search are at least 44 by 44 CSS px with `elementFromPoint` at the center and a 16 px font; the empty state shows no field. The Revision 1 checks (header links, search states, journey, handler) all still pass.
+- Seed change: the script now also seeds an 80-character column name, so the My tasks summary expects "5 tasks on 2 boards". `focusNotHidden` now focuses the last match of its selector (it took the first, a heading link far above the viewport on the taller page).
+- Status journey at 375 px (manual steps scripted): the card shows an open badge, moves to Done through the API, and returning through the **My tasks link** shows the green done badge. The card then moves back to To do and the browser **Back button** shows **the stale "Done" badge**. A reload shows the current open badge. The first run showed **the stale "Done" badge** on Back, a reload showed the current one. The user asked for the fix (S18, below), and after it the same journey shows the current open badge on Back and a status changed while the tab was hidden appears when the tab becomes visible, both asserted.
+
+### S18: refresh on mount and on visibility (group 17)
+
+The user asked for a refresh ("A refresh when the page becomes visible would fix it. => you can do it."). `MyTasks` calls `router.refresh()` in an effect on mount and on `visibilitychange` to visible, and removes the listener on unmount (`components/tasks/MyTasks.tsx`, DD22). Visibility alone would not fix Back inside the app, because Back does not change visibility, so the mount refresh is the part that fixes it. `router.refresh()` keeps the typed query. Cost: one extra E21 read per visit, accepted (a render timestamp would avoid it but a client clock that differs from the server's could suppress a needed refresh). Tests: 3 added in `MyTasks.test.tsx` (once on mount, visible and hidden, after unmount, query kept). Checks after the change: `npm test` 2262 passed, lint and typecheck clean, `next build` clean, and the 448-check browser run above.
+
+### Defects found and fixed
+
+- None in the product code. Two harness issues: the focus check selector (above), and a Flask keep-alive reset. A first run failed at 375 px with "timed out waiting for board with search" and Next logged `flask_request_failed … outcome=transport`. It repeated on a second run. With gunicorn started with `--keep-alive 60` the run passed. The likely cause is Node reusing a connection that gunicorn's default 2 second keep-alive had closed, made visible by the longer waits in the new steps. It was not investigated further, so treat the cause as unverified. Render also runs gunicorn with the default keep-alive.
+
+### Deviations from the approved design (no change to behavior or contract)
+
+- The test that a response without `column_name` or `is_done` throws is in `lib/server/tasks.test.ts` (where the parser runs), not in `page.test.tsx`, which mocks `getMyTasks`.
+- Summary numbers are wrapped in `tabular-nums` spans by splitting the sentence on digits, so the sentence reads the same as the Revision 1 one.
+
+### Requirement coverage
+
+| Requirement | Proof |
+|---|---|
+| 9.1, 9.6 (E21 fields, rename and Done flag move shown on the next read) | `test_my_tasks.py` (3 new or extended tests), Property 13 |
+| 9.2 to 9.5 (badge, style, accessible name, no widening) | `MyTasks.test.tsx`, `BaseBadge.test.tsx`, browser check at four widths |
+| 9.7 (no status change from My Tasks) | no handler added, the row stays a link (`MyTasks.test.tsx`) |
+| 10.1 to 10.10 (search, states, live region, clear, mobile) | `MyTasks.test.tsx`, `tasks.test.ts` (Properties 14, 15), browser check |
+| 8.3 (parser keys) | `lib/tasks.test.ts`, `lib/server/tasks.test.ts` |
+
+### Still open
+
+- The Playwright My Tasks steps and real-device checks (T15).
+- Deployment in Flask-first order (T16, `docs/DEPLOYMENT.md` section 4). Vercel deploys every push to `main`, so push the backend change first.

@@ -1,4 +1,9 @@
 // Real-browser check for the my-tasks-search slice (T11): Requirements 6, 7 and 5 (journey), 8.1 and 8.9.
+// Revision 2 (2026-11-20, Requirements 9 and 10): the status badge and the My Tasks search on /my-tasks
+// at the four widths (done, open and 80-character column names, a matching and a non-matching query,
+// no request while typing) and a status journey at 375 px (a card moved to Done, then back).
+// Run it with REPORT_FILE=evidence/my-tasks-search-mobile-rev2.json SHOT_DIR=evidence/my-tasks-search-screenshots-rev2
+// so the Revision 1 files stay.
 //
 // Drives headless Google Chrome over the DevTools Protocol with Node's built-in WebSocket, so it
 // needs no npm dependency. It uses Chrome's device emulation (not a real phone) and says so in the
@@ -58,6 +63,7 @@ const MEMBER = { email: `ts-member-${SUFFIX}@t11-check.example.test`, name: "Che
 const PASSWORD = `Aa1!${randomBytes(3).toString("hex")}`;
 const SECRETS = [ADMIN.email, MEMBER.email, PASSWORD];
 const LONG_TITLE = `Unbroken${"x".repeat(140)}`;
+const LONG_COLUMN = `Review${"x".repeat(74)}`; // 80 characters, the column name limit, unbroken
 const NOTE = "A longer description that should be clamped to two lines on the My tasks page. ".repeat(6);
 
 async function api(method, path, token, body) {
@@ -99,7 +105,9 @@ async function seed() {
   await card(done, "Finished work", { assignee_id: MEMBER.id });
   await card(todo, LONG_TITLE, { assignee_id: MEMBER.id });
   await card(betaTodo, "Beta task", { assignee_id: MEMBER.id });
-  return { alpha, beta };
+  const betaLong = (await api("POST", `/api/boards/${beta.id}/columns`, ADMIN.token, { name: LONG_COLUMN })).column;
+  await card(betaLong, "Long status task", { assignee_id: MEMBER.id });
+  return { alpha, beta, todo, done };
 }
 
 // ---- minimal CDP client --------------------------------------------------------------------
@@ -401,7 +409,10 @@ async function headerChecks(role, label, width, page, expectCurrent) {
 async function focusNotHidden(role, label, width, page, selector) {
   const ok = await page.eval(`(() => {
     window.scrollTo(0, document.documentElement.scrollHeight);
-    const el = document.querySelector(${JSON.stringify(selector)});
+    // The last match, so the check focuses the control at the foot of a long page (Rev 2: the first
+    // match is a heading link far above the viewport once the page is taller than one screen).
+    const all = document.querySelectorAll(${JSON.stringify(selector)});
+    const el = all[all.length - 1];
     if (!el) return null;
     el.focus();
     const r = el.getBoundingClientRect();
@@ -477,6 +488,61 @@ async function searchStates(role, page, width) {
   record(role, P, width, "a blank query clears results and loading at once", await page.tryWait(`${RESULT_LABELS}.length === 0 && !document.body.innerText.includes('Searching')`, 1000));
 }
 
+// ---- Revision 2: status badge and My Tasks search (Requirements 9 and 10) -------------------
+const MT_SUMMARY = `(document.querySelector('main p.surface')?.textContent ?? '').replace(/\\s+/g, ' ').trim()`;
+const MT_FIELD = "#my-tasks-search";
+
+async function statusAndSearchChecks(role, page, width) {
+  const P = "my tasks (rev 2)";
+  const done = `Finished work, Alpha board, Done`;
+  const open = `Search task 01, Alpha board, To do`;
+  const long = `Long status task, Beta board, ${LONG_COLUMN}`;
+  const b = await page.eval(`(() => {
+    const info = (label) => {
+      const a = [...document.querySelectorAll('main a')].find((x) => x.getAttribute('aria-label') === label);
+      const badge = a?.querySelector('.badge');
+      if (!a || !badge) return null;
+      const ar = a.getBoundingClientRect(), br = badge.getBoundingClientRect();
+      return {
+        cls: badge.className,
+        icon: !!badge.querySelector('svg'),
+        text: badge.textContent.trim(),
+        inside: br.left >= ar.left - 0.5 && br.right <= ar.right + 0.5 && br.top >= ar.top - 0.5 && br.bottom <= ar.bottom + 0.5,
+        ratio: br.width / ar.width,
+        wrapsInside: badge.scrollWidth <= badge.clientWidth + 1,
+      };
+    };
+    return { done: info(${JSON.stringify(done)}), open: info(${JSON.stringify(open)}), long: info(${JSON.stringify(long)}), docScroll: document.documentElement.scrollWidth, inner: window.innerWidth };
+  })()`);
+  record(role, P, width, "a Done-column row shows a success badge with a check icon and the column name", !!b.done && b.done.cls.includes("badge-success") && b.done.icon && b.done.text === "Done", b.done ? b.done.text : "row missing");
+  record(role, P, width, "an open row shows a ghost badge with no icon and its column name", !!b.open && b.open.cls.includes("badge-ghost") && !b.open.icon && b.open.text === "To do", b.open ? b.open.text : "row missing");
+  record(role, P, width, "an 80-character column name stays inside its row, wraps and takes at most 45% of the row", !!b.long && b.long.inside && b.long.wrapsInside && b.long.ratio <= 0.46, b.long ? `ratio ${b.long.ratio.toFixed(2)}` : "row missing");
+  record(role, P, width, "every badge sits inside its row", [b.done, b.open, b.long].every((x) => x && x.inside));
+  record(role, P, width, "the long column name causes no horizontal page scroll", b.docScroll <= b.inner, `scrollWidth ${b.docScroll}, innerWidth ${b.inner}`);
+
+  // typing filters locally: no request at all
+  const before = page.cdp.requests.filter((r) => r.sessionId === page.sessionId).length;
+  await page.eval(setValue(MT_FIELD, "finished"));
+  const filtered = await page.tryWait(`${MT_SUMMARY} === '1 of 5 tasks on 1 board'`, 3000);
+  record(role, P, width, "a matching query shows '1 of 5 tasks on 1 board' at once", filtered, await page.eval(MT_SUMMARY));
+  const groups = await page.eval(`[...document.querySelectorAll('main h2')].map((h) => h.textContent.trim().replace(/^[A-Z]/, '')).join('|')`);
+  record(role, P, width, "groups with no match are hidden", groups === "Alpha board", groups);
+  await sleep(500);
+  const after = page.cdp.requests.filter((r) => r.sessionId === page.sessionId).length;
+  record(role, P, width, "typing a query sends no request", after === before, `${after - before} requests`);
+  reportPage(role, `${P} match`, width, await page.eval(measureExpr(null)));
+  await shot(page, width, "my-tasks-search-match");
+
+  // no match: a distinct state with a Clear search control that restores the list and focuses the field
+  await page.eval(setValue(MT_FIELD, "zzzz"));
+  record(role, P, width, "a non-matching query shows the no-match message and '0 of 5 tasks'", await page.tryWait(`document.body.innerText.includes('No tasks match “zzzz”.') && ${MT_SUMMARY} === '0 of 5 tasks'`, 3000));
+  record(role, P, width, "the no-match state differs from the empty state", await page.eval(`!document.body.innerText.includes('No cards are assigned to you.')`));
+  reportPage(role, `${P} no match`, width, await page.eval(measureExpr(null)));
+  await shot(page, width, "my-tasks-search-nomatch");
+  await page.eval(`[...document.querySelectorAll('main button')].find((x) => x.textContent.trim() === 'Clear search').click()`);
+  record(role, P, width, "Clear search empties the field, focuses it and restores the full list", await page.tryWait(`document.querySelector(${JSON.stringify(MT_FIELD)}).value === '' && document.activeElement === document.querySelector(${JSON.stringify(MT_FIELD)}) && ${MT_SUMMARY} === '5 tasks on 2 boards'`, 3000));
+}
+
 async function widthChecks(role, page, width) {
   const pages = [["/", "dashboard", "Boards"], ["/my-tasks", "my tasks", "My tasks"]];
   for (const [path, name, current] of pages) {
@@ -495,14 +561,16 @@ async function widthChecks(role, page, width) {
           return { heads, summary, longWraps: !!long && long.scrollWidth <= long.clientWidth + 1, clamped: !!clamp && getComputedStyle(clamp).webkitLineClamp === '2' };
         })()`);
         record(role, "my tasks", width, "groups follow the API order (Alpha board, Beta board)", g.heads.join("|") === "Alpha board|Beta board", g.heads.join("|"));
-        record(role, "my tasks", width, "the summary counts tasks and boards", g.summary[0] === "4 tasks on 2 boards", g.summary[0]);
+        record(role, "my tasks", width, "the summary counts tasks and boards", g.summary[0] === "5 tasks on 2 boards", g.summary[0]);
         record(role, "my tasks", width, "a 148-character unbroken title wraps inside its row", g.longWraps);
         record(role, "my tasks", width, "a long description is clamped to two lines", g.clamped);
         await focusNotHidden(role, "my tasks", width, page, "main a[href^='/boards/']:last-of-type");
         await shot(page, width, "my-tasks");
+        await statusAndSearchChecks(role, page, width);
       } else {
         await page.waitFor(`document.body.innerText.includes('No cards are assigned to you.')`, "empty state");
         reportPage(role, "my tasks empty", width, await page.eval(measureExpr(null)));
+        record(role, "my tasks empty", width, "the empty state has no search field (Rev 2)", await page.eval(`!document.querySelector('#my-tasks-search')`));
         await shot(page, width, "my-tasks-empty");
       }
     } else {
@@ -515,6 +583,51 @@ async function widthChecks(role, page, width) {
     await page.waitFor(`!!document.querySelector('#card-search')`, "board");
     await headerChecks(role, "board page", width, page, "Boards");
   }
+}
+
+// ---- Revision 2: the status journey at 375 px (task 14.2) -----------------------------------
+// A card moves to Done and back through the API (the board's own move is covered by the kanban
+// journey). Records what the My tasks link, the browser Back button and a reload show.
+async function statusJourney(page) {
+  const J = "status journey";
+  const W = 375;
+  const LABEL_TODO = "Search task 01, Alpha board, To do";
+  const LABEL_DONE = "Search task 01, Alpha board, Done";
+  const move = async (column) => {
+    const detail = await api("GET", `/api/boards/${ids.alpha.id}`, ADMIN.token);
+    const card = detail.columns.flatMap((c) => c.cards).find((c) => c.title === "Search task 01");
+    await api("PATCH", `/api/cards/${card.id}/position`, ADMIN.token, { column_id: column.id, before_card_id: null, expected_position_version: detail.position_version });
+  };
+  const badgeOf = (label) => `(() => { const a = [...document.querySelectorAll('main a')].find((x) => x.getAttribute('aria-label') === ${JSON.stringify(label)}); const b = a?.querySelector('.badge'); return b ? b.className.includes('badge-success') ? 'done' : 'open' : null; })()`;
+  await login(page, MEMBER.email);
+  await page.resize(W);
+  await page.goto(`${ORIGIN}/my-tasks`);
+  record("member", J, W, "before the move the card shows an open badge", await page.tryWait(`${badgeOf(LABEL_TODO)} === 'open'`, 6000));
+  await page.eval(`[...document.querySelectorAll('main h2 a')].find((a) => a.textContent.includes('Alpha board')).click()`);
+  await page.tryWait(`location.pathname === '/boards/${ids.alpha.id}'`, 8000);
+  await move(ids.done);
+  await page.eval(`document.querySelector('header nav a[href="/my-tasks"]').click()`);
+  record("member", J, W, "after the move, returning through the My tasks link shows the green done badge", await page.tryWait(`${badgeOf(LABEL_DONE)} === 'done'`, 8000));
+  await page.eval(`[...document.querySelectorAll('main h2 a')].find((a) => a.textContent.includes('Alpha board')).click()`);
+  await page.tryWait(`location.pathname === '/boards/${ids.alpha.id}'`, 8000);
+  await move(ids.todo);
+  await page.eval(`history.back()`);
+  await page.tryWait(`location.pathname === '/my-tasks'`, 8000);
+  await sleep(1500);
+  const afterBack = await page.eval(`${badgeOf(LABEL_DONE)} === 'done' ? 'done (stale)' : ${badgeOf(LABEL_TODO)} === 'open' ? 'open (current)' : 'missing'`);
+  record("member", J, W, "after the card moved back, the Back button shows the current status (the page refreshes when it mounts)", afterBack === "open (current)", `Back showed: ${afterBack}`);
+  // the tab becomes visible again: a change made while the page was hidden shows without a reload
+  await page.eval(`document.querySelector('header nav a[href="/my-tasks"]').click()`);
+  await page.eval(`[...document.querySelectorAll('main h2 a')].find((a) => a.textContent.includes('Alpha board')).click()`);
+  await page.tryWait(`location.pathname === '/boards/${ids.alpha.id}'`, 8000);
+  await page.eval(`history.back()`);
+  await page.tryWait(`${badgeOf(LABEL_TODO)} === 'open'`, 8000);
+  await move(ids.done);
+  await page.eval(`(() => { Object.defineProperty(document, 'visibilityState', { configurable: true, get: () => 'hidden' }); document.dispatchEvent(new Event('visibilitychange')); Object.defineProperty(document, 'visibilityState', { configurable: true, get: () => 'visible' }); document.dispatchEvent(new Event('visibilitychange')); })()`);
+  record("member", J, W, "when the tab becomes visible again, a status changed meanwhile shows without a reload", await page.tryWait(`${badgeOf(LABEL_DONE)} === 'done'`, 8000));
+  await move(ids.todo);
+  await page.goto(`${ORIGIN}/my-tasks`);
+  record("member", J, W, "a reload shows the current open badge", await page.tryWait(`${badgeOf(LABEL_TODO)} === 'open'`, 6000));
 }
 
 // ---- the manual journey at 375 px ----------------------------------------------------------
@@ -624,6 +737,7 @@ async function main() {
         await widthChecks(role, page, width);
       }
     }
+    await statusJourney(page);
     await journey(page);
   } finally {
     chrome.kill();
@@ -631,7 +745,7 @@ async function main() {
   }
   const failed = results.filter((r) => !r.pass);
   const report = {
-    slice: "my-tasks-search (T11)",
+    slice: "my-tasks-search (T11), Revisions 1 and 2",
     browser: version,
     mode: "headless Chrome with device emulation (not a real phone), touch emulation below 640 px",
     widths: WIDTHS,

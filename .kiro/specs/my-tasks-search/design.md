@@ -2,7 +2,9 @@
 
 ## Overview
 
-This design implements the My Tasks read (E21), the board card search (E22), the `/my-tasks` page, the search control on the board page and the shared navigation change (root T11). It follows `requirements.md` (Requirements 1 to 8, decisions S1–S11 approved on 2026-11-14 with clarifications) and the shared design D5 and D6. Python (Flask, SQLAlchemy, Marshmallow, pytest) and TypeScript (Next.js App Router, Tailwind, daisyUI, Vitest) are the languages already in the repository. No table, migration, dependency, `docs/API.md` path, method, parameter name or response field changes.
+This design implements the My Tasks read (E21), the board card search (E22), the `/my-tasks` page, the search control on the board page and the shared navigation change (root T11). It follows `requirements.md` (Requirements 1 to 8, decisions S1–S11 approved on 2026-11-14 with clarifications) and the shared design D5 and D6. Python (Flask, SQLAlchemy, Marshmallow, pytest) and TypeScript (Next.js App Router, Tailwind, daisyUI, Vitest) are the languages already in the repository. No table, migration, dependency, `docs/API.md` path, method, parameter name or response field changes (Rev 2: the E21 item gains two fields, C42).
+
+**Revision 2 (2026-11-20).** Requirements 9 and 10 (decisions S12–S17, approved 2026-11-20 in chat as written) add a status badge to each My Tasks row and a local title search above the groups. The design adds two fields to the E21 item, one small variant to `BaseBadge`, one pure filter helper and a client state in `MyTasks`. See "Revision 2 design" after "Mobile design". The Revision 1 sections stay as the record of what was built. Where Revision 2 changes a Revision 1 statement, the statement is marked "(Rev 2)" in place. The one contract change is the additive E21 item (C42).
 
 ### Verified facts about the existing code
 
@@ -154,7 +156,7 @@ def search_cards(board_id, user_id, q: str) -> list[dict]:            # E22
 
 ### Serialization
 
-Explicit allowlist schemas, as for the other endpoints. `TaskItemSchema` dumps `id, column_id, title, description, assignee_id, assignee_name, order, board_id, board_name`. `SearchResultSchema` dumps `id, title, column_id` and nothing else, so no description, assignee or comment reaches the response (Requirement 2.6). `description` is returned in E21 because the page shows an excerpt and the contract's `Card` shape includes it.
+Explicit allowlist schemas, as for the other endpoints. `TaskItemSchema` dumps `id, column_id, title, description, assignee_id, assignee_name, order, board_id, board_name` (Rev 2: and `column_name`, `is_done`). `SearchResultSchema` dumps `id, title, column_id` and nothing else, so no description, assignee or comment reaches the response (Requirement 2.6). `description` is returned in E21 because the page shows an excerpt and the contract's `Card` shape includes it.
 
 ### Next handlers and client allowlist
 
@@ -203,12 +205,12 @@ frontend/
 | Component | Boundary | Responsibility |
 |---|---|---|
 | `MyTasksPage` (`page.tsx`) | Server | Verify the session, read E21, render `MyTasks`. A read failure throws `ApiError` to `app/error.tsx`. |
-| `MyTasks` | Props-only | Summary strip, `TaskGroup` per board, the empty state. |
-| `TaskGroup` | Props-only | The heading link to `/boards/<id>` with the chip, and a `ul` of rows. Each row links to the same board. |
+| `MyTasks` | Client (Rev 2, DD17), serializable props | The search field and its query state, the filter, summary strip, `TaskGroup` per board, the empty state and the no-match state. |
+| `TaskGroup` | Props-only | The heading link to `/boards/<id>` with the chip, and a `ul` of rows. Each row links to the same board and shows the Status_Badge (Rev 2). |
 | `CardSearch` | Client | The labelled field, the five states, the result list. Calls `onOpenCard(cardId)`. |
 | `useCardSearch` | Hook | Query text, debounce, request, abort, late-response guard, retry. |
 
-The task row is a link to the board with the card title and a two-line excerpt (`line-clamp-2`, `break-words`), and the group heading is a second link to the same board. The row link has the accessible name "<title>, <board name>". There is no card deep link (S9).
+The task row is a link to the board with the card title and a two-line excerpt (`line-clamp-2`, `break-words`), and the group heading is a second link to the same board. The row link has the accessible name "<title>, <board name>" (Rev 2: "<title>, <board name>, <column name>", DD14). There is no card deep link (S9).
 
 ### Search state and the live board
 
@@ -278,21 +280,130 @@ The `<nav aria-label="Main">` is always rendered. Below 1024 px the header is al
 
 `/my-tasks`: `main` with `mx-auto w-full max-w-6xl p-4 sm:p-6 lg:p-8`, the title `text-2xl sm:text-3xl font-semibold tracking-tight`, the summary strip (one `surface` with "3 tasks on 2 boards" and `tabular-nums`), then one `surface` per board group with `divide-y divide-base-300` rows. Below 1024 px there is only the main column. Titles, excerpts and board names use `break-words min-w-0`. Each row is a full-width link with `min-h-11`. The board page keeps its full-width layout, and the search field is full width at 375 px with a `text-base` font so iOS Safari does not zoom. Results stack and wrap. `lib/mobileGuard.test.ts` keeps `h-screen`, `100vh` and zoom locks out of the new files. Measured checks are in "Browser checks".
 
+## Revision 2 design (status badge and task search)
+
+### Verified facts for Revision 2
+
+| Fact | Where | Consequence |
+|---|---|---|
+| `my_tasks` already joins `BoardColumn` (for the board and the soft-delete filter) but selects no column field. | `backend/app/blueprints/cards/service.py` | `BoardColumn.name` and `BoardColumn.is_done` are two more selected columns on the same join. No extra query, no migration (DD13). |
+| `TaskItemSchema` is an explicit allowlist with `Meta.fields`. | `backend/app/blueprints/cards/schema.py` | Add two declared fields and two names to `Meta.fields`. An undeclared column can never leak. |
+| `parseTaskItem` calls `parseCard(value)` and then copies `board_id` and `board_name`, throwing `malformedApiError` on any other shape. | `frontend/lib/tasks.ts` | Extend with `column_name` (string) and `is_done` (boolean). |
+| `BaseBadge` has `primary` and `ghost` variants. `--color-success` (`#1a7f4b`, content white) exists in the theme. | `components/shared/BaseBadge.tsx`, `app/globals.css` | Add a `success` variant (`badge-success`). The color is the existing semantic one, so FE-D1 holds (DD15). |
+| `Icon` has `check` and `x`. `FormField` has `type="search"`, `maxLength`, `hideLabel`, `inputClassName` and `inputRef`. `CardSearch` already shows the search-field pattern (icon at the left, `pl-9`, label hidden, an `aria-live` `sr-only` paragraph). `titleMatches(title, query)` and `SEARCH_QUERY_MAX` exist in `lib/cardSearch.ts`. | frontend | Reuse all of them. No new shared component and no new matching function (DD16). |
+| `MyTasks` is a props-only component rendered by the Server Component page. The page passes `tasks` (serializable). | `components/tasks/MyTasks.tsx`, `app/(protected)/my-tasks/page.tsx` | `MyTasks` gets `"use client"` and a `useState` query. The page stays a Server Component (FE-C1). |
+| The row link has `aria-label="<title>, <board name>"`, and an `aria-label` replaces the link's content. | `TaskGroup.tsx` | The label gains the column name, or the badge is invisible to a screen reader (DD14). |
+| No Playwright step reads a My Tasks row name. `mobile.spec.ts` only visits the route. | `frontend/e2e` | The label change breaks no journey. |
+
+### Revision 2 decisions
+
+| ID | Decision | Rationale |
+|---|---|---|
+| DD13 | E21 selects `BoardColumn.name AS column_name` and `BoardColumn.is_done AS is_done` in the same statement. `TaskItemSchema` dumps both. | S12. One snapshot with the card, so the status cannot disagree with the card's position. No new query, index or table. |
+| DD14 | Each row is `[title and excerpt] [Status_Badge] [chevron]`. The row link's accessible name becomes `"<title>, <board name>, <column name>"`. The badge is plain text inside the link and never takes focus. | Requirements 9.2 to 9.4. The visible badge and the spoken name say the same thing. |
+| DD15 | `BaseBadge` gets `variant="success"` (`badge-success`). A done badge shows `<Icon name="check" className="size-3.5" />` before the text. An open badge is `ghost` with no icon. The badge text is the column name. A caller can let a long name wrap by passing `h-auto min-h-6 max-w-[45%] whitespace-normal py-0.5 text-left` as `className`, because daisyUI's `badge` has a fixed height and `BaseBadge` already carries `shrink-0`. | S13, FE-D1 (no new color), 9.3 (not color alone), 9.5 (FE-S4). The 45% cap keeps at least half of the row for the title. |
+| DD16 | The filter is a pure function `filterTasks(tasks, query)` in `lib/tasks.ts`. It trims the query, returns `tasks` unchanged when the trimmed text is empty, and otherwise keeps a task when `titleMatches(task.title, trimmed)`. `MyTasks` groups the filtered list with the existing `groupTasksByBoard`. | S14, S15. `titleMatches` is the function the board search already uses (case-insensitive literal substring), so the two searches agree and there is no wildcard to escape. Grouping after the filter drops empty groups and keeps the API order for free (10.6, S1). |
+| DD17 | `MyTasks` becomes a client component: `"use client"`, `const [query, setQuery] = useState("")`, and a `useRef` for the field. No debounce, no effect, no URL, no storage. The page file does not change. | S15, S17. One file holds the state. A wrapper component would add a file for no reuse (FE-C2 is met: `MyTasks` composes the field and `TaskGroup`, and `TaskGroup` stays props-only). |
+| DD18 | The search block renders only when `tasks.length > 0`. The field copies the `CardSearch` markup: `FormField` (`type="search"`, `hideLabel`, label "Search my tasks", placeholder "Search my tasks", `maxLength={SEARCH_QUERY_MAX}`, `pl-9`, `autoComplete="off"`) with the `search` icon, in a `w-full sm:max-w-sm` wrapper. | 10.1, 10.10. One pattern for both searches. |
+| DD19 | An `sr-only` `<p aria-live="polite" aria-atomic="true">` holds the announcement: `"<N> tasks"` while filtering with matches and `"No tasks match."` otherwise. It is always rendered while `tasks.length > 0`, so a change is announced. | 10.7. Same pattern as `CardSearch`, which avoids a second `role="status"`. |
+| DD20 | The summary strip shows `"<shown> of <all> tasks on <k> boards"` when the normalized query is not empty and `shown > 0`, and `"<all> tasks on <k> boards"` otherwise. When `shown` is 0 the strip shows `"0 of <all> tasks"` without the boards part, because "on 0 boards" reads as a defect. Singular forms follow the existing `task` and `board` labels. | 4.3, 10.6. This refines 10.6 for the zero case (review item R1). |
+| DD21 | The no-match state is a dashed `surface` panel like the empty state, with the text `No tasks match "<query>".` (the trimmed query, as plain text) and a ghost `BaseButton` "Clear search". The button empties the query and calls `inputRef.current?.focus()`. | 10.5, 10.9. The dashed panel matches FE-D7's empty state, and the text differs from "No cards are assigned to you." The native clear of `type="search"` fires `onChange` with `""`, so it needs no code. |
+| DD22 (S18) | `MyTasks` runs `router.refresh()` in an effect on mount and on `visibilitychange` to `visible`, and removes the listener on unmount. No staleness check. `router.refresh()` re-renders the Server Component and keeps client state, so the typed query stays. | The Back button restores an earlier render from Next's router cache, and the journey showed the stale badge. Visibility alone does not fire on Back, so the mount refresh fixes Back and the listener covers a tab left open. A render timestamp would skip the refresh on a fresh visit, but a client clock that differs from the server's could suppress a needed refresh, so the simple always-refresh is kept. Ceiling: one extra E21 read per visit. |
+
+### Backend change (E21)
+
+```python
+# backend/app/blueprints/cards/service.py  (my_tasks) — two lines added to the select
+            Board.name.label("board_name"),
+            BoardColumn.name.label("column_name"),       # Rev 2
+            BoardColumn.is_done.label("is_done"),        # Rev 2
+```
+
+```python
+# backend/app/blueprints/cards/schema.py  (TaskItemSchema)
+    column_name = fields.String()                         # Rev 2
+    is_done = fields.Boolean()                            # Rev 2
+    # Meta.fields gains "column_name", "is_done" after "board_name"
+```
+
+The docstring of `my_tasks` says that the status comes from the same join. The sort, the filters, the query validation and the membership join do not change. The `docs/API.md` E21 row and the "E21 item" shape line are the contract edits (C42).
+
+### Frontend change
+
+```ts
+// frontend/lib/types.ts
+export type TaskItem = Card & { board_id: string; board_name: string; column_name: string; is_done: boolean };
+
+// frontend/lib/tasks.ts
+export function parseTaskItem(value: unknown): TaskItem {
+  if (!isRecord(value) || typeof value.board_id !== "string" || typeof value.board_name !== "string"
+      || typeof value.column_name !== "string" || typeof value.is_done !== "boolean") throw malformedApiError();
+  return { ...parseCard(value), board_id: value.board_id, board_name: value.board_name,
+           column_name: value.column_name, is_done: value.is_done };
+}
+export function filterTasks(tasks: TaskItem[], query: string): TaskItem[] {
+  const q = query.trim();
+  return q === "" ? tasks : tasks.filter((task) => titleMatches(task.title, q));
+}
+```
+
+```tsx
+// components/tasks/MyTasks.tsx  ("use client")
+const [query, setQuery] = useState("");
+const trimmed = query.trim();
+const shown = filterTasks(tasks, query);
+const groups = groupTasksByBoard(shown);
+// tasks.length === 0            → the Revision 1 empty state, no field (4.4)
+// otherwise: field, sr-only live line, summary strip (DD20), then
+//   shown.length === 0          → the no-match panel (DD21)
+//   else                        → one <TaskGroup> per group
+```
+
+```tsx
+// components/tasks/TaskGroup.tsx — one row
+<Link aria-label={`${task.title}, ${group.boardName}, ${task.column_name}`} ...>
+  <span className="flex min-w-0 flex-1 flex-col gap-1"> …title and excerpt as before… </span>
+  <BaseBadge variant={task.is_done ? "success" : "ghost"} className="max-w-[45%] ...">
+    {task.is_done ? <Icon name="check" className="size-3.5" /> : null}
+    <span className="min-w-0 break-words">{task.column_name}</span>
+  </BaseBadge>
+  <Icon name="chevron-right" />
+</Link>
+```
+
+The badge shares the row with the title, so on a 320 px screen the title column has `min-w-0 flex-1` and the badge is capped at 45% of the row, which leaves the title at least half. A column name of 80 characters (the column limit) wraps inside the badge. `BaseBadge` gets the `success` variant and a note that its text may wrap when a caller passes `h-auto` and `whitespace-normal`. daisyUI's `badge` has a fixed height, so the caller removes it for a wrapping name (`h-auto min-h-6 py-0.5 whitespace-normal text-left`).
+
+### Revision 2 states and behavior
+
+| Case | Result |
+|---|---|
+| No task | Revision 1 empty state, no field, no summary of filtering. |
+| Tasks, empty or blank query | All groups, summary "3 tasks on 2 boards". |
+| Query with matches | Only matching rows, groups with no match hidden, summary "1 of 3 tasks on 1 board", live line "1 task" (singular and plural follow the count). |
+| Query with no match | Field stays, the no-match panel, summary "0 of 3 tasks", live line "No tasks match." |
+| Clear search | Query `""`, focus on the field, full list. |
+| Reload or a link visit | Empty field, full list (state is local, S17). |
+| Column renamed or card moved on the board | The page shows the status of its last load. Navigating back or reloading fetches the new value (9.6). |
+
+### Revision 2 mobile design (Requirement 7, FE-S4 to FE-S6)
+
+The field is full width at 375 px, `sm:max-w-sm` from 640 px, 16 px font and `min-h-11`. The "Clear search" button is `min-h-11 min-w-11`. The badge is a label with no target size. At 320 px the row is title block (at least 55%) plus badge (up to 45%) plus the 20 px chevron, and every text wraps (`break-words`, `min-w-0`), so the page does not widen. The measured script adds a done row, an open row, a row with an 80-character column name, a matching query and a no-match query, and checks `scrollWidth <= innerWidth`, the 44 px boxes of the field and the clear button, and that the badge's bounding box stays inside its row.
+
 ## Data Models
 
 No schema change. `cards`, `board_columns`, `boards`, `board_members` and `users` are read as they are.
 
-### Wire shapes (unchanged from `docs/API.md`)
+### Wire shapes
 
 ```text
-E21 item   { id, column_id, title, description, assignee_id, assignee_name, order, board_id, board_name }
+E21 item   { id, column_id, title, description, assignee_id, assignee_name, order, board_id, board_name, column_name, is_done }   # Rev 2: column_name, is_done added (C42)
 E22 item   { id, title, column_id }
 ```
 
 ### Frontend types
 
 ```ts
-type TaskItem = Card & { board_id: string; board_name: string };
+type TaskItem = Card & { board_id: string; board_name: string; column_name: string; is_done: boolean };  // Rev 2
 type TaskGroup = { boardId: string; boardName: string; tasks: TaskItem[] };
 type SearchResult = { id: string; title: string; column_id: string };
 type VisibleResult = { cardId: string; title: string; columnName: string };
@@ -327,6 +438,7 @@ Backend tests run on `TEST_DATABASE_URL` through `db_guard` and `BoardTracker`. 
 | `test_my_tasks.py` | E21 200 shape and allowlist, the empty list, only the caller's cards, a Done card included, exclusion of a soft-deleted card, a card in a soft-deleted column, a card on a soft-deleted board, a card assigned to another user, an unassigned card, and a card on a board where the caller has no active membership (a removed member whose assignment still names them). The sort order over two boards with names that differ by case and equal names, and the column and card order. Cards of one board adjacent. A removal hides the board's cards at once. `assignee_name` and `board_name` after a rename. No write, no event, `position_version` unchanged, `no-store`. 401. |
 | `test_card_search.py` | E22 200 shape and allowlist, no match as an empty list, case-insensitive matching, literal `%`, `_`, `\` and `/`, title only (a description or comment word does not match), the trimmed `q`, the cap (21 matching cards return 20, in board order, ties broken by card ID), the order across columns and a reorder, soft-deleted card and column excluded, other-board cards never returned, 404 for a nonmember, a removed member, a missing board and a soft-deleted board with one envelope, Admin and Member both allowed, no write, no event, `no-store`, 401, and the check order (401, then a bad path ID or query 400, then 404). |
 | `test_search_properties.py` | Parameterized properties 1 to 5 below. |
+| `test_my_tasks.py` (extended, Rev 2) | Every item has `column_name` and `is_done` and the key set is exactly the documented ten plus two. A card in the Done column has `is_done` true and a card in another column false, with the column's name. Cards of one board in two columns show their own column. After an Admin renames a column and after the Done flag moves (E14 on an empty column), the next E21 shows the new values. The existing exclusions, order, membership removal, no-write and `no-store` tests keep passing. |
 | `test_boards_cleanup.py` (extended) | The sentinel survives the T11 cleanup. |
 
 The 100-card timing is a measurement script in `evidence/`, not a pytest case.
@@ -336,15 +448,16 @@ The 100-card timing is a measurement script in `evidence/`, not a pytest case.
 | File | Covers |
 |---|---|
 | `lib/cardSearch.test.ts` | `cardSearchPath` encoding (a `&`, `#`, `%` and a space in `q`), `parseSearchResults` allowlist and error shape, `titleMatches`, and the table-driven `resolveSearchResults` cases: unchanged title, rename that still matches, rename that no longer matches, a move to another column, a delete, a rolled-back delete that restores the result, an empty board. |
-| `lib/tasks.test.ts` | `parseTaskList` allowlist and error shape, `groupTasksByBoard` keeps the API order, groups by first appearance, handles an empty list. |
+| `lib/tasks.test.ts` | `parseTaskList` allowlist and error shape, `groupTasksByBoard` keeps the API order, groups by first appearance, handles an empty list. Rev 2: the parser copies `column_name` and `is_done` and throws on a missing key, a non-string name and a non-boolean flag. `filterTasks`: empty and whitespace-only query return the same list, case-insensitive match, literal `%`, `_`, `\`, `*` and `.`, trims the query, title only (a description, board name or column name does not match), keeps the API order, no match returns `[]`. |
+| `components/shared/BaseBadge.test.tsx` (new, Rev 2) | The `success` variant gives `badge-success`, `ghost` stays the default, a caller `className` is appended. |
 | `lib/apiClient` tests (extended) | The search pattern is declared, any other `/cards/search` path, a second parameter, a non-UUID board ID or a fragment throws before `fetch`. |
 | `lib/server/flask.test.ts` (extended) | `search` is applied to the final URL, a duplicate and unknown key are kept in order, a value that does not start with `?` throws, the origin check still runs. |
 | `app/api/cardSearchRoute.test.ts` | The handler forwards the query string unchanged: one `q`, a repeated `q`, an unknown key, a blank `q` and a `q=%00` (NUL) reach Flask exactly as sent, and the Flask 400 body and status pass through. A bad board ID is 400 without a call. A missing cookie is 401 and clears the cookie. The bearer token comes from the cookie, `no-store` is set and no token is in the response. |
 | `hooks/useCardSearch.test.tsx` | With fake timers: a burst of keystrokes sends one request after 300 ms, nothing before 300 ms, the trimmed text is sent, no request for blank text, clearing the field clears the results at once and aborts the request and the timer, an identical trimmed text sends nothing, two deferred requests that resolve out of order leave the newest results, an abort is not an error, 5xx and transport failure give the error state and keep the text, Retry sends one request without a delay, a 400 shows the field message and sends no retry, a 404 calls `onAccessLost`, unmount aborts and clears the timer. |
 | `components/kanban/CardSearch.test.tsx` | The label, idle (no message), loading, results (title and column name), no results with the query text, error with Retry, "Showing 20 results." only when 20 were returned and with the visible count, a result hidden after a rename that no longer matches, a new title and column shown after a rename and a move, a deleted card hidden and restored on rollback, a new match not shown until the next search, selecting a result calls `onOpenCard` with the card ID, the live region text. |
 | `components/kanban/KanbanBoard.test.tsx` (extended) | The search above the columns, a result opens the detail modal for the current card and focus returns to the result, the search stays usable while the board is busy and a pending search does not disable a move. |
-| `components/tasks/MyTasks.test.tsx` | Groups in the given order, heading link and row link to `/boards/<id>`, the summary text for one and several tasks and boards, the empty state, the excerpt and long text classes, no card ID in any link. |
-| `app/(protected)/my-tasks/page.test.tsx` | The session is verified, E21 is read with `?assignee=me`, the page renders the groups, a read failure throws, a missing session redirects. |
+| `components/tasks/MyTasks.test.tsx` | Groups in the given order, heading link and row link to `/boards/<id>`, the summary text for one and several tasks and boards, the empty state, the excerpt and long text classes, no card ID in any link. Rev 2: every row shows its column name as a badge, a done row has the check icon and `badge-success` and an open row has `badge-ghost` and no icon, the row's accessible name ends with the column name, a done task in a column named "Selesai" shows `badge-success`, the check icon and "Selesai", an 80-character column name gets the wrapping classes, and the order of rows does not change with the badge. Search: no field when there is no task, a labelled `type="search"` field with `maxLength` 100, typing filters at once with no timer and no `fetch`, groups with no match disappear, the summary "1 of 3 tasks on 1 board" and "0 of 3 tasks", the no-match text with the query as text (a `<b>` in the query renders as text), the empty state text is not the no-match text, Clear search empties the field and focuses it, a whitespace-only query shows everything, the live line text. Refresh (S18): `router.refresh()` once on mount, again when the tab becomes visible and not when hidden, never after unmount, and the typed query kept across new props. |
+| `app/(protected)/my-tasks/page.test.tsx` | The session is verified, E21 is read with `?assignee=me`, the page renders the groups, a read failure throws, a missing session redirects. Rev 2: a response without `column_name` or `is_done` throws to the error boundary. The test data of this file, `lib/server/tasks.test.ts` and `MyTasks.test.tsx` gain the two fields. |
 | `components/shared/AppHeader.test.tsx` (extended) | Both links render, `aria-current` on `/`, `/boards/x` and `/my-tasks`, both have `min-h-11`, the nav has the classes that show it below 1024 px (`order-last`, `basis-full`) and no `hidden` on the nav. |
 | `lib/boardChip.test.ts`, `components/boards/BoardList.test.tsx` | The same board ID gives the same chip class in both places. |
 
@@ -355,7 +468,9 @@ The 100-card timing is a measurement script in `evidence/`, not a pytest case.
 - A manual journey at 375 px: open My tasks from the top bar, follow a board link, type a query, see results, open a card from a result, clear the query, a no-result query, rename the card and see the result follow it.
 - A late-response check in the browser by delaying one request, and the validation check through the real handler with `curl` (repeated `q`, unknown key, blank `q`, `q=%00`) against the dev server.
 - Timing: 30 sequential E22 and 30 sequential E21 requests on a board of 100 cards, with raw timings and conditions, compared with the 800 ms reference (Requirement 8.9).
-- The V10 Playwright journey is delivered in T15.
+- (Rev 2) `evidence/my-tasks-search-mobile-measure.mjs` is extended, not replaced, with a done row, an open row, a row with an 80-character column name, a matching query and a no-match query on `/my-tasks` at 320, 375, 768 and 1280 px. It also checks that typing sends no request (a `fetch` and network counter stays at zero), the 44 px boxes and 16 px font of the field and the clear button, and that every badge stays inside its row. Revision 2 files are named so the Revision 1 files stay (`my-tasks-search-mobile-rev2.json`, `my-tasks-search-screenshots-rev2/`).
+- (Rev 2) A manual journey at 375 px: open My tasks, see done and open badges, type part of a title, see the summary change, type text that matches nothing, clear it, then mark a card done on its board, return through the "My tasks" link and through the browser Back button, and record whether the green badge shows in each case and after a reload.
+- The V10 Playwright journey is delivered in T15. (Rev 2: the Playwright My Tasks step is not added here, as with Revision 1. Real-device checks stay open.)
 
 ## Correctness Properties
 
@@ -373,6 +488,9 @@ Each property is a parameterized test over fixed tables, not a generator.
 10. **Debounce.** For any sequence of changes closer than 300 ms apart, one request is sent, 300 ms after the last change, with the final trimmed text. A blank value sends none and clears the results at once (Requirements 5.2, 5.3).
 11. **Query pass-through.** The handler forwards the query string it receives byte for byte, repeats and unknown keys included (Requirement 8.1).
 12. **Navigation.** On every path the header shows both links, marks exactly one as current for `/`, `/boards/*` and `/my-tasks`, and keeps both at 44 px (Requirements 6.1 to 6.3).
+13. **Status matches the column (Rev 2).** For every table of cards across columns (Done and not Done, renamed, moved), each E21 item's `column_name` and `is_done` equal the current name and flag of the column that holds the card, and the badge shows done if and only if `is_done` is true (Requirements 9.1 to 9.3, 9.6).
+14. **Filter (Rev 2).** For any task list and query, `filterTasks` returns the tasks whose title contains the trimmed query case-insensitively as a literal substring, in the input order, returns the input for an empty trimmed query, and never reads another field. The shown groups are those of the returned tasks, in the API order (Requirements 10.2 to 10.4, 10.6).
+15. **No request from search (Rev 2).** Typing, filtering and clearing call no `fetch` and no route (Requirements 4.7, 10.2).
 
 ## Acceptance Criteria Map
 
@@ -386,10 +504,16 @@ Each property is a parameterized test over fixed tables, not a generator.
 | 6 (navigation) | `AppHeader` | WP-F5 | RTL, V11 measured, property 12 |
 | 7 (mobile, AC13.1) | every new page and control | WP-F3, WP-F5, WP-V | V11 measured script, screenshots, manual journey |
 | 8 (handlers, verification) | Next handler, allowlist, docs | WP-F1, WP-D | V07, handler tests, property 11, timing record |
+| 9 (task status, Rev 2, AC06.2) | `GET /api/cards` item · `my_tasks`, `TaskItemSchema`, `parseTaskItem`, `BaseBadge`, `TaskGroup` | WP-R2-B, WP-R2-F | V07 `test_my_tasks.py`, `tasks.test.ts`, `MyTasks.test.tsx`, property 13, V11 measured |
+| 10 (My Tasks search, Rev 2, AC06.2) | `MyTasks`, `filterTasks`, `titleMatches` | WP-R2-F | RTL, `tasks.test.ts`, properties 14, 15, V11 measured, manual journey |
 
 Work packages: **WP-B1** `load_query_args`, schemas, `my_tasks`, `search_cards`, routes, the fixture. **WP-B2** backend tests and the cleanup sentinel. **WP-F1** types, parsers, `FLASK_PATHS`, the `search` option, the Next handler, the client allowlist, `getMyTasks`. **WP-F2** `lib/cardSearch.ts` and `useCardSearch`. **WP-F3** `MyTasks`, `TaskGroup`, the page, `CardSearch`, `boardChip`. **WP-F4** `KanbanBoard` wiring. **WP-F5** `AppHeader`. **WP-V** the measured mobile check, the manual journey and the timing record. **WP-D** documentation.
 
+Revision 2 work packages: **WP-R2-B** E21 `column_name` and `is_done` (service, schema, `test_my_tasks.py`). **WP-R2-F** `TaskItem` type and parser, `filterTasks`, `BaseBadge` `success`, `TaskGroup` badge and label, `MyTasks` search and states, their tests and the fixtures that build a `TaskItem`. **WP-R2-V** the measured mobile check, the manual journey, the evidence, the documentation (README, changelogs, traceability). **WP-R2-D** the shared contract documents (C42).
+
 ### Dependencies and gates
+
+Revision 2 gates: **B2** the backend E21 checks pass before the frontend parser requires `column_name` and `is_done` (WP-R2-B before WP-R2-F). **C2** the full backend and frontend suites, lint, typecheck and `next build` pass before the measured mobile record is final. **D2** Revision 2 is recorded complete only after B2, C2 and the measured check pass. The frontend and Flask must ship together, because the parser throws on a missing key (Risks).
 
 Root T08 and T09 are verified, and so is T10, so no gate blocks the start. WP-B1 comes before WP-F1 (the handler tests need the contract to be live), WP-F1 before WP-F2, WP-F2 before WP-F3 and WP-F4. WP-F5 is independent. Root T11 is checked only when the backend checks, the frontend checks and the measured mobile check pass. Unverified work stays open.
 
@@ -404,6 +528,8 @@ No endpoint path, method, parameter name or response field changes. These clarif
 | C20 | E22: title-only, case-insensitive, `%`, `_` and `\` literal, at most 20 in board order with the card ID as tie-breaker, no total. A nonmember gets the generic 404 (C1). Both endpoints are read-only: no lock, event, notification or version change (S4, S5, S11). | `docs/API.md`, `specs/requirements.md` AC09.1 |
 | C21 | A browser Route Handler for E22 that forwards the query string unchanged. E21 has no browser handler (S3, S11). | `frontend/specs/api-integration.md`, `docs/API.md` |
 | C22 | The AppHeader shows Boards and My tasks at every width (S10). | `guidelines/frontend.md` FE-D2, `specs/design.md` D5, `frontend/specs/pages-and-components.md` |
+
+| C42 (Rev 2) | The E21 item gains `column_name` (the current name of the column that holds the card) and `is_done` (that column's Done flag), read in the same statement as the card. Additive: no path, method, parameter, error, filter, sort or existing field changes. Search on My Tasks is local and adds no API (S12, S14). | `docs/API.md` (E21 row and "E21 item" shape), `backend/specs/api-contract.md`, `frontend/specs/api-integration.md`, `frontend/specs/pages-and-components.md` (`/my-tasks` row), `specs/requirements.md` AC06.2, `specs/design.md` D6, `specs/traceability.md`, `docs/TEST-PLAN.md` V07 and V11, `docs/DEPLOYMENT.md` (deploy Flask before the frontend for this change), `guidelines/frontend.md` (component table: `BaseBadge` `success`), `specs/CHANGELOG.md`. Applied at finalize, after the task plan is approved. |
 
 Synchronized with this design (2026-11-14): `specs/requirements.md` AC06.2 and AC09.1, `specs/design.md` D5 and D6, `docs/API.md`, `backend/specs/api-contract.md`, `frontend/specs/api-integration.md`, `frontend/specs/pages-and-components.md`, `guidelines/frontend.md` FE-D2, `docs/TEST-PLAN.md` V07 and V11, `specs/traceability.md`, `specs/CHANGELOG.md` and `evidence/spec-review.md`. Left for finalization after the task plan is approved: the link from root T11 in `specs/tasks.md` to `.kiro/specs/my-tasks-search/tasks.md`. Left for the implementation: the README, the application changelogs and `evidence/my-tasks-search-T11.md`.
 
@@ -420,10 +546,27 @@ S1–S11 are resolved as written in `requirements.md` ("Approved decisions"). Th
 | Q5 | Sort order | The approved S1 order with the card ID as the final tie-breaker. No column ID tie-breaker is added. | Service sketch; Property 2; tasks 1.3, 2.2 |
 | Q6 | Sticky mobile header | The wrapping navigation row is approved. At both 320 px and 375 px, Boards and My tasks are reachable, each link is at least 44 by 44 CSS px, and the header causes no horizontal overflow and does not overlap content. | AppHeader; Browser checks; Property 12; tasks 7.1, 8.1 |
 
+### Revision 2 review items (for approval)
+
+S12–S17 are the approved decisions. These are design choices the requirements left open:
+
+| ID | Choice | Default in this design | Alternative |
+|---|---|---|---|
+| R1 | The summary when a query matches nothing | "0 of 3 tasks" without the boards part (DD20). Requirement 10.6 says "on <shown boards> boards", which would read "on 0 boards". | Keep the sentence as written, "0 of 3 tasks on 0 boards". |
+| R2 | Where the "Clear search" button lives | In the no-match panel only. The browser's native clear (`type="search"`) covers the rest. | Also a permanent clear button inside the field. It adds a control and an overlap with the native one. |
+| R3 | State holder | `MyTasks` itself becomes the client component (DD17). The page file does not change. | A new client wrapper `MyTasksView` around a props-only `MyTasks`. More files, same behavior. |
+| R4 | Long column names | The badge wraps inside the row, capped at 45% of the row (DD15). | Truncate with an ellipsis and a `title`. Hides the status text on a phone, where there is no hover. |
+| R5 | Row accessible name | `"<title>, <board name>, <column name>"` (DD14). | Keep the Revision 1 name and add `aria-describedby` to the badge. A longer path for the same result. |
+| R6 | `BaseBadge` | One new `success` variant (DD15), a shared-part change recorded in `guidelines/frontend.md`. | A local `badge-success` class in `TaskGroup`. Bypasses the shared part (FE-D1). |
+
 ## Risks
 
 | Risk | Handling |
 |---|---|
+| (Rev 2) Frontend and Flask ship out of step: a new frontend against an old Flask, or the reverse. | **Resolved by deploy order, with the parser kept strict.** Flask is deployed before the frontend, because an old frontend ignores the two new keys and keeps working, while a new frontend on an old Flask shows the error boundary (4.6). The parser does not default a missing `is_done` to false, because that would show a done task as open, which is the wrong answer this feature exists to prevent. The order is written into the T16 deployment runbook (`docs/DEPLOYMENT.md`) at finalize (WP-R2-D), and the local run uses both from one commit. Test: `lib/tasks.test.ts` proves the throw. |
+| (Rev 2) A renamed Done column shows its new name, so "done" is not always the word "Done". | **Accepted, as S13 decided, and covered by a test.** The badge uses the board's own wording and the green check marks the done state in a second way. `MyTasks.test.tsx` renders a done task in a column named "Selesai" and expects `badge-success`, the check icon and the text "Selesai". |
+| (Rev 2) A long column name or a narrow phone squeezes the title. | **Resolved by the 45% cap and wrapping (DD15), proven by test and measurement.** `MyTasks.test.tsx` renders an 80-character column name (the column limit) and expects the wrapping classes. The measured script checks `scrollWidth <= innerWidth` and the badge inside its row at 320 and 375 px with that name. |
+| (Rev 2) The status is as of the page load, so a card moved on the board might look stale on My Tasks. | **Resolved by DD22 (S18) after the journey showed a stale badge on Back.** The page refreshes on mount and when the tab becomes visible. The note below is the earlier reasoning, kept as the record: **accepted for an open page, checked for navigation.** The page is dynamic (it reads the session cookie), and Next 16 does not reuse a dynamic page from the client router cache on a link visit. The manual journey (Browser checks) now moves a card to Done on its board and returns through the "My tasks" link and through the browser Back button, and records what each shows. If Back shows the old status, the evidence says so and the user decides whether a refresh on focus is wanted. No code is added for it now. |
 | The sort by `lower(name)` follows the database collation, so mixed-script names can order differently from Python. | The sort is stable and deterministic (the board ID breaks ties). The tests use ASCII names. |
 | An unbounded E21 list grows with the user's assignments. | Within the project's scale (no cap in v1, S1). Revisit if one user holds a few hundred cards. |
 | A raw query string forwarded by the handler can be long. | Gunicorn rejects a request line above its limit with a non-JSON 400. The browser sends at most 100 units of `q`, so the normal path is far below it. The handler's reply for a non-JSON upstream body already maps to a typed error. |

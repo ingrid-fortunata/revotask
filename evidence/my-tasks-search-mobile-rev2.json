@@ -1,0 +1,3437 @@
+{
+  "slice": "my-tasks-search (T11), Revisions 1 and 2",
+  "browser": "Chrome/157.0.8103.80",
+  "mode": "headless Chrome with device emulation (not a real phone), touch emulation below 640 px",
+  "widths": [
+    320,
+    375,
+    768,
+    1280
+  ],
+  "total": 448,
+  "failed": 0,
+  "results": [
+    {
+      "role": "member",
+      "page": "dashboard",
+      "width": 320,
+      "check": "Boards and My tasks are both in the header",
+      "pass": true,
+      "detail": "Boards, My tasks"
+    },
+    {
+      "role": "member",
+      "page": "dashboard",
+      "width": 320,
+      "check": "both header links are visible, inside the viewport and reachable at their center",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "dashboard",
+      "width": 320,
+      "check": "each header link is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "Boards 142x44; My tasks 142x44"
+    },
+    {
+      "role": "member",
+      "page": "dashboard",
+      "width": 320,
+      "check": "the header causes no horizontal overflow",
+      "pass": true,
+      "detail": "header 0, scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "member",
+      "page": "dashboard",
+      "width": 320,
+      "check": "the sticky bar does not overlap the content (main starts at or below the bar)",
+      "pass": true,
+      "detail": "header bottom 156, main top 156"
+    },
+    {
+      "role": "member",
+      "page": "dashboard",
+      "width": 320,
+      "check": "the header is a sticky top bar",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "dashboard",
+      "width": 320,
+      "check": "the current page link is Boards",
+      "pass": true,
+      "detail": "Boards"
+    },
+    {
+      "role": "member",
+      "page": "dashboard",
+      "width": 320,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "member",
+      "page": "dashboard",
+      "width": 320,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "9 controls"
+    },
+    {
+      "role": "member",
+      "page": "dashboard",
+      "width": 320,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "my tasks",
+      "width": 320,
+      "check": "Boards and My tasks are both in the header",
+      "pass": true,
+      "detail": "Boards, My tasks"
+    },
+    {
+      "role": "member",
+      "page": "my tasks",
+      "width": 320,
+      "check": "both header links are visible, inside the viewport and reachable at their center",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "my tasks",
+      "width": 320,
+      "check": "each header link is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "Boards 142x44; My tasks 142x44"
+    },
+    {
+      "role": "member",
+      "page": "my tasks",
+      "width": 320,
+      "check": "the header causes no horizontal overflow",
+      "pass": true,
+      "detail": "header 0, scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "member",
+      "page": "my tasks",
+      "width": 320,
+      "check": "the sticky bar does not overlap the content (main starts at or below the bar)",
+      "pass": true,
+      "detail": "header bottom 156, main top 156"
+    },
+    {
+      "role": "member",
+      "page": "my tasks",
+      "width": 320,
+      "check": "the header is a sticky top bar",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "my tasks",
+      "width": 320,
+      "check": "the current page link is My tasks",
+      "pass": true,
+      "detail": "My tasks"
+    },
+    {
+      "role": "member",
+      "page": "my tasks",
+      "width": 320,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "member",
+      "page": "my tasks",
+      "width": 320,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "14 controls"
+    },
+    {
+      "role": "member",
+      "page": "my tasks",
+      "width": 320,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "my tasks",
+      "width": 320,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "1 controls"
+    },
+    {
+      "role": "member",
+      "page": "my tasks",
+      "width": 320,
+      "check": "groups follow the API order (Alpha board, Beta board)",
+      "pass": true,
+      "detail": "Alpha board|Beta board"
+    },
+    {
+      "role": "member",
+      "page": "my tasks",
+      "width": 320,
+      "check": "the summary counts tasks and boards",
+      "pass": true,
+      "detail": "5 tasks on 2 boards"
+    },
+    {
+      "role": "member",
+      "page": "my tasks",
+      "width": 320,
+      "check": "a 148-character unbroken title wraps inside its row",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "my tasks",
+      "width": 320,
+      "check": "a long description is clamped to two lines",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "my tasks",
+      "width": 320,
+      "check": "a focused control after a scroll is not hidden under the sticky bar",
+      "pass": true,
+      "detail": "top 590, bar bottom 156"
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2)",
+      "width": 320,
+      "check": "a Done-column row shows a success badge with a check icon and the column name",
+      "pass": true,
+      "detail": "Done"
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2)",
+      "width": 320,
+      "check": "an open row shows a ghost badge with no icon and its column name",
+      "pass": true,
+      "detail": "To do"
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2)",
+      "width": 320,
+      "check": "an 80-character column name stays inside its row, wraps and takes at most 45% of the row",
+      "pass": true,
+      "detail": "ratio 0.45"
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2)",
+      "width": 320,
+      "check": "every badge sits inside its row",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2)",
+      "width": 320,
+      "check": "the long column name causes no horizontal page scroll",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2)",
+      "width": 320,
+      "check": "a matching query shows '1 of 5 tasks on 1 board' at once",
+      "pass": true,
+      "detail": "1 of 5 tasks on 1 board"
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2)",
+      "width": 320,
+      "check": "groups with no match are hidden",
+      "pass": true,
+      "detail": "Alpha board"
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2)",
+      "width": 320,
+      "check": "typing a query sends no request",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2) match",
+      "width": 320,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2) match",
+      "width": 320,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "9 controls"
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2) match",
+      "width": 320,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2) match",
+      "width": 320,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "1 controls"
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2)",
+      "width": 320,
+      "check": "a non-matching query shows the no-match message and '0 of 5 tasks'",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2)",
+      "width": 320,
+      "check": "the no-match state differs from the empty state",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2) no match",
+      "width": 320,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2) no match",
+      "width": 320,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "8 controls"
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2) no match",
+      "width": 320,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2) no match",
+      "width": 320,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "1 controls"
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2)",
+      "width": 320,
+      "check": "Clear search empties the field, focuses it and restores the full list",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board search",
+      "width": 320,
+      "check": "the search field is type=search, limited to 100 and 16 px or more",
+      "pass": true,
+      "detail": "16px"
+    },
+    {
+      "role": "member",
+      "page": "board search idle",
+      "width": 320,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "member",
+      "page": "board search idle",
+      "width": 320,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "60 controls"
+    },
+    {
+      "role": "member",
+      "page": "board search idle",
+      "width": 320,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board search idle",
+      "width": 320,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "1 controls"
+    },
+    {
+      "role": "member",
+      "page": "board search",
+      "width": 320,
+      "check": "idle shows no results block and no result message",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board search",
+      "width": 320,
+      "check": "a valid query shows Searching… during the debounce and the request",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board search loading",
+      "width": 320,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "member",
+      "page": "board search loading",
+      "width": 320,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "60 controls"
+    },
+    {
+      "role": "member",
+      "page": "board search loading",
+      "width": 320,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board search loading",
+      "width": 320,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "1 controls"
+    },
+    {
+      "role": "member",
+      "page": "board search",
+      "width": 320,
+      "check": "results appear after the delayed response",
+      "pass": true,
+      "detail": "9 matches"
+    },
+    {
+      "role": "member",
+      "page": "board search results",
+      "width": 320,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "member",
+      "page": "board search results",
+      "width": 320,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "69 controls"
+    },
+    {
+      "role": "member",
+      "page": "board search results",
+      "width": 320,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board search results",
+      "width": 320,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "1 controls"
+    },
+    {
+      "role": "member",
+      "page": "board search",
+      "width": 320,
+      "check": "fewer than 20 results show no count line",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board search",
+      "width": 320,
+      "check": "20 returned results show Showing 20 results.",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board search 20 results",
+      "width": 320,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "member",
+      "page": "board search 20 results",
+      "width": 320,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "80 controls"
+    },
+    {
+      "role": "member",
+      "page": "board search 20 results",
+      "width": 320,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board search 20 results",
+      "width": 320,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "1 controls"
+    },
+    {
+      "role": "member",
+      "page": "board search",
+      "width": 320,
+      "check": "no match shows the distinct no-result message",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board search no results",
+      "width": 320,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "member",
+      "page": "board search no results",
+      "width": 320,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "60 controls"
+    },
+    {
+      "role": "member",
+      "page": "board search no results",
+      "width": 320,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board search no results",
+      "width": 320,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "1 controls"
+    },
+    {
+      "role": "member",
+      "page": "board search",
+      "width": 320,
+      "check": "a failed search shows the error message and Retry",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board search error",
+      "width": 320,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "member",
+      "page": "board search error",
+      "width": 320,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "61 controls"
+    },
+    {
+      "role": "member",
+      "page": "board search error",
+      "width": 320,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board search error",
+      "width": 320,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "1 controls"
+    },
+    {
+      "role": "member",
+      "page": "board search",
+      "width": 320,
+      "check": "Retry recovers and shows results",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board search",
+      "width": 320,
+      "check": "a blank query clears results and loading at once",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board page",
+      "width": 320,
+      "check": "Boards and My tasks are both in the header",
+      "pass": true,
+      "detail": "Boards, My tasks"
+    },
+    {
+      "role": "member",
+      "page": "board page",
+      "width": 320,
+      "check": "both header links are visible, inside the viewport and reachable at their center",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board page",
+      "width": 320,
+      "check": "each header link is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "Boards 142x44; My tasks 142x44"
+    },
+    {
+      "role": "member",
+      "page": "board page",
+      "width": 320,
+      "check": "the header causes no horizontal overflow",
+      "pass": true,
+      "detail": "header 0, scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "member",
+      "page": "board page",
+      "width": 320,
+      "check": "the sticky bar does not overlap the content (main starts at or below the bar)",
+      "pass": true,
+      "detail": "header bottom 156, main top 156"
+    },
+    {
+      "role": "member",
+      "page": "board page",
+      "width": 320,
+      "check": "the header is a sticky top bar",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board page",
+      "width": 320,
+      "check": "the current page link is Boards",
+      "pass": true,
+      "detail": "Boards"
+    },
+    {
+      "role": "member",
+      "page": "dashboard",
+      "width": 375,
+      "check": "Boards and My tasks are both in the header",
+      "pass": true,
+      "detail": "Boards, My tasks"
+    },
+    {
+      "role": "member",
+      "page": "dashboard",
+      "width": 375,
+      "check": "both header links are visible, inside the viewport and reachable at their center",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "dashboard",
+      "width": 375,
+      "check": "each header link is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "Boards 169.5x44; My tasks 169.5x44"
+    },
+    {
+      "role": "member",
+      "page": "dashboard",
+      "width": 375,
+      "check": "the header causes no horizontal overflow",
+      "pass": true,
+      "detail": "header 0, scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "member",
+      "page": "dashboard",
+      "width": 375,
+      "check": "the sticky bar does not overlap the content (main starts at or below the bar)",
+      "pass": true,
+      "detail": "header bottom 108, main top 108"
+    },
+    {
+      "role": "member",
+      "page": "dashboard",
+      "width": 375,
+      "check": "the header is a sticky top bar",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "dashboard",
+      "width": 375,
+      "check": "the current page link is Boards",
+      "pass": true,
+      "detail": "Boards"
+    },
+    {
+      "role": "member",
+      "page": "dashboard",
+      "width": 375,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "member",
+      "page": "dashboard",
+      "width": 375,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "9 controls"
+    },
+    {
+      "role": "member",
+      "page": "dashboard",
+      "width": 375,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "my tasks",
+      "width": 375,
+      "check": "Boards and My tasks are both in the header",
+      "pass": true,
+      "detail": "Boards, My tasks"
+    },
+    {
+      "role": "member",
+      "page": "my tasks",
+      "width": 375,
+      "check": "both header links are visible, inside the viewport and reachable at their center",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "my tasks",
+      "width": 375,
+      "check": "each header link is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "Boards 169.5x44; My tasks 169.5x44"
+    },
+    {
+      "role": "member",
+      "page": "my tasks",
+      "width": 375,
+      "check": "the header causes no horizontal overflow",
+      "pass": true,
+      "detail": "header 0, scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "member",
+      "page": "my tasks",
+      "width": 375,
+      "check": "the sticky bar does not overlap the content (main starts at or below the bar)",
+      "pass": true,
+      "detail": "header bottom 108, main top 108"
+    },
+    {
+      "role": "member",
+      "page": "my tasks",
+      "width": 375,
+      "check": "the header is a sticky top bar",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "my tasks",
+      "width": 375,
+      "check": "the current page link is My tasks",
+      "pass": true,
+      "detail": "My tasks"
+    },
+    {
+      "role": "member",
+      "page": "my tasks",
+      "width": 375,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "member",
+      "page": "my tasks",
+      "width": 375,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "14 controls"
+    },
+    {
+      "role": "member",
+      "page": "my tasks",
+      "width": 375,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "my tasks",
+      "width": 375,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "1 controls"
+    },
+    {
+      "role": "member",
+      "page": "my tasks",
+      "width": 375,
+      "check": "groups follow the API order (Alpha board, Beta board)",
+      "pass": true,
+      "detail": "Alpha board|Beta board"
+    },
+    {
+      "role": "member",
+      "page": "my tasks",
+      "width": 375,
+      "check": "the summary counts tasks and boards",
+      "pass": true,
+      "detail": "5 tasks on 2 boards"
+    },
+    {
+      "role": "member",
+      "page": "my tasks",
+      "width": 375,
+      "check": "a 148-character unbroken title wraps inside its row",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "my tasks",
+      "width": 375,
+      "check": "a long description is clamped to two lines",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "my tasks",
+      "width": 375,
+      "check": "a focused control after a scroll is not hidden under the sticky bar",
+      "pass": true,
+      "detail": "top 632, bar bottom 108"
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2)",
+      "width": 375,
+      "check": "a Done-column row shows a success badge with a check icon and the column name",
+      "pass": true,
+      "detail": "Done"
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2)",
+      "width": 375,
+      "check": "an open row shows a ghost badge with no icon and its column name",
+      "pass": true,
+      "detail": "To do"
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2)",
+      "width": 375,
+      "check": "an 80-character column name stays inside its row, wraps and takes at most 45% of the row",
+      "pass": true,
+      "detail": "ratio 0.45"
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2)",
+      "width": 375,
+      "check": "every badge sits inside its row",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2)",
+      "width": 375,
+      "check": "the long column name causes no horizontal page scroll",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2)",
+      "width": 375,
+      "check": "a matching query shows '1 of 5 tasks on 1 board' at once",
+      "pass": true,
+      "detail": "1 of 5 tasks on 1 board"
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2)",
+      "width": 375,
+      "check": "groups with no match are hidden",
+      "pass": true,
+      "detail": "Alpha board"
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2)",
+      "width": 375,
+      "check": "typing a query sends no request",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2) match",
+      "width": 375,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2) match",
+      "width": 375,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "9 controls"
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2) match",
+      "width": 375,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2) match",
+      "width": 375,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "1 controls"
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2)",
+      "width": 375,
+      "check": "a non-matching query shows the no-match message and '0 of 5 tasks'",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2)",
+      "width": 375,
+      "check": "the no-match state differs from the empty state",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2) no match",
+      "width": 375,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2) no match",
+      "width": 375,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "8 controls"
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2) no match",
+      "width": 375,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2) no match",
+      "width": 375,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "1 controls"
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2)",
+      "width": 375,
+      "check": "Clear search empties the field, focuses it and restores the full list",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board search",
+      "width": 375,
+      "check": "the search field is type=search, limited to 100 and 16 px or more",
+      "pass": true,
+      "detail": "16px"
+    },
+    {
+      "role": "member",
+      "page": "board search idle",
+      "width": 375,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "member",
+      "page": "board search idle",
+      "width": 375,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "60 controls"
+    },
+    {
+      "role": "member",
+      "page": "board search idle",
+      "width": 375,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board search idle",
+      "width": 375,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "1 controls"
+    },
+    {
+      "role": "member",
+      "page": "board search",
+      "width": 375,
+      "check": "idle shows no results block and no result message",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board search",
+      "width": 375,
+      "check": "a valid query shows Searching… during the debounce and the request",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board search loading",
+      "width": 375,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "member",
+      "page": "board search loading",
+      "width": 375,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "60 controls"
+    },
+    {
+      "role": "member",
+      "page": "board search loading",
+      "width": 375,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board search loading",
+      "width": 375,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "1 controls"
+    },
+    {
+      "role": "member",
+      "page": "board search",
+      "width": 375,
+      "check": "results appear after the delayed response",
+      "pass": true,
+      "detail": "9 matches"
+    },
+    {
+      "role": "member",
+      "page": "board search results",
+      "width": 375,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "member",
+      "page": "board search results",
+      "width": 375,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "69 controls"
+    },
+    {
+      "role": "member",
+      "page": "board search results",
+      "width": 375,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board search results",
+      "width": 375,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "1 controls"
+    },
+    {
+      "role": "member",
+      "page": "board search",
+      "width": 375,
+      "check": "fewer than 20 results show no count line",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board search",
+      "width": 375,
+      "check": "20 returned results show Showing 20 results.",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board search 20 results",
+      "width": 375,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "member",
+      "page": "board search 20 results",
+      "width": 375,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "80 controls"
+    },
+    {
+      "role": "member",
+      "page": "board search 20 results",
+      "width": 375,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board search 20 results",
+      "width": 375,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "1 controls"
+    },
+    {
+      "role": "member",
+      "page": "board search",
+      "width": 375,
+      "check": "no match shows the distinct no-result message",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board search no results",
+      "width": 375,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "member",
+      "page": "board search no results",
+      "width": 375,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "60 controls"
+    },
+    {
+      "role": "member",
+      "page": "board search no results",
+      "width": 375,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board search no results",
+      "width": 375,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "1 controls"
+    },
+    {
+      "role": "member",
+      "page": "board search",
+      "width": 375,
+      "check": "a failed search shows the error message and Retry",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board search error",
+      "width": 375,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "member",
+      "page": "board search error",
+      "width": 375,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "61 controls"
+    },
+    {
+      "role": "member",
+      "page": "board search error",
+      "width": 375,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board search error",
+      "width": 375,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "1 controls"
+    },
+    {
+      "role": "member",
+      "page": "board search",
+      "width": 375,
+      "check": "Retry recovers and shows results",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board search",
+      "width": 375,
+      "check": "a blank query clears results and loading at once",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board page",
+      "width": 375,
+      "check": "Boards and My tasks are both in the header",
+      "pass": true,
+      "detail": "Boards, My tasks"
+    },
+    {
+      "role": "member",
+      "page": "board page",
+      "width": 375,
+      "check": "both header links are visible, inside the viewport and reachable at their center",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board page",
+      "width": 375,
+      "check": "each header link is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "Boards 169.5x44; My tasks 169.5x44"
+    },
+    {
+      "role": "member",
+      "page": "board page",
+      "width": 375,
+      "check": "the header causes no horizontal overflow",
+      "pass": true,
+      "detail": "header 0, scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "member",
+      "page": "board page",
+      "width": 375,
+      "check": "the sticky bar does not overlap the content (main starts at or below the bar)",
+      "pass": true,
+      "detail": "header bottom 108, main top 108"
+    },
+    {
+      "role": "member",
+      "page": "board page",
+      "width": 375,
+      "check": "the header is a sticky top bar",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board page",
+      "width": 375,
+      "check": "the current page link is Boards",
+      "pass": true,
+      "detail": "Boards"
+    },
+    {
+      "role": "member",
+      "page": "dashboard",
+      "width": 768,
+      "check": "Boards and My tasks are both in the header",
+      "pass": true,
+      "detail": "Boards, My tasks"
+    },
+    {
+      "role": "member",
+      "page": "dashboard",
+      "width": 768,
+      "check": "both header links are visible, inside the viewport and reachable at their center",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "dashboard",
+      "width": 768,
+      "check": "each header link is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "Boards 366x44; My tasks 366x44"
+    },
+    {
+      "role": "member",
+      "page": "dashboard",
+      "width": 768,
+      "check": "the header causes no horizontal overflow",
+      "pass": true,
+      "detail": "header 0, scrollWidth 768, innerWidth 768"
+    },
+    {
+      "role": "member",
+      "page": "dashboard",
+      "width": 768,
+      "check": "the sticky bar does not overlap the content (main starts at or below the bar)",
+      "pass": true,
+      "detail": "header bottom 108, main top 108"
+    },
+    {
+      "role": "member",
+      "page": "dashboard",
+      "width": 768,
+      "check": "the header is a sticky top bar",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "dashboard",
+      "width": 768,
+      "check": "the current page link is Boards",
+      "pass": true,
+      "detail": "Boards"
+    },
+    {
+      "role": "member",
+      "page": "dashboard",
+      "width": 768,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 768, innerWidth 768"
+    },
+    {
+      "role": "member",
+      "page": "dashboard",
+      "width": 768,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "9 controls"
+    },
+    {
+      "role": "member",
+      "page": "dashboard",
+      "width": 768,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "my tasks",
+      "width": 768,
+      "check": "Boards and My tasks are both in the header",
+      "pass": true,
+      "detail": "Boards, My tasks"
+    },
+    {
+      "role": "member",
+      "page": "my tasks",
+      "width": 768,
+      "check": "both header links are visible, inside the viewport and reachable at their center",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "my tasks",
+      "width": 768,
+      "check": "each header link is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "Boards 358.5x44; My tasks 358.5x44"
+    },
+    {
+      "role": "member",
+      "page": "my tasks",
+      "width": 768,
+      "check": "the header causes no horizontal overflow",
+      "pass": true,
+      "detail": "header 0, scrollWidth 753, innerWidth 768"
+    },
+    {
+      "role": "member",
+      "page": "my tasks",
+      "width": 768,
+      "check": "the sticky bar does not overlap the content (main starts at or below the bar)",
+      "pass": true,
+      "detail": "header bottom 108, main top 108"
+    },
+    {
+      "role": "member",
+      "page": "my tasks",
+      "width": 768,
+      "check": "the header is a sticky top bar",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "my tasks",
+      "width": 768,
+      "check": "the current page link is My tasks",
+      "pass": true,
+      "detail": "My tasks"
+    },
+    {
+      "role": "member",
+      "page": "my tasks",
+      "width": 768,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 753, innerWidth 768"
+    },
+    {
+      "role": "member",
+      "page": "my tasks",
+      "width": 768,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "14 controls"
+    },
+    {
+      "role": "member",
+      "page": "my tasks",
+      "width": 768,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "my tasks",
+      "width": 768,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "1 controls"
+    },
+    {
+      "role": "member",
+      "page": "my tasks",
+      "width": 768,
+      "check": "groups follow the API order (Alpha board, Beta board)",
+      "pass": true,
+      "detail": "Alpha board|Beta board"
+    },
+    {
+      "role": "member",
+      "page": "my tasks",
+      "width": 768,
+      "check": "the summary counts tasks and boards",
+      "pass": true,
+      "detail": "5 tasks on 2 boards"
+    },
+    {
+      "role": "member",
+      "page": "my tasks",
+      "width": 768,
+      "check": "a 148-character unbroken title wraps inside its row",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "my tasks",
+      "width": 768,
+      "check": "a long description is clamped to two lines",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "my tasks",
+      "width": 768,
+      "check": "a focused control after a scroll is not hidden under the sticky bar",
+      "pass": true,
+      "detail": "top 783, bar bottom 108"
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2)",
+      "width": 768,
+      "check": "a Done-column row shows a success badge with a check icon and the column name",
+      "pass": true,
+      "detail": "Done"
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2)",
+      "width": 768,
+      "check": "an open row shows a ghost badge with no icon and its column name",
+      "pass": true,
+      "detail": "To do"
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2)",
+      "width": 768,
+      "check": "an 80-character column name stays inside its row, wraps and takes at most 45% of the row",
+      "pass": true,
+      "detail": "ratio 0.45"
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2)",
+      "width": 768,
+      "check": "every badge sits inside its row",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2)",
+      "width": 768,
+      "check": "the long column name causes no horizontal page scroll",
+      "pass": true,
+      "detail": "scrollWidth 753, innerWidth 768"
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2)",
+      "width": 768,
+      "check": "a matching query shows '1 of 5 tasks on 1 board' at once",
+      "pass": true,
+      "detail": "1 of 5 tasks on 1 board"
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2)",
+      "width": 768,
+      "check": "groups with no match are hidden",
+      "pass": true,
+      "detail": "Alpha board"
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2)",
+      "width": 768,
+      "check": "typing a query sends no request",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2) match",
+      "width": 768,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 768, innerWidth 768"
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2) match",
+      "width": 768,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "9 controls"
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2) match",
+      "width": 768,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2) match",
+      "width": 768,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "1 controls"
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2)",
+      "width": 768,
+      "check": "a non-matching query shows the no-match message and '0 of 5 tasks'",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2)",
+      "width": 768,
+      "check": "the no-match state differs from the empty state",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2) no match",
+      "width": 768,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 768, innerWidth 768"
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2) no match",
+      "width": 768,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "8 controls"
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2) no match",
+      "width": 768,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2) no match",
+      "width": 768,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "1 controls"
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2)",
+      "width": 768,
+      "check": "Clear search empties the field, focuses it and restores the full list",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board search",
+      "width": 768,
+      "check": "the search field is type=search, limited to 100 and 16 px or more",
+      "pass": true,
+      "detail": "16px"
+    },
+    {
+      "role": "member",
+      "page": "board search idle",
+      "width": 768,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 753, innerWidth 768"
+    },
+    {
+      "role": "member",
+      "page": "board search idle",
+      "width": 768,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "60 controls"
+    },
+    {
+      "role": "member",
+      "page": "board search idle",
+      "width": 768,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board search idle",
+      "width": 768,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "1 controls"
+    },
+    {
+      "role": "member",
+      "page": "board search",
+      "width": 768,
+      "check": "idle shows no results block and no result message",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board search",
+      "width": 768,
+      "check": "a valid query shows Searching… during the debounce and the request",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board search loading",
+      "width": 768,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 753, innerWidth 768"
+    },
+    {
+      "role": "member",
+      "page": "board search loading",
+      "width": 768,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "60 controls"
+    },
+    {
+      "role": "member",
+      "page": "board search loading",
+      "width": 768,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board search loading",
+      "width": 768,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "1 controls"
+    },
+    {
+      "role": "member",
+      "page": "board search",
+      "width": 768,
+      "check": "results appear after the delayed response",
+      "pass": true,
+      "detail": "9 matches"
+    },
+    {
+      "role": "member",
+      "page": "board search results",
+      "width": 768,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 753, innerWidth 768"
+    },
+    {
+      "role": "member",
+      "page": "board search results",
+      "width": 768,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "69 controls"
+    },
+    {
+      "role": "member",
+      "page": "board search results",
+      "width": 768,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board search results",
+      "width": 768,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "1 controls"
+    },
+    {
+      "role": "member",
+      "page": "board search",
+      "width": 768,
+      "check": "fewer than 20 results show no count line",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board search",
+      "width": 768,
+      "check": "20 returned results show Showing 20 results.",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board search 20 results",
+      "width": 768,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 753, innerWidth 768"
+    },
+    {
+      "role": "member",
+      "page": "board search 20 results",
+      "width": 768,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "80 controls"
+    },
+    {
+      "role": "member",
+      "page": "board search 20 results",
+      "width": 768,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board search 20 results",
+      "width": 768,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "1 controls"
+    },
+    {
+      "role": "member",
+      "page": "board search",
+      "width": 768,
+      "check": "no match shows the distinct no-result message",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board search no results",
+      "width": 768,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 753, innerWidth 768"
+    },
+    {
+      "role": "member",
+      "page": "board search no results",
+      "width": 768,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "60 controls"
+    },
+    {
+      "role": "member",
+      "page": "board search no results",
+      "width": 768,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board search no results",
+      "width": 768,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "1 controls"
+    },
+    {
+      "role": "member",
+      "page": "board search",
+      "width": 768,
+      "check": "a failed search shows the error message and Retry",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board search error",
+      "width": 768,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 753, innerWidth 768"
+    },
+    {
+      "role": "member",
+      "page": "board search error",
+      "width": 768,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "61 controls"
+    },
+    {
+      "role": "member",
+      "page": "board search error",
+      "width": 768,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board search error",
+      "width": 768,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "1 controls"
+    },
+    {
+      "role": "member",
+      "page": "board search",
+      "width": 768,
+      "check": "Retry recovers and shows results",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board search",
+      "width": 768,
+      "check": "a blank query clears results and loading at once",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board page",
+      "width": 768,
+      "check": "Boards and My tasks are both in the header",
+      "pass": true,
+      "detail": "Boards, My tasks"
+    },
+    {
+      "role": "member",
+      "page": "board page",
+      "width": 768,
+      "check": "both header links are visible, inside the viewport and reachable at their center",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board page",
+      "width": 768,
+      "check": "each header link is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "Boards 358.5x44; My tasks 358.5x44"
+    },
+    {
+      "role": "member",
+      "page": "board page",
+      "width": 768,
+      "check": "the header causes no horizontal overflow",
+      "pass": true,
+      "detail": "header 0, scrollWidth 753, innerWidth 768"
+    },
+    {
+      "role": "member",
+      "page": "board page",
+      "width": 768,
+      "check": "the sticky bar does not overlap the content (main starts at or below the bar)",
+      "pass": true,
+      "detail": "header bottom 108, main top 108"
+    },
+    {
+      "role": "member",
+      "page": "board page",
+      "width": 768,
+      "check": "the header is a sticky top bar",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board page",
+      "width": 768,
+      "check": "the current page link is Boards",
+      "pass": true,
+      "detail": "Boards"
+    },
+    {
+      "role": "member",
+      "page": "dashboard",
+      "width": 1280,
+      "check": "Boards and My tasks are both in the header",
+      "pass": true,
+      "detail": "Boards, My tasks"
+    },
+    {
+      "role": "member",
+      "page": "dashboard",
+      "width": 1280,
+      "check": "both header links are visible, inside the viewport and reachable at their center",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "dashboard",
+      "width": 1280,
+      "check": "each header link is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "Boards 232x44; My tasks 232x44"
+    },
+    {
+      "role": "member",
+      "page": "dashboard",
+      "width": 1280,
+      "check": "the header causes no horizontal overflow",
+      "pass": true,
+      "detail": "header 0, scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "member",
+      "page": "dashboard",
+      "width": 1280,
+      "check": "the sidebar does not overlap the content (main starts right of the sidebar)",
+      "pass": true,
+      "detail": "sidebar right 256, main left 256"
+    },
+    {
+      "role": "member",
+      "page": "dashboard",
+      "width": 1280,
+      "check": "the current page link is Boards",
+      "pass": true,
+      "detail": "Boards"
+    },
+    {
+      "role": "member",
+      "page": "dashboard",
+      "width": 1280,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "member",
+      "page": "dashboard",
+      "width": 1280,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "9 controls"
+    },
+    {
+      "role": "member",
+      "page": "dashboard",
+      "width": 1280,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "my tasks",
+      "width": 1280,
+      "check": "Boards and My tasks are both in the header",
+      "pass": true,
+      "detail": "Boards, My tasks"
+    },
+    {
+      "role": "member",
+      "page": "my tasks",
+      "width": 1280,
+      "check": "both header links are visible, inside the viewport and reachable at their center",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "my tasks",
+      "width": 1280,
+      "check": "each header link is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "Boards 232x44; My tasks 232x44"
+    },
+    {
+      "role": "member",
+      "page": "my tasks",
+      "width": 1280,
+      "check": "the header causes no horizontal overflow",
+      "pass": true,
+      "detail": "header 0, scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "member",
+      "page": "my tasks",
+      "width": 1280,
+      "check": "the sidebar does not overlap the content (main starts right of the sidebar)",
+      "pass": true,
+      "detail": "sidebar right 256, main left 256"
+    },
+    {
+      "role": "member",
+      "page": "my tasks",
+      "width": 1280,
+      "check": "the current page link is My tasks",
+      "pass": true,
+      "detail": "My tasks"
+    },
+    {
+      "role": "member",
+      "page": "my tasks",
+      "width": 1280,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "member",
+      "page": "my tasks",
+      "width": 1280,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "14 controls"
+    },
+    {
+      "role": "member",
+      "page": "my tasks",
+      "width": 1280,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "my tasks",
+      "width": 1280,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "1 controls"
+    },
+    {
+      "role": "member",
+      "page": "my tasks",
+      "width": 1280,
+      "check": "groups follow the API order (Alpha board, Beta board)",
+      "pass": true,
+      "detail": "Alpha board|Beta board"
+    },
+    {
+      "role": "member",
+      "page": "my tasks",
+      "width": 1280,
+      "check": "the summary counts tasks and boards",
+      "pass": true,
+      "detail": "5 tasks on 2 boards"
+    },
+    {
+      "role": "member",
+      "page": "my tasks",
+      "width": 1280,
+      "check": "a 148-character unbroken title wraps inside its row",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "my tasks",
+      "width": 1280,
+      "check": "a long description is clamped to two lines",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "my tasks",
+      "width": 1280,
+      "check": "a focused control after a scroll is not hidden under the sticky bar",
+      "pass": true,
+      "detail": "top 710, bar bottom 900"
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2)",
+      "width": 1280,
+      "check": "a Done-column row shows a success badge with a check icon and the column name",
+      "pass": true,
+      "detail": "Done"
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2)",
+      "width": 1280,
+      "check": "an open row shows a ghost badge with no icon and its column name",
+      "pass": true,
+      "detail": "To do"
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2)",
+      "width": 1280,
+      "check": "an 80-character column name stays inside its row, wraps and takes at most 45% of the row",
+      "pass": true,
+      "detail": "ratio 0.45"
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2)",
+      "width": 1280,
+      "check": "every badge sits inside its row",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2)",
+      "width": 1280,
+      "check": "the long column name causes no horizontal page scroll",
+      "pass": true,
+      "detail": "scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2)",
+      "width": 1280,
+      "check": "a matching query shows '1 of 5 tasks on 1 board' at once",
+      "pass": true,
+      "detail": "1 of 5 tasks on 1 board"
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2)",
+      "width": 1280,
+      "check": "groups with no match are hidden",
+      "pass": true,
+      "detail": "Alpha board"
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2)",
+      "width": 1280,
+      "check": "typing a query sends no request",
+      "pass": true,
+      "detail": "0 requests"
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2) match",
+      "width": 1280,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2) match",
+      "width": 1280,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "9 controls"
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2) match",
+      "width": 1280,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2) match",
+      "width": 1280,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "1 controls"
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2)",
+      "width": 1280,
+      "check": "a non-matching query shows the no-match message and '0 of 5 tasks'",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2)",
+      "width": 1280,
+      "check": "the no-match state differs from the empty state",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2) no match",
+      "width": 1280,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2) no match",
+      "width": 1280,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "8 controls"
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2) no match",
+      "width": 1280,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2) no match",
+      "width": 1280,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "1 controls"
+    },
+    {
+      "role": "member",
+      "page": "my tasks (rev 2)",
+      "width": 1280,
+      "check": "Clear search empties the field, focuses it and restores the full list",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board search",
+      "width": 1280,
+      "check": "the search field is type=search, limited to 100 and 16 px or more",
+      "pass": true,
+      "detail": "16px"
+    },
+    {
+      "role": "member",
+      "page": "board search idle",
+      "width": 1280,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 1265, innerWidth 1280"
+    },
+    {
+      "role": "member",
+      "page": "board search idle",
+      "width": 1280,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "60 controls"
+    },
+    {
+      "role": "member",
+      "page": "board search idle",
+      "width": 1280,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board search idle",
+      "width": 1280,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "1 controls"
+    },
+    {
+      "role": "member",
+      "page": "board search",
+      "width": 1280,
+      "check": "idle shows no results block and no result message",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board search",
+      "width": 1280,
+      "check": "a valid query shows Searching… during the debounce and the request",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board search loading",
+      "width": 1280,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 1265, innerWidth 1280"
+    },
+    {
+      "role": "member",
+      "page": "board search loading",
+      "width": 1280,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "60 controls"
+    },
+    {
+      "role": "member",
+      "page": "board search loading",
+      "width": 1280,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board search loading",
+      "width": 1280,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "1 controls"
+    },
+    {
+      "role": "member",
+      "page": "board search",
+      "width": 1280,
+      "check": "results appear after the delayed response",
+      "pass": true,
+      "detail": "9 matches"
+    },
+    {
+      "role": "member",
+      "page": "board search results",
+      "width": 1280,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 1265, innerWidth 1280"
+    },
+    {
+      "role": "member",
+      "page": "board search results",
+      "width": 1280,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "69 controls"
+    },
+    {
+      "role": "member",
+      "page": "board search results",
+      "width": 1280,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board search results",
+      "width": 1280,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "1 controls"
+    },
+    {
+      "role": "member",
+      "page": "board search",
+      "width": 1280,
+      "check": "fewer than 20 results show no count line",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board search",
+      "width": 1280,
+      "check": "20 returned results show Showing 20 results.",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board search 20 results",
+      "width": 1280,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 1265, innerWidth 1280"
+    },
+    {
+      "role": "member",
+      "page": "board search 20 results",
+      "width": 1280,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "80 controls"
+    },
+    {
+      "role": "member",
+      "page": "board search 20 results",
+      "width": 1280,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board search 20 results",
+      "width": 1280,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "1 controls"
+    },
+    {
+      "role": "member",
+      "page": "board search",
+      "width": 1280,
+      "check": "no match shows the distinct no-result message",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board search no results",
+      "width": 1280,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 1265, innerWidth 1280"
+    },
+    {
+      "role": "member",
+      "page": "board search no results",
+      "width": 1280,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "60 controls"
+    },
+    {
+      "role": "member",
+      "page": "board search no results",
+      "width": 1280,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board search no results",
+      "width": 1280,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "1 controls"
+    },
+    {
+      "role": "member",
+      "page": "board search",
+      "width": 1280,
+      "check": "a failed search shows the error message and Retry",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board search error",
+      "width": 1280,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 1265, innerWidth 1280"
+    },
+    {
+      "role": "member",
+      "page": "board search error",
+      "width": 1280,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "61 controls"
+    },
+    {
+      "role": "member",
+      "page": "board search error",
+      "width": 1280,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board search error",
+      "width": 1280,
+      "check": "every text input, select and textarea computes to at least 16px",
+      "pass": true,
+      "detail": "1 controls"
+    },
+    {
+      "role": "member",
+      "page": "board search",
+      "width": 1280,
+      "check": "Retry recovers and shows results",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board search",
+      "width": 1280,
+      "check": "a blank query clears results and loading at once",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board page",
+      "width": 1280,
+      "check": "Boards and My tasks are both in the header",
+      "pass": true,
+      "detail": "Boards, My tasks"
+    },
+    {
+      "role": "member",
+      "page": "board page",
+      "width": 1280,
+      "check": "both header links are visible, inside the viewport and reachable at their center",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "board page",
+      "width": 1280,
+      "check": "each header link is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "Boards 232x44; My tasks 232x44"
+    },
+    {
+      "role": "member",
+      "page": "board page",
+      "width": 1280,
+      "check": "the header causes no horizontal overflow",
+      "pass": true,
+      "detail": "header 0, scrollWidth 1265, innerWidth 1280"
+    },
+    {
+      "role": "member",
+      "page": "board page",
+      "width": 1280,
+      "check": "the sidebar does not overlap the content (main starts right of the sidebar)",
+      "pass": true,
+      "detail": "sidebar right 256, main left 256"
+    },
+    {
+      "role": "member",
+      "page": "board page",
+      "width": 1280,
+      "check": "the current page link is Boards",
+      "pass": true,
+      "detail": "Boards"
+    },
+    {
+      "role": "admin",
+      "page": "dashboard",
+      "width": 320,
+      "check": "Boards and My tasks are both in the header",
+      "pass": true,
+      "detail": "Boards, My tasks"
+    },
+    {
+      "role": "admin",
+      "page": "dashboard",
+      "width": 320,
+      "check": "both header links are visible, inside the viewport and reachable at their center",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "dashboard",
+      "width": 320,
+      "check": "each header link is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "Boards 142x44; My tasks 142x44"
+    },
+    {
+      "role": "admin",
+      "page": "dashboard",
+      "width": 320,
+      "check": "the header causes no horizontal overflow",
+      "pass": true,
+      "detail": "header 0, scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "admin",
+      "page": "dashboard",
+      "width": 320,
+      "check": "the sticky bar does not overlap the content (main starts at or below the bar)",
+      "pass": true,
+      "detail": "header bottom 156, main top 156"
+    },
+    {
+      "role": "admin",
+      "page": "dashboard",
+      "width": 320,
+      "check": "the header is a sticky top bar",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "dashboard",
+      "width": 320,
+      "check": "the current page link is Boards",
+      "pass": true,
+      "detail": "Boards"
+    },
+    {
+      "role": "admin",
+      "page": "dashboard",
+      "width": 320,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "admin",
+      "page": "dashboard",
+      "width": 320,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "9 controls"
+    },
+    {
+      "role": "admin",
+      "page": "dashboard",
+      "width": 320,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "my tasks",
+      "width": 320,
+      "check": "Boards and My tasks are both in the header",
+      "pass": true,
+      "detail": "Boards, My tasks"
+    },
+    {
+      "role": "admin",
+      "page": "my tasks",
+      "width": 320,
+      "check": "both header links are visible, inside the viewport and reachable at their center",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "my tasks",
+      "width": 320,
+      "check": "each header link is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "Boards 142x44; My tasks 142x44"
+    },
+    {
+      "role": "admin",
+      "page": "my tasks",
+      "width": 320,
+      "check": "the header causes no horizontal overflow",
+      "pass": true,
+      "detail": "header 0, scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "admin",
+      "page": "my tasks",
+      "width": 320,
+      "check": "the sticky bar does not overlap the content (main starts at or below the bar)",
+      "pass": true,
+      "detail": "header bottom 156, main top 156"
+    },
+    {
+      "role": "admin",
+      "page": "my tasks",
+      "width": 320,
+      "check": "the header is a sticky top bar",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "my tasks",
+      "width": 320,
+      "check": "the current page link is My tasks",
+      "pass": true,
+      "detail": "My tasks"
+    },
+    {
+      "role": "admin",
+      "page": "my tasks empty",
+      "width": 320,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 320, innerWidth 320"
+    },
+    {
+      "role": "admin",
+      "page": "my tasks empty",
+      "width": 320,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "6 controls"
+    },
+    {
+      "role": "admin",
+      "page": "my tasks empty",
+      "width": 320,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "my tasks empty",
+      "width": 320,
+      "check": "the empty state has no search field (Rev 2)",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "dashboard",
+      "width": 375,
+      "check": "Boards and My tasks are both in the header",
+      "pass": true,
+      "detail": "Boards, My tasks"
+    },
+    {
+      "role": "admin",
+      "page": "dashboard",
+      "width": 375,
+      "check": "both header links are visible, inside the viewport and reachable at their center",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "dashboard",
+      "width": 375,
+      "check": "each header link is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "Boards 169.5x44; My tasks 169.5x44"
+    },
+    {
+      "role": "admin",
+      "page": "dashboard",
+      "width": 375,
+      "check": "the header causes no horizontal overflow",
+      "pass": true,
+      "detail": "header 0, scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "admin",
+      "page": "dashboard",
+      "width": 375,
+      "check": "the sticky bar does not overlap the content (main starts at or below the bar)",
+      "pass": true,
+      "detail": "header bottom 108, main top 108"
+    },
+    {
+      "role": "admin",
+      "page": "dashboard",
+      "width": 375,
+      "check": "the header is a sticky top bar",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "dashboard",
+      "width": 375,
+      "check": "the current page link is Boards",
+      "pass": true,
+      "detail": "Boards"
+    },
+    {
+      "role": "admin",
+      "page": "dashboard",
+      "width": 375,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "admin",
+      "page": "dashboard",
+      "width": 375,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "9 controls"
+    },
+    {
+      "role": "admin",
+      "page": "dashboard",
+      "width": 375,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "my tasks",
+      "width": 375,
+      "check": "Boards and My tasks are both in the header",
+      "pass": true,
+      "detail": "Boards, My tasks"
+    },
+    {
+      "role": "admin",
+      "page": "my tasks",
+      "width": 375,
+      "check": "both header links are visible, inside the viewport and reachable at their center",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "my tasks",
+      "width": 375,
+      "check": "each header link is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "Boards 169.5x44; My tasks 169.5x44"
+    },
+    {
+      "role": "admin",
+      "page": "my tasks",
+      "width": 375,
+      "check": "the header causes no horizontal overflow",
+      "pass": true,
+      "detail": "header 0, scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "admin",
+      "page": "my tasks",
+      "width": 375,
+      "check": "the sticky bar does not overlap the content (main starts at or below the bar)",
+      "pass": true,
+      "detail": "header bottom 108, main top 108"
+    },
+    {
+      "role": "admin",
+      "page": "my tasks",
+      "width": 375,
+      "check": "the header is a sticky top bar",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "my tasks",
+      "width": 375,
+      "check": "the current page link is My tasks",
+      "pass": true,
+      "detail": "My tasks"
+    },
+    {
+      "role": "admin",
+      "page": "my tasks empty",
+      "width": 375,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 375, innerWidth 375"
+    },
+    {
+      "role": "admin",
+      "page": "my tasks empty",
+      "width": 375,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "6 controls"
+    },
+    {
+      "role": "admin",
+      "page": "my tasks empty",
+      "width": 375,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "my tasks empty",
+      "width": 375,
+      "check": "the empty state has no search field (Rev 2)",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "dashboard",
+      "width": 768,
+      "check": "Boards and My tasks are both in the header",
+      "pass": true,
+      "detail": "Boards, My tasks"
+    },
+    {
+      "role": "admin",
+      "page": "dashboard",
+      "width": 768,
+      "check": "both header links are visible, inside the viewport and reachable at their center",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "dashboard",
+      "width": 768,
+      "check": "each header link is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "Boards 366x44; My tasks 366x44"
+    },
+    {
+      "role": "admin",
+      "page": "dashboard",
+      "width": 768,
+      "check": "the header causes no horizontal overflow",
+      "pass": true,
+      "detail": "header 0, scrollWidth 768, innerWidth 768"
+    },
+    {
+      "role": "admin",
+      "page": "dashboard",
+      "width": 768,
+      "check": "the sticky bar does not overlap the content (main starts at or below the bar)",
+      "pass": true,
+      "detail": "header bottom 108, main top 108"
+    },
+    {
+      "role": "admin",
+      "page": "dashboard",
+      "width": 768,
+      "check": "the header is a sticky top bar",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "dashboard",
+      "width": 768,
+      "check": "the current page link is Boards",
+      "pass": true,
+      "detail": "Boards"
+    },
+    {
+      "role": "admin",
+      "page": "dashboard",
+      "width": 768,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 768, innerWidth 768"
+    },
+    {
+      "role": "admin",
+      "page": "dashboard",
+      "width": 768,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "9 controls"
+    },
+    {
+      "role": "admin",
+      "page": "dashboard",
+      "width": 768,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "my tasks",
+      "width": 768,
+      "check": "Boards and My tasks are both in the header",
+      "pass": true,
+      "detail": "Boards, My tasks"
+    },
+    {
+      "role": "admin",
+      "page": "my tasks",
+      "width": 768,
+      "check": "both header links are visible, inside the viewport and reachable at their center",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "my tasks",
+      "width": 768,
+      "check": "each header link is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "Boards 366x44; My tasks 366x44"
+    },
+    {
+      "role": "admin",
+      "page": "my tasks",
+      "width": 768,
+      "check": "the header causes no horizontal overflow",
+      "pass": true,
+      "detail": "header 0, scrollWidth 768, innerWidth 768"
+    },
+    {
+      "role": "admin",
+      "page": "my tasks",
+      "width": 768,
+      "check": "the sticky bar does not overlap the content (main starts at or below the bar)",
+      "pass": true,
+      "detail": "header bottom 108, main top 108"
+    },
+    {
+      "role": "admin",
+      "page": "my tasks",
+      "width": 768,
+      "check": "the header is a sticky top bar",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "my tasks",
+      "width": 768,
+      "check": "the current page link is My tasks",
+      "pass": true,
+      "detail": "My tasks"
+    },
+    {
+      "role": "admin",
+      "page": "my tasks empty",
+      "width": 768,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 768, innerWidth 768"
+    },
+    {
+      "role": "admin",
+      "page": "my tasks empty",
+      "width": 768,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "6 controls"
+    },
+    {
+      "role": "admin",
+      "page": "my tasks empty",
+      "width": 768,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "my tasks empty",
+      "width": 768,
+      "check": "the empty state has no search field (Rev 2)",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "dashboard",
+      "width": 1280,
+      "check": "Boards and My tasks are both in the header",
+      "pass": true,
+      "detail": "Boards, My tasks"
+    },
+    {
+      "role": "admin",
+      "page": "dashboard",
+      "width": 1280,
+      "check": "both header links are visible, inside the viewport and reachable at their center",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "dashboard",
+      "width": 1280,
+      "check": "each header link is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "Boards 232x44; My tasks 232x44"
+    },
+    {
+      "role": "admin",
+      "page": "dashboard",
+      "width": 1280,
+      "check": "the header causes no horizontal overflow",
+      "pass": true,
+      "detail": "header 0, scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "admin",
+      "page": "dashboard",
+      "width": 1280,
+      "check": "the sidebar does not overlap the content (main starts right of the sidebar)",
+      "pass": true,
+      "detail": "sidebar right 256, main left 256"
+    },
+    {
+      "role": "admin",
+      "page": "dashboard",
+      "width": 1280,
+      "check": "the current page link is Boards",
+      "pass": true,
+      "detail": "Boards"
+    },
+    {
+      "role": "admin",
+      "page": "dashboard",
+      "width": 1280,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "admin",
+      "page": "dashboard",
+      "width": 1280,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "9 controls"
+    },
+    {
+      "role": "admin",
+      "page": "dashboard",
+      "width": 1280,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "my tasks",
+      "width": 1280,
+      "check": "Boards and My tasks are both in the header",
+      "pass": true,
+      "detail": "Boards, My tasks"
+    },
+    {
+      "role": "admin",
+      "page": "my tasks",
+      "width": 1280,
+      "check": "both header links are visible, inside the viewport and reachable at their center",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "my tasks",
+      "width": 1280,
+      "check": "each header link is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "Boards 232x44; My tasks 232x44"
+    },
+    {
+      "role": "admin",
+      "page": "my tasks",
+      "width": 1280,
+      "check": "the header causes no horizontal overflow",
+      "pass": true,
+      "detail": "header 0, scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "admin",
+      "page": "my tasks",
+      "width": 1280,
+      "check": "the sidebar does not overlap the content (main starts right of the sidebar)",
+      "pass": true,
+      "detail": "sidebar right 256, main left 256"
+    },
+    {
+      "role": "admin",
+      "page": "my tasks",
+      "width": 1280,
+      "check": "the current page link is My tasks",
+      "pass": true,
+      "detail": "My tasks"
+    },
+    {
+      "role": "admin",
+      "page": "my tasks empty",
+      "width": 1280,
+      "check": "no horizontal page scroll (scrollWidth <= innerWidth)",
+      "pass": true,
+      "detail": "scrollWidth 1280, innerWidth 1280"
+    },
+    {
+      "role": "admin",
+      "page": "my tasks empty",
+      "width": 1280,
+      "check": "every interactive box is at least 44x44 CSS px",
+      "pass": true,
+      "detail": "6 controls"
+    },
+    {
+      "role": "admin",
+      "page": "my tasks empty",
+      "width": 1280,
+      "check": "elementFromPoint at each control center returns the control",
+      "pass": true
+    },
+    {
+      "role": "admin",
+      "page": "my tasks empty",
+      "width": 1280,
+      "check": "the empty state has no search field (Rev 2)",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "status journey",
+      "width": 375,
+      "check": "before the move the card shows an open badge",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "status journey",
+      "width": 375,
+      "check": "after the move, returning through the My tasks link shows the green done badge",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "status journey",
+      "width": 375,
+      "check": "after the card moved back, the Back button shows the current status (the page refreshes when it mounts)",
+      "pass": true,
+      "detail": "Back showed: open (current)"
+    },
+    {
+      "role": "member",
+      "page": "status journey",
+      "width": 375,
+      "check": "when the tab becomes visible again, a status changed meanwhile shows without a reload",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "status journey",
+      "width": 375,
+      "check": "a reload shows the current open badge",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "journey",
+      "width": 375,
+      "check": "My tasks opens from the top bar link by touch (no address typed)",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "journey",
+      "width": 375,
+      "check": "a board link on My tasks opens that board",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "journey",
+      "width": 375,
+      "check": "a query shows its result with the card's column",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "journey",
+      "width": 375,
+      "check": "selecting a result opens Card details for that card",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "journey",
+      "width": 375,
+      "check": "after Escape, focus returns to the result that opened the dialog",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "journey",
+      "width": 375,
+      "check": "after a rename that no longer matches, the result disappears without a new request",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "journey",
+      "width": 375,
+      "check": "a rename that still matches shows the new title in the result",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "journey",
+      "width": 375,
+      "check": "after deleting the card, its result is gone",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "journey",
+      "width": 375,
+      "check": "clearing the query returns to idle",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "journey",
+      "width": 375,
+      "check": "a no-result query shows the no-result message",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "journey",
+      "width": 375,
+      "check": "a late response of an earlier query does not overwrite the newer results",
+      "pass": true,
+      "detail": "2 search requests"
+    },
+    {
+      "role": "member",
+      "page": "handler",
+      "width": 0,
+      "check": "the same-origin handler returns the Flask 400 for a repeated q",
+      "pass": true,
+      "detail": "status 400, fields {\"q\":\"Send one value.\"}"
+    },
+    {
+      "role": "member",
+      "page": "handler",
+      "width": 0,
+      "check": "the response for a repeated q is private, no-store",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "handler",
+      "width": 0,
+      "check": "the same-origin handler returns the Flask 400 for an unknown key beside q",
+      "pass": true,
+      "detail": "status 400, fields null"
+    },
+    {
+      "role": "member",
+      "page": "handler",
+      "width": 0,
+      "check": "the response for an unknown key beside q is private, no-store",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "handler",
+      "width": 0,
+      "check": "the same-origin handler returns the Flask 400 for a blank q",
+      "pass": true,
+      "detail": "status 400, fields {\"q\":\"Required.\"}"
+    },
+    {
+      "role": "member",
+      "page": "handler",
+      "width": 0,
+      "check": "the response for a blank q is private, no-store",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "handler",
+      "width": 0,
+      "check": "the same-origin handler returns the Flask 400 for a NUL q",
+      "pass": true,
+      "detail": "status 400, fields {\"q\":\"Enter valid text.\"}"
+    },
+    {
+      "role": "member",
+      "page": "handler",
+      "width": 0,
+      "check": "the response for a NUL q is private, no-store",
+      "pass": true
+    },
+    {
+      "role": "member",
+      "page": "handler",
+      "width": 0,
+      "check": "a valid query through the handler returns 200",
+      "pass": true
+    }
+  ]
+}

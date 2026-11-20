@@ -6,9 +6,11 @@ This plan implements the My Tasks read (E21), the board card search (E22), the `
 
 **Status:** Done locally (2026-11-14). Requirements and design were approved (decisions S1–S11 and Q1–Q6), and the user's `implement my-tasks-search` invocation for all tasks approved this plan. Every group is verified; see `evidence/my-tasks-search-T11.md`. Open outside this plan: Playwright (V10), real-device checks (T15) and deployment (T16).
 
-**Root task:** T11. Existing root IDs are preserved and no new root ID is proposed. Root T11 stays unchecked in `specs/tasks.md` until its checks pass.
+**Revision 2 (2026-11-20): task status badge and My Tasks search, done locally and verified.** Requirements 9 and 10 (decisions S12–S17) and `design.md` ("Revision 2 design", DD13–DD21, C42, review items R1–R6) were approved in chat on 2026-11-20, and the user's `/revotask-feature implement my tasks all the tasks` invocation approved this plan. Groups 11 to 16 were implemented the same day (see `evidence/my-tasks-search-T11.md`, Revision 2). Groups 0 to 10 stay checked as the record of Revision 1. Group 17 (S18, 2026-11-20) added the refresh on mount and on visibility after the journey showed a stale status on Back. Open outside this plan: Playwright steps (V10), real-device checks (T15) and deployment in Flask-first order (T16).
 
-**Inputs:** `requirements.md` (Requirements 1 to 8, S1–S11), `design.md` (DD1–DD12, Properties 1–12, WP-B1 to WP-D, C18–C22, Q1–Q6).
+**Root task:** T11. Existing root IDs are preserved and no new root ID is proposed. Root T11 was checked after Revision 1 and stays checked while Revision 2 is open, with the open revision noted in its row at finalize (task 11.1), as T12 does.
+
+**Inputs:** `requirements.md` (Requirements 1 to 10, S1–S17), `design.md` (DD1–DD21, Properties 1–15, WP-B1 to WP-D and WP-R2-B, -F, -V, -D, C18–C22 and C42, Q1–Q6, R1–R6).
 
 ## Dependency gates
 
@@ -18,6 +20,9 @@ This plan implements the My Tasks read (E21), the board card search (E22), the `
 | B | The backend E21 and E22 checks pass before any frontend task that calls them. | 2.6 |
 | C | The frontend and the full suites pass before the mobile record is final. | 9 |
 | D | Root T11 is checked only after the backend, frontend, measured mobile check, journey and timing record pass. Unverified work stays open with the actual reason. | 10.5 |
+| B2 | Revision 2: the backend E21 checks pass before the frontend parser requires `column_name` and `is_done`. | 12.3 |
+| C2 | Revision 2: the full backend and frontend suites, lint, typecheck and `next build` pass before the mobile record is final. | 15.1 |
+| D2 | Revision 2 is recorded complete only after B2, C2 and the measured check pass. Unverified work stays open with the actual reason. | 16.6 |
 
 ## Test conventions (all groups)
 
@@ -190,6 +195,110 @@ This plan implements the My Tasks read (E21), the board card search (E22), the `
     - Acceptance: the checkbox matches the evidence.
     - _Root: T11_
 
+## Revision 2 tasks (2026-11-20): task status badge and My Tasks search
+
+Order of work: finalize the shared documents (C42), the backend E21 change and its tests with a checkpoint, the frontend types, parser and filter, the `BaseBadge` variant, the row badge, the search and its states, their tests, the measured mobile check and journey, the full verification, and the documentation checkpoint. For UI tasks read FE-D1 to FE-D9 and `frontend/app/globals.css` first. The test conventions above apply. Revision 2 adds no table, migration, dependency, route or color.
+
+- [x] 11. Finalize the Revision 2 spec (documents only)
+  - [x] 11.1 Synchronize the shared documents with `design.md` ("Contract and Document Impact", C42)
+    - Update `docs/API.md` (the E21 row and the "E21 item" shape line: add `column_name` and `is_done`, say that they are the card's current column name and Done flag), `backend/specs/api-contract.md`, `frontend/specs/api-integration.md`, `frontend/specs/pages-and-components.md` (the `/my-tasks` row: status badge and local search, `MyTasks` is a client component), `specs/requirements.md` AC06.2 (status per row and a title search), `specs/design.md` D6, `specs/traceability.md` (AC06.2: Revision 2 open), the T11 row of `specs/tasks.md` (a "Revision 2 in progress" note, T11 stays checked), `docs/TEST-PLAN.md` V07 and V11, `docs/DEPLOYMENT.md` (one line: deploy Flask before the frontend for this change, because the new frontend parser requires the two E21 keys), and `guidelines/frontend.md` (component table: `BaseBadge` has a `success` variant; `MyTasks` is a client component). Record before, after, reason and verification in `specs/CHANGELOG.md`, and the plan approval in `evidence/spec-review.md`. Change no source code, test, README or application changelog.
+    - Acceptance: each document says the same as `design.md`: the E21 item has twelve keys, nothing else in E21 changes, and the search sends no request. `specs/tasks.md` shows T11 checked with the open revision noted.
+    - _Requirements: 9.1, 10.2; Root: T11; Decisions: S12, S14_
+
+- [x] 12. Backend: E21 status fields (WP-R2-B)
+  - [x] 12.1 Add `column_name` and `is_done` to `my_tasks` and `TaskItemSchema`
+    - In `backend/app/blueprints/cards/service.py`, add `BoardColumn.name.label("column_name")` and `BoardColumn.is_done.label("is_done")` to the `my_tasks` select (the join already exists) and update its docstring. In `schema.py`, add `column_name = fields.String()` and `is_done = fields.Boolean()` to `TaskItemSchema`, and the two names after `board_name` in `Meta.fields`. Do not change the filters, the sort, the membership join or the query validation.
+    - Acceptance: an E21 item has exactly the twelve documented keys. No extra query is issued (the statement count of one E21 call does not change). No write, flush, event or lock.
+    - _Requirements: 1.6, 9.1; Root: T11; Decisions: S12, DD13_
+  - [x] 12.2 Extend `test_my_tasks.py` (and `search_helpers.py` where it builds an E21 item)
+    - Assert the exact key set (ten Revision 1 keys plus `column_name` and `is_done`). Assert a card in the Done column has `is_done` true with that column's name and a card in another column has `is_done` false with its own name, with two columns on one board. Assert that after an Admin renames a column (E14) and after the Done flag moves to another empty column (E14), the next E21 shows the new values (Property 13, Requirement 9.6). Keep the existing exclusion, order, membership removal, no-write and `no-store` tests passing. Tests write only to the Test_Database through `BoardTracker`.
+    - Acceptance: the new cases pass and fail against the old service (remove the two select lines to see them fail, then restore). All earlier cases of the file still pass.
+    - _Requirements: 8.4, 9.1, 9.6; Root: T11; Decisions: S12_
+  - [x] 12.3 Backend checkpoint (gate B2)
+    - From `backend/`: `.venv/bin/python -m pytest -p no:cacheprovider -q` (the full suite) and `.venv/bin/ruff check .`. Record the commands and real counts.
+    - Acceptance: the full suite passes and `ruff` is clean. If a test fails, fix its cause before any frontend task. Do not weaken a test.
+    - _Requirements: 8.4; Root: T11_
+
+- [x] 13. Frontend: type, parser, filter and badge (WP-R2-F)
+  - [x] 13.1 Extend `TaskItem`, `parseTaskItem` and add `filterTasks`
+    - In `frontend/lib/types.ts`, `TaskItem = Card & { board_id; board_name; column_name: string; is_done: boolean }`. In `frontend/lib/tasks.ts`, extend `parseTaskItem` to require `column_name` (string) and `is_done` (boolean) and copy them, throwing `malformedApiError` otherwise (no default for a missing `is_done`). Add `filterTasks(tasks, query)` as in `design.md` ("Frontend change"): trim, return the input when empty, else keep tasks where `titleMatches(task.title, trimmed)` (import from `lib/cardSearch.ts`).
+    - Acceptance: `npm run typecheck` shows every `TaskItem` builder that lacks the two fields. The parser copies only documented fields.
+    - _Requirements: 8.3, 9.1, 10.3, 10.4; Root: T11; Decisions: S12, S14, S15, DD16_
+  - [x] 13.2 Update the fixtures that build a `TaskItem` and extend `lib/tasks.test.ts`
+    - Add `column_name` and `is_done` to the builders in `app/(protected)/my-tasks/page.test.tsx`, `components/tasks/MyTasks.test.tsx`, `lib/tasks.test.ts` and `lib/server/tasks.test.ts`. In `lib/tasks.test.ts` add: the parser copies the two keys, and throws on a missing `column_name`, a non-string `column_name`, a missing `is_done` and a non-boolean `is_done` (including the strings `"true"` and `"false"`). `filterTasks`: an empty and a whitespace-only query return the same list, case-insensitive match, literal `%`, `_`, `\`, `*` and `.`, a trimmed query, title only (a description, a board name or a column name does not match), API order kept, no match returns `[]` (Property 14). In `page.test.tsx`, a response without `column_name` or `is_done` throws to the error boundary.
+    - Acceptance: `npx vitest run lib/tasks.test.ts lib/server/tasks.test.ts "app/(protected)/my-tasks/page.test.tsx"` passes.
+    - _Requirements: 8.3, 8.6, 9.1, 10.3, 10.4; Root: T11; Decisions: S12, S14, S15_
+  - [x] 13.3 Add the `success` variant to `BaseBadge`
+    - In `frontend/components/shared/BaseBadge.tsx`: `variant?: "primary" | "ghost" | "success"` and `success: "badge-success"` in the class map. Add `frontend/components/shared/BaseBadge.test.tsx`: the default is `badge-ghost`, `success` gives `badge-success`, `primary` gives `badge-primary`, a caller `className` is appended and `shrink-0` stays.
+    - Acceptance: the test passes. No existing `BaseBadge` caller changes.
+    - _Requirements: 9.3, 7.3; Root: T11; Decisions: S13, DD15, R6_
+  - [x] 13.4 Show the Status_Badge in `TaskGroup`
+    - In `frontend/components/tasks/TaskGroup.tsx`, add the badge between the title block and the chevron as in `design.md` ("Frontend change"): `BaseBadge` with `variant={task.is_done ? "success" : "ghost"}`, the `check` icon (`size-3.5`) before the text for a done task only, the column name in a `min-w-0 break-words` span, and `className="h-auto min-h-6 max-w-[45%] whitespace-normal py-0.5 text-left"`. Change the row link's `aria-label` to `"<title>, <board name>, <column name>"`. The badge takes no focus and adds no handler.
+    - Acceptance: a done row and an open row render differently by variant and icon, and both show the column text. The row still links to `/boards/<id>` with no card ID.
+    - _Requirements: 9.2–9.5, 7.1, 7.3; Root: T11; Decisions: S13, DD14, DD15, R4, R5_
+  - [x] 13.5 Add the search and its states to `MyTasks`
+    - In `frontend/components/tasks/MyTasks.tsx`: add `"use client"`, `useState` for the query and a `useRef` for the field. When `tasks.length === 0`, render the Revision 1 empty state only (no field). Otherwise render, in order: the field (`FormField`, `type="search"`, `hideLabel`, label and placeholder "Search my tasks", `maxLength={SEARCH_QUERY_MAX}`, `inputClassName="pl-9"`, `autoComplete="off"`, the `search` icon, in a `w-full sm:max-w-sm` wrapper, as in `CardSearch`), an `sr-only` `<p aria-live="polite" aria-atomic="true">` with the announcement ("<N> task(s)" or "No tasks match."), the summary strip (DD20: "<shown> of <all> tasks on <k> boards", "0 of <all> tasks" when nothing matches, the Revision 1 sentence when the query is empty), then either the no-match panel (dashed `surface`, `No tasks match "<query>".` as text, a ghost `BaseButton` "Clear search" that empties the query and focuses the field) or one `TaskGroup` per group of `groupTasksByBoard(filterTasks(tasks, query))`. No debounce, no effect, no URL, no storage, no request. The page file does not change.
+    - Acceptance: typing filters at once. `page.tsx` is unchanged. `npm run typecheck` and `npm run lint` are clean.
+    - _Requirements: 4.3, 4.4, 4.7, 10.1–10.10; Root: T11; Decisions: S14–S17, DD16–DD21, R1–R3_
+  - [x] 13.6 Extend `components/tasks/MyTasks.test.tsx`
+    - Badge: every row shows its column name as text. A done row has `badge-success` and the check icon, an open row has `badge-ghost` and no icon. A done task in a column named "Selesai" shows `badge-success`, the icon and "Selesai". An 80-character column name gets the wrapping classes. The row's accessible name ends with the column name. Adding the badge does not change the row order (Properties 13, 14). Search: no field and no search text for an empty list, a labelled `type="search"` field with `maxLength` 100 and a 16 px class, typing filters at once with fake timers advanced by 0 and a `fetch` spy never called (Property 15), groups with no match disappear and the order is kept, the summaries "1 of 3 tasks on 1 board" and "0 of 3 tasks", the no-match text with the query shown as text (a query of `<b>x</b>` renders as text), the empty-state text differs from the no-match text, Clear search empties the field and moves focus to it, a whitespace-only query shows every task, the live line text, a case-insensitive match, `%` matches only a title that contains `%`. Assert rendered text, roles and requests, not only that the component mounts.
+    - Acceptance: `npx vitest run components/tasks components/shared/BaseBadge.test.tsx` passes. The new cases fail when `filterTasks` is replaced with an identity function and when the badge is removed (check once, then restore).
+    - _Requirements: 8.6, 9.2–9.5, 10.1–10.10; Root: T11; Decisions: S13–S16_
+
+- [x] 14. Measured mobile check and journey (WP-R2-V)
+  - [x] 14.1 Extend `evidence/my-tasks-search-mobile-measure.mjs`
+    - Add, on `/my-tasks` with seeded users: a user with an open row, a done row (a Done column), a row whose column has an 80-character name, a query that matches and a query that matches nothing. At 320, 375, 768 and 1280 px check `scrollWidth <= innerWidth` for the page, the 44 by 44 CSS px box (`elementFromPoint` at the center) of the field, the Clear search button and each row link, a 16 px font on the field, every badge inside its row's bounding box, and that typing sends no request (a network and `fetch` counter stays at zero). Save the JSON and screenshots as `evidence/my-tasks-search-mobile-rev2.json` and `evidence/my-tasks-search-screenshots-rev2/` so the Revision 1 files stay. State whether the browser was an emulator or a real device.
+    - Acceptance: every check passes at the four widths, with a real count, 0 failed.
+    - _Requirements: 7.1, 7.2, 7.6, 9.5, 10.10; Root: T11_
+  - [x] 14.2 Manual journey at 375 px
+    - Open My tasks, see done and open badges, type part of a title, see the summary change, type text that matches nothing, clear it. Then mark a card done on its board, return through the "My tasks" link and through the browser Back button, and record whether the green badge shows in each case and after a reload. Delete the seeded data afterward.
+    - Acceptance: the record states what each route showed. If Back shows the old status, say so and leave the decision about a refresh on focus to the user.
+    - _Requirements: 7.4, 9.6; Root: T11_
+
+- [x] 15. Full verification checkpoint (gate C2)
+  - [x] 15.1 Run all checks
+    - Backend (from `backend/`): the full `pytest` and `ruff check .`. Frontend (from `frontend/`): `npm run lint`, `npm run typecheck`, `npm test`, `npm run build`. If time allows, `npm run e2e` to confirm no existing journey broke (the My Tasks route is only visited by `mobile.spec.ts`). Record the exact commands and real counts.
+    - Acceptance: all pass, with the real counts in the evidence. The My Tasks badge and search are covered by tests that fail without them (13.6, 12.2).
+    - _Requirements: 8.4–8.8; Root: T11_
+  - [x] 15.2 Review the diff against the spec
+    - Check the diff against Requirements 9 and 10, DD13–DD21 and Properties 13 to 15. Confirm: no new color, font, dependency, route, table or migration; no token or request added to the page; `page.tsx` unchanged; `BaseBadge` has only the `success` variant added; the E21 route, query rule, sort and filters are unchanged. Record findings and what was fixed.
+    - Acceptance: the diff matches the spec or the deviation is recorded in `specs/CHANGELOG.md`.
+    - _Requirements: 3.5, 9.1; Root: T11_
+
+- [x] 16. Documentation checkpoint and Revision 2 status
+  - [x] 16.1 Evidence
+    - Add a "Revision 2" section to `evidence/my-tasks-search-T11.md`: the commands and counts, the measured mobile result and screenshots (emulator or real device), the manual journey including the Back-button result, defects found and fixed, and what stays open (the Playwright My Tasks steps, real-device checks, T16 deployment in Flask-first order). Record the implementation in `evidence/spec-review.md`.
+    - _Root: T11_
+  - [x] 16.2 Changelogs
+    - Add concise entries under the `## YYYY-MM-DD` heading for the commit date, with a `### <short-sha> <subject>` entry in `CHANGELOG.md`, `backend/CHANGELOG.md` and `frontend/CHANGELOG.md`. Record any deviation from the approved design in `specs/CHANGELOG.md` with before, after, reason and verification.
+    - _Root: T11_
+  - [x] 16.3 README and user guide
+    - Update the `README.md` My tasks sentence (a status badge on each task, a search field, local counts) with verified results only, and `docs/USER_GUIDE.md` for the badge and the search if it describes My tasks. Update the `specs/traceability.md` rows for AC06.2 with the observed results and link `my-tasks-search-T11.md`.
+    - _Root: T11_
+  - [x] 16.4 Standards check
+    - Confirm `guidelines/frontend.md` lists `BaseBadge` with its `success` variant and `MyTasks` as a client component, and that the `/my-tasks` row in `frontend/specs/pages-and-components.md` matches the shipped page.
+    - _Root: T11_
+  - [x] 16.5 Deployment note
+    - Confirm `docs/DEPLOYMENT.md` says to deploy Flask before the frontend for this change. Do not deploy: publishing stays in the release workflow.
+    - _Root: T11_
+  - [x] 16.6 Revision 2 status (gate D2)
+    - Mark Revision 2 complete in this file, the T11 row of `specs/tasks.md` and the traceability rows only when groups 11 to 15 pass. Otherwise leave the failed or unverified work open with the real reason. T11 stays checked.
+    - Acceptance: every checkbox and status line matches the evidence.
+    - _Root: T11_
+
+- [x] 17. Refresh the status on mount and when the tab is visible (S18, DD22)
+  - [x] 17.1 Add the refresh to `MyTasks` and test it
+    - In `frontend/components/tasks/MyTasks.tsx`: `useRouter()`, an effect that calls `router.refresh()` on mount and on `visibilitychange` when `document.visibilityState` is `visible`, and removes the listener on unmount. Mock `next/navigation` in `MyTasks.test.tsx` and the page test. Cases: one refresh on mount, a refresh when visible and none when hidden, no refresh after unmount, the typed query kept across new props.
+    - Acceptance: `npx vitest run components/tasks "app/(protected)/my-tasks"` passes, lint and typecheck are clean.
+    - _Requirements: 9.6, 4.7; Root: T11; Decisions: S18, DD22_
+  - [x] 17.2 Browser check of Back and visibility
+    - In `evidence/my-tasks-search-mobile-measure.mjs`, the Back check now asserts the current status, and a check toggles visibility to hidden and visible after a change made through the API.
+    - Acceptance: the run passes with 0 failed, and the Back check reads "open (current)".
+    - _Requirements: 9.6; Root: T11_
+  - [x] 17.3 Documentation
+    - Record S18 in `specs/CHANGELOG.md`, the changelogs, `evidence/my-tasks-search-T11.md`, `evidence/spec-review.md`, the README, the traceability row and `docs/API.md` is unchanged.
+    - _Root: T11_
+
 ## Notes
 
 - Test sub-tasks are not marked optional. Root completion in `specs/tasks.md` needs V07 and V11, so they are required here.
@@ -215,7 +324,18 @@ This plan implements the My Tasks read (E21), the board card search (E22), the `
     { "id": 8, "tasks": ["8.1", "8.2", "8.3"] },
     { "id": 9, "tasks": ["9.1", "9.2"] },
     { "id": 10, "tasks": ["10.1", "10.2", "10.3", "10.4"] },
-    { "id": 11, "tasks": ["10.5"] }
+    { "id": 11, "tasks": ["10.5"] },
+    { "id": 12, "tasks": ["11.1"] },
+    { "id": 13, "tasks": ["12.1"] },
+    { "id": 14, "tasks": ["12.2", "13.3"] },
+    { "id": 15, "tasks": ["12.3"] },
+    { "id": 16, "tasks": ["13.1"] },
+    { "id": 17, "tasks": ["13.2", "13.4", "13.5"] },
+    { "id": 18, "tasks": ["13.6"] },
+    { "id": 19, "tasks": ["14.1", "14.2"] },
+    { "id": 20, "tasks": ["15.1", "15.2"] },
+    { "id": 21, "tasks": ["16.1", "16.2", "16.3", "16.4", "16.5"] },
+    { "id": 22, "tasks": ["16.6"] }
   ]
 }
 ```
