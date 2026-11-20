@@ -11,6 +11,7 @@ const { redirectSignal } = vi.hoisted(() => ({ redirectSignal: new Error("NEXT_R
 
 vi.mock("@/lib/server/session", () => ({ getCurrentUser: vi.fn() }));
 vi.mock("@/lib/server/tasks", () => ({ getMyTasks: vi.fn() }));
+vi.mock("next/navigation", () => ({ useRouter: () => ({ refresh: vi.fn() }) }));
 
 const USER = { id: "1", name: "Ada", email: "a@b.co" };
 const TASK: TaskItem = {
@@ -23,6 +24,8 @@ const TASK: TaskItem = {
   order: 1,
   board_id: "11111111-1111-4111-8111-111111111111",
   board_name: "Launch",
+  column_name: "To do",
+  is_done: false,
 };
 
 beforeEach(() => {
@@ -36,7 +39,7 @@ describe("MyTasksPage", () => {
     expect(getCurrentUser).toHaveBeenCalledTimes(1);
     expect(getMyTasks).toHaveBeenCalledTimes(1);
     expect(screen.getByRole("heading", { level: 1, name: "My tasks" })).toBeVisible();
-    expect(screen.getByRole("link", { name: "Write report, Launch" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "Write report, Launch, To do" })).toHaveAttribute(
       "href",
       "/boards/11111111-1111-4111-8111-111111111111",
     );

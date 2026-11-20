@@ -17,6 +17,8 @@ const task = {
   order: 1,
   board_id: "b",
   board_name: "Board",
+  column_name: "To do",
+  is_done: false,
 };
 
 beforeEach(() => fetchPrivate.mockReset());
@@ -27,6 +29,13 @@ describe("getMyTasks", () => {
     const tasks = await getMyTasks();
     expect(fetchPrivate).toHaveBeenCalledWith("myTasks", { method: "GET", search: "?assignee=me" });
     expect(tasks).toEqual([task]);
+  });
+
+  it.each(["column_name", "is_done"])("throws an ApiError when an item lacks %s (Rev 2)", async (key) => {
+    const { [key as "column_name"]: _omitted, ...rest } = task;
+    void _omitted;
+    fetchPrivate.mockResolvedValue({ status: 200, body: { data: [rest] }, retryAfter: null });
+    await expect(getMyTasks()).rejects.toBeInstanceOf(ApiError);
   });
 
   it("returns an empty list", async () => {

@@ -53,7 +53,7 @@ export type Comment = {
 };
 
 // My Tasks and card search shapes from docs/API.md (E21 item, E22 item).
-export type TaskItem = Card & { board_id: string; board_name: string };
+export type TaskItem = Card & { board_id: string; board_name: string; column_name: string; is_done: boolean };
 export type TaskGroup = { boardId: string; boardName: string; tasks: TaskItem[] };
 export type SearchResult = { id: string; title: string; column_id: string };
 /** The held E22 response: the trimmed query it answered and the items exactly as returned. */
