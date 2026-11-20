@@ -137,7 +137,10 @@ class CardSearchQuerySchema(Schema):
 
 
 class TaskItemSchema(Schema):
-    """E21 item: the Card fields plus the board's ID and name. Allowlist, dump only."""
+    """E21 item: the Card fields plus the board's ID and name and the column's name and Done flag.
+
+    Allowlist, dump only.
+    """
 
     id = fields.UUID()
     column_id = fields.UUID()
@@ -148,6 +151,8 @@ class TaskItemSchema(Schema):
     order = fields.Float()
     board_id = fields.UUID()
     board_name = fields.String()
+    column_name = fields.String()
+    is_done = fields.Boolean()
 
     class Meta:
         fields = (
@@ -160,6 +165,8 @@ class TaskItemSchema(Schema):
             "order",
             "board_id",
             "board_name",
+            "column_name",
+            "is_done",
         )
 
 

@@ -274,7 +274,8 @@ def my_tasks(user_id: uuid.UUID) -> list[dict[str, Any]]:
 
     Read-only: no lock, event or write. The membership join checks access in the same snapshot, so
     a removal hides the board's cards at once. Sorted by lower-case board name, board ID, column
-    order, card order, then card ID (S1, Q5). Done cards are included (S2).
+    order, card order, then card ID (S1, Q5). Done cards are included (S2). Each item carries the
+    card's column name and that column's Done flag, from the same join (status, S12, C42).
     """
     rows = db.session.execute(
         select(
@@ -287,6 +288,8 @@ def my_tasks(user_id: uuid.UUID) -> list[dict[str, Any]]:
             Card.order,
             Board.id.label("board_id"),
             Board.name.label("board_name"),
+            BoardColumn.name.label("column_name"),
+            BoardColumn.is_done.label("is_done"),
         )
         .join(BoardColumn, BoardColumn.id == Card.column_id)
         .join(Board, Board.id == BoardColumn.board_id)

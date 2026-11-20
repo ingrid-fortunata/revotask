@@ -20,6 +20,8 @@ CARD_FIELDS = {
     "order",
     "board_id",
     "board_name",
+    "column_name",
+    "is_done",
 }
 SEARCH_FIELDS = {"id", "title", "column_id"}
 STANDARD_MESSAGE = "Check the submitted fields."

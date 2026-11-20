@@ -1,4 +1,7 @@
-"""E21 My Tasks (task 2.2; Requirements 1.1-1.8, 3.3, 3.4; S1, S2, S5, Q5). Properties 1, 2."""
+"""E21 My Tasks (task 2.2; Requirements 1.1-1.8, 3.3, 3.4; S1, S2, S5, Q5). Properties 1, 2.
+
+Revision 2 (task 12.2; Requirements 9.1, 9.6; S12; Property 13): `column_name` and `is_done`.
+"""
 
 from __future__ import annotations
 
@@ -86,6 +89,54 @@ def test_returns_the_documented_fields(client, world):
     assert item["assignee_id"] == str(world.me.id)
     assert item["assignee_name"] == "Me"
     assert item["description"] is None
+    assert (item["column_name"], item["is_done"]) == ("Todo", False)
+
+
+def test_status_follows_the_cards_own_column(client, world):
+    board = world.board("Alpha")
+    todo = world.column(board, "Todo", order=1.0)
+    done = world.column(board, "Finished", order=2.0, done=True)
+    open_card = world.card(todo, "Open", order=1.0)
+    done_card = world.card(done, "Closed", order=1.0)
+    items = {item["id"]: item for item in world.get(client).get_json()["data"]}
+    open_item, done_item = items[str(open_card)], items[str(done_card)]
+    assert (open_item["column_name"], open_item["is_done"]) == ("Todo", False)
+    assert (done_item["column_name"], done_item["is_done"]) == ("Finished", True)
+    assert isinstance(done_item["is_done"], bool)
+
+
+def test_status_shows_a_rename_and_a_moved_done_flag_on_the_next_read(client, world, app):
+    board = world.board("Alpha")
+    first = world.column(board, "Todo", order=1.0, done=True)
+    second = world.column(board, "Doing", order=2.0)
+    world.card(first, "In first", order=1.0)
+    world.card(second, "In second", order=1.0)
+
+    def statuses():
+        data = world.get(client).get_json()["data"]
+        return {i["title"]: (i["column_name"], i["is_done"]) for i in data}
+
+    assert statuses() == {"In first": ("Todo", True), "In second": ("Doing", False)}
+    _write(
+        app,
+        lambda: db.session.execute(
+            update(BoardColumn).where(BoardColumn.id == first).values(name="Backlog")
+        ),
+    )
+    assert statuses()["In first"] == ("Backlog", True)
+    _write(
+        app,
+        lambda: db.session.execute(
+            update(BoardColumn).where(BoardColumn.id == first).values(is_done=False)
+        ),
+    )
+    _write(
+        app,
+        lambda: db.session.execute(
+            update(BoardColumn).where(BoardColumn.id == second).values(is_done=True)
+        ),
+    )
+    assert statuses() == {"In first": ("Backlog", False), "In second": ("Doing", True)}
 
 
 def test_no_assignment_returns_an_empty_list(client, world):
