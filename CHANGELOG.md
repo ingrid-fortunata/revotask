@@ -2,6 +2,15 @@
 
 Newest date first. Each `## YYYY-MM-DD` heading groups the commits made that day. Each commit has a `### <short-sha> <subject>` entry with its notes. Follows the [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) style.
 
+## 2026-11-20
+
+### (commit pending) feat: status badge per task and a search field on My tasks (my-tasks-search revision 2)
+
+- My tasks shows a status badge on each task: the name of its column, green with a check for the Done column and grey otherwise. A search field above the groups filters your tasks by title as you type (case-insensitive, no request, groups with no match are hidden, "1 of 5 tasks on 1 board", a no-match message with Clear search). E21 items gain `column_name` and `is_done`. `BaseBadge` gets a `success` variant. No table, migration, dependency or route changes.
+- Deploy Flask before the frontend: the new frontend requires the two E21 keys (`docs/DEPLOYMENT.md`).
+- The page refreshes its data when it mounts and when the tab becomes visible again, so the browser Back button no longer shows a stale status (one extra read of your tasks per visit).
+- Checks: backend 2236 passed and 1 skipped (2234 before), ruff clean. Frontend 2262 passed (2221 before), lint, typecheck and `next build` clean. A 448-check Chrome run (device emulation, 320 to 1280 px) with 0 failed. Not run: Playwright and a real phone. Evidence: `evidence/my-tasks-search-T11.md`.
+
 ## 2026-11-19
 
 ### (commit pending) feat: read-only email and optional password change on the profile (profile revision 2)

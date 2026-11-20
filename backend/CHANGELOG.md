@@ -2,6 +2,13 @@
 
 Record actual changes for this component. Newest date first. Each `## YYYY-MM-DD` heading groups the commits made that day, and each commit has a `### <short-sha> <subject>` entry. Reference the matching root entry for the same commit in [the root changelog](../CHANGELOG.md).
 
+## 2026-11-20
+
+### (commit pending) feat: E21 returns the column name and Done flag (my-tasks-search revision 2)
+
+- `cards/service.py`: `my_tasks` also selects `BoardColumn.name` as `column_name` and `BoardColumn.is_done` from the join it already had. `cards/schema.py`: `TaskItemSchema` dumps both after `board_name`. No extra query, filter, sort or route change.
+- Tests: `test_my_tasks.py` asserts the twelve keys, the status of a Done and an open card in two columns, and that a column rename and a moved Done flag show on the next read. `search_helpers.CARD_FIELDS` has the two keys. 2236 passed and 1 skipped, ruff clean.
+
 ## 2026-11-19
 
 ### (commit pending) feat: read-only email and optional password change on the profile (profile revision 2)

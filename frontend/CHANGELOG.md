@@ -2,6 +2,14 @@
 
 Record actual changes for this component. Newest date first. Each `## YYYY-MM-DD` heading groups the commits made that day, and each commit has a `### <short-sha> <subject>` entry. Reference the matching root entry for the same commit in [the root changelog](../CHANGELOG.md).
 
+## 2026-11-20
+
+### (commit pending) feat: status badge and search on My tasks (my-tasks-search revision 2)
+
+- `lib/tasks.ts`: `parseTaskItem` requires `column_name` (string) and `is_done` (boolean) and throws otherwise, with no default. `filterTasks` reuses `titleMatches`. `lib/types.ts`: `TaskItem` has the two fields.
+- `TaskGroup` shows a `BaseBadge` per row (`success` with a check icon for a Done column, `ghost` otherwise, capped at 45% of the row so a long name wraps) and the row's accessible name ends with the column name. `MyTasks` is a client component that holds the query: a search field, "N of M tasks", a no-match state with Clear search and an `aria-live` line. `BaseBadge` gets the `success` variant. `page.tsx` is unchanged. `MyTasks` also calls `router.refresh()` on mount and on `visibilitychange` to visible, so a render restored by the Back button is replaced by the current status (the typed query is kept).
+- Tests: `BaseBadge.test.tsx` (new), `MyTasks.test.tsx`, `tasks.test.ts`, `server/tasks.test.ts` and the page test. 2262 passed, lint, typecheck and `next build` clean. 448-check Chrome run, 0 failed.
+
 ## 2026-11-19
 
 ### (commit pending) feat: read-only email and optional password change on the profile (profile revision 2)
